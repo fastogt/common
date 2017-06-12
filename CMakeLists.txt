@@ -1,0 +1,78 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+PROJECT(common VERSION 1.17.5.0 LANGUAGES CXX C)
+SET(CMAKE_CXX_STANDARD 11)
+
+SET(PROJECT_NAME_TITLE ${PROJECT_NAME} CACHE STRING "Title for ${PROJECT_NAME}")
+SET(PROJECT_DOMAIN "www.fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
+SET(PROJECT_COMPANYNAME "FastoGT" CACHE STRING "Company name for ${PROJECT_NAME}")
+SET(PROJECT_COPYRIGHT "Copyright (C) 2014-2016 ${PROJECT_COMPANYNAME}. All Rights Reserved.")
+SET(PROJECT_COMPANYNAME_DOMAIN "www.fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
+SET(PROJECT_MAINTAINER_MAIL "atopilski@fastogt.com" CACHE STRING "Internet mail address for ${PROJECT_NAME} mainteiner")
+SET(PROJECT_MAINTAINER_NAME "Alexandr Topilski" CACHE STRING "Name of ${PROJECT_NAME} mainteiner")
+SET(PROJECT_GITHUB_FORK "www.github.com/fastogt/common" CACHE STRING "Git fork of ${PROJECT_NAME}")
+SET(PROJECT_GITHUB_ISSUES "www.github.com/fastogt/common/issues" CACHE STRING "Git issue link for ${PROJECT_NAME}")
+SET(PROJECT_BUILD_TYPE_VERSION "release") #alfa, beta, rc, release
+
+STRING(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)
+STRING(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERRCASE)
+
+########################## Options #########################
+IF(MSVC)
+  IF(CMAKE_CL_64)
+    OPTION(BUILD_64X "Build 64bit project" ON)
+  ELSE()
+    OPTION(BUILD_64X "Build 64bit project" OFF)
+  ENDIF()
+ELSE(MSVC)
+  IF("${OS_ARCH}" STREQUAL "64")
+    OPTION(BUILD_64X "Build 64bit project" ON)
+  ELSEIF("${OS_ARCH}" STREQUAL "32")
+    OPTION(BUILD_64X "Build 64bit project" OFF)
+  ELSE()
+    IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+      OPTION(BUILD_64X "Build 64bit project" ON)
+    ELSE(CMAKE_SIZEOF_VOID_P MATCHES 8)
+      OPTION(BUILD_64X "Build 64bit project" OFF)
+    ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+  ENDIF()
+ENDIF(MSVC)
+OPTION(QT_ENABLED "Enable Qt support" OFF)
+OPTION(DEVELOPER_ENABLE_TESTS "Enable tests for ${PROJECT_NAME_TITLE} project" OFF)
+OPTION(DEVELOPER_CHECK_STYLE "Enable check style for ${PROJECT_NAME_TITLE} project" OFF)
+OPTION(DEVELOPER_GENERATE_DOCS "Generate docs api for ${PROJECT_NAME_TITLE} project" OFF)
+
+MESSAGE(STATUS "BUILD_64X: ${BUILD_64X}")
+
+##################################DEFAULT VALUES##########################################
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE DEBUG)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
+# If the user did not customize the install prefix,
+# set it to live under build so we don't inadvertently pollute /usr/local
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE)
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+IF("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
+  MESSAGE(SEND_ERROR "In-source builds are not allowed.")
+ENDIF("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
+
+MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+
+############################################################################
+
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+INCLUDE(config) ###################
+DEFINE_DEFAULT_DEFINITIONS(ON)
+DEFINE_PROJECT_DEFINITIONS()
+
+IF(DEVELOPER_GENERATE_DOCS)
+  CREATE_DOCS(${PROJECT_NAME_LOWERCASE} ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+ENDIF(DEVELOPER_GENERATE_DOCS)
+
+ADD_SUBDIRECTORY(src)
+
+IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/.git/hooks/pre-commit)
+  EXECUTE_PROCESS(COMMAND ${CMAKE_SOURCE_DIR}/scripts/create_pre_commit_hook.sh)
+ENDIF()

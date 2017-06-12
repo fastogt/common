@@ -1,0 +1,15 @@
+[submodule "cmake"]
+	path = cmake
+	url = https://github.com/fastogt/cmake.git
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://github.com/google/googletest.git
+[submodule "src/third-party/cmp"]
+	path = src/third-party/cmp
+	url = https://github.com/camgunz/cmp.git
+[submodule "src/third-party/cpuid/libcpuid"]
+	path = src/third-party/cpuid/libcpuid
+	url = https://github.com/fastogt/libcpuid.git
+[submodule "src/third-party/libev/src"]
+	path = src/third-party/libev/src
+	url = https://github.com/fastogt/libev.git

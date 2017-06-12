@@ -1,0 +1,3 @@
+CMakeLists.txt.user*
+tests/gtest/
+build_*
