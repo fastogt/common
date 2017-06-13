@@ -42,6 +42,9 @@
 #define SHA1_K40 0x8f1bbcdc
 #define SHA1_K60 0xca62c1d6
 
+namespace common {
+namespace hash {
+
 void sha1_init(sha1nfo* s) {
   s->state[0] = 0x67452301;
   s->state[1] = 0xefcdab89;
@@ -193,3 +196,6 @@ uint8_t* sha1_resultHmac(sha1nfo* s) {
   }
   return sha1_result(s);
 }
+
+}  // namespace hash
+}  // namespace common

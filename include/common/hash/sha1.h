@@ -35,6 +35,9 @@
 #define HASH_LENGTH 20
 #define BLOCK_LENGTH 64
 
+namespace common {
+namespace hash {
+
 typedef struct sha1nfo {
   uint32_t buffer[BLOCK_LENGTH / 4];
   uint32_t state[HASH_LENGTH / 4];
@@ -64,3 +67,6 @@ void sha1_initHmac(sha1nfo* s, const uint8_t* key, int keyLength);
 /**
  */
 uint8_t* sha1_resultHmac(sha1nfo* s);
+
+}  // namespace hash
+}  // namespace common

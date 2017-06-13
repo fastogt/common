@@ -70,11 +70,15 @@
 #define GET(n) (ctx->block[(n)])
 #endif
 
+namespace common {
+namespace hash {
+
+namespace {
 /*
  * This processes one or more 64-byte data blocks, but does NOT update
  * the bit counters.  There are no alignment requirements.
  */
-static const void* body(MD5_CTX* ctx, const void* data, unsigned long size) {
+const void* body(MD5_CTX* ctx, const void* data, unsigned long size) {
   const unsigned char* ptr;
   MD5_u32plus a, b, c, d;
   MD5_u32plus saved_a, saved_b, saved_c, saved_d;
@@ -180,6 +184,8 @@ static const void* body(MD5_CTX* ctx, const void* data, unsigned long size) {
   return ptr;
 }
 
+}  // namespace
+
 void MD5_Init(MD5_CTX* ctx) {
   ctx->a = 0x67452301;
   ctx->b = 0xefcdab89;
@@ -273,3 +279,6 @@ void MD5_Final(unsigned char* result, MD5_CTX* ctx) {
 
   memset(ctx, 0, sizeof(*ctx));
 }
+
+}  // namespace hash
+}  // namespace common
