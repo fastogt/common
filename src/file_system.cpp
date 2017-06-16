@@ -784,9 +784,11 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
     open_flags = O_TRUNC;
   }
 
+#ifdef OS_WIN  // binary can be only on windows
   if (flags & FLAG_OPEN_BINARY) {
     open_flags |= O_BINARY;
   }
+#endif
 
   if (!open_flags && !(flags & FLAG_OPEN)) {
     NOTREACHED();
