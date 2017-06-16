@@ -444,10 +444,11 @@ class File {
     FLAG_CREATE = 1 << 1,          // Creates a new file, only if it does not
     FLAG_OPEN_TRUNCATED = 1 << 2,  // Opens a file and truncates it, only if it
                                    // exists.
-    FLAG_READ = 1 << 3,
-    FLAG_WRITE = 1 << 4,
-    FLAG_APPEND = 1 << 5,
-    FLAG_DELETE_ON_CLOSE = 1 << 6
+    FLAG_OPEN_BINARY = 1 << 3,
+    FLAG_READ = 1 << 4,
+    FLAG_WRITE = 1 << 5,
+    FLAG_APPEND = 1 << 6,
+    FLAG_DELETE_ON_CLOSE = 1 << 7
   };
 
   File();
