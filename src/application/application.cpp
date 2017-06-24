@@ -91,6 +91,14 @@ void Application::UnSubscribe(listener_t* listener) {
   impl_->UnSubscribe(listener);
 }
 
+timer_id_t Application::AddTimer(uint32_t interval, timer_callback_t cb, void* user_data) {
+  return impl_->AddTimer(interval, cb, user_data);
+}
+
+bool Application::RemoveTimer(timer_id_t id) {
+  return impl_->RemoveTimer(id);
+}
+
 void Application::ShowCursor() {
   impl_->ShowCursor();
 }

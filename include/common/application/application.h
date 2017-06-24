@@ -26,12 +26,26 @@
 namespace common {
 namespace application {
 
+/**
+ *  Function prototype for the timer callback function.
+ *
+ *  The callback function is passed the current timer interval and returns
+ *  the next timer interval.  If the returned value is the same as the one
+ *  passed in, the periodic alarm continues, otherwise a new alarm is
+ *  scheduled.  If the callback returns 0, the periodic alarm is cancelled.
+ */
+typedef uint32_t (*timer_callback_t)(uint32_t interval, void* user_data);
+typedef int timer_id_t;
+
 class IApplicationImpl {
  public:
   typedef IEvent event_t;
   typedef IListener listener_t;
 
   IApplicationImpl(int argc, char** argv);
+
+  virtual timer_id_t AddTimer(uint32_t interval, timer_callback_t cb, void* user_data) = 0;
+  virtual bool RemoveTimer(timer_id_t id) = 0;
 
   virtual int PreExec() = 0;   // EXIT_FAILURE, EXIT_SUCCESS
   virtual int Exec() = 0;      // EXIT_FAILURE, EXIT_SUCCESS
@@ -75,6 +89,19 @@ class Application {
   void Subscribe(listener_t* listener, events_size_t id);
   void UnSubscribe(listener_t* listener, events_size_t id);
   void UnSubscribe(listener_t* listener);
+
+  /**
+   * \brief Add a new timer to the pool of timers already running.
+   *
+   * \return A timer ID, or 0 when an error occurs.
+   */
+  timer_id_t AddTimer(uint32_t interval, timer_callback_t cb, void* user_data);
+  /**
+   * \brief Remove a timer knowing its ID.
+   *
+   * \return A boolean value indicating success or failure.
+   */
+  bool RemoveTimer(timer_id_t id);
 
   void ShowCursor();
   void HideCursor();
