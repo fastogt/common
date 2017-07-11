@@ -158,7 +158,7 @@ void immediate_exit();
 #define NOTREACHED() LOG_FILE_LINE_STREAM(CRIT) << "NOTREACHED() hit in " << __FUNCTION__ << "."
 
 #if defined(NDEBUG)
-#define VERIFY(x) LAZY_STREAM(LOG_FILE_LINE_STREAM(ERROR), !(x)) << "Verify failed: " #x "."
+#define VERIFY(x) LAZY_STREAM(LOG_FILE_LINE_STREAM(ERR), !(x)) << "Verify failed: " #x "."
 #else
 #define VERIFY(x) DCHECK(x)
 #endif

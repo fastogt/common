@@ -31,7 +31,7 @@
 
 #include <string>  // for string
 
-#include <common/log_levels.h>  // for LEVEL_LOG::L_ERROR, LEVEL_LOG
+#include <common/log_levels.h>  // for LEVEL_LOG::L_ERR, LEVEL_LOG
 #include <common/sprintf.h>
 #include <common/value.h>  // for Value::ErrorsType, Value, ErrorValue
 
@@ -50,18 +50,18 @@ typedef shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && err->
 typedef shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
-Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERROR);
+Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERR);
 
 Error make_error_value(const std::string& in_value,
                        Value::ErrorsType errorType,
-                       logging::LEVEL_LOG level = logging::L_ERROR);
+                       logging::LEVEL_LOG level = logging::L_ERR);
 
-ErrnoError make_error_value_errno(int err, Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERROR);
+ErrnoError make_error_value_errno(int err, Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERR);
 
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
                                    Value::ErrorsType errorType,
-                                   logging::LEVEL_LOG level = logging::L_ERROR);
+                                   logging::LEVEL_LOG level = logging::L_ERR);
 
 }  // namespace common
 

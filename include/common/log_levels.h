@@ -36,7 +36,7 @@ enum LEVEL_LOG {
   L_EMERG = 0,  // system is unusable
   L_ALERT,      // action must be taken immediately
   L_CRIT,       // critical conditions
-  L_ERROR,      // error conditions
+  L_ERR,        // error conditions
   L_WARNING,    // warning conditions
   L_NOTICE,     // normal, but significant, condition
   L_INFO,       // informational message

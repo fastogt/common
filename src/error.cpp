@@ -31,7 +31,7 @@
 
 #include <string>  // for string
 
-#include <common/log_levels.h>  // for LEVEL_LOG, LEVEL_LOG::L_ERROR
+#include <common/log_levels.h>  // for LEVEL_LOG, LEVEL_LOG::L_ERR
 #include <common/logger.h>      // for RUNTIME_LOG
 #include <common/types.h>       // for common_strerror
 #include <common/value.h>       // for Value, Value::ErrorsType, ErrorValue
@@ -86,7 +86,7 @@ common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, bool n
   std::string strer = common::common_strerror(err);
   std::string descr = function + " : " + strer;
 
-  common::ErrnoError error = common::make_error_value_errno(err, common::Value::E_ERROR, common::logging::L_ERROR);
+  common::ErrnoError error = common::make_error_value_errno(err, common::Value::E_ERROR, common::logging::L_ERR);
   error->SetDescription(descr);
   if (notify) {
     DEBUG_MSG_ERROR(error);

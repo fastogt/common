@@ -507,7 +507,7 @@ ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nr
   }
 
   if (lnread == 0) {
-    return make_error_value_errno(ECONNRESET, Value::E_ERROR, logging::L_ERROR);
+    return make_error_value_errno(ECONNRESET, Value::E_ERROR, logging::L_ERR);
   }
 
   *nread = lnread;
