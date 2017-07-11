@@ -244,3 +244,14 @@ inline void destroy(T** v) {
   delete lv;
   *v = nullptr;
 }
+
+template <typename T>
+inline T stable_value_in_range(T a, T amin, T amax) {
+  if (a < amin) {
+    return amin;
+  } else if (a > amax) {
+    return amax;
+  }
+
+  return a;
+}
