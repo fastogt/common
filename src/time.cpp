@@ -46,21 +46,7 @@ struct timespec current_timespec() {
 time64_t current_utc_mstime() {
   timeval cur_time = current_timeval();
   time_t now = ::time(NULL);
-  struct tm utc_tm;
-#ifdef OS_POSIX
-  gmtime_r(&now, &utc_tm);
-#else
-  gmtime_s(&utc_tm, &now);
-#endif
-  struct tm local_tm;
-#ifdef OS_POSIX
-  localtime_r(&now, &local_tm);
-#else
-  localtime_s(&local_tm, &now);
-#endif
-  int offset_hours = local_tm.tm_hour - utc_tm.tm_hour;
-  utc_tm.tm_hour += offset_hours;
-  return mktime(&utc_tm) * 1000 + cur_time.tv_usec / 1000;
+  return now * 1000 + cur_time.tv_usec / 1000;
 }
 
 struct timeval current_timeval() {
