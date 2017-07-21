@@ -33,11 +33,6 @@ language: cpp
 compiler:
   - gcc
   - clang
-
-  - which cmake
-  - cmake --version
-  - which openssl
-  - openssl version
 script:
   - git submodule update --init --recursive
   - mkdir build
