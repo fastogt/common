@@ -1362,7 +1362,7 @@ uint32_t ConvertVersionNumberFromString(const std::string& version) {
     }
   }
 
-  return PROJECT_VERSION_GENERATE(major, minor, patch, tweak);
+  return PROJECT_VERSION_GENERATE_FULL(major, minor, patch, tweak);
 }
 
 }  // namespace common
