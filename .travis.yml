@@ -37,8 +37,8 @@ script:
   - git submodule update --init --recursive
   - mkdir build
   - cd build
-  - cmake .. -GNinja -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=RELEASE -DDEVELOPER_ENABLE_TESTS=ON
-  - ninja
+  - cmake .. -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=RELEASE -DDEVELOPER_ENABLE_TESTS=ON
+  - make
   - ctest
   
 after_success:
