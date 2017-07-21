@@ -1,6 +1,7 @@
 #include "common/system_info/system_info.h"
 
-#include <ApplicationServices/ApplicationServices.h>
+//#include <ApplicationServices/ApplicationServices.h>
+#include <CoreServices/CoreServices.h>
 
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
@@ -41,13 +42,12 @@ int64_t AmountOfAvailablePhysicalMemory() {
   mach_port_t host = mach_host_self();
   vm_statistics_data_t vm_info;
   mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
-  if (host_statistics(host, HOST_VM_INFO, reinterpret_cast<host_info_t>(&vm_info), &count) !=
-      KERN_SUCCESS) {
+  if (host_statistics(host, HOST_VM_INFO, reinterpret_cast<host_info_t>(&vm_info), &count) != KERN_SUCCESS) {
     NOTREACHED();
     return 0;
   }
 
   return static_cast<int64_t>(vm_info.free_count - vm_info.speculative_count) * PAGE_SIZE;
 }
-}
-}
+}  // namespace system_info
+}  // namespace common
