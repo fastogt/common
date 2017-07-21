@@ -31,9 +31,9 @@
 
 #include <QMetaType>
 
+#include <common/convert2string.h>
 #include <common/logger.h>
 #include <common/qt/convert2string.h>
-#include <common/convert2string.h>
 
 namespace common {
 namespace qt {

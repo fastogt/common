@@ -156,4 +156,4 @@ UnaryPredicate forEachRecursive(TreeItem* parent, UnaryPredicate p) {
 
 }  // namespace gui
 }  // namespace qt
-}  // namespace fasto
+}  // namespace common

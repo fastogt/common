@@ -29,12 +29,12 @@
 
 #include <common/qt/gui/regexp_input_dialog.h>
 
-#include <QHBoxLayout>
-#include <QLineEdit>
-#include <QLabel>
-#include <QRegExpValidator>
 #include <QDialogButtonBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
+#include <QRegExpValidator>
 
 #include <common/macros.h>
 

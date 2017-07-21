@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <QModelIndex>
 #include <QEvent>
+#include <QModelIndex>
 
-#include <common/macros.h>
 #include <common/error.h>
+#include <common/macros.h>
 
 namespace common {
 namespace qt {

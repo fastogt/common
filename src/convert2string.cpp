@@ -1328,8 +1328,7 @@ std::string ConvertVersionNumberToString(uint32_t number) {
   uint8_t minor = PROJECT_GET_MINOR_VERSION(number);
   uint8_t patch = PROJECT_GET_PATCH_VERSION(number);
   uint8_t tweak = PROJECT_GET_TWEAK_VERSION(number);
-  SNPrintf(buffer, sizeof(buffer), "%s.%s.%s.%s", common::ConvertToString(major), common::ConvertToString(minor),
-           common::ConvertToString(patch), common::ConvertToString(tweak));
+  SNPrintf(buffer, sizeof(buffer), "%u.%u.%u.%u", major, minor, patch, tweak);
   return buffer;
 }
 

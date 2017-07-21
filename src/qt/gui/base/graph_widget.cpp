@@ -33,12 +33,12 @@
 #include <stddef.h>  // for size_t
 #include <string>    // for string
 
-#include <QStylePainter>
 #include <QDateTime>
+#include <QStylePainter>
 #include <QWheelEvent>
 
-#include <common/macros.h>  // for UNUSED
 #include <common/convert2string.h>
+#include <common/macros.h>             // for UNUSED
 #include <common/qt/convert2string.h>  // for ConvertFromString, etc
 
 namespace common {

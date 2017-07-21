@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include <QObject>
 #include <QColor>
+#include <QObject>
 
 class QLabel;
 class QMovie;

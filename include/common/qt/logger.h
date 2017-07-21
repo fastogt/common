@@ -58,8 +58,8 @@ class Logger : public QObject, public common::patterns::LazySingleton<Logger> {
   Logger();
 };
 
-}  // qt
-}  // common
+}  // namespace qt
+}  // namespace common
 
 template <typename T>
 inline void LOG_MSG(T mess, common::logging::LEVEL_LOG level, bool notify) {

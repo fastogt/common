@@ -30,8 +30,8 @@
 #include <common/qt/gui/icon_label.h>
 
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QIcon>
+#include <QLabel>
 
 namespace common {
 namespace qt {

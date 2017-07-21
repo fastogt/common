@@ -29,10 +29,10 @@
 
 #include <common/qt/convert2string.h>
 
-#include <common/macros.h>  // for WCHAR_T_IS_UTF32
 #include <common/convert2string.h>
-#include <QByteArray>  // for QByteArray
-#include <QChar>       // for QChar, operator!=
+#include <common/macros.h>  // for WCHAR_T_IS_UTF32
+#include <QByteArray>       // for QByteArray
+#include <QChar>            // for QChar, operator!=
 
 namespace common {
 

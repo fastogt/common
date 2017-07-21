@@ -29,9 +29,9 @@
 
 #include <common/qt/gui/glass_widget.h>
 
+#include <QEvent>
 #include <QLabel>
 #include <QMovie>
-#include <QEvent>
 
 #include <QGraphicsOpacityEffect>
 

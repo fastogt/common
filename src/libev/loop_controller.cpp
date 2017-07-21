@@ -36,8 +36,8 @@
 #include <common/logger.h>         // for COMPACT_LOG_FILE_CRIT
 #include <common/macros.h>         // for CHECK
 
-#include <common/libev/tcp/tcp_server.h>
 #include <common/libev/io_loop_observer.h>
+#include <common/libev/tcp/tcp_server.h>
 
 namespace common {
 namespace libev {

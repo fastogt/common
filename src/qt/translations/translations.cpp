@@ -29,9 +29,9 @@
 
 #include <common/qt/translations/translations.h>
 
-#include <QTranslator>
-#include <QDir>
 #include <QApplication>
+#include <QDir>
+#include <QTranslator>
 
 #include <common/qt/utils_qt.h>
 
