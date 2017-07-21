@@ -181,10 +181,11 @@ void immediate_exit();
 
 #define NOOP() asm("nop")
 
-#define PROJECT_VERSION_CHECK(major, minor, patch) ((major << 16) | (minor << 8) | (patch))
-#define PROJECT_GET_MAJOR_VERSION(version) ((version >> 16) & 0xFF)
-#define PROJECT_GET_MINOR_VERSION(version) ((version >> 8) & 0xFF)
-#define PROJECT_GET_PATCH_VERSION(version) (version & 0xFF)
+#define PROJECT_VERSION_CHECK(major, minor, patch, tweak) ((major << 24) | (minor << 16) | (patch << 8) | tweak)
+#define PROJECT_GET_MAJOR_VERSION(version) ((version >> 24) & 0xFF)
+#define PROJECT_GET_MINOR_VERSION(version) ((version >> 16) & 0xFF)
+#define PROJECT_GET_PATCH_VERSION(version) ((version >> 8) & 0xFF)
+#define PROJECT_GET_TWEAK_VERSION(version) (version & 0xFF)
 #define PROJECT_VERSION_GENERATE PROJECT_VERSION_CHECK
 
 // Put this in the declarations for a class to be uncopyable.

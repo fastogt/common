@@ -1324,9 +1324,12 @@ bool HexStringToBytes(const std::string& input, std::vector<uint8_t>* output) {
 
 std::string ConvertVersionNumberToString(uint32_t number) {
   char buffer[16] = {0};
-  SNPrintf(buffer, sizeof(buffer), "%s.%s.%s", common::ConvertToString(PROJECT_GET_MAJOR_VERSION(number)),
-           common::ConvertToString(PROJECT_GET_MINOR_VERSION(number)),
-           common::ConvertToString(PROJECT_GET_PATCH_VERSION(number)));
+  uint8_t major = PROJECT_GET_MAJOR_VERSION(number);
+  uint8_t minor = PROJECT_GET_MINOR_VERSION(number);
+  uint8_t patch = PROJECT_GET_PATCH_VERSION(number);
+  uint8_t tweak = PROJECT_GET_TWEAK_VERSION(number);
+  SNPrintf(buffer, sizeof(buffer), "%s.%s.%s.%s", common::ConvertToString(major), common::ConvertToString(minor),
+           common::ConvertToString(patch), common::ConvertToString(tweak));
   return buffer;
 }
 
@@ -1338,30 +1341,28 @@ uint32_t ConvertVersionNumberFromString(const std::string& version) {
   uint8_t major = 0;
   uint8_t minor = 0;
   uint8_t patch = 0;
+  uint8_t tweak = 0;
 
-  int dot_count = 0;
-  std::string number;
-  for (size_t i = 0; i < version.size(); ++i) {
-    char c = version[i];
-    if (c == '.') {
-      if (dot_count == 0) {
-        bool res = ConvertFromString(number, &major);
-        UNUSED(res);
-      } else if (dot_count == 1) {
-        bool res = ConvertFromString(number, &minor);
-        UNUSED(res);
-      } else if (dot_count == 2) {
-        bool res = ConvertFromString(number, &patch);
-        UNUSED(res);
-      }
-      dot_count++;
-      number.clear();
-    } else {
-      number += c;
+  std::vector<std::string> numbers;
+  size_t count_del = Tokenize(version, ".", &numbers);
+  for (size_t i = 0; i < count_del; ++i) {
+    std::string number_str = numbers[i];
+    if (i == 0) {
+      bool res = ConvertFromString(number_str, &major);
+      UNUSED(res);
+    } else if (i == 1) {
+      bool res = ConvertFromString(number_str, &minor);
+      UNUSED(res);
+    } else if (i == 2) {
+      bool res = ConvertFromString(number_str, &patch);
+      UNUSED(res);
+    } else if (i == 3) {
+      bool res = ConvertFromString(number_str, &tweak);
+      UNUSED(res);
     }
   }
 
-  return PROJECT_VERSION_GENERATE(major, minor, patch);
+  return PROJECT_VERSION_GENERATE(major, minor, patch, tweak);
 }
 
 }  // namespace common
