@@ -157,7 +157,9 @@ ELSEIF(OS_POSIX)
   IF(OS_MACOSX)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
-    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_mac.cpp system/system_mac.mm file_system_mac.mm)
+    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_mac.cpp
+        system_info/system_info_mac.mm system/system_mac.mm file_system_mac.mm
+    )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${COCOA_LIBRARY})
   ELSEIF(OS_LINUX)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})

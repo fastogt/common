@@ -1,8 +1,5 @@
 #include "common/system_info/system_info.h"
 
-//#include <ApplicationServices/ApplicationServices.h>
-#include <CoreServices/CoreServices.h>
-
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
 
@@ -13,15 +10,6 @@ namespace system_info {
 
 std::string OperatingSystemName() {
   return "Mac OS X";
-}
-
-std::string OperatingSystemVersion() {
-  int32_t major, minor, bugfix;
-  Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>(&major));
-  Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>(&minor));
-  Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>(&bugfix));
-
-  return MemSPrintf("%d.%d.%d", major, minor, bugfix);
 }
 
 int64_t AmountOfPhysicalMemory() {

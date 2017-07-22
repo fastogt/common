@@ -1,6 +1,8 @@
 #include "common/file_system.h"
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSString.h>
 
 namespace common {
 namespace file_system {
