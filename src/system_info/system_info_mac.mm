@@ -7,8 +7,8 @@ namespace common {
 namespace system_info {
 
 std::string OperatingSystemVersion() {
-  NSProcessInfo *pInfo = [NSProcessInfo processInfo];
-  NSString *version = [pInfo operatingSystemVersionString];
+  NSProcessInfo* pInfo = [NSProcessInfo processInfo];
+  NSString* version = [pInfo operatingSystemVersionString];
   return [version UTF8String];
 }
 

@@ -295,6 +295,10 @@ ErrnoError create_node(const std::string& path) {
   return fl.Open(path, File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_WRITE);
 }
 
+ErrnoError touch(const std::string& path) {
+  return create_node(path);
+}
+
 Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
     return make_error_value_perror("read_file_cb", EINVAL, ErrorValue::E_ERROR);

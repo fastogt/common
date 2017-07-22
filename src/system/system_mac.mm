@@ -6,7 +6,7 @@
 namespace {
 std::string StatusToString(OSStatus status) {
   char str[20] = {0};
-  *(UInt32 *) (str + 1) = CFSwapInt32HostToBig(status);
+  *(UInt32*)(str + 1) = CFSwapInt32HostToBig(status);
   if (isprint(str[1]) && isprint(str[2]) && isprint(str[3]) && isprint(str[4])) {
     str[0] = str[5] = '\'';
     str[6] = '\0';
@@ -32,44 +32,45 @@ Error Shutdown(shutdown_t type) {
   AEEventID eventToSendID;
   if (type == SHUTDOWN) {
     eventToSendID = kAEShutDown;
-  } else if(type == LOGOUT) {
+  } else if (type == LOGOUT) {
     eventToSendID = kAEReallyLogOut;
 
-  } else if(type == REBOOT) {
+  } else if (type == REBOOT) {
     eventToSendID = kAERestart;
   } else {
     return make_error_value_perror("systemShutdown", EINVAL, ErrorValue::E_ERROR);
   }
 
   AEAddressDesc targetDesc;
-  static const ProcessSerialNumber kPSNOfSystemProcess = { 0, kSystemProcess };
+  static const ProcessSerialNumber kPSNOfSystemProcess = {0, kSystemProcess};
   AppleEvent eventReply = {typeNull, NULL};
   AppleEvent eventToSend = {typeNull, NULL};
 
-  OSStatus status = AECreateDesc(typeProcessSerialNumber, &kPSNOfSystemProcess, sizeof(kPSNOfSystemProcess), &targetDesc);
+  OSStatus status =
+      AECreateDesc(typeProcessSerialNumber, &kPSNOfSystemProcess, sizeof(kPSNOfSystemProcess), &targetDesc);
 
-  if (status != noErr){
+  if (status != noErr) {
     return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
   }
 
-  status = AECreateAppleEvent(kCoreEventClass, eventToSendID, &targetDesc, kAutoGenerateReturnID, kAnyTransactionID, &eventToSend);
+  status = AECreateAppleEvent(kCoreEventClass, eventToSendID, &targetDesc, kAutoGenerateReturnID, kAnyTransactionID,
+                              &eventToSend);
 
   AEDisposeDesc(&targetDesc);
 
-  if (status != noErr){
+  if (status != noErr) {
     return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
   }
 
   status = AESendMessage(&eventToSend, &eventReply, kAENormalPriority, kAEDefaultTimeout);
 
   AEDisposeDesc(&eventToSend);
-  if (status != noErr){
+  if (status != noErr) {
     return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
   }
 
   AEDisposeDesc(&eventReply);
   return Error();
 }
-
 }
 }
