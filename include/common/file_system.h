@@ -332,10 +332,7 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError close_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) WARN_UNUSED_RESULT;
-#ifdef OS_POSIX
 ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;
-ErrnoError create_node(const std::string& path, mode_t permissions) WARN_UNUSED_RESULT;
-#endif
 typedef Error (*read_cb)(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed);
 Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data);
 

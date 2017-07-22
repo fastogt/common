@@ -92,10 +92,8 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
   const std::string home_test_test_tt = home_test + test + "/tt";
   err = common::file_system::remove_file(home_test_test_tt);
   ASSERT_TRUE(!err);
-#ifdef OS_POSIX
-  err = common::file_system::create_node(home_test_test_tt, S_IRWXU | S_IRWXG | S_IRWXO);
+  err = common::file_system::create_node(home_test_test_tt);
   ASSERT_TRUE(!err);
-#endif
   isExist = common::file_system::is_file_exist(home_test_test_tt);
   ASSERT_TRUE(isExist);
 

@@ -286,24 +286,14 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
   return ErrnoError();
 }
 
-#ifdef OS_POSIX
 ErrnoError create_node(const std::string& path) {
-  return create_node(path, S_IRWXU | S_IRWXG | S_IRWXO);
-}
-
-ErrnoError create_node(const std::string& path, mode_t permissions) {
   if (path.empty()) {
     return make_error_value_perror("create_node", EINVAL, ErrorValue::E_ERROR);
   }
 
-  bool result = mknod(path.c_str(), permissions, 0) != ERROR_RESULT_VALUE;
-  if (!result) {
-    return make_error_value_perror("mknod", errno, ErrorValue::E_ERROR);
-  }
-
-  return ErrnoError();
+  File fl;
+  return fl.Open(path, File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_WRITE);
 }
-#endif
 
 Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
