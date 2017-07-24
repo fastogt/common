@@ -2,6 +2,15 @@
 # http://about.travis-ci.org/docs/user/build-configuration/
 # This file can be validated on:
 # http://lint.travis-ci.org/
+before_install:
+ - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+ - sudo tar xf release-1.7.0.tar.gz
+ - cd googletest-release-1.7.0
+ - sudo cmake -DBUILD_SHARED_LIBS=ON .
+ - sudo make
+ - sudo cp -a include/gtest /usr/include
+ - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
+ - cd "${TRAVIS_BUILD_DIR}"
 
 install:
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
@@ -26,7 +35,6 @@ addons:
     - g++-4.9
     - clang-3.7
     - valgrind
-    - libgtest-dev
 os:
   - linux
   - osx
