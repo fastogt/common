@@ -75,4 +75,4 @@ ADD_SUBDIRECTORY(src)
 
 IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/.git/hooks/pre-commit)
   EXECUTE_PROCESS(COMMAND ${CMAKE_SOURCE_DIR}/scripts/create_pre_commit_hook.sh)
-ENDIF()
+ENDIF(NOT EXISTS ${CMAKE_SOURCE_DIR}/.git/hooks/pre-commit)

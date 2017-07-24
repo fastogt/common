@@ -1,9 +1,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/fastogt/cmake.git
-[submodule "tests/googletest"]
-	path = tests/googletest
-	url = https://github.com/google/googletest.git
 [submodule "src/third-party/cmp"]
 	path = src/third-party/cmp
 	url = https://github.com/camgunz/cmp.git

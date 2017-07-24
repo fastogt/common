@@ -12,7 +12,7 @@ struct CurrentSystemInfo {
 
   const SystemInfo info;
 
-  static CurrentSystemInfo* instance() { return &common::patterns::LazySingleton<CurrentSystemInfo>::Instance(); }
+  static CurrentSystemInfo* Instance() { return &common::patterns::LazySingleton<CurrentSystemInfo>::Instance(); }
 };
 
 }  // namespace
@@ -33,7 +33,7 @@ const std::string& SystemInfo::arch() const {
 }
 
 const SystemInfo& currentSystemInfo() {
-  return CurrentSystemInfo::instance()->info;
+  return CurrentSystemInfo::Instance()->info;
 }
 
 }  // namespace system_info

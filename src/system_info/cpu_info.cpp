@@ -42,7 +42,7 @@ struct CurrentCpuInfo {
 
   const common::system_info::CpuInfo info;
 
-  static CurrentCpuInfo* instance() { return &common::patterns::LazySingleton<CurrentCpuInfo>::Instance(); }
+  static CurrentCpuInfo* Instance() { return &common::patterns::LazySingleton<CurrentCpuInfo>::Instance(); }
 };
 
 }  // namespace
@@ -93,7 +93,7 @@ bool CpuInfo::Equals(const CpuInfo& other) const {
 }
 
 const CpuInfo& CurrentCpuInfo() {
-  return CurrentCpuInfo::instance()->info;
+  return CurrentCpuInfo::Instance()->info;
 }
 
 CpuInfo CpuInfo::MakeCpuInfo() {
@@ -101,8 +101,7 @@ CpuInfo CpuInfo::MakeCpuInfo() {
     return CpuInfo();
   }
 
-  struct cpu_raw_data_t raw;  // contains only raw data
-
+  struct cpu_raw_data_t raw;           // contains only raw data
   if (cpuid_get_raw_data(&raw) < 0) {  // obtain the raw CPUID data
     return CpuInfo();
   }
@@ -115,7 +114,6 @@ CpuInfo CpuInfo::MakeCpuInfo() {
   CpuInfo inf;
   inf.impl_->cpuid_ = data;
   inf.impl_->is_valid_ = true;
-
   return inf;
 }
 

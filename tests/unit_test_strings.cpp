@@ -17,14 +17,14 @@ TEST(string, convertTo) {
   const std::string lconvText = common::ConvertToString(lval);
   ASSERT_EQ(ltext, lconvText);
 
-  std::string openssl_str_verson = common::ConvertVersionNumberToString(OPENSSL_VERSION_NUMBER_EXAMPLE);
+  std::string openssl_str_verson = common::ConvertVersionNumberTo3DotString(OPENSSL_VERSION_NUMBER_EXAMPLE);
   ASSERT_EQ(openssl_str_verson, OPENSSL_VERSION_TEXT_EXAMPLE);
   uint32_t openssl_ver_number = common::ConvertVersionNumberFromString(OPENSSL_VERSION_TEXT_EXAMPLE);
   ASSERT_EQ(openssl_ver_number, OPENSSL_VERSION_NUMBER_EXAMPLE);
 
   uint32_t ver_number = common::ConvertVersionNumberFromString(PROJECT_VERSION);
   ASSERT_EQ(ver_number, PROJECT_VERSION_NUMBER);
-  std::string str_verson = common::ConvertVersionNumberToString(ver_number);
+  std::string str_verson = common::ConvertVersionNumberTo3DotString(ver_number);
   ASSERT_EQ(str_verson, PROJECT_VERSION);
 }
 
