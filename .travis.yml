@@ -2,16 +2,6 @@
 # http://about.travis-ci.org/docs/user/build-configuration/
 # This file can be validated on:
 # http://lint.travis-ci.org/
-before_install:
- - sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
- - sudo tar xf release-1.7.0.tar.gz
- - cd googletest-release-1.7.0
- - sudo cmake -DBUILD_SHARED_LIBS=ON .
- - sudo make
- - sudo cp -a include/gtest /usr/include
- - sudo cp -a libgtest_main.so libgtest.so /usr/lib/
- - cd "${TRAVIS_BUILD_DIR}"
-
 install:
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
@@ -21,6 +11,13 @@ install:
 - echo ${CXX}
 - ${CXX} --version
 - ${CXX} -v
+
+- sudo wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
+- sudo tar xf release-1.7.0.tar.gz
+- cd googletest-release-1.7.0
+- sudo cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr/local .
+- sudo make install
+- cd "${TRAVIS_BUILD_DIR}"
 addons:
   apt:
     # List of whitelisted in travis packages for ubuntu-precise can be found here:
