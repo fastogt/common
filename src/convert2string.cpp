@@ -1322,13 +1322,22 @@ bool HexStringToBytes(const std::string& input, std::vector<uint8_t>* output) {
   return HexStringToBytesT(input, output);
 }
 
-std::string ConvertVersionNumberToString(uint32_t number) {
+std::string ConvertVersionNumberTo3DotString(uint32_t number) {
   char buffer[16] = {0};
   uint8_t major = PROJECT_GET_MAJOR_VERSION(number);
   uint8_t minor = PROJECT_GET_MINOR_VERSION(number);
   uint8_t patch = PROJECT_GET_PATCH_VERSION(number);
   uint8_t tweak = PROJECT_GET_TWEAK_VERSION(number);
   SNPrintf(buffer, sizeof(buffer), "%u.%u.%u.%u", major, minor, patch, tweak);
+  return buffer;
+}
+
+std::string ConvertVersionNumberTo2DotString(uint32_t number) {
+  char buffer[16] = {0};
+  uint8_t major = PROJECT_GET_MAJOR_VERSION(number);
+  uint8_t minor = PROJECT_GET_MINOR_VERSION(number);
+  uint8_t patch = PROJECT_GET_PATCH_VERSION(number);
+  SNPrintf(buffer, sizeof(buffer), "%u.%u.%u", major, minor, patch);
   return buffer;
 }
 
