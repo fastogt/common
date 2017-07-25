@@ -64,12 +64,10 @@ bool stream_reader(cmp_ctx_t* ctx, void* data, size_t limit) {
   return read_bytes(data, limit, reinterpret_cast<char*>(ctx->buf));
 }
 
-size_t stram_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
-  UNUSED(ctx);
-  UNUSED(data);
-  UNUSED(count);
-
-  return 0;
+size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
+  std::string* out = static_cast<std::string*>(ctx->buf);
+  out->append(static_cast<const char*>(data), count);
+  return count;
 }
 
 }  // namespace
@@ -78,20 +76,23 @@ namespace common {
 MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
 
 common::Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  cmp_ctx_t cmp;
-  char* copy = reinterpret_cast<char*>(calloc(data.size() + 1, sizeof(char)));
-  if (copy) {
-    memcpy(copy, data.c_str(), data.size());
-    cmp_init(&cmp, copy, NULL, stram_writer);
-    free(copy);
+  if (!out || data.empty()) {
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
   }
 
-  *out = "Not supported now";
+  cmp_ctx_t cmp;
+  std::string lout;
+  cmp_init(&cmp, &lout, NULL, stream_writer);
+  bool res = cmp_write_str(&cmp, data.c_str(), data.size());
+  if (!res) {
+    return common::make_error_value("MsgPackEDcoder internal error!", common::ErrorValue::E_ERROR);
+  }
+  *out = lout;
   return common::Error();
 }
 
 common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  if (!out) {
+  if (!out || data.empty()) {
     return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
   }
   cmp_ctx_t cmp;
@@ -237,10 +238,9 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
         break;
       }
       default: {
-        char buff[64] = {0};
-        common::SNPrintf(buff, sizeof(buff), "Unrecognized object type %u\n", obj.type);
-        return common::make_error_value(buff, common::ErrorValue::E_ERROR);
-      } break;
+        return common::make_error_value(MemSPrintf("Unrecognized object type %u\n", obj.type),
+                                        common::ErrorValue::E_ERROR);
+      }
     }
   }
 
