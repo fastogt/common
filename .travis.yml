@@ -2,6 +2,15 @@
 # http://about.travis-ci.org/docs/user/build-configuration/
 # This file can be validated on:
 # http://lint.travis-ci.org/
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "bfdLI3KTG3qaQyqLK2iBToVr0c0Q9fi5lCt7UXCIjEZcR8SNnN0JUgAll2PJGkDFtwjd3iYs/JqX0if97rJf4e2HSFukKQWk6Tave7z4/IgFzp4xKvowE83PmD1VU885lPQN+9A4ZF04GOfaPOrfcInW2HFeYI2yMktQHkutpSQeSuux8YRBR1BdpIzoEf2m2B7f8ZEjdGzMxKoFEly70nO9KBi0QvsiGa6Ghe6m8VA3B24NSYiqW0oyZQGsm7mMtfTs9j9RGjf3Rsmd/DWDBTCMgQ1sgNcl7V3blyR46rhCSfQWpS8UPpfa2t4/E26QfCN2O+8JKweG7EHxUY8EWl7CBB9KKWp++sjJssi2M2l/kaRFrYHMxeBt6gIRoB519F5H7xqauQIEz5q/+TDT/rFwq2HzEnUXFZjuWEPG5c5EX/ThxV7Pkjs+3klu0AjK6B82zRd+qbo1Z30/yY9350gBS/jdLG17OCOrh4l6y6O1NKwIX5J+l/w/iK5Wv1MedcqNFFp2jJrp8nMRdIOcvjjksT8PSS3eB2BVZViLp/54Eq0s/3rLIDuT+rvg5W/L6ejIjmxORhEOR8DbsqgPBi34K4c7JHMIIrA9jUdQxJJsYAlNNKBu/ARXN5H8f3xDFNtHTvY2Ntz9DSWiede/agMazmCjcZ5sJEV1vOaWFS8="
+
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
 install:
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
@@ -33,6 +42,14 @@ addons:
     - g++-4.9
     - clang-3.7
     - valgrind
+  coverity_scan:
+    project:
+      name: "fastogt/common"
+      description: "Build submitted via Travis CI"
+    notification_email: atopilski@gmail.com
+    build_command_prepend: "./configure; make clean"
+    build_command:   "make -j 4"
+    branch_pattern: coverity_scan
 os:
   - linux
   - osx
