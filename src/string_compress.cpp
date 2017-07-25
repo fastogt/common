@@ -151,7 +151,10 @@ Error EncodeSnappy(const std::string& data, std::string* out) {
 
   std::string lout;
   size_t writed_bytes = snappy::Compress(data.c_str(), data.length(), &lout);
-  UNUSED(writed_bytes);
+  if (writed_bytes == 0) {
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+  }
+
   *out = lout;
   return Error();
 }
@@ -163,7 +166,10 @@ Error DecodeSnappy(const std::string& data, std::string* out) {
 
   std::string lout;
   size_t writed_bytes = snappy::Uncompress(data.c_str(), data.length(), &lout);
-  UNUSED(writed_bytes);
+  if (writed_bytes == 0) {
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+  }
+
   *out = lout;
   return Error();
 }

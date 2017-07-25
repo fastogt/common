@@ -3,6 +3,7 @@
 #include <common/text_decoders/compress_snappy_edcoder.h>
 #include <common/text_decoders/compress_zlib_edcoder.h>
 
+#ifdef HAVE_ZLIB
 TEST(zlib, enc_dec) {
   const std::string raw_data = "alex alex alex alex";
   common::CompressZlibEDcoder zl;
@@ -15,7 +16,9 @@ TEST(zlib, enc_dec) {
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(raw_data, dec_data);
 }
+#endif
 
+#ifdef HAVE_SNAPPY
 TEST(snappy, enc_dec) {
   const std::string raw_data = "alex alex alex alex";
   common::CompressSnappyEDcoder zl;
@@ -28,3 +31,4 @@ TEST(snappy, enc_dec) {
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(raw_data, dec_data);
 }
+#endif
