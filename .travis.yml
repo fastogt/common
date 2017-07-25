@@ -2,15 +2,6 @@
 # http://about.travis-ci.org/docs/user/build-configuration/
 # This file can be validated on:
 # http://lint.travis-ci.org/
-env:
-  global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "cylrCnso7R+ZvZwOvCXOsqNbAbXTuWBeNJjv+cQjoPhboeetilZa+xb1F1SLqv2PQWT1vzrxdxOyzQQdkpqZSbG6aMpJcP0kHzqDd6DIIrE5P929hOebKQhLQsHWLQEUYv/k25YpH0o6oa0ZBA13oNtvJXQpdemZk5XOHTSRRjabcDVtTnz8jsp/Owlk4Ow98UarSRbMdISgGX4nsfwi/PDiisW3gAAg/6V7gXLo5M45/yVqhsb2gyS2Ga6MbsvsBBOo9azbcZtR2KtRfSzZKRsMW2lt7iY/DAYO73NnwooJLgHguf+kkaFjDkgVDP/4l6dsWR1R4776DhRtGRbpxtk/YBavVSBN+OdZllWg8apOB2nDpDBX5dgcvx4mt39GG0bPVGv10YNhWGD4aovFnceSD7djP/BorwMrU8LxR1gZ9mnvatZppYBIuPzI60+5Lj02b95Uk00y1SaJuuwyoSegC43UvU2lM+cZEWI74SrnlsvFxca5Svf0kd9G4VCS2d+o8ARC9fxuG3aDx9cnM0ylqdmzQjKo9zU8ylrTX6M7LBvTHqjN/JhgjLPZuomDts+o4X5uihUSGwQmBozdDgzqnLSDAAMpCJuxvSpqdubTRsZG/uSL2InRrkg3KKEM4QBedIdInqkP5/zqTQADmdu6rFBhY8D7wmzPTvvG08s="
-
-before_install:
-      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
-
 install:
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
@@ -42,14 +33,6 @@ addons:
     - g++-4.9
     - clang-3.7
     - valgrind
-  coverity_scan:
-    project:
-      name: "fastogt/common"
-      description: "Build submitted via Travis CI of common library"
-    notification_email: atopilski@fastogt.com
-    build_command_prepend: "cov-configure --comptype gcc --compiler ${CC} --template"
-    build_command:   "make"
-    branch_pattern: coverity_scan
 os:
   - linux
   - osx
@@ -63,12 +46,6 @@ before_script:
   - cmake .. -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=RELEASE -DDEVELOPER_ENABLE_TESTS=ON
 
 script:
-  - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
-      then
-        echo "Don't build on coverty_scan branch.";
-        exit 0;
-    fi
-
   - make
   - CTEST_OUTPUT_ON_FAILURE=1 make test
   
