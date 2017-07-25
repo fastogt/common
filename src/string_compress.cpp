@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -137,4 +137,36 @@ Error DecodeZlib(const std::string& data, std::string* out) {
 
 }  // namespace common
 
+#endif
+
+#ifdef HAVE_SNAPPY
+#include <snappy.h>
+
+namespace common {
+
+Error EncodeSnappy(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+  }
+
+  std::string lout;
+  size_t writed_bytes = snappy::Compress(data.c_str(), data.length(), &lout);
+  UNUSED(writed_bytes);
+  *out = lout;
+  return Error();
+}
+
+Error DecodeSnappy(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+  }
+
+  std::string lout;
+  size_t writed_bytes = snappy::Uncompress(data.c_str(), data.length(), &lout);
+  UNUSED(writed_bytes);
+  *out = lout;
+  return Error();
+}
+
+}  // namespace common
 #endif

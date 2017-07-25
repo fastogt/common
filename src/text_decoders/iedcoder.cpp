@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -35,11 +35,12 @@
 #include <common/convert2string.h>
 #include <common/value.h>  // for ErrorValue, etc
 
-#include <common/text_decoders/base64_edcoder.h>    // for Base64EDcoder
-#include <common/text_decoders/compress_edcoder.h>  // for CompressEDcoder
-#include <common/text_decoders/hex_edcoder.h>       // for HexEDcoder
-#include <common/text_decoders/html_edcoder.h>      // for HtmlEscEDcoder
-#include <common/text_decoders/msgpack_edcoder.h>   // for MsgPackEDcoder
+#include <common/text_decoders/base64_edcoder.h>  // for Base64EDcoder
+#include <common/text_decoders/compress_snappy_edcoder.h>
+#include <common/text_decoders/compress_zlib_edcoder.h>  // for CompressZlibEDcoder
+#include <common/text_decoders/hex_edcoder.h>            // for HexEDcoder
+#include <common/text_decoders/html_edcoder.h>           // for HtmlEscEDcoder
+#include <common/text_decoders/msgpack_edcoder.h>        // for MsgPackEDcoder
 
 namespace common {
 std::string ConvertToString(EDTypes t) {
@@ -88,8 +89,10 @@ EDTypes IEDcoder::GetType() const {
 IEDcoder* IEDcoder::CreateEDCoder(EDTypes type) {
   if (type == Base64) {
     return new Base64EDcoder;
-  } else if (type == Compress) {
-    return new CompressEDcoder;
+  } else if (type == CompressZlib) {
+    return new CompressZlibEDcoder;
+  } else if (type == CompressSnappy) {
+    return new CompressSnappyEDcoder;
   } else if (type == Hex) {
     return new HexEDcoder;
   } else if (type == MsgPack) {

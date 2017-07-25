@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -36,7 +36,7 @@
 
 namespace common {
 
-enum EDTypes { Base64, Compress, Hex, MsgPack, HtmlEsc };
+enum EDTypes { Base64, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
 
 const std::string EDecoderTypes[] = {"Base64", "GZip", "Hex", "MsgPack", "HtmlEscape"};
 

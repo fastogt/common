@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -27,22 +27,30 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/text_decoders/compress_snappy_edcoder.h>
 
-#include <string>  // for string
+#include <string>
 
-#include <common/error.h>  // for Error
-
-#include <common/text_decoders/iedcoder.h>  // for IEDcoder
+#include <common/string_compress.h>
 
 namespace common {
-class CompressEDcoder : public IEDcoder {
- public:
-  CompressEDcoder();
 
- private:
-  virtual common::Error EncodeImpl(const std::string& data, std::string* out) override;
-  virtual common::Error DecodeImpl(const std::string& data, std::string* out) override;
-};
+CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(CompressSnappy) {}
+
+common::Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+#ifdef HAVE_SNAPPY
+  return common::EncodeSnappy(data, out);
+#else
+  return common::make_error_value("CompressSnappy encode not supported", common::ErrorValue::E_ERROR);
+#endif
+}
+
+common::Error CompressSnappyEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+#ifdef HAVE_SNAPPY
+  return common::DecodeSnappy(data, out);
+#else
+  return common::make_error_value("CompressSnappy decode not supported", common::ErrorValue::E_ERROR);
+#endif
+}
 
 }  // namespace common

@@ -27,17 +27,23 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/event.h>
+#pragma once
+
+#include <string>  // for string
+
+#include <common/error.h>  // for Error
+
+#include <common/text_decoders/iedcoder.h>  // for IEDcoder
 
 namespace common {
 
-IEvent::~IEvent() {}
+class CompressZlibEDcoder : public IEDcoder {
+ public:
+  CompressZlibEDcoder();
 
-IEvent::event_id_t IEvent::EventID() const {
-  return event_id_;
-}
+ private:
+  virtual common::Error EncodeImpl(const std::string& data, std::string* out) override;
+  virtual common::Error DecodeImpl(const std::string& data, std::string* out) override;
+};
 
-IEvent::IEvent(event_id_t id) : event_id_(id) {}
-
-IListener::~IListener() {}
 }  // namespace common

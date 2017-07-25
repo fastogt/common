@@ -108,7 +108,8 @@ SET(TEXT_DECODERS_HEADERS
   ${PROJECT_SOURCE_DIR}/include/common/text_decoders/html_edcoder.h
   ${PROJECT_SOURCE_DIR}/include/common/text_decoders/iedcoder.h
   ${PROJECT_SOURCE_DIR}/include/common/text_decoders/base64_edcoder.h
-  ${PROJECT_SOURCE_DIR}/include/common/text_decoders/compress_edcoder.h
+  ${PROJECT_SOURCE_DIR}/include/common/text_decoders/compress_zlib_edcoder.h
+  ${PROJECT_SOURCE_DIR}/include/common/text_decoders/compress_snappy_edcoder.h
   ${PROJECT_SOURCE_DIR}/include/common/text_decoders/msgpack_edcoder.h
 )
 
@@ -117,7 +118,8 @@ SET(TEXT_DECODERS_SOURCES
   text_decoders/html_edcoder.cpp
   text_decoders/iedcoder.cpp
   text_decoders/base64_edcoder.cpp
-  text_decoders/compress_edcoder.cpp
+  text_decoders/compress_zlib_edcoder.cpp
+  text_decoders/compress_snappy_edcoder.cpp
   text_decoders/msgpack_edcoder.cpp
 )
 
@@ -343,6 +345,8 @@ ADD_SUBDIRECTORY(third-party/cpuid)
 ADD_SUBDIRECTORY(third-party/libev)
 SET(COMMON_LIBS ${COMMON_LIBS} ${COMMON_PLATFORM_LIBRARIES})
 
+#dependencies ${ZLIB_LIBRARIES} ${SNAPPY_LIBRARIES}
+
 SET(COMMON_PROJECT_NAME ${PROJECT_NAME_LOWERCASE})
 SET(PRIVATE_INCLUDE_DIRECTORIES ${PRIVATE_INCLUDE_DIRECTORIES} third-party)
 ADD_LIBRARY(${COMMON_PROJECT_NAME} ${COMMON_HEADERS} ${COMMON_SOURCES} ${CMP_SOURCES}
@@ -410,9 +414,10 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_http.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_net.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_strings.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit_test_text_edecoders.cpp
   )
 
-  TARGET_LINK_LIBRARIES(${UNIT_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common)
+  TARGET_LINK_LIBRARIES(${UNIT_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common ${ZLIB_LIBRARIES} ${SNAPPY_LIBRARIES})
 
   ADD_TEST_TARGET(${UNIT_TESTS_PROJECT_NAME})
   SET_PROPERTY(TARGET ${UNIT_TESTS_PROJECT_NAME} PROPERTY FOLDER "Unit tests")
@@ -433,7 +438,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/test_thread_many_empty.cpp
   )
 
-  TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common)
+  TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common ${ZLIB_LIBRARIES} ${SNAPPY_LIBRARIES})
 
   ADD_TEST_TARGET(${OTHER_TESTS_PROJECT_NAME})
   SET_PROPERTY(TARGET ${OTHER_TESTS_PROJECT_NAME} PROPERTY FOLDER "Other tests")

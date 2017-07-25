@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -45,4 +45,11 @@ Error EncodeZlib(const std::string& data,
 Error DecodeZlib(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
 }  // namespace common
 
+#endif
+
+#ifdef HAVE_SNAPPY
+namespace common {
+Error EncodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+}  // namespace common
 #endif

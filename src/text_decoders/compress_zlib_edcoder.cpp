@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -27,7 +27,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/compress_edcoder.h>
+#include <common/text_decoders/compress_zlib_edcoder.h>
 
 #include <string>
 
@@ -35,21 +35,21 @@
 
 namespace common {
 
-CompressEDcoder::CompressEDcoder() : IEDcoder(Compress) {}
+CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(CompressZlib) {}
 
-common::Error CompressEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
   return common::EncodeZlib(data, out);
 #else
-  return common::make_error_value("Compress encode not supported", common::ErrorValue::E_ERROR);
+  return common::make_error_value("CompressZlib encode not supported", common::ErrorValue::E_ERROR);
 #endif
 }
 
-common::Error CompressEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
   return common::DecodeZlib(data, out);
 #else
-  return common::make_error_value("Compress decode not supported", common::ErrorValue::E_ERROR);
+  return common::make_error_value("CompressZlib decode not supported", common::ErrorValue::E_ERROR);
 #endif
 }
 
