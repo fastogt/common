@@ -7,6 +7,7 @@
 #include <common/text_decoders/html_edcoder.h>
 #include <common/text_decoders/msgpack_edcoder.h>
 
+#if 0
 TEST(msg_pack, enc_dec) {
   const std::string raw_data = "alex aalex talex balex";
   common::MsgPackEDcoder zl;
@@ -19,6 +20,7 @@ TEST(msg_pack, enc_dec) {
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(raw_data, dec_data);
 }
+#endif
 
 TEST(html, enc_dec) {
   const std::string raw_data = "alex aalex talex balex";
