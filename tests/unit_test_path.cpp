@@ -18,6 +18,15 @@ TEST(Path, is_valid_path) {
   std::string invalid_path4 = "/home//";
   ASSERT_FALSE(common::file_system::is_valid_path(invalid_path4));
 
+  std::string invalid_path5 = "home/";
+  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path5));
+
+  std::string invalid_path6 = "C://";
+  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path6));
+
+  std::string invalid_path7 = "C:/\\";
+  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path7));
+
   std::string valid_path0 = "/";
   ASSERT_TRUE(common::file_system::is_valid_path(valid_path0));
 
@@ -38,4 +47,10 @@ TEST(Path, is_valid_path) {
 
   std::string valid_path6 = "F:/home\\alex2.txt";
   ASSERT_TRUE(common::file_system::is_valid_path(valid_path6));
+
+  std::string valid_path7 = "C:/";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path7));
+
+  std::string valid_path8 = "D:\\";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path8));
 }

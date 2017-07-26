@@ -36,25 +36,25 @@ TEST(ascii_string_path, IsValid) {
 TEST(ascii_string_path, directory) {
   common::file_system::ascii_string_path com("/home/sasha");  // file
   ASSERT_TRUE(com.IsValid());
-  ASSERT_EQ(com.Directory(), "/home/");
-  ASSERT_EQ(com.ParentDirectory(), "/home/");
+  ASSERT_EQ(com.GetDirectory(), "/home/");
+  ASSERT_EQ(com.GetParentDirectory(), "/home/");
 
   const std::string st_dir = common::file_system::stable_dir_path(std::string("/home/sasha"));
   ASSERT_EQ(st_dir, "/home/sasha/");
   common::file_system::ascii_string_path com_dir(st_dir);  // directory
   ASSERT_TRUE(com_dir.IsValid());
-  ASSERT_EQ(com_dir.Directory(), "/home/sasha/");
-  ASSERT_EQ(com_dir.ParentDirectory(), "/home/");
+  ASSERT_EQ(com_dir.GetDirectory(), "/home/sasha/");
+  ASSERT_EQ(com_dir.GetParentDirectory(), "/home/");
 
   common::file_system::ascii_string_path com_dir_1l("/home/");
   ASSERT_TRUE(com_dir_1l.IsValid());
-  ASSERT_EQ(com_dir_1l.Directory(), "/home/");
-  ASSERT_EQ(com_dir_1l.ParentDirectory(), "/");
+  ASSERT_EQ(com_dir_1l.GetDirectory(), "/home/");
+  ASSERT_EQ(com_dir_1l.GetParentDirectory(), "/");
 
   common::file_system::ascii_string_path root("/");
   ASSERT_TRUE(root.IsValid());
-  ASSERT_EQ(root.Directory(), "/");
-  ASSERT_EQ(root.ParentDirectory(), "/");
+  ASSERT_EQ(root.GetDirectory(), "/");
+  ASSERT_EQ(root.GetParentDirectory(), "/");
 }
 
 TEST(ascii_string_path, filename) {
@@ -65,9 +65,9 @@ TEST(ascii_string_path, filename) {
 #endif
   common::file_system::ascii_string_path com("~/1.txt");
   ASSERT_TRUE(com.IsValid());
-  ASSERT_EQ(com.Directory(), common::file_system::stable_dir_path(home));
-  ASSERT_EQ(com.FileName(), "1.txt");
-  ASSERT_EQ(com.Extension(), "txt");
+  ASSERT_EQ(com.GetDirectory(), common::file_system::stable_dir_path(home));
+  ASSERT_EQ(com.GetFileName(), "1.txt");
+  ASSERT_EQ(com.GetExtension(), "txt");
 }
 
 TEST(Path, CreateRemoveDirectoryRecursive) {

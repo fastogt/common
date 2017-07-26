@@ -45,17 +45,17 @@ class Upath {
   bool IsValid() const;
   bool IsRoot() const;
 
-  std::string Path() const;  // hpath + filename = path
+  std::string GetPath() const;  // hpath + filename = path
   void SetPath(const std::string& path);
 
-  std::string Query() const;
+  std::string GetQuery() const;
 
-  std::string Mime() const;  // mime
-  size_t Levels() const;
-  std::string HpathLevel(size_t lv) const;  // directories
-  std::string Hpath() const;                // directories
-  std::string Filename() const;             // filename
-  std::string GetUpath() const;             // path + query
+  std::string GetMime() const;  // mime
+  size_t GetLevels() const;
+  std::string GetHpathLevel(size_t lv) const;  // directories
+  std::string GetHpath() const;                // directories
+  std::string GetFilename() const;             // filename
+  std::string GetUpath() const;                // path + query
   bool Equals(const Upath& path) const;
 
  private:

@@ -105,18 +105,27 @@ inline bool is_valid_path(const std::basic_string<CharT, Traits>& path) {
   size_t len = path.length();
   for (size_t i = 0; i < len; ++i) {
     CharT c = path[i];
-    if (c == get_home_separator<CharT>() && i != 0) {
+    if (c == get_home_separator<CharT>() && i != 0) {  // ~ can be only in zero position
       return false;
-    } else if (c == '/' && (i + 1 < len)) {
-      CharT l = path[i + 1];
-      if (l == '/') {
-        return false;
+    } else if (c == get_separator<CharT>()) {  // unix separator
+      if (i + 1 < len) {                       // invalid if // (/root//)
+        CharT l = path[i + 1];
+        if (l == get_separator<CharT>() || l == get_win_separator<CharT>()) {
+          return false;
+        }
+      }
+    } else if (c == get_win_separator<CharT>()) {  // windows separator
+      if (i + 1 < len) {                           // invalid if // (C:\Windows\\)
+        CharT l = path[i + 1];
+        if (l == get_win_separator<CharT>() || l == get_separator<CharT>()) {
+          return false;
+        }
       }
     }
   }
 
   bool res = path[0] == get_separator<CharT>() || path[0] == get_home_separator<CharT>();
-  if (!res && path.size() >= 3) {  // maybe windows
+  if (!res && path.size() >= 3) {  // maybe windows path
     res = path[1] == ':' && (path[2] == '/' || path[2] == '\\');
   }
 
@@ -187,7 +196,7 @@ inline std::basic_string<CharT, Traits> prepare_path(const CharT* path) {
 }
 
 template <typename CharT>
-inline std::basic_string<CharT> get_file_name(std::basic_string<CharT> path) {
+inline std::basic_string<CharT> get_file_name(std::basic_string<CharT> path) {  // filename + extension
   if (!is_valid_path(path)) {
     return std::basic_string<CharT>();
   }
@@ -210,7 +219,7 @@ inline std::basic_string<CharT> get_file_name(std::basic_string<CharT> path) {
 }
 
 template <typename CharT>
-inline std::basic_string<CharT> get_file_extension(std::basic_string<CharT> path) {
+inline std::basic_string<CharT> get_file_extension(std::basic_string<CharT> path) {  // extenstion
   if (!is_valid_path(path)) {
     return std::basic_string<CharT>();
   }
@@ -372,17 +381,17 @@ class StringPath {
 
   bool IsValid() const { return is_valid_path(path_); }
 
-  bool Empty() const { return path_.empty(); }
+  bool GetEmpty() const { return path_.empty(); }
 
-  value_type Directory() const { return get_dir_path(path_); }
+  value_type GetDirectory() const { return get_dir_path(path_); }
 
-  value_type ParentDirectory() const { return get_parent_dir_path(path_); }
+  value_type GetParentDirectory() const { return get_parent_dir_path(path_); }
 
-  value_type Path() const { return path_; }
+  value_type GetPath() const { return path_; }
 
-  value_type FileName() const { return get_file_name(path_); }
+  value_type GetFileName() const { return get_file_name(path_); }
 
-  value_type Extension() const { return get_file_extension(path_); }
+  value_type GetExtension() const { return get_file_extension(path_); }
 
   bool Equals(const StringPath<CharT, Traits>& path) const { return path_ == path.path_; }
 
@@ -454,7 +463,7 @@ class File {
 
   ErrnoError Open(const path_type::value_type& file_path, uint32_t flags) WARN_UNUSED_RESULT;
   ErrnoError Open(const path_type& file_path, uint32_t flags) WARN_UNUSED_RESULT;
-  path_type Path() const;
+  path_type GetPath() const;
   bool IsValid() const;
 
   ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;

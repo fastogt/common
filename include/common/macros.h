@@ -105,7 +105,7 @@ typedef int descriptor_t;
 #elif defined(OS_POSIX) && (defined(COMPILER_GCC) || defined(COMPILER_CLANG)) && defined(__WCHAR_MAX__) && \
     (__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
 // On Posix, we'll detect short wchar_t, but projects aren't guaranteed to
-// compile in this mode (in particular, Chrome doesn't). This is intended for
+// compile in this mode (in particular, Common doesn't). This is intended for
 // other projects using base who manage their own dependencies and make sure
 // short wchar works for them.
 #define WCHAR_T_IS_UTF16

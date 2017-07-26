@@ -37,7 +37,7 @@
 // being deprecated.  We can get rid of this when we upgrade to VS2008 and we
 // can use <tr1/unordered_map> and <tr1/unordered_set>.
 #ifdef __DEPRECATED
-#define CHROME_OLD__DEPRECATED __DEPRECATED
+#define COMMON_OLD__DEPRECATED __DEPRECATED
 #undef __DEPRECATED
 #endif
 
@@ -51,9 +51,9 @@
 
 #include <string>
 
-#ifdef CHROME_OLD__DEPRECATED
-#define __DEPRECATED CHROME_OLD__DEPRECATED
-#undef CHROME_OLD__DEPRECATED
+#ifdef COMMON_OLD__DEPRECATED
+#define __DEPRECATED COMMON_OLD__DEPRECATED
+#undef COMMON_OLD__DEPRECATED
 #endif
 
 namespace BASE_HASH_NAMESPACE {

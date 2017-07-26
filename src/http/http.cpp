@@ -399,7 +399,7 @@ std::string ConvertToString(http::http_request request) {
   uri::Upath upath = request.path();
   http::http_method method = request.method();
 
-  std::string headerout = common::MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.Path(),
+  std::string headerout = common::MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.GetPath(),
                                              ConvertToString(request.protocol()));  // "GET /hello.htm HTTP/1.1\r\n"
   http::http_request::headers_t headers = request.headers();
   for (size_t i = 0; i < headers.size(); ++i) {

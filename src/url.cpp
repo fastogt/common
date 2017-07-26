@@ -242,7 +242,7 @@ bool Upath::IsRoot() const {
   return path_ == uri_separator_string;
 }
 
-std::string Upath::Path() const {
+std::string Upath::GetPath() const {
   return path_;
 }
 
@@ -250,11 +250,11 @@ void Upath::SetPath(const std::string& path) {
   path_ = path;
 }
 
-std::string Upath::Query() const {
+std::string Upath::GetQuery() const {
   return query_;
 }
 
-std::string Upath::Hpath() const {
+std::string Upath::GetHpath() const {
   size_t slash = path_.find_last_of(uri_separator_string);
   if (slash != std::string::npos) {
     return path_.substr(0, slash + 1);
@@ -263,7 +263,7 @@ std::string Upath::Hpath() const {
   return stable_path(path_);
 }
 
-std::string Upath::Filename() const {
+std::string Upath::GetFilename() const {
   size_t slash = path_.find_last_of(uri_separator_string);
   if (slash != std::string::npos) {
     return path_.substr(slash + 1);
@@ -272,11 +272,11 @@ std::string Upath::Filename() const {
   return std::string();
 }
 
-std::string Upath::Mime() const {
+std::string Upath::GetMime() const {
   return detail::get_mime_type(path_.c_str());
 }
 
-std::string Upath::HpathLevel(size_t lv) const {
+std::string Upath::GetHpathLevel(size_t lv) const {
   std::vector<std::string> tokens;
   size_t count = Tokenize(path_, uri_separator_string, &tokens);
   if (lv > count) {
@@ -292,7 +292,7 @@ std::string Upath::HpathLevel(size_t lv) const {
   return result;
 }
 
-size_t Upath::Levels() const {
+size_t Upath::GetLevels() const {
   std::vector<std::string> tokens;
   size_t sz = Tokenize(path_, uri_separator_string, &tokens);
   if (sz == 0) {
@@ -451,10 +451,10 @@ std::string Uri::Hpath() const {
   DCHECK(IsValid());
 
   if (host_.empty()) {
-    return MemSPrintf("%s://%s", Protocol(), path_.Hpath());
+    return MemSPrintf("%s://%s", Protocol(), path_.GetHpath());
   }
 
-  return MemSPrintf("%s://%s/%s", Protocol(), host_, path_.Hpath());
+  return MemSPrintf("%s://%s/%s", Protocol(), host_, path_.GetHpath());
 }
 
 bool Uri::Equals(const Uri& uri) const {

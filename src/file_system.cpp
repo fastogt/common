@@ -709,7 +709,7 @@ File::~File() {
   delete holder_;
 }
 
-File::path_type File::Path() const {
+File::path_type File::GetPath() const {
   return file_path_;
 }
 
@@ -805,7 +805,7 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   }
 
   int fd = INVALID_DESCRIPTOR;
-  const std::string path_str = file_path.Path();
+  const std::string path_str = file_path.GetPath();
   ErrnoError err = open_descriptor(path_str, open_flags, &fd);
   if (err && err->IsError()) {
     return err;
@@ -826,7 +826,7 @@ ANSIFile::~ANSIFile() {}
 
 ErrnoError ANSIFile::Open(const char* mode) {
   if (!file_) {
-    std::string spath = path_.Path();
+    std::string spath = path_.GetPath();
     const char* path = spath.c_str();
     file_ = fopen(path, mode);
     if (file_) {
@@ -1029,11 +1029,11 @@ bool ConvertFromString16(const string16& from, file_system::utf_string_path* out
 }
 
 std::string ConvertToString(const file_system::ascii_string_path& path) {
-  return path.Path();
+  return path.GetPath();
 }
 
 string16 ConvertFromString16(const file_system::utf_string_path& path) {
-  return path.Path();
+  return path.GetPath();
 }
 
 }  // namespace common

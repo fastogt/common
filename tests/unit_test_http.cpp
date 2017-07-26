@@ -17,7 +17,7 @@ TEST(Http, parse_GET) {
       "HTTPTool/1.0\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request, &r1);
   ASSERT_EQ(r1.method(), http::HM_GET);
-  ASSERT_EQ(r1.path().Path(), "path/file.html");
+  ASSERT_EQ(r1.path().GetPath(), "path/file.html");
   ASSERT_TRUE(r1.headers().size() == 2);
   ASSERT_TRUE(r1.body().empty());
   ASSERT_FALSE(err.second);
@@ -32,7 +32,7 @@ TEST(Http, parse_GET) {
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request2, &r2);
   ASSERT_EQ(r2.method(), http::HM_GET);
-  ASSERT_EQ(r2.path().Path(), "hello.htm");
+  ASSERT_EQ(r2.path().GetPath(), "hello.htm");
   ASSERT_TRUE(r2.headers().size() == 5);
   ASSERT_TRUE(r2.body().empty());
   ASSERT_FALSE(err.second);
@@ -47,7 +47,7 @@ TEST(Http, parse_GET) {
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request4, &r4);
   ASSERT_EQ(r4.method(), http::HM_GET);
-  ASSERT_EQ(r4.path().Path(), "hello.htm");
+  ASSERT_EQ(r4.path().GetPath(), "hello.htm");
   // ASSERT_EQ(r4.path().Query(), "home=Cosby&favorite flavor=flies");
   ASSERT_TRUE(r4.headers().size() == 5);
   ASSERT_TRUE(r4.body().empty());
@@ -67,7 +67,7 @@ TEST(Http, parse_GET) {
   err = http::parse_http_request(request5, &r5);
   ASSERT_FALSE(err.second);
   ASSERT_EQ(r5.method(), http::HM_GET);
-  ASSERT_EQ(r5.path().Path(), "[object LocalMediaStream]");
+  ASSERT_EQ(r5.path().GetPath(), "[object LocalMediaStream]");
   ASSERT_TRUE(r5.protocol() == http::HP_1_1);
   ASSERT_TRUE(r5.headers().size() == 7);
   ASSERT_TRUE(r5.body().empty());
@@ -84,7 +84,7 @@ TEST(Http, parse_HEAD) {
       "Connection: Keep-Alive\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.method(), http::HM_HEAD);
-  ASSERT_EQ(r3.path().Path(), "hello.htm");
+  ASSERT_EQ(r3.path().GetPath(), "hello.htm");
   ASSERT_TRUE(r3.headers().size() == 5);
   ASSERT_TRUE(r3.body().empty());
   ASSERT_FALSE(err.second);
@@ -102,7 +102,7 @@ TEST(Http, parse_POST) {
       "home=Cosby&favorite+flavor=flies";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.method(), http::HM_POST);
-  ASSERT_EQ(r3.path().Path(), "hello.htm");
+  ASSERT_EQ(r3.path().GetPath(), "hello.htm");
   ASSERT_TRUE(r3.headers().size() == 5);
   ASSERT_EQ(r3.body(), "home=Cosby&favorite flavor=flies");
   ASSERT_TRUE(r3.body().size() == 32);
@@ -169,147 +169,22 @@ TEST(Http2, parse_frames) {
   ASSERT_FALSE(invalidstreamfh.IsValid());
   // 00000C04000000000000030000006400040000FFFF00000502000000000300000000C800000502000000000500000000640000050200000000070000000000000005
   // 020000000009000000070000000502000000000B000000030000002901250000000D0000000B0F828486418A089D5C0B8170DC780F0353032A2F2A907A8DAA69D29AC4C0576576D6BF838F
-  const uint8_t raw_frame0[] = {0x00,
-                                0x00,
-                                0x0C,
-                                0x04,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00, /*header*/
-                                0x00,
-                                0x03,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x64,
-                                0x00,
-                                0x04,
-                                0x00,
-                                0x00,
-                                0xFF,
-                                0xFF};
-  const uint8_t raw_frame1[] = {0x00,
-                                0x00,
-                                0x05,
-                                0x02,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x03, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0xC8};
-  const uint8_t raw_frame2[] = {0x00,
-                                0x00,
-                                0x05,
-                                0x02,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x05, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x64};
-  const uint8_t raw_frame3[] = {0x00,
-                                0x00,
-                                0x05,
-                                0x02,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x07, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00};
-  const uint8_t raw_frame4[] = {0x00,
-                                0x00,
-                                0x05,
-                                0x02,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x09, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x07,
-                                0x00};
-  const uint8_t raw_frame5[] = {0x00,
-                                0x00,
-                                0x05,
-                                0x02,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x0B, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x03,
-                                0x00};
-  const uint8_t raw_frame6[] = {0x00,
-                                0x00,
-                                0x29,
-                                0x01,
-                                0x25,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x0D, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x0B,
-                                0x0F,
-                                0x82,
-                                0x84,
-                                0x86,
-                                0x41,
-                                0x8A,
-                                0x08,
-                                0x9D,
-                                0x5C,
-                                0x0B,
-                                0x81,
-                                0x70,
-                                0xDC,
-                                0x78,
-                                0x0F,
-                                0x03,
-                                0x53,
-                                0x03,
-                                0x2A,
-                                0x2F,
-                                0x2A,
-                                0x90,
-                                0x7A,
-                                0x8D,
-                                0xAA,
-                                0x69,
-                                0xD2,
-                                0x9A,
-                                0xC4,
-                                0xC0,
-                                0x57,
-                                0x65,
-                                0x76,
-                                0xD6,
-                                0xBF,
-                                0x83,
-                                0x8F};
+  const uint8_t raw_frame0[] = {0x00, 0x00, 0x0C, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, /*header*/
+                                0x00, 0x03, 0x00, 0x00, 0x00, 0x64, 0x00, 0x04, 0x00, 0x00, 0xFF, 0xFF};
+  const uint8_t raw_frame1[] = {0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x03, /*header*/
+                                0x00, 0x00, 0x00, 0x00, 0xC8};
+  const uint8_t raw_frame2[] = {0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x05, /*header*/
+                                0x00, 0x00, 0x00, 0x00, 0x64};
+  const uint8_t raw_frame3[] = {0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x07, /*header*/
+                                0x00, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t raw_frame4[] = {0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x09, /*header*/
+                                0x00, 0x00, 0x00, 0x07, 0x00};
+  const uint8_t raw_frame5[] = {0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x0B, /*header*/
+                                0x00, 0x00, 0x00, 0x03, 0x00};
+  const uint8_t raw_frame6[] = {0x00, 0x00, 0x29, 0x01, 0x25, 0x00, 0x00, 0x00, 0x0D, /*header*/
+                                0x00, 0x00, 0x00, 0x0B, 0x0F, 0x82, 0x84, 0x86, 0x41, 0x8A, 0x08, 0x9D, 0x5C, 0x0B,
+                                0x81, 0x70, 0xDC, 0x78, 0x0F, 0x03, 0x53, 0x03, 0x2A, 0x2F, 0x2A, 0x90, 0x7A, 0x8D,
+                                0xAA, 0x69, 0xD2, 0x9A, 0xC4, 0xC0, 0x57, 0x65, 0x76, 0xD6, 0xBF, 0x83, 0x8F};
 
   char raw_frames[141] = {0};
   size_t len = 0;
@@ -350,31 +225,14 @@ TEST(Http2, parse_frames) {
 
 TEST(Http2, frame_settings) {
   const uint8_t raw_settings_frame[] = {
-      0x00,
-      0x00,
-      0x0C,
-      0x04,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x00, /*header*/
-      0x00,
-      0x03,
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x0C, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, /*header*/
+      0x00, 0x03, 0x00, 0x00, 0x00,
       0x64,  // settings_id_/value
-      0x00,
-      0x04,
-      0x00,
-      0x00,
-      0xFF,
+      0x00, 0x04, 0x00, 0x00, 0xFF,
       0xFF  // settings_id_/value
   };
 
-  http2::frames_t frames =
-      http2::parse_frames((const char*)raw_settings_frame, sizeof(raw_settings_frame));
+  http2::frames_t frames = http2::parse_frames((const char*)raw_settings_frame, sizeof(raw_settings_frame));
   ASSERT_TRUE(frames.size() == 1);
 
   http2::frame_settings* set = (http2::frame_settings*)(&frames[0]);
@@ -395,84 +253,33 @@ TEST(Http2, frame_settings) {
 TEST(Http2, frame_priority) {
   // priority frame //
   const uint8_t raw_priority_frames[] = {
-      0x00,
-      0x00,
-      0x05,
-      0x02,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x03, /*header*/
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x03, /*header*/
+      0x00, 0x00, 0x00,
       0x00,  // stream_id
       0xC8,  // weight
 
-      0x00,
-      0x00,
-      0x05,
-      0x02,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x05, /*header*/
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x05, /*header*/
+      0x00, 0x00, 0x00,
       0x00,  // stream_id
       0x64,  // weight
 
-      0x00,
-      0x00,
-      0x05,
-      0x02,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x07, /*header*/
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x07, /*header*/
+      0x00, 0x00, 0x00,
       0x00,  // stream_id
       0x00,  // weight
 
-      0x00,
-      0x00,
-      0x05,
-      0x02,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x09, /*header*/
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x09, /*header*/
+      0x00, 0x00, 0x00,
       0x07,  // stream_id
       0x00,  // weight
 
-      0x00,
-      0x00,
-      0x05,
-      0x02,
-      0x00,
-      0x00,
-      0x00,
-      0x00,
-      0x0B, /*header*/
-      0x00,
-      0x00,
-      0x00,
+      0x00, 0x00, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x0B, /*header*/
+      0x00, 0x00, 0x00,
       0x03,  // stream_id
       0x00   // weight
   };
 
-  http2::frames_t frames =
-      http2::parse_frames((const char*)raw_priority_frames, sizeof(raw_priority_frames));
+  http2::frames_t frames = http2::parse_frames((const char*)raw_priority_frames, sizeof(raw_priority_frames));
   ASSERT_TRUE(frames.size() == 5);
 
   http2::frame_priority* pri1 = (http2::frame_priority*)(&frames[0]);
@@ -529,59 +336,15 @@ TEST(Http2, frame_priority) {
 
 TEST(Http2, frame_headers) {
   // headers frame//
-  const uint8_t headers_frame0[] = {0x00,
-                                    0x00,
-                                    0x29,
-                                    0x01,
-                                    0x25,
-                                    0x00,
-                                    0x00,
-                                    0x00,
-                                    0x0D, /*header*/
-                                    0x00,
-                                    0x00,
-                                    0x00,
+  const uint8_t headers_frame0[] = {0x00, 0x00, 0x29, 0x01, 0x25, 0x00, 0x00, 0x00, 0x0D, /*header*/
+                                    0x00, 0x00, 0x00,
                                     0x0B,  // stream_id
                                     0x0F,  // weight
-                                    0x82,
-                                    0x84,
-                                    0x86,
-                                    0x41,
-                                    0x8A,
-                                    0x08,
-                                    0x9D,
-                                    0x5C,
-                                    0x0B,
-                                    0x81,
-                                    0x70,
-                                    0xDC,
-                                    0x78,
-                                    0x0F,
-                                    0x03,
-                                    0x53,
-                                    0x03,
-                                    0x2A,
-                                    0x2F,
-                                    0x2A,
-                                    0x90,
-                                    0x7A,
-                                    0x8D,
-                                    0xAA,
-                                    0x69,
-                                    0xD2,
-                                    0x9A,
-                                    0xC4,
-                                    0xC0,
-                                    0x57,
-                                    0x65,
-                                    0x76,
-                                    0xD6,
-                                    0xBF,
-                                    0x83,
-                                    0x8F};
+                                    0x82, 0x84, 0x86, 0x41, 0x8A, 0x08, 0x9D, 0x5C, 0x0B, 0x81, 0x70, 0xDC,
+                                    0x78, 0x0F, 0x03, 0x53, 0x03, 0x2A, 0x2F, 0x2A, 0x90, 0x7A, 0x8D, 0xAA,
+                                    0x69, 0xD2, 0x9A, 0xC4, 0xC0, 0x57, 0x65, 0x76, 0xD6, 0xBF, 0x83, 0x8F};
 
-  http2::frames_t framesh0 =
-      http2::parse_frames((const char*)headers_frame0, sizeof(headers_frame0));
+  http2::frames_t framesh0 = http2::parse_frames((const char*)headers_frame0, sizeof(headers_frame0));
   ASSERT_TRUE(framesh0.size() == 1);
 
   http2::frame_headers* head0 = (http2::frame_headers*)(&framesh0[0]);
@@ -601,61 +364,18 @@ TEST(Http2, frame_headers) {
   http::http_request r0;
   std::pair<http::http_status, Error> err0 = http2::parse_http_request(*head0, &r0);
   ASSERT_EQ(r0.method(), http::HM_GET);
-  ASSERT_EQ(r0.path().Path(), "/");
+  ASSERT_EQ(r0.path().GetPath(), "/");
   ASSERT_TRUE(r0.headers().size() == 3);
   ASSERT_TRUE(r0.body().empty());
   ASSERT_FALSE(err0.second);
 
-  const uint8_t headers_frame[] = {0x00,
-                                   0x00,
-                                   0x29,
-                                   0x01,
-                                   0x25,
-                                   0x00,
-                                   0x00,
-                                   0x00,
-                                   0x0D, /*header*/
-                                   0x00,
-                                   0x00,
-                                   0x00,
+  const uint8_t headers_frame[] = {0x00, 0x00, 0x29, 0x01, 0x25, 0x00, 0x00, 0x00, 0x0D, /*header*/
+                                   0x00, 0x00, 0x00,
                                    0x0B,  // dep_stream_id
                                    0x0F,  // weight
-                                   0x82,
-                                   0x84,
-                                   0x86,
-                                   0x41,
-                                   0x8A,
-                                   0x08,
-                                   0x9D,
-                                   0x5C,
-                                   0x0B,
-                                   0x81,
-                                   0x70,
-                                   0xDC,
-                                   0x78,
-                                   0x0F,
-                                   0x03,
-                                   0x53,
-                                   0x03,
-                                   0x2A,
-                                   0x2F,
-                                   0x2A,
-                                   0x90,
-                                   0x7A,
-                                   0x8D,
-                                   0xAA,
-                                   0x69,
-                                   0xD2,
-                                   0x9A,
-                                   0xC4,
-                                   0xC0,
-                                   0x57,
-                                   0x65,
-                                   0x76,
-                                   0xD6,
-                                   0xBF,
-                                   0x83,
-                                   0x8F};
+                                   0x82, 0x84, 0x86, 0x41, 0x8A, 0x08, 0x9D, 0x5C, 0x0B, 0x81, 0x70, 0xDC,
+                                   0x78, 0x0F, 0x03, 0x53, 0x03, 0x2A, 0x2F, 0x2A, 0x90, 0x7A, 0x8D, 0xAA,
+                                   0x69, 0xD2, 0x9A, 0xC4, 0xC0, 0x57, 0x65, 0x76, 0xD6, 0xBF, 0x83, 0x8F};
 
   http2::frames_t framesh1 = http2::parse_frames((const char*)headers_frame, sizeof(headers_frame));
   ASSERT_TRUE(framesh1.size() == 1);
@@ -677,7 +397,7 @@ TEST(Http2, frame_headers) {
   http::http_request r1;
   std::pair<http::http_status, Error> err = http2::parse_http_request(*head1, &r1);
   ASSERT_EQ(r1.method(), http::HM_GET);
-  ASSERT_EQ(r1.path().Path(), "/");
+  ASSERT_EQ(r1.path().GetPath(), "/");
   ASSERT_TRUE(r1.headers().size() == 3);
   ASSERT_TRUE(r1.body().empty());
   ASSERT_FALSE(err.second);
@@ -686,40 +406,13 @@ TEST(Http2, frame_headers) {
 
 TEST(Http2, frame_goaway) {
   // 000019070000000000000000000000000153455454494E4753206578706563746564
-  const uint8_t away_frame[] = {0x00,
-                                0x00,
-                                0x19,
-                                0x07,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00,
-                                0x00, /*header*/
-                                0x00,
-                                0x00,
-                                0x00,
+  const uint8_t away_frame[] = {0x00, 0x00, 0x19, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, /*header*/
+                                0x00, 0x00, 0x00,
                                 0x00,  // stream_id
-                                0x00,
-                                0x00,
-                                0x00,
+                                0x00, 0x00, 0x00,
                                 0x01,  // error_code
-                                0x53,
-                                0x45,
-                                0x54,
-                                0x54,
-                                0x49,
-                                0x4E,
-                                0x47,
-                                0x53,
-                                0x20,
-                                0x65,
-                                0x78,
-                                0x70,
-                                0x65,
-                                0x63,
-                                0x74,
-                                0x65,
-                                0x64};
+                                0x53, 0x45, 0x54, 0x54, 0x49, 0x4E, 0x47, 0x53, 0x20,
+                                0x65, 0x78, 0x70, 0x65, 0x63, 0x74, 0x65, 0x64};
 
   // goaway frame//
   http2::frames_t frames1 = http2::parse_frames((const char*)away_frame, sizeof(away_frame));
