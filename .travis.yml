@@ -50,9 +50,8 @@ script:
   - CTEST_OUTPUT_ON_FAILURE=1 make test
 
 after_success:
-  - cd "${TRAVIS_BUILD_DIR}"
   - sudo pip install cpp-coveralls
-  - coveralls --exclude lib --exclude tests
+  - coveralls --exclude tests
 
 notifications:
   recipients:
