@@ -41,7 +41,6 @@ compiler:
   - gcc
   - clang
 
-matrix:
 exclude:
   - os: osx
     compiler: gcc
