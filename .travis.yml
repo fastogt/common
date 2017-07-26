@@ -41,8 +41,6 @@ compiler:
   - gcc
   - clang
 matrix:
-  - BUILD_TYPE=DEBUG
-  - BUILD_TYPE=RELEASE
   exclude:
     - os: osx
       compiler: gcc
@@ -50,7 +48,7 @@ matrix:
 before_script:
   - mkdir build
   - cd build
-  - cmake .. -DCOVERALLS=ON -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DDEVELOPER_ENABLE_TESTS=ON
+  - cmake .. -DCOVERALLS=ON -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=DEBUG -DDEVELOPER_ENABLE_TESTS=ON
 
 script:
   - make
