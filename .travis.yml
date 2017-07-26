@@ -52,7 +52,7 @@ script:
 after_success:
   - cd "${TRAVIS_BUILD_DIR}"
   - sudo pip install cpp-coveralls
-  - coveralls --include include/common --include src
+  - coveralls --include include/common --include src --exclude src/third-party
 
 notifications:
   recipients:
