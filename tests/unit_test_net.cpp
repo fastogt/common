@@ -23,7 +23,8 @@ TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   socket_info inf = tcp.GetInfo();
   ASSERT_TRUE(inf.addr_info() == NULL);
   auto ex_handler = THREAD_MANAGER()->CreateThread(&exec_serv, &serv);
-  ex_handler->Start();
+  bool res = ex_handler->Start();
+  DCHECK(res);
   sleep(1);
   err = tcp.Connect();
   ASSERT_FALSE(err && err->IsError());
@@ -49,7 +50,8 @@ TEST(SocketTcp, bindRandomWorkflow) {
   socket_info inf = tcp.GetInfo();
   ASSERT_TRUE(inf.addr_info() == NULL);
   auto ex_handler = THREAD_MANAGER()->CreateThread(&exec_serv, &serv);
-  ex_handler->Start();
+  bool res = ex_handler->Start();
+  DCHECK(res);
   sleep(1);
   err = tcp.Connect();
   ASSERT_FALSE(err && err->IsError());

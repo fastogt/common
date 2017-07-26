@@ -94,7 +94,7 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   // for inner use
   template <typename RT>
   void WrapThread(Thread<RT>* thr) {
-    if (thr->lcpu_number_ == -1) {
+    if (thr->lcpu_number_ == invalid_cpu_count) {
       thr->lcpu_number_ = AllocLCpuNumber(thr->ptr_);
     }
 

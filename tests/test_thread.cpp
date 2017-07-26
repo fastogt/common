@@ -22,7 +22,8 @@ TEST(Thread, fasto_loop) {
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     tp[i] = THREAD_MANAGER()->CreateThread(&test);
     GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
-    tp[i]->Start();
+    bool res = tp[i]->Start();
+    DCHECK(res);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {

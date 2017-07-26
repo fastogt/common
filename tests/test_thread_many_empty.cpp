@@ -45,7 +45,8 @@ TEST(Thread, fasto_many_empty_function) {
     closure_t cl = getFunction(i % (MANY_EMPTY_FUNCTION_COUNT + 1));
     tp[i] = THREAD_MANAGER()->CreateThread(cl);
     GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
-    tp[i]->Start();
+    bool res = tp[i]->Start();
+    DCHECK(res);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {

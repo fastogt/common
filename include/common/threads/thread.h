@@ -157,7 +157,7 @@ class Thread final : public ThreadJoinBase<RT> {
     return NULL;
   }
 
-  Thread() : base_class(function_type()), ptr_(0), lcpu_number_(-1), priority_(PRIORITY_NORMAL) {}
+  Thread() : base_class(function_type()), ptr_(0), lcpu_number_(invalid_cpu_count), priority_(PRIORITY_NORMAL) {}
   Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
       : base_class(func), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
 

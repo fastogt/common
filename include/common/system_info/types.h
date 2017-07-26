@@ -29,12 +29,15 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <stddef.h>
 
 namespace common {
 
-typedef int32_t core_count_t;
-typedef int32_t lcpu_count_t;
+typedef size_t core_count_t;
+static const core_count_t invalid_core_count = static_cast<core_count_t>(-1);
+
+typedef size_t lcpu_count_t;
+static const lcpu_count_t invalid_cpu_count = static_cast<lcpu_count_t>(-1);
 
 namespace system_info {}  // namespace system_info
 }  // namespace common

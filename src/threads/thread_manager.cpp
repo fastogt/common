@@ -67,7 +67,7 @@ lcpu_count_t ThreadManager::AllocLCpuNumber(uintptr_t fc) const {
     for (lcpu_count_t j = 0; j < lc; j += toncore) {
       uintptr_t cur = max_lcpu[j].addr[i];
       if (!cur) {
-        max_lcpu[j].addr[i] = cur;
+        max_lcpu[j].addr[i] = fc;
         return j;
       }
 
