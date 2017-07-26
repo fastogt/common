@@ -34,16 +34,16 @@ addons:
     - g++-4.9
     - clang-3.7
     - valgrind
-os:
-  - linux
-  - osx
-compiler:
-  - gcc
-  - clang
-
-exclude:
-  - os: osx
-    compiler: gcc
+matrix:
+  os:
+    - linux
+    - osx
+  compiler:
+    - gcc
+    - clang
+  exclude:
+    - os: osx
+    - compiler: gcc
   
 before_script:
   - mkdir build
