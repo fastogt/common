@@ -57,9 +57,8 @@ script:
   - CTEST_OUTPUT_ON_FAILURE=1 make test
 
 after_success:
-  - cd "${TRAVIS_BUILD_DIR}"
   - sudo pip install cpp-coveralls
-  - coveralls --include include/common --include src --exclude src/third-party
+  - make coveralls
 
 notifications:
   recipients:
