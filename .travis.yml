@@ -2,6 +2,7 @@
 # http://about.travis-ci.org/docs/user/build-configuration/
 # This file can be validated on:
 # http://lint.travis-ci.org/
+language: cpp
 install:
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
@@ -36,10 +37,15 @@ addons:
 os:
   - linux
   - osx
-language: cpp
 compiler:
   - gcc
   - clang
+
+matrix:
+exclude:
+  - os: osx
+    compiler: gcc
+  
 before_script:
   - mkdir build
   - cd build
