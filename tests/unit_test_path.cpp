@@ -12,20 +12,8 @@ TEST(Path, is_valid_path) {
   std::string invalid_path2 = "/~";
   ASSERT_FALSE(common::file_system::is_valid_path(invalid_path2));
 
-  std::string invalid_path3 = "//";
-  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path3));
-
-  std::string invalid_path4 = "/home//";
-  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path4));
-
   std::string invalid_path5 = "home/";
   ASSERT_FALSE(common::file_system::is_valid_path(invalid_path5));
-
-  std::string invalid_path6 = "C://";
-  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path6));
-
-  std::string invalid_path7 = "C:/\\";
-  ASSERT_FALSE(common::file_system::is_valid_path(invalid_path7));
 
   std::string valid_path0 = "/";
   ASSERT_TRUE(common::file_system::is_valid_path(valid_path0));
@@ -53,4 +41,33 @@ TEST(Path, is_valid_path) {
 
   std::string valid_path8 = "D:\\";
   ASSERT_TRUE(common::file_system::is_valid_path(valid_path8));
+
+  std::string valid_path9 = "C://";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path9));
+
+  std::string valid_path10 = "C:/\\";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path10));
+
+  std::string valid_path11 = "//";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path11));
+
+  std::string valid_path12 = "/home//";
+  ASSERT_TRUE(common::file_system::is_valid_path(valid_path12));
+}
+
+TEST(Path, stable_path) {
+  std::string valid_path8 = "D:\\\\\\";
+  ASSERT_EQ(common::file_system::stable_dir_path(valid_path8), "D:/");
+
+  std::string valid_path9 = "C://";
+  ASSERT_EQ(common::file_system::stable_dir_path(valid_path9), "C:/");
+
+  std::string valid_path10 = "C:/\\";
+  ASSERT_EQ(common::file_system::stable_dir_path(valid_path10), "C:/");
+
+  std::string valid_path11 = "//";
+  ASSERT_EQ(common::file_system::stable_dir_path(valid_path11), "/");
+
+  std::string valid_path12 = "/home//";
+  ASSERT_EQ(common::file_system::stable_dir_path(valid_path12), "/home/");
 }

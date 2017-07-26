@@ -107,20 +107,6 @@ inline bool is_valid_path(const std::basic_string<CharT, Traits>& path) {
     CharT c = path[i];
     if (c == get_home_separator<CharT>() && i != 0) {  // ~ can be only in zero position
       return false;
-    } else if (c == get_separator<CharT>()) {  // unix separator
-      if (i + 1 < len) {                       // invalid if // (/root//)
-        CharT l = path[i + 1];
-        if (l == get_separator<CharT>() || l == get_win_separator<CharT>()) {
-          return false;
-        }
-      }
-    } else if (c == get_win_separator<CharT>()) {  // windows separator
-      if (i + 1 < len) {                           // invalid if // (C:\Windows\\)
-        CharT l = path[i + 1];
-        if (l == get_win_separator<CharT>() || l == get_separator<CharT>()) {
-          return false;
-        }
-      }
     }
   }
 
@@ -161,9 +147,24 @@ inline tribool is_relative_path(const CharT* path) {
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT> >
-inline std::basic_string<CharT, Traits> fixup_separator_in_path(std::basic_string<CharT, Traits> path) {
-  std::replace(path.begin(), path.end(), get_win_separator<CharT>(), get_separator<CharT>());
-  return path;
+inline std::basic_string<CharT, Traits> fixup_separator_in_path(const std::basic_string<CharT, Traits>& path) {
+  std::basic_string<CharT, Traits> path_without_dup;
+  for (size_t i = 0; i < path.size(); ++i) {
+    CharT c = path[i];
+    if (c == get_win_separator<CharT>()) {
+      c = get_separator<CharT>();
+    }
+
+    if (c == get_separator<CharT>() && i + 1 < path.size()) {
+      CharT c2 = path[i + 1];
+      if (c2 == get_win_separator<CharT>() || c2 == get_separator<CharT>()) {
+        continue;
+      }
+    }
+    path_without_dup += c;
+  }
+
+  return path_without_dup;
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT> >
