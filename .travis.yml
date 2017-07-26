@@ -43,7 +43,7 @@ compiler:
 matrix:
   exclude:
     - os: osx
-    - compiler: gcc
+      compiler: gcc
   
 before_script:
   - mkdir build
