@@ -41,6 +41,8 @@ common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::stri
 #ifdef HAVE_ZLIB
   return common::EncodeZlib(data, out);
 #else
+  UNUSED(data);
+  UNUSED(out);
   return common::make_error_value("CompressZlib encode not supported", common::ErrorValue::E_ERROR);
 #endif
 }
@@ -49,6 +51,8 @@ common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::stri
 #ifdef HAVE_ZLIB
   return common::DecodeZlib(data, out);
 #else
+  UNUSED(data);
+  UNUSED(out);
   return common::make_error_value("CompressZlib decode not supported", common::ErrorValue::E_ERROR);
 #endif
 }

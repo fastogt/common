@@ -16,7 +16,7 @@ SET(APPLIATION_HEADERS
 )
 
 SET(APPLIATION_SOURCES
-  application/application.cpp
+  ${PROJECT_SOURCE_DIR}/src/application/application.cpp
 )
 
 SET(SYSTEM_HEADERS
@@ -24,7 +24,7 @@ SET(SYSTEM_HEADERS
 )
 
 SET(SYSTEM_SOURCES
-  system/system.cpp
+  ${PROJECT_SOURCE_DIR}/src/system/system.cpp
 )
 
 SET(THREADS_HEADERS
@@ -40,10 +40,10 @@ SET(THREADS_HEADERS
 )
 
 SET(THREADS_SOURCES
-  threads/thread.cpp
-  threads/thread_manager.cpp
-  threads/event_bus.cpp
-  threads/event_dispatcher.cpp
+  ${PROJECT_SOURCE_DIR}/src/threads/thread.cpp
+  ${PROJECT_SOURCE_DIR}/src/threads/thread_manager.cpp
+  ${PROJECT_SOURCE_DIR}/src/threads/event_bus.cpp
+  ${PROJECT_SOURCE_DIR}/src/threads/event_dispatcher.cpp
 )
 
 SET(NET_HEADERS
@@ -53,9 +53,9 @@ SET(NET_HEADERS
 )
 
 SET(NET_SOURCES
-  net/types.cpp
-  net/net.cpp
-  net/socket_tcp.cpp
+  ${PROJECT_SOURCE_DIR}/src/net/types.cpp
+  ${PROJECT_SOURCE_DIR}/src/net/net.cpp
+  ${PROJECT_SOURCE_DIR}/src/net/socket_tcp.cpp
 )
 
 SET(LIBEV_TCP_HEADERS
@@ -63,9 +63,9 @@ SET(LIBEV_TCP_HEADERS
   ${PROJECT_SOURCE_DIR}/include/common/libev/tcp/tcp_server.h
 )
 
-SET(LIBEV_SOURCES
-  libev/tcp/tcp_client.cpp
-  libev/tcp/tcp_server.cpp
+SET(LIBEV_TCP_SOURCES
+  ${PROJECT_SOURCE_DIR}/src/libev/tcp/tcp_client.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
 )
 
 SET(LIBEV_HEADERS
@@ -83,17 +83,17 @@ SET(LIBEV_HEADERS
 )
 
 SET(LIBEV_SOURCES
-  libev/event_loop.cpp
-  libev/io_client.cpp
-  libev/io_loop.cpp
-  libev/io_loop_observer.cpp
-  libev/loop_controller.cpp
-  libev/types.cpp
-  libev/event_async.cpp
-  libev/event_io.cpp
-  libev/event_timer.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/event_loop.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/io_client.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/io_loop.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/io_loop_observer.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/loop_controller.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/types.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/event_async.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/event_io.cpp
+  ${PROJECT_SOURCE_DIR}/src/libev/event_timer.cpp
 
-  ${LIBEV_SOURCES}
+  ${LIBEV_TCP_SOURCES}
 )
 
 SET(HTTP_HEADERS
@@ -103,9 +103,9 @@ SET(HTTP_HEADERS
 )
 
 SET(HTTP_SOURCES
-  http/http.cpp
-  http/http2.cpp
-  http/http2_huffman.cpp
+  ${PROJECT_SOURCE_DIR}/src/http/http.cpp
+  ${PROJECT_SOURCE_DIR}/src/http/http2.cpp
+  ${PROJECT_SOURCE_DIR}/src/http/http2_huffman.cpp
 )
 
 SET(TEXT_DECODERS_HEADERS
@@ -119,13 +119,13 @@ SET(TEXT_DECODERS_HEADERS
 )
 
 SET(TEXT_DECODERS_SOURCES
-  text_decoders/hex_edcoder.cpp
-  text_decoders/html_edcoder.cpp
-  text_decoders/iedcoder.cpp
-  text_decoders/base64_edcoder.cpp
-  text_decoders/compress_zlib_edcoder.cpp
-  text_decoders/compress_snappy_edcoder.cpp
-  text_decoders/msgpack_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/hex_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/html_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/iedcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/base64_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/compress_zlib_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/compress_snappy_edcoder.cpp
+  ${PROJECT_SOURCE_DIR}/src/text_decoders/msgpack_edcoder.cpp
 )
 
 SET(HASH_HEADERS
@@ -134,8 +134,8 @@ SET(HASH_HEADERS
 )
 
 SET(HASH_SOURCES
-  hash/md5.cpp
-  hash/sha1.cpp
+  ${PROJECT_SOURCE_DIR}/src/hash/md5.cpp
+  ${PROJECT_SOURCE_DIR}/src/hash/sha1.cpp
 )
 
 SET(CMP_SOURCES third-party/cmp/cmp.c)
@@ -147,38 +147,53 @@ SET(SYSTEM_INFO_HEADERS
 )
 
 SET(SYSTEM_INFO_SOURCES
-  system_info/cpu_info.cpp
-  system_info/system_info.cpp
-  system_info/types.cpp
+  ${PROJECT_SOURCE_DIR}/src/system_info/cpu_info.cpp
+  ${PROJECT_SOURCE_DIR}/src/system_info/system_info.cpp
+  ${PROJECT_SOURCE_DIR}/src/system_info/types.cpp
 )
 
 IF(OS_WINDOWS)
   SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS} ${PROJECT_SOURCE_DIR}/include/common/string_util_win.h)
-  SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_win.cpp system/system_win.cpp)
+  SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+    ${PROJECT_SOURCE_DIR}/src/system_info/system_info_win.cpp
+    ${PROJECT_SOURCE_DIR}/src/system/system_win.cp
+  )
   SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ws2_32)
 ELSEIF(OS_POSIX)
   SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS} ${PROJECT_SOURCE_DIR}/include/common/string_util_posix.h)
-  SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_posix.cpp system/system_posix.cpp)
+  SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+    ${PROJECT_SOURCE_DIR}/src/system_info/system_info_posix.cpp
+    ${PROJECT_SOURCE_DIR}/src/system/system_posix.cpp
+  )
   SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES})
 
   IF(OS_MACOSX)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
-    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_mac.cpp
-        system_info/system_info_mac.mm system/system_mac.mm file_system_mac.mm
+    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+      ${PROJECT_SOURCE_DIR}/src/system_info/system_info_mac.cpp
+      ${PROJECT_SOURCE_DIR}/src/system_info/system_info_mac.mm
+      ${PROJECT_SOURCE_DIR}/src/system/system_mac.mm
+      ${PROJECT_SOURCE_DIR}/src/file_system_mac.mm
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${COCOA_LIBRARY})
   ELSEIF(OS_LINUX)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
-    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_linux.cpp)
+    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+      ${PROJECT_SOURCE_DIR}/src/system_info/system_info_linux.cpp
+    )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} rt)
   ELSEIF(OS_ANDROID)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
-    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_android.cpp)
+    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+      ${PROJECT_SOURCE_DIR}/src/system_info/system_info_android.cpp
+    )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES})
   ELSEIF(OS_FREEBSD)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
-    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES} system_info/system_info_freebsd.cpp)
+    SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
+      ${PROJECT_SOURCE_DIR}/src/system_info/system_info_freebsd.cpp
+    )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES})
   ENDIF(OS_MACOSX)
 ELSE()
@@ -201,8 +216,8 @@ IF(QT_ENABLED)
   )
 
   SET(COMMON_QT_SOURCES
-   qt/utils_qt.cpp
-   qt/convert2string.cpp
+   ${PROJECT_SOURCE_DIR}/src/qt/utils_qt.cpp
+   ${PROJECT_SOURCE_DIR}/src/qt/convert2string.cpp
   )
 
   SET(FASTO_QT_HEADERS
@@ -225,19 +240,19 @@ IF(QT_ENABLED)
   )
 
   SET(FASTO_QT_SOURCES
-    qt/gui/shortcuts.cpp
-    qt/utils_qt.cpp
-    qt/logger.cpp
-    qt/gui/base/tree_model.cpp
-    qt/gui/base/tree_item.cpp
-    qt/gui/base/table_model.cpp
-    qt/gui/base/table_item.cpp
-    qt/gui/base/graph_widget.cpp
-    qt/gui/glass_widget.cpp
-    qt/gui/icon_label.cpp
-    qt/gui/regexp_input_dialog.cpp
-    qt/gui/app_style.cpp
-    qt/translations/translations.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/shortcuts.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/utils_qt.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/logger.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/base/tree_model.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/base/tree_item.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/base/table_model.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/base/table_item.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/base/graph_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/glass_widget.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/icon_label.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/regexp_input_dialog.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/gui/app_style.cpp
+    ${PROJECT_SOURCE_DIR}/src/qt/translations/translations.cpp
   )
 
   #SET(CMAKE_AUTOMOC ON)
@@ -257,12 +272,17 @@ ENDIF(QT_ENABLED)
 
 IF(USE_PTHREAD)
   SET(THREADS_HDRS)
-  SET(THREADS_SRC threads/posix_thread.cpp threads/posix_event.cpp)
+  SET(THREADS_SRC
+    ${PROJECT_SOURCE_DIR}/src/threads/posix_thread.cpp
+    ${PROJECT_SOURCE_DIR}/src/threads/posix_event.cpp
+  )
   IF(NOT OS_ANDROID)
    SET(THREADS_LIBRARIES ${THREADS_LIBRARIES} pthread)
   ENDIF(NOT OS_ANDROID)
 ELSE()
-  SET(THREADS_SRC threads/win_thread.cpp)
+  SET(THREADS_SRC
+    ${PROJECT_SOURCE_DIR}/src/threads/win_thread.cpp
+  )
   SET(THREADS_HDRS)
   SET(THREADS_LIBRARIES)
 ENDIF(USE_PTHREAD)
@@ -332,12 +352,29 @@ SET(COMMON_HEADERS
 )
 
 SET(COMMON_SOURCES
-  log_levels.cpp logger.cpp string_compress.cpp event.cpp
-  safe_sprintf.cpp sprintf.cpp utf_string_conversions.cpp utf_string_conversion_utils.cpp
-  string_util.cpp icu_utf.cpp string_piece.cpp string16.cpp string_util_constants.cpp
-  convert2string.cpp types.cpp lexical_cast.cpp
-  macros.cpp file_system.cpp value.cpp error.cpp
-  url.cpp time.cpp utils.cpp
+  ${PROJECT_SOURCE_DIR}/src/log_levels.cpp
+  ${PROJECT_SOURCE_DIR}/src/logger.cpp
+  ${PROJECT_SOURCE_DIR}/src/string_compress.cpp
+  ${PROJECT_SOURCE_DIR}/src/event.cpp
+  ${PROJECT_SOURCE_DIR}/src/safe_sprintf.cpp
+  ${PROJECT_SOURCE_DIR}/src/sprintf.cpp
+  ${PROJECT_SOURCE_DIR}/src/utf_string_conversions.cpp
+  ${PROJECT_SOURCE_DIR}/src/utf_string_conversion_utils.cpp
+  ${PROJECT_SOURCE_DIR}/src/string_util.cpp
+  ${PROJECT_SOURCE_DIR}/src/icu_utf.cpp
+  ${PROJECT_SOURCE_DIR}/src/string_piece.cpp
+  ${PROJECT_SOURCE_DIR}/src/string16.cpp
+  ${PROJECT_SOURCE_DIR}/src/string_util_constants.cpp
+  ${PROJECT_SOURCE_DIR}/src/convert2string.cpp
+  ${PROJECT_SOURCE_DIR}/src/types.cpp
+  ${PROJECT_SOURCE_DIR}/src/lexical_cast.cpp
+  ${PROJECT_SOURCE_DIR}/src/macros.cpp
+  ${PROJECT_SOURCE_DIR}/src/file_system.cpp
+  ${PROJECT_SOURCE_DIR}/src/value.cpp
+  ${PROJECT_SOURCE_DIR}/src/error.cpp
+  ${PROJECT_SOURCE_DIR}/src/url.cpp
+  ${PROJECT_SOURCE_DIR}/src/time.cpp
+  ${PROJECT_SOURCE_DIR}/src/utils.cpp
 
   ${PATTERNS_SOURCES} ${APPLIATION_SOURCES} ${SYSTEM_SOURCES} ${THREADS_SOURCES}
   ${NET_SOURCES} ${LIBEV_SOURCES}
@@ -459,6 +496,6 @@ IF(DEVELOPER_ENABLE_TESTS)
 
   TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common ${COMMON_LIBS})
 
-  ADD_TEST_TARGET(${OTHER_TESTS_PROJECT_NAME})
-  SET_PROPERTY(TARGET ${OTHER_TESTS_PROJECT_NAME} PROPERTY FOLDER "Other tests")
+  #ADD_TEST_TARGET(${OTHER_TESTS_PROJECT_NAME})
+  #SET_PROPERTY(TARGET ${OTHER_TESTS_PROJECT_NAME} PROPERTY FOLDER "Other tests")
 ENDIF(DEVELOPER_ENABLE_TESTS)

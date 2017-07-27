@@ -41,6 +41,8 @@ common::Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::st
 #ifdef HAVE_SNAPPY
   return common::EncodeSnappy(data, out);
 #else
+  UNUSED(data);
+  UNUSED(out);
   return common::make_error_value("CompressSnappy encode not supported", common::ErrorValue::E_ERROR);
 #endif
 }
@@ -49,6 +51,8 @@ common::Error CompressSnappyEDcoder::DecodeImpl(const std::string& data, std::st
 #ifdef HAVE_SNAPPY
   return common::DecodeSnappy(data, out);
 #else
+  UNUSED(data);
+  UNUSED(out);
   return common::make_error_value("CompressSnappy decode not supported", common::ErrorValue::E_ERROR);
 #endif
 }
