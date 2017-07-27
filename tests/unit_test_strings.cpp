@@ -8,35 +8,38 @@
 #define OPENSSL_VERSION_NUMBER_EXAMPLE 0x00090301
 #define OPENSSL_VERSION_TEXT_EXAMPLE "0.9.3.1"
 
+template <typename T>
+void ConvertToStringCheck(T val, const std::string& val_expected_str) {
+  const std::string val_text = common::ConvertToString(val);
+  ASSERT_EQ(val_expected_str, val_text);
+  T res_val;
+  ASSERT_TRUE(common::ConvertFromString(val_text, &res_val));
+  ASSERT_EQ(val, res_val);
+}
+
+template <typename T>
+void ConvertToString16Check(T val, const common::string16& val_expected_str) {
+  const common::string16 val_text = common::ConvertToString16(val);
+  ASSERT_EQ(val_expected_str, val_text);
+  T res_val;
+  ASSERT_TRUE(common::ConvertFromString16(val_text, &res_val));
+  ASSERT_EQ(val, res_val);
+}
+
 TEST(string, convertTo) {
-  int val = 11;
-  const std::string stext = "11";
-  const std::string conv_text = common::ConvertToString(val);
-  ASSERT_EQ(stext, conv_text);
-  int res_val;
-  ASSERT_TRUE(common::ConvertFromString(stext, &res_val));
-  ASSERT_EQ(res_val, val);
+  ConvertToStringCheck(true, "true");
+  ConvertToStringCheck(false, "false");
 
-  long lval = 11;
-  const std::string ltext = "11";
-  const std::string lconv_text = common::ConvertToString(lval);
-  ASSERT_EQ(ltext, lconv_text);
-  int res_lval;
-  ASSERT_TRUE(common::ConvertFromString(ltext, &res_lval));
-  ASSERT_EQ(res_lval, lval);
+  ConvertToStringCheck(11, "11");
+  ConvertToStringCheck(-11, "-11");
 
-  double dval = 11.12;
-  const std::string dtext = "11.12";
-  const std::string dconv_text = common::ConvertToString(dval, 2);
-  ASSERT_EQ(dtext, dconv_text);
-  double res_dval;
-  ASSERT_TRUE(common::ConvertFromString(dtext, &res_dval));
-  ASSERT_EQ(res_dval, dval);
+  ConvertToStringCheck(141L, "141");
+  ConvertToStringCheck(-141L, "-141");
 
-  const std::string dconv1_text = common::ConvertToString(dval, 1);
-  ASSERT_EQ(dconv1_text, dtext.substr(0, dtext.size() - 1));
-  double res_dval1;
-  ASSERT_TRUE(common::ConvertFromString(dconv1_text, &res_dval1));
+  ConvertToStringCheck(141UL, "141");
+  ConvertToStringCheck(1421UL, "1421");
+
+  ConvertToStringCheck(11.12, "11.12");
 
   std::string openssl_str_verson = common::ConvertVersionNumberTo3DotString(OPENSSL_VERSION_NUMBER_EXAMPLE);
   ASSERT_EQ(openssl_str_verson, OPENSSL_VERSION_TEXT_EXAMPLE);
@@ -50,35 +53,15 @@ TEST(string, convertTo) {
 }
 
 TEST(string16, convertTo) {
-  const common::string16 text = common::UTF8ToUTF16("text");
-  const std::string stext = "text";
-  const common::string16 convText = common::ConvertToString16(stext);
-  ASSERT_EQ(text, convText);
-  ASSERT_TRUE(common::IsStringASCII(stext));
+  ConvertToString16Check(true, common::UTF8ToUTF16("true"));
+  ConvertToString16Check(false, common::UTF8ToUTF16("false"));
 
-  std::string fstext;
-  bool res = common::ConvertFromString16(convText, &fstext);
-  ASSERT_TRUE(res);
-  ASSERT_EQ(stext, fstext);
+  ConvertToString16Check(11, common::UTF8ToUTF16("11"));
+  ConvertToString16Check(-11, common::UTF8ToUTF16("-11"));
 
-  const common::string16 text2 = common::UTF8ToUTF16("Привет");
-  const std::string stext2 = "Привет";
-  const common::string16 conv_text1 = common::ConvertToString16(stext2);
-  ASSERT_EQ(text2, conv_text1);
-  ASSERT_FALSE(common::IsStringASCII(conv_text1));
+  ConvertToString16Check(11.32, common::UTF8ToUTF16("11.32"));
 
-  std::string fstext2;
-  res = common::ConvertFromString16(conv_text1, &fstext2);
-  ASSERT_TRUE(res);
-  ASSERT_EQ(stext2, fstext2);
-
-  const int val = 11;
-  const common::string16 stext_int = common::UTF8ToUTF16("11");
-  const common::string16 conv_text2 = common::ConvertToString16(val);
-  ASSERT_EQ(stext_int, conv_text2);
-  int res_val;
-  ASSERT_TRUE(common::ConvertFromString16(stext_int, &res_val));
-  ASSERT_EQ(res_val, val);
+  ConvertToString16Check(std::string("Привет"), common::UTF8ToUTF16("Привет"));
 }
 
 TEST(string, MemSPrintf) {

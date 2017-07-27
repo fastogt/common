@@ -87,7 +87,7 @@ void DynamicEventDispatcher::ProcessEvent(event_t* event) {
     return;
   }
 
-  events_size_t pos = event->EventID();
+  events_size_t pos = event->GetEventID();
   if (pos >= max_events_count_) {
     NOTREACHED();
     return;

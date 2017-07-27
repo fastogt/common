@@ -70,6 +70,6 @@ common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, bool n
 
 template <typename... Args>
 common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt, int err, Args... args) {
-  std::string func_args = common::MemSPrintf(fmt, args...);
+  const std::string func_args = common::MemSPrintf(fmt, args...);
   return DEBUG_MSG_PERROR(func_args, err, true);
 }

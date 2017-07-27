@@ -29,8 +29,9 @@
 
 #pragma once
 
+#include <stddef.h>  // for size_t
+
 #include <common/error.h>  // for Error
-#include <stddef.h>        // for size_t
 
 namespace common {
 
@@ -42,7 +43,7 @@ class IEvent {
   typedef events_size_t event_id_t;
   virtual ~IEvent();
 
-  event_id_t EventID() const;
+  event_id_t GetEventID() const;
 
  protected:
   explicit IEvent(event_id_t id);
@@ -65,7 +66,7 @@ class IEventEx : public IEvent {
   typedef type type_t;
 
   type_t GetEventType() const {
-    const event_id_t id = EventID();
+    const event_id_t id = GetEventID();
     return static_cast<type_t>(id);
   }
 
@@ -80,7 +81,7 @@ class Event : public IEventEx<type> {
   typedef void senders_t;
   static const type_t EventType = event_t;
 
-  senders_t* Sender() const { return sender_; }
+  senders_t* GetSender() const { return sender_; }
 
  protected:
   explicit Event(senders_t* sender) : IEventEx<type_t>(event_t), sender_(sender) {}

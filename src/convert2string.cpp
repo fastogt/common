@@ -433,11 +433,13 @@ string16 ConvertToString16(unsigned long long value) {
 }
 
 string16 ConvertToString16(float value) {
-  return IntToStringT<string16, float, unsigned int, true>::IntToString(value);
+  std::string str = ConvertToString(value);
+  return ConvertToString16(str);
 }
 
 string16 ConvertToString16(double value) {
-  return IntToStringT<string16, double, unsigned long, true>::IntToString(value);
+  std::string str = ConvertToString(value);
+  return ConvertToString16(str);
 }
 
 //
