@@ -9,6 +9,13 @@ void CheckValue(U* (*create_ptr)(T t), bool (U::*get_ptr)(T* t) const, T val, co
   T val_res;
   ASSERT_TRUE((cval->*get_ptr)(&val_res));
   ASSERT_EQ(val_res, val);
+
+  U* copy = cval->DeepCopy();
+  T val_res2;
+  ASSERT_TRUE((copy->*get_ptr)(&val_res2));
+  ASSERT_EQ(val_res, val_res2);
+  delete copy;
+
   delete cval;
 }
 
