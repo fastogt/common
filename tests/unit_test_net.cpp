@@ -31,6 +31,8 @@ TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   inf = tcp.GetInfo();
   ASSERT_FALSE(inf.addr_info() == NULL);
   ex_handler->Join();
+  err = tcp.Close();
+  ASSERT_FALSE(err && err->IsError());
   err = serv.Close();
   ASSERT_FALSE(err && err->IsError());
 }
@@ -60,6 +62,8 @@ TEST(SocketTcp, bindRandomWorkflow) {
   inf = tcp.GetInfo();
   ASSERT_FALSE(inf.addr_info() == NULL);
   ex_handler->Join();
+  err = tcp.Close();
+  ASSERT_FALSE(err && err->IsError());
   err = serv.Close();
   ASSERT_FALSE(err && err->IsError());
 }

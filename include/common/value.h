@@ -93,6 +93,7 @@ class Value {
 
   virtual ~Value();
 
+  // simple types
   static Value* CreateNullValue();
   static FundamentalValue* CreateBooleanValue(bool in_value);
   static FundamentalValue* CreateIntegerValue(int in_value);
@@ -102,6 +103,7 @@ class Value {
   static FundamentalValue* CreateLongLongIntegerValue(long long in_value);
   static FundamentalValue* CreateULongLongIntegerValue(unsigned long long in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
+
   static StringValue* CreateStringValue(const std::string& in_value);
   static ArrayValue* CreateArrayValue();
   static ByteArrayValue* CreateByteArrayValue(const byte_array_t& array);
