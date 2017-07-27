@@ -33,3 +33,40 @@ TEST(Value, create_and_get_simple_type) {
   CheckValue(&common::Value::CreateDoubleValue, &common::FundamentalValue::GetAsDouble, 11.5,
              common::Value::TYPE_DOUBLE);
 }
+
+TEST(Value, create_and_get_complex_type) {
+  const std::string data = "data";
+  common::Value* val_string = common::Value::CreateStringValue(data);
+  ASSERT_TRUE(val_string && val_string->GetType() == common::Value::TYPE_STRING);
+  std::string data2;
+  ASSERT_TRUE(val_string->GetAsString(&data2));
+  ASSERT_EQ(data, data2);
+
+  common::Value* val_arr = common::Value::CreateArrayValue();
+  ASSERT_TRUE(val_arr && val_arr->GetType() == common::Value::TYPE_ARRAY);
+
+  const common::byte_array_t bt = {0, 1};
+  common::Value* val_barr = common::Value::CreateByteArrayValue(bt);
+  ASSERT_TRUE(val_barr && val_barr->GetType() == common::Value::TYPE_BYTE_ARRAY);
+  common::byte_array_t bt2;
+  ASSERT_TRUE(val_barr->GetAsByteArray(&bt2));
+  ASSERT_EQ(bt2, bt);
+
+  common::Value* val_set = common::Value::CreateSetValue();
+  ASSERT_TRUE(val_set && val_set->GetType() == common::Value::TYPE_SET);
+
+  common::Value* val_zset = common::Value::CreateZSetValue();
+  ASSERT_TRUE(val_zset && val_zset->GetType() == common::Value::TYPE_ZSET);
+
+  common::Value* val_hash = common::Value::CreateHashValue();
+  ASSERT_TRUE(val_hash && val_hash->GetType() == common::Value::TYPE_HASH);
+
+  const std::string err_descr = "err";
+  const common::Value::ErrorsType ert = common::Value::E_INTERRUPTED;
+  const common::logging::LEVEL_LOG lg = common::logging::L_INFO;
+  common::ErrorValue* val_error = common::Value::CreateErrorValue(err_descr, ert, lg);
+  ASSERT_TRUE(val_error && val_error->GetType() == common::Value::TYPE_ERROR && val_error->IsError());
+  ASSERT_EQ(val_error->GetDescription(), err_descr);
+  ASSERT_EQ(val_error->GetErrorType(), ert);
+  ASSERT_EQ(val_error->GetLevel(), lg);
+}

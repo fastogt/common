@@ -54,6 +54,7 @@ TEST(string16, convertTo) {
   const std::string stext = "text";
   const common::string16 convText = common::ConvertToString16(stext);
   ASSERT_EQ(text, convText);
+  ASSERT_TRUE(common::IsStringASCII(stext));
 
   std::string fstext;
   bool res = common::ConvertFromString16(convText, &fstext);
@@ -62,13 +63,22 @@ TEST(string16, convertTo) {
 
   const common::string16 text2 = common::UTF8ToUTF16("Привет");
   const std::string stext2 = "Привет";
-  const common::string16 convText2 = common::ConvertToString16(stext2);
-  ASSERT_EQ(text2, convText2);
+  const common::string16 conv_text1 = common::ConvertToString16(stext2);
+  ASSERT_EQ(text2, conv_text1);
+  ASSERT_FALSE(common::IsStringASCII(conv_text1));
 
   std::string fstext2;
-  res = common::ConvertFromString16(convText2, &fstext2);
+  res = common::ConvertFromString16(conv_text1, &fstext2);
   ASSERT_TRUE(res);
   ASSERT_EQ(stext2, fstext2);
+
+  const int val = 11;
+  const common::string16 stext_int = common::UTF8ToUTF16("11");
+  const common::string16 conv_text2 = common::ConvertToString16(val);
+  ASSERT_EQ(stext_int, conv_text2);
+  int res_val;
+  ASSERT_TRUE(common::ConvertFromString16(stext_int, &res_val));
+  ASSERT_EQ(res_val, val);
 }
 
 TEST(string, MemSPrintf) {
@@ -79,10 +89,20 @@ TEST(string, MemSPrintf) {
 }
 
 TEST(string, utils) {
-  const std::string test_data = "alex,palec,malec";
+  const std::string test_data_low = "alex,palec,malec";
+  const std::string test_data_up = "ALEX,PALEC,MALEC";
   std::vector<std::string> splited;
-  size_t tok = common::Tokenize(test_data, ",", &splited);
+  size_t tok = common::Tokenize(test_data_low, ",", &splited);
   ASSERT_EQ(tok, splited.size());
-  std::string merged = common::JoinString(splited, ",");
-  ASSERT_EQ(test_data, merged);
+  const std::string merged = common::JoinString(splited, ",");
+  ASSERT_EQ(test_data_low, merged);
+
+  const std::string test_data_upper = common::StringToUpperASCII(test_data_low);
+  ASSERT_EQ(test_data_upper, test_data_up);
+
+  const std::string test_data_lower = common::StringToLowerASCII(test_data_up);
+  ASSERT_EQ(test_data_low, test_data_lower);
+  ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_up, false));
+  ASSERT_FALSE(common::FullEqualsASCII(test_data_low, test_data_up, true));
+  ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_lower, true));
 }

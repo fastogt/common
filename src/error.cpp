@@ -79,7 +79,7 @@ void DEBUG_MSG_ERROR(common::Error er) {
   }
 
   common::logging::LEVEL_LOG level = er->GetLevel();
-  RUNTIME_LOG(level) << er->Description();
+  RUNTIME_LOG(level) << er->GetDescription();
 }
 
 common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, bool notify) {

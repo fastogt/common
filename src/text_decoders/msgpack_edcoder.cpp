@@ -47,8 +47,8 @@ namespace {
 
 bool read_bytes(void* data, size_t sz, char* ch) {
   size_t len = strlen(ch);
-  bool isComp = len >= sz;
-  if (isComp) {
+  bool is_comp = len >= sz;
+  if (is_comp) {
     memcpy(data, ch, sz);
     memmove(ch, ch + sz, len - sz);
     ch[len - sz] = 0;
@@ -57,7 +57,7 @@ bool read_bytes(void* data, size_t sz, char* ch) {
     ch[0] = 0;
   }
 
-  return isComp;
+  return is_comp;
 }
 
 bool stream_reader(cmp_ctx_t* ctx, void* data, size_t limit) {

@@ -1099,7 +1099,7 @@ common::logging::LEVEL_LOG ErrorValue::GetLevel() const {
   return level_;
 }
 
-std::string ErrorValue::Description() const {
+std::string ErrorValue::GetDescription() const {
   return description_;
 }
 

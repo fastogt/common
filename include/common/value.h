@@ -449,7 +449,7 @@ class ErrorValue : public Value {
 
   ErrorsType GetErrorType() const;
   common::logging::LEVEL_LOG GetLevel() const;
-  std::string Description() const;
+  std::string GetDescription() const;
   void SetDescription(const std::string& descr);
 
   virtual bool GetAsError(ErrorValue* out_value) const override WARN_UNUSED_RESULT;
