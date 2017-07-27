@@ -51,13 +51,10 @@ before_script:
   - cmake .. -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=Debug -DDEVELOPER_ENABLE_TESTS=ON -DDEVELOPER_ENABLE_COVERALLS=ON
 
 script:
-  - export COVERALLS_SERVICE_NAME=travis-ci
-  - export COVERALLS_REPO_TOKEN=RhMbW2NJkVdm8QT2fLBvkKUqNKLBFnLhC
   - make
   - CTEST_OUTPUT_ON_FAILURE=1 make test
 
 after_success:
-  - sudo pip install cpp-coveralls
   - make coveralls
 
 notifications:
