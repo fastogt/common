@@ -158,7 +158,7 @@ IF(OS_WINDOWS)
   SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/string_util_win.h)
   SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
     ${CMAKE_SOURCE_DIR}/src/system_info/system_info_win.cpp
-    ${CMAKE_SOURCE_DIR}/src/system/system_win.cp
+    ${CMAKE_SOURCE_DIR}/src/system/system_win.cpp
   )
   SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ws2_32)
 ELSEIF(OS_POSIX)
