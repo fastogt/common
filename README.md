@@ -1,7 +1,7 @@
 About Common
 ===============
 [![Travis Build Status](https://travis-ci.org/fastogt/common.svg?branch=master)](https://travis-ci.org/fastogt/common)
-[![Coverage Status](https://coveralls.io/repos/github/fastogt/common/badge.svg)](https://coveralls.io/github/fastogt/common)
+[![Coverage Status](https://coveralls.io/repos/github/fastogt/common/badge.svg?branch=master)](https://coveralls.io/github/fastogt/common?branch=master)
 
 FastoGT common sources
 
