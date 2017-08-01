@@ -54,65 +54,24 @@ template <typename RT>
 bool IsCurrentThread(Thread<RT>* thread);
 
 class ThreadBase {
- protected:
-  ThreadBase() : event_(1, 0) {}
+ public:
+  PlatformThreadHandle GetHandle() const { return handle_; }
 
-  Event event_;
+ protected:
+  ThreadBase() : handle_() {}
+
+  PlatformThreadHandle handle_;
 };
 
 template <typename RT>
-class ThreadJoinBase : public ThreadBase {
+class Thread final : public ThreadBase {
  public:
+  friend class ThreadManager;
+  typedef ThreadBase base_class;
   typedef RT result_type;
   typedef std::function<result_type()> function_type;
 
-  result_type JoinAndGet() {
-    void* res = NULL;
-    if (PlatformThread::Join(&handle_, &res)) {
-      ThreadBase::event_.Reset();
-    }
-
-    return res_;
-  }
-
- protected:
-  explicit ThreadJoinBase(const function_type& func) : res_(), handle_(invalid_handle), func_(func) {}
-
-  void Run() { res_ = func_(); }
-
-  result_type res_;
-  PlatformThreadHandle handle_;
-  const function_type func_;
-};
-
-template <>
-class ThreadJoinBase<void> : public ThreadBase {
- public:
-  typedef void result_type;
-  typedef std::function<result_type()> function_type;
-
- protected:
-  explicit ThreadJoinBase(const function_type& func) : handle_(invalid_handle), func_(func) {}
-
-  void Run() { func_(); }
-
-  PlatformThreadHandle handle_;
-  const function_type func_;
-};
-
-template <typename RT>
-class Thread final : public ThreadJoinBase<RT> {
- public:
-  friend class ThreadManager;
-  typedef ThreadJoinBase<RT> base_class;
-  typedef typename base_class::result_type result_type;
-  typedef typename base_class::function_type function_type;
-
-  platform_thread_id_t GetTid() const { return base_class::handle_.GetTid(); }
-
-  PlatformThreadHandle GetHandle() const { return base_class::handle_; }
-
-  bool IsRunning() { return ThreadBase::event_.Wait(0) && GetTid() != invalid_tid; }
+  bool IsRunning() { return event_.Wait(0) && base_class::handle_.GetTid() != invalid_tid; }
 
   // Sets the thread's priority. Must be called before start().
   ThreadPriority GetPriority() const { return priority_; }
@@ -127,7 +86,7 @@ class Thread final : public ThreadJoinBase<RT> {
   }
 
   bool Start() WARN_UNUSED_RESULT {
-    if (!base_class::func_) {
+    if (!func_) {
       return false;
     }
 
@@ -137,18 +96,25 @@ class Thread final : public ThreadJoinBase<RT> {
       return false;
     }
 
-    ThreadBase::event_.Set();
+    event_.Set();
     return true;
   }
 
   void Join() {
     void* res = NULL;
-    if (PlatformThread::Join(&(base_class::handle_), &res)) {
-      ThreadBase::event_.Reset();
+    if (PlatformThread::Join(&(handle_), &res)) {
+      event_.Reset();
     }
   }
 
-  ~Thread() { Join(); }
+  result_type JoinAndGet() {
+    void* res = NULL;
+    if (PlatformThread::Join(&handle_, &res)) {
+      event_.Reset();
+    }
+
+    return res_;
+  }
 
  private:
   static void* thread_start(void* arg) {
@@ -159,10 +125,88 @@ class Thread final : public ThreadJoinBase<RT> {
     return NULL;
   }
 
-  Thread() : base_class(function_type()), ptr_(0), lcpu_number_(invalid_cpu_count), priority_(PRIORITY_NORMAL) {}
+  Thread()
+      : res_(),
+        func_(function_type()),
+        event_(1, 0),
+        ptr_(0),
+        lcpu_number_(invalid_cpu_count),
+        priority_(PRIORITY_NORMAL) {}
   Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
-      : base_class(func), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
+      : res_(), func_(func), event_(1, 0), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
 
+  void Run() { res_ = func_(); }
+
+  result_type res_;
+  const function_type func_;
+  Event event_;
+  uintptr_t const ptr_;
+  lcpu_count_t lcpu_number_;
+  ThreadPriority priority_;
+};
+
+template <>
+class Thread<void> : public ThreadBase {
+ public:
+  friend class ThreadManager;
+  typedef ThreadBase base_class;
+  typedef void result_type;
+  typedef std::function<result_type()> function_type;
+
+  bool IsRunning() { return event_.Wait(0) && base_class::handle_.GetTid() != invalid_tid; }
+
+  // Sets the thread's priority. Must be called before start().
+  ThreadPriority GetPriority() const { return priority_; }
+
+  bool SetPriority(ThreadPriority priority) {
+    if (IsRunning()) {
+      return false;
+    }
+
+    priority_ = priority;
+    return true;
+  }
+
+  bool Start() WARN_UNUSED_RESULT {
+    if (!func_) {
+      return false;
+    }
+
+    bool created = PlatformThread::Create(&(base_class::handle_), &thread_start, this, priority_);
+    if (!created) {
+      DNOTREACHED();
+      return false;
+    }
+
+    event_.Set();
+    return true;
+  }
+
+  void Join() {
+    void* res = NULL;
+    if (PlatformThread::Join(&(handle_), &res)) {
+      event_.Reset();
+    }
+  }
+
+ private:
+  static void* thread_start(void* arg) {
+    Thread* thr = static_cast<Thread*>(arg);
+    WrapThread(thr);
+    thr->Run();
+    UnWrapThread(thr);
+    return NULL;
+  }
+
+  Thread()
+      : func_(function_type()), event_(1, 0), ptr_(0), lcpu_number_(invalid_cpu_count), priority_(PRIORITY_NORMAL) {}
+  Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
+      : func_(func), event_(1, 0), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
+
+  void Run() { func_(); }
+
+  const function_type func_;
+  Event event_;
   uintptr_t const ptr_;
   lcpu_count_t lcpu_number_;
   ThreadPriority priority_;

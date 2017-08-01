@@ -119,7 +119,7 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
 
   const system_info::CpuInfo& info_;
   platform_tls_t key_;
-  Thread<int>* main_thread_;
+  Thread<int>* const main_thread_;
 };
 
 }  // namespace threads

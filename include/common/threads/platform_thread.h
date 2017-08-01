@@ -63,11 +63,9 @@ class PlatformThreadHandle {
  public:
   PlatformThreadHandle() : handle_(invalid_handle), thread_id_(invalid_tid) {}
 
-  explicit PlatformThreadHandle(platform_handle_t handle) : handle_(handle), thread_id_(invalid_tid) {}
-
   PlatformThreadHandle(platform_handle_t handle, platform_thread_id_t id) : handle_(handle), thread_id_(id) {}
 
-  bool is_equal(const PlatformThreadHandle& other) const;
+  bool EqualsHandle(const PlatformThreadHandle& other) const;
 
   platform_thread_id_t GetTid() const { return thread_id_; }
   platform_handle_t GetHandle() const { return handle_; }
@@ -82,6 +80,9 @@ class PlatformThreadHandle {
   platform_handle_t handle_;
   platform_thread_id_t thread_id_;
 };
+
+PlatformThreadHandle invalid_thread_handle();
+PlatformThreadHandle current_thread_handle();
 
 inline bool operator==(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
   return lhs.Equals(rhs);

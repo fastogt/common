@@ -19,11 +19,12 @@ TEST(Libev, IoServer) {
   ASSERT_FALSE(err && err->IsError());
 
   auto tp = THREAD_MANAGER()->CreateThread(&ExitServer, serv);
-  GTEST_ASSERT_EQ(tp->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(tp->GetHandle(), common::threads::invalid_thread_handle());
   bool res_start = tp->Start();
   ASSERT_TRUE(res_start);
 
   int res_exec = serv->Exec();
   ASSERT_TRUE(res_exec == EXIT_SUCCESS);
   delete serv;
+  tp->Join();
 }

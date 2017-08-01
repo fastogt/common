@@ -65,7 +65,7 @@ TEST(Thread, fasto_many_function) {
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     closure_t cl = getWFunction(i % (MANY_FUNCTION_COUNT + 1));
     tp[i] = THREAD_MANAGER()->CreateThread(cl);
-    GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
+    GTEST_ASSERT_EQ(tp[i]->GetHandle(), common::threads::invalid_thread_handle());
     bool res = tp[i]->Start();
     DCHECK(res);
   }
@@ -94,7 +94,7 @@ TEST(Thread, fasto_many_onebody_function) {
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     closure_t cl = getOneBodyMultFunction(i % (MANY_FUNCTION_COUNT + 1));
     tp[i] = THREAD_MANAGER()->CreateThread(cl);
-    GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
+    GTEST_ASSERT_EQ(tp[i]->GetHandle(), common::threads::invalid_thread_handle());
     bool res = tp[i]->Start();
     DCHECK(res);
   }

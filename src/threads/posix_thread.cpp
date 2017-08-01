@@ -124,8 +124,16 @@ void* threadFunc(void* params) {
 const platform_handle_t invalid_handle = PTHREAD_INVALID_TID;
 const platform_thread_id_t invalid_tid = 0;
 
-bool PlatformThreadHandle::is_equal(const PlatformThreadHandle& other) const {
+bool PlatformThreadHandle::EqualsHandle(const PlatformThreadHandle& other) const {
   return pthread_equal(handle_, other.handle_) != 0;
+}
+
+PlatformThreadHandle invalid_thread_handle() {
+  return PlatformThreadHandle(invalid_handle, invalid_tid);
+}
+
+PlatformThreadHandle current_thread_handle() {
+  return PlatformThreadHandle(PlatformThread::GetCurrentHandle(), PlatformThread::GetCurrentId());
 }
 
 void InitProcessPolicy(lcpu_count_t lCpuCount) {
@@ -214,11 +222,11 @@ bool PlatformThread::Create(PlatformThreadHandle* thread_handle,
 }
 
 bool PlatformThread::Join(PlatformThreadHandle* thread_handle, void** thread_return) {
-  if (!thread_handle || thread_handle->GetHandle() == invalid_handle) {
+  if (!thread_handle) {
     return false;
   }
 
-  if (thread_handle->handle_ == invalid_handle) {
+  if (thread_handle->GetHandle() == invalid_handle) {
     thread_handle->thread_id_ = invalid_tid;
     return false;
   }

@@ -8,12 +8,12 @@
 
 TEST(Thread, common) {
   auto c1 = THREAD_MANAGER()->CreateThread(&test);
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
   c1->Join();
-  common::threads::platform_thread_id_t tid = c1->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  common::threads::PlatformThreadHandle hand = c1->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
 }
 
 #ifndef NDEBUG
@@ -27,12 +27,12 @@ TEST(Thread, isCurrentThread) {
   void* thr = NULL;
   auto c1 = THREAD_MANAGER()->CreateThread(&testIsCurrent, &thr);
   thr = c1.get();
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
   c1->Join();
-  common::threads::platform_thread_id_t tid = c1->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  common::threads::PlatformThreadHandle hand = c1->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
 }
 
 #endif
@@ -41,26 +41,19 @@ void sleep5Sec() {
   common::utils::msleep(5000);
 }
 
-TEST(Thread, outOfScope) {
-  auto c1 = THREAD_MANAGER()->CreateThread(&sleep5Sec);
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
-  bool res = c1->Start();
-  DCHECK(res);
-}
-
 int valueGetFunc() {
   return 5;
 }
 
 TEST(Thread, valueAfterExec) {
   auto c1 = THREAD_MANAGER()->CreateThread(&valueGetFunc);
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
   int result = c1->JoinAndGet();
   GTEST_ASSERT_EQ(result, 5);
-  common::threads::platform_thread_id_t tid = c1->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  common::threads::PlatformThreadHandle hand = c1->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
 }
 
 class A {
@@ -76,13 +69,13 @@ class A {
 TEST(Thread, classMethod) {
   A a;
   auto c1 = THREAD_MANAGER()->CreateThread(&A::run, &a);
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
   int result = c1->JoinAndGet();
   GTEST_ASSERT_EQ(result, 1);
-  common::threads::platform_thread_id_t tid = c1->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  common::threads::PlatformThreadHandle hand = c1->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
 }
 
 class B : public A {
@@ -97,13 +90,13 @@ class B : public A {
 TEST(Thread, classVirtualMethod) {
   A* b = new B;
   auto c1 = THREAD_MANAGER()->CreateThread(&A::run, b);
-  GTEST_ASSERT_EQ(c1->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
   int result = c1->JoinAndGet();
   GTEST_ASSERT_EQ(result, 2);
-  common::threads::platform_thread_id_t tid = c1->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  common::threads::PlatformThreadHandle hand = c1->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
 
   /*auto c2 = THREAD_MANAGER()->CreateThread(&B::run, b);
   GTEST_ASSERT_EQ(c2->tid(), fastocpu::invalid_tid);
@@ -115,13 +108,13 @@ TEST(Thread, classVirtualMethod) {
 
   B* bb = dynamic_cast<B*>(b);
   auto c3 = THREAD_MANAGER()->CreateThread(&B::run, bb);
-  GTEST_ASSERT_EQ(c3->GetTid(), common::threads::invalid_tid);
+  GTEST_ASSERT_EQ(c3->GetHandle(), common::threads::invalid_thread_handle());
   bool rses = c3->Start();
   DCHECK(rses);
   result = c3->JoinAndGet();
   GTEST_ASSERT_EQ(result, 2);
-  tid = c3->GetTid();
-  GTEST_ASSERT_EQ(tid, common::threads::invalid_tid);
+  hand = c3->GetHandle();
+  GTEST_ASSERT_EQ(hand, common::threads::invalid_thread_handle());
   delete b;
 }
 
@@ -134,11 +127,11 @@ TEST(Thread, afterstartValidTid) {
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     tp[i] = THREAD_MANAGER()->CreateThread(&testint);
-    GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
+    GTEST_ASSERT_EQ(tp[i]->GetHandle(), common::threads::invalid_thread_handle());
     bool ress = tp[i]->Start();
     DCHECK(ress);
     int res = tp[i]->JoinAndGet();
     GTEST_ASSERT_EQ(res, 1);
-    GTEST_ASSERT_EQ(tp[i]->GetTid(), common::threads::invalid_tid);
+    GTEST_ASSERT_EQ(tp[i]->GetHandle(), common::threads::invalid_thread_handle());
   }
 }
