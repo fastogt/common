@@ -2,6 +2,7 @@
 
 #include <common/convert2string.h>
 #include <common/sprintf.h>
+#include <common/string_piece.h>
 #include <common/string_util.h>
 #include <common/utf_string_conversions.h>
 
@@ -88,4 +89,14 @@ TEST(string, utils) {
   ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_up, false));
   ASSERT_FALSE(common::FullEqualsASCII(test_data_low, test_data_up, true));
   ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_lower, true));
+}
+
+TEST(string, StringPiece) {
+  const std::string sasha_string = "sasha";
+  common::StringPiece str_sasha(sasha_string);
+  ASSERT_TRUE(str_sasha.starts_with("sa"));
+  ASSERT_FALSE(str_sasha.starts_with("as"));
+  common::StringPiece str_sasha2(str_sasha);
+  ASSERT_EQ(str_sasha, str_sasha2);
+  ASSERT_EQ(str_sasha.as_string(), sasha_string);
 }

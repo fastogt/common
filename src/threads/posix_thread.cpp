@@ -136,6 +136,10 @@ void FreeProcessPolicy(lcpu_count_t lCpuCount) {
   UNUSED(lCpuCount);
 }
 
+platform_handle_t PlatformThread::GetCurrentHandle() {
+  return pthread_self();
+}
+
 // static
 platform_thread_id_t PlatformThread::GetCurrentId() {
 // Pthreads doesn't have the concept of a thread ID, so we have to reach down

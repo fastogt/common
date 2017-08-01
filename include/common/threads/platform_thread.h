@@ -72,12 +72,24 @@ class PlatformThreadHandle {
   platform_thread_id_t GetTid() const { return thread_id_; }
   platform_handle_t GetHandle() const { return handle_; }
 
+  bool Equals(const PlatformThreadHandle& handle) const {
+    return handle_ == handle.handle_ && thread_id_ == handle.thread_id_;
+  }
+
  private:
   friend class PlatformThread;
 
   platform_handle_t handle_;
   platform_thread_id_t thread_id_;
 };
+
+inline bool operator==(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
+  return lhs.Equals(rhs);
+}
+
+inline bool operator!=(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
+  return !lhs.Equals(rhs);
+}
 
 enum ThreadPriority {
   PRIORITY_IDLE = -1,
@@ -98,6 +110,7 @@ class PlatformThread {
   static bool Join(PlatformThreadHandle* thread_handle, void** thread_return);
   static void SetAffinity(PlatformThreadHandle* thread_handle, lcpu_count_t lCpuCount);
 
+  static platform_handle_t GetCurrentHandle();
   static platform_thread_id_t GetCurrentId();
 
   static bool InitTlsKey(platform_tls_t* key);

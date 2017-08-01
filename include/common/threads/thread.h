@@ -110,10 +110,12 @@ class Thread final : public ThreadJoinBase<RT> {
 
   platform_thread_id_t GetTid() const { return base_class::handle_.GetTid(); }
 
+  PlatformThreadHandle GetHandle() const { return base_class::handle_; }
+
   bool IsRunning() { return ThreadBase::event_.Wait(0) && GetTid() != invalid_tid; }
 
   // Sets the thread's priority. Must be called before start().
-  ThreadPriority priority() const { return priority_; }
+  ThreadPriority GetPriority() const { return priority_; }
 
   bool SetPriority(ThreadPriority priority) {
     if (IsRunning()) {

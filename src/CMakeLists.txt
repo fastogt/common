@@ -475,6 +475,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_text_edecoders.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_value.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_logger.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit_test_threads.cpp
   )
 
   TARGET_LINK_LIBRARIES(${UNIT_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} common ${COMMON_LIBS})

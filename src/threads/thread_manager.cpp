@@ -111,6 +111,8 @@ ThreadManager::ThreadManager() : info_(system_info::CurrentCpuInfo()), key_(0), 
   PlatformThread::InitTlsKey(&key_);
 
   main_thread_ = new Thread<int>;
+  main_thread_->handle_ = PlatformThreadHandle(PlatformThread::GetCurrentHandle(), PlatformThread::GetCurrentId());
+  main_thread_->event_.Set();
   WrapThread(main_thread_);
 }
 
