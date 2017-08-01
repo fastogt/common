@@ -68,13 +68,14 @@ TEST(string16, convertTo) {
 TEST(string, MemSPrintf) {
   const int val_int = 11;
   const std::string val_string = "alex";
+  const std::string val_esc_string = "alex\n";
   std::string result = common::MemSPrintf("%d %s", val_int, val_string);
   ASSERT_EQ(result, std::to_string(val_int) + " " + val_string);
 
   std::string esc = common::EscapedText(val_string);
-  ASSERT_EQ(esc, val_string + "/n");
+  ASSERT_EQ(esc, val_esc_string);
   esc = common::EscapedText(esc);
-  ASSERT_EQ(esc, val_string + "/n");
+  ASSERT_EQ(esc, val_esc_string);
 }
 
 TEST(string, utils) {

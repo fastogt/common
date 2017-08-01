@@ -62,7 +62,7 @@ typedef std::basic_ifstream<char16, string16_char_traits> string16_ifstream;
 
 const char* common_strerror(int err);
 
-std::string EscapedText(const std::string& str);  // add /n at the end if needed
+std::string EscapedText(const std::string& str);  // add \n at the end if needed
 
 typedef int64_t time64_t;  // millisecond
 
