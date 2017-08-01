@@ -39,8 +39,6 @@
 #include <common/error.h>      // for Error
 #include <common/http/http.h>  // for http_request (ptr only), etc
 #include <common/http/http2_huffman.h>
-#include <common/macros.h>  // for WARN_UNUSED_RESULT
-#include <common/types.h>   // for buffer_t, byte_t
 
 #define PREFACE_STARTS "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
 #define PREFACE_STARTS_LEN (sizeof(PREFACE_STARTS) - 1)

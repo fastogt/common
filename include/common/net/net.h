@@ -38,7 +38,6 @@
 #include <common/error.h>      // for ErrnoError
 #include <common/macros.h>     // for WARN_UNUSED_RESULT
 #include <common/net/types.h>  // for socket_descr_t, etc
-#include <common/types.h>      // for byte_t
 
 struct addrinfo;
 struct sockaddr;

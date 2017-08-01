@@ -37,7 +37,6 @@
 #include <iostream>
 #include <string>  // for allocator, string, etc
 
-#include <common/macros.h>  // for UNUSED
 #include <common/smart_ptr.h>
 #include <common/sprintf.h>
 

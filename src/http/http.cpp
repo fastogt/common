@@ -38,9 +38,6 @@
 #include <utility>  // for make_pair, pair
 
 #include <common/convert2string.h>  // for ConvertFromString
-#include <common/sprintf.h>         // for MemSPrintf
-#include <common/string_util.h>     // for EqualsASCII, etc
-#include <common/value.h>           // for ErrorValue, etc
 
 namespace common {
 

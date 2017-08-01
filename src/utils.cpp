@@ -38,8 +38,6 @@
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...
 #include <string>      // for string
 
-#include <common/types.h>  // for buffer_t, byte_t
-
 #ifndef UINT64_C
 #define UINT64_C(val) val##ULL
 #endif

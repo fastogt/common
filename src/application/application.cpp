@@ -20,10 +20,7 @@
 
 #include <stdlib.h>  // for EXIT_FAILURE
 
-#include <common/event.h>  // for events_size_t
 #include <common/file_system.h>
-#include <common/logger.h>  // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>  // for UNUSED, CHECK
 
 namespace common {
 namespace application {

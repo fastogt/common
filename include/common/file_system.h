@@ -35,11 +35,8 @@
 #include <string>       // for string, char_traits
 
 #include <common/error.h>     // for ErrnoError, Error
-#include <common/logger.h>    // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>    // for WARN_UNUSED_RESULT, descriptor_t, DISAL...
 #include <common/sprintf.h>   // for MemSPrintf
 #include <common/string16.h>  // for string16, char16
-#include <common/types.h>     // for buffer_t, tribool, tribool::SUCCESS
 
 namespace common {
 namespace file_system {

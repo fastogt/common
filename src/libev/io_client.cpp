@@ -33,8 +33,6 @@
 
 #include <string>
 
-#include <common/logger.h>
-
 #include <common/libev/tcp/tcp_server.h>
 
 namespace common {

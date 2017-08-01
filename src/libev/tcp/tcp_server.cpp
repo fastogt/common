@@ -33,19 +33,6 @@
 #include <signal.h>  // for signal, SIGPIPE, SIG_ERR
 #include <stdlib.h>  // for exit, EXIT_FAILURE
 
-#include <common/logger.h>  // for COMPACT_LOG_FILE_CRIT
-
-#include <common/error.h>   // for Error, DEBUG_MSG_ERROR
-#include <common/macros.h>  // for CHECK, DNOTREACHED
-
-#include <common/net/types.h>  // for HostAndPort, operator==
-
-#include <common/libev/event_io.h>        // for LibevIO
-#include <common/libev/event_loop.h>      // for LibEvLoop
-#include <common/libev/io_loop.h>         // for IoLoop
-#include <common/libev/tcp/tcp_client.h>  // for TcpClient
-#include <common/libev/types.h>           // for ::EV_ERROR
-
 namespace common {
 namespace libev {
 class IoClient;

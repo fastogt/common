@@ -34,12 +34,7 @@
 #include <limits>    // for numeric_limits
 #include <string>    // for string, wstring
 
-#include <common/logger.h>  // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>  // for UNUSED, DCHECK, WCHAR_T_I...
 #include <common/sprintf.h>
-#include <common/string16.h>                // for string16, char16
-#include <common/string_piece.h>            // for StringPiece, StringPiece16
-#include <common/types.h>                   // for buffer_t, MAKE_BUFFER
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
 
 namespace common {

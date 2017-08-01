@@ -33,7 +33,6 @@
 #include <string>    // for string, operator==
 
 #include <common/convert2string.h>
-#include <common/value.h>  // for ErrorValue, etc
 
 #include <common/text_decoders/base64_edcoder.h>  // for Base64EDcoder
 #include <common/text_decoders/compress_snappy_edcoder.h>

@@ -40,9 +40,6 @@
 #include <vector>     // for operator==, vector
 
 #include <common/convert2string.h>  // for ConvertToString, etc
-#include <common/portable_endian.h>
-#include <common/url.h>    // for Upath
-#include <common/value.h>  // for ErrorValue, etc
 
 #define MAKE_STATIC_ENT(N, V, T, H) \
   { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, NULL, 0, (H), (T) }

@@ -64,7 +64,6 @@
 #include <string>  // for string
 
 #include <common/macros.h>  // for ERROR_RESULT_VALUE, etc
-#include <common/value.h>   // for Value::ErrorsType::E_ERROR, etc
 
 #if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD)
 

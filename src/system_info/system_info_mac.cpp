@@ -1,9 +1,9 @@
-#include "common/system_info/system_info.h"
+#include <common/system_info/system_info.h>
 
 #include <mach/mach_host.h>
 #include <mach/mach_init.h>
 
-#include "common/sprintf.h"
+#include <common/macros.h>
 
 namespace common {
 namespace system_info {

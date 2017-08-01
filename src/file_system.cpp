@@ -62,10 +62,6 @@ int ftruncate(descriptor_t fd, int64_t length) {
 #endif
 
 #include <common/convert2string.h>  // for ConvertToString16
-#include <common/error.h>           // for ErrnoError, Error
-#include <common/macros.h>          // for ERROR_RESULT_VALUE, etc
-#include <common/string16.h>        // for string16
-#include <common/types.h>           // for buffer_t, byte_t, tribool, triboo...
 
 #define FS_BUF_SIZE 1024 * 4
 

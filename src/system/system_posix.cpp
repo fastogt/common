@@ -33,10 +33,6 @@
 #include <sys/reboot.h>  // for reboot
 #include <unistd.h>      // for sync
 
-#include <common/error.h>   // for Error, etc
-#include <common/macros.h>  // for ERROR_RESULT_VALUE
-#include <common/value.h>   // for ErrorValue, etc
-
 #define SYSTEM_CALL 1
 #define REBOOT_CALL 0
 

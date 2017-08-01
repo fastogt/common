@@ -31,8 +31,6 @@
 
 #include <common/libev/types.h>
 
-#include <common/macros.h>
-
 struct ev_async;
 struct ev_loop;
 

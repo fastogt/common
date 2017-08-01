@@ -29,10 +29,6 @@
 
 #include <common/libev/tcp/tcp_client.h>
 
-#include <common/libev/io_client.h>  // for IoClient
-
-#include <common/net/socket_tcp.h>  // for SocketHolder
-
 namespace common {
 namespace libev {
 class IoLoop;

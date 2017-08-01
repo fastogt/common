@@ -29,12 +29,6 @@
 
 #pragma once
 
-#include <common/error.h>   // for Error
-#include <common/macros.h>  // for WARN_UNUSED_RESULT
-
-#include <common/net/socket_tcp.h>  // for ServerSocketTcp
-#include <common/net/types.h>       // for socket_info (ptr only), Hos...
-
 #include <common/libev/io_loop.h>         // for IoLoop
 #include <common/libev/tcp/tcp_client.h>  // for TcpClient
 

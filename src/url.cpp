@@ -35,8 +35,6 @@
 #include <string>    // for string
 
 #include <common/file_system.h>
-#include <common/logger.h>  // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>  // for DCHECK
 
 namespace {
 const char* schemes_array[] = {"unknown", "http", "https", "ftp", "file", "ws", "udp", "rtmp", "dev"};

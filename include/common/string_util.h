@@ -37,7 +37,6 @@
 #include <string>  // for string
 #include <vector>  // for vector
 
-#include <common/macros.h>        // for PRINTF_FORMAT, DCHECK, etc
 #include <common/string16.h>      // for string16, char16
 #include <common/string_piece.h>  // for StringPiece, StringPiece16
 

@@ -32,12 +32,7 @@
 #include <functional>
 #include <string>
 
-#include <common/macros.h>  // for WARN_UNUSED_RESULT
-#include <common/patterns/crtp_pattern.h>
-#include <common/types.h>  // for IMetaClassInfo
-
 #include <common/libev/event_loop.h>
-#include <common/libev/types.h>  // for timer_id_t, flags_t, custom_loo...
 
 namespace common {
 namespace libev {

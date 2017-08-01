@@ -29,14 +29,7 @@
 
 #pragma once
 
-#include <common/error.h>   // for Error
-#include <common/macros.h>  // for descriptor_t
-
-#include <common/net/socket_tcp.h>  // for SocketHolder
-#include <common/net/types.h>       // for socket_info
-
 #include <common/libev/io_client.h>  // for IoClient
-#include <common/libev/types.h>      // for ::EV_READ, flags_t
 
 namespace common {
 namespace libev {

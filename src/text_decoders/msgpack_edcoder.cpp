@@ -37,11 +37,9 @@
 
 #include <string>  // for string
 
-#include <cmp/cmp.h>                // for cmp_object_t, etc
+#include <cmp/cmp.h>  // for cmp_object_t, etc
+
 #include <common/convert2string.h>  // for ConvertToString
-#include <common/macros.h>          // for UNUSED
-#include <common/sprintf.h>         // for SNPrintf
-#include <common/value.h>           // for ErrorValue, etc
 
 namespace {
 

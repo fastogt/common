@@ -31,7 +31,6 @@
 
 #include <string>
 
-#include <common/logger.h>
 #include <common/threads/types.h>
 
 #include <common/libev/io_client.h>

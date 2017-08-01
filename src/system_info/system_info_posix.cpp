@@ -41,8 +41,9 @@ namespace system_info {
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
 std::string OperatingSystemName() {
   struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
+  int res = uname(&info);
+  if (res < 0) {
+    DNOTREACHED() << "uname: " << res;
     return std::string();
   }
 
@@ -53,8 +54,9 @@ std::string OperatingSystemName() {
 #if !defined(OS_MACOSX)
 std::string OperatingSystemVersion() {
   struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
+  int res = uname(&info);
+  if (res < 0) {
+    DNOTREACHED() << "uname: " << res;
     return std::string();
   }
 
@@ -64,8 +66,9 @@ std::string OperatingSystemVersion() {
 
 std::string OperatingSystemArchitecture() {
   struct utsname info;
-  if (uname(&info) < 0) {
-    NOTREACHED();
+  int res = uname(&info);
+  if (res < 0) {
+    DNOTREACHED() << "uname: " << res;
     return std::string();
   }
   std::string arch(info.machine);

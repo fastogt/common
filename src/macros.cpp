@@ -32,8 +32,7 @@
 #include <assert.h>
 #include <stdlib.h>  // for exit, EXIT_FAILURE
 
-#include <common/log_levels.h>  // for LEVEL_LOG::L_CRIT
-#include <common/logger.h>      // for DEBUG_MSG_FORMAT
+#include <common/logger.h>  // for DEBUG_MSG_FORMAT
 
 void immediate_assert() {
   assert(0);

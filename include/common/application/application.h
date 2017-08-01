@@ -21,7 +21,6 @@
 #include <string>  // for string
 
 #include <common/event.h>
-#include <common/smart_ptr.h>
 
 namespace common {
 namespace application {

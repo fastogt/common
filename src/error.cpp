@@ -31,10 +31,8 @@
 
 #include <string>  // for string
 
-#include <common/log_levels.h>  // for LEVEL_LOG, LEVEL_LOG::L_ERR
-#include <common/logger.h>      // for RUNTIME_LOG
-#include <common/types.h>       // for common_strerror
-#include <common/value.h>       // for Value, Value::ErrorsType, ErrorValue
+#include <common/logger.h>  // for RUNTIME_LOG
+#include <common/types.h>   // for common_strerror
 
 namespace common {
 

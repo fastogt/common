@@ -35,11 +35,9 @@
 #include <string>  // for string
 #include <unordered_map>
 
-#include <common/log_levels.h>  // for LEVEL_LOG
-#include <common/macros.h>      // for WARN_UNUSED_RESULT, DISALLOW_COPY_AND...
+#include <common/macros.h>  // for WARN_UNUSED_RESULT, DISALLOW_COPY_AND...
 #include <common/smart_ptr.h>
-#include <common/string16.h>  // for string16
-#include <common/types.h>     // for byte_array_t
+#include <common/types.h>  // for byte_array_t
 
 namespace common {
 class ArrayValue;

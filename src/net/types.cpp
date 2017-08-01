@@ -43,7 +43,6 @@
 #include <string>     // for string, basic_string, etc
 
 #include <common/convert2string.h>  // for ConvertFromString
-#include <common/macros.h>          // for NOTREACHED
 #include <common/sprintf.h>         // for SNPrintf
 
 namespace common {

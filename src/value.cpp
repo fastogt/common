@@ -33,11 +33,6 @@
 #include <string>    // for string
 
 #include <common/convert2string.h>
-#include <common/log_levels.h>  // for LEVEL_LOG, LEVEL_LOG::L_DEBUG
-#include <common/logger.h>      // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>      // for UNUSED, DCHECK, DNOTREACHED
-#include <common/string16.h>    // for string16
-#include <common/types.h>       // for byte_array_t, byte_t
 
 namespace common {
 namespace {

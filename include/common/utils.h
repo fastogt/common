@@ -36,7 +36,6 @@
 #include <string>       // for string
 #include <utility>      // for pair
 
-#include <common/macros.h>    // for destroy, COMPILE_ASSERT
 #include <common/string16.h>  // for char16
 #include <common/types.h>     // for buffer_t, byte_t
 

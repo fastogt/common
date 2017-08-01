@@ -32,12 +32,6 @@
 #include <stdlib.h>
 
 #include <common/libev/io_loop.h>  // for IoLoop
-#include <common/libev/types.h>    // for custom_loop_exec_function_t
-#include <common/logger.h>         // for COMPACT_LOG_FILE_CRIT
-#include <common/macros.h>         // for CHECK
-
-#include <common/libev/io_loop_observer.h>
-#include <common/libev/tcp/tcp_server.h>
 
 namespace common {
 namespace libev {
