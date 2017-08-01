@@ -3,6 +3,7 @@
 namespace common {
 namespace threads {
 namespace {
+
 struct ThreadParams {
   void* args;
   routine_signature* cl;
@@ -15,7 +16,8 @@ DWORD WINAPI ThreadFunc(LPVOID params) {
   delete thread_params;
   return 0;
 }
-}
+
+}  // namespace
 
 const platform_handle_t invalid_handle = NULL;
 const platform_thread_id_t invalid_tid = 0;
@@ -44,9 +46,18 @@ void FreeProcessPolicy(lcpu_count_t lCpuCount) {
   UNUSED(lCpuCount);
 }
 
+bool PlatformThreadHandle::EqualsHandle(const PlatformThreadHandle& other) const {
+  return handle_ == other.handle_;
+}
+
 // static
 platform_thread_id_t PlatformThread::GetCurrentId() {
   return GetCurrentThreadId();
+}
+
+// static
+platform_handle_t GetCurrentHandle() {
+  return OpenThread(SYNCHRONIZE, FALSE, GetCurrentThreadId());
 }
 
 bool PlatformThread::Create(PlatformThreadHandle* thread_handle,
@@ -62,12 +73,8 @@ bool PlatformThread::Create(PlatformThreadHandle* thread_handle,
   params->cl = routine;
   params->args = arg;
 
-  thread_handle->handle_ = CreateThread(NULL,
-                                        0,
-                                        static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc),
-                                        params,
-                                        0,
-                                        &thread_handle->thread_id_);
+  thread_handle->handle_ =
+      CreateThread(NULL, 0, static_cast<LPTHREAD_START_ROUTINE>(&ThreadFunc), params, 0, &thread_handle->thread_id_);
   bool result = thread_handle->handle_ != invalid_handle;
   DCHECK(result);
   if (result) {
@@ -142,5 +149,6 @@ void* PlatformThread::GetTlsDataByKey(platform_tls_t key) {
 bool PlatformThread::SetTlsDataByKey(platform_tls_t key, void* data) {
   return TlsSetValue(key, data) == 1;
 }
-}
-}
+
+}  // namespace threads
+}  // namespace common

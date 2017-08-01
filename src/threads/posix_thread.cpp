@@ -128,14 +128,6 @@ bool PlatformThreadHandle::EqualsHandle(const PlatformThreadHandle& other) const
   return pthread_equal(handle_, other.handle_) != 0;
 }
 
-PlatformThreadHandle invalid_thread_handle() {
-  return PlatformThreadHandle(invalid_handle, invalid_tid);
-}
-
-PlatformThreadHandle current_thread_handle() {
-  return PlatformThreadHandle(PlatformThread::GetCurrentHandle(), PlatformThread::GetCurrentId());
-}
-
 void InitProcessPolicy(lcpu_count_t lCpuCount) {
   UNUSED(lCpuCount);
 }
@@ -226,7 +218,7 @@ bool PlatformThread::Join(PlatformThreadHandle* thread_handle, void** thread_ret
     return false;
   }
 
-  if (thread_handle->GetHandle() == invalid_handle) {
+  if (thread_handle->GetPlatformHandle() == invalid_handle) {
     thread_handle->thread_id_ = invalid_tid;
     return false;
   }
@@ -242,7 +234,7 @@ bool PlatformThread::Join(PlatformThreadHandle* thread_handle, void** thread_ret
 void PlatformThread::SetAffinity(PlatformThreadHandle* thread_handle, lcpu_count_t lCpuCount) {
   UNUSED(lCpuCount);
 
-  if (!thread_handle || thread_handle->GetHandle() == invalid_handle) {
+  if (!thread_handle || thread_handle->GetPlatformHandle() == invalid_handle) {
     return;
   }
 

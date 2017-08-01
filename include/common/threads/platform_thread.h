@@ -68,10 +68,10 @@ class PlatformThreadHandle {
   bool EqualsHandle(const PlatformThreadHandle& other) const;
 
   platform_thread_id_t GetTid() const { return thread_id_; }
-  platform_handle_t GetHandle() const { return handle_; }
+  platform_handle_t GetPlatformHandle() const { return handle_; }
 
   bool Equals(const PlatformThreadHandle& handle) const {
-    return handle_ == handle.handle_ && thread_id_ == handle.thread_id_;
+    return EqualsHandle(handle) && thread_id_ == handle.thread_id_;
   }
 
  private:

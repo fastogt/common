@@ -51,6 +51,14 @@ bool IsCurrentThread(Thread<RT>* thread) {
   return THREAD_MANAGER()->IsCurrentThread(thread);
 }
 
+PlatformThreadHandle invalid_thread_handle() {
+  return PlatformThreadHandle(invalid_handle, invalid_tid);
+}
+
+PlatformThreadHandle current_thread_handle() {
+  return PlatformThreadHandle(PlatformThread::GetCurrentHandle(), PlatformThread::GetCurrentId());
+}
+
 template void WrapThread(Thread<void>* thread);
 template void UnWrapThread(Thread<void>* thread);
 template bool IsCurrentThread(Thread<void>* thread);

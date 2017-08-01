@@ -70,6 +70,11 @@ TEST(string, MemSPrintf) {
   const std::string val_string = "alex";
   std::string result = common::MemSPrintf("%d %s", val_int, val_string);
   ASSERT_EQ(result, std::to_string(val_int) + " " + val_string);
+
+  std::string esc = common::EscapedText(val_string);
+  ASSERT_EQ(esc, val_string + "/n");
+  esc = common::EscapedText(esc);
+  ASSERT_EQ(esc, val_string + "/n");
 }
 
 TEST(string, utils) {
