@@ -40,6 +40,7 @@
 namespace common {
 
 namespace {
+
 template <typename STR, typename INT, typename UINT, bool NEG>
 struct IntToStringT {
   // This is to avoid a compiler warning about unary minus on unsigned type.
@@ -321,24 +322,6 @@ typedef BaseHexIteratorRangeToInt64Traits<StringPiece::const_iterator> HexIterat
 
 typedef BaseHexIteratorRangeToUInt64Traits<StringPiece::const_iterator> HexIteratorRangeToUInt64Traits;
 
-template <typename STR>
-bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
-  DCHECK_EQ(output->size(), 0u);
-  size_t count = input.size();
-  if (count == 0 || (count % 2) != 0) {
-    return false;
-  }
-  for (uintptr_t i = 0; i < count / 2; ++i) {
-    uint8_t msb = 0;  // most significant 4 bits
-    uint8_t lsb = 0;  // least significant 4 bits
-    if (!CharToDigit<16>(input[i * 2], &msb) || !CharToDigit<16>(input[i * 2 + 1], &lsb)) {
-      return false;
-    }
-    output->push_back((msb << 4) | lsb);
-  }
-  return true;
-}
-
 template <typename VALUE, int BASE>
 class StringPieceToNumberTraits : public BaseIteratorRangeToNumberTraits<StringPiece::const_iterator, VALUE, BASE> {};
 
@@ -362,6 +345,58 @@ class BytesToNumberTraits : public BaseIteratorRangeToNumberTraits<buffer_t::con
 template <typename VALUE>
 bool BytesToIntImpl(const buffer_t& input, VALUE* output) {
   return IteratorRangeToNumber<BytesToNumberTraits<VALUE, 10> >::Invoke(input.begin(), input.end(), output);
+}
+
+template <typename STR>
+bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
+  DCHECK_EQ(output->size(), 0u);
+  size_t count = input.size();
+  if (count == 0 || (count % 2) != 0) {
+    return false;
+  }
+  for (uintptr_t i = 0; i < count / 2; ++i) {
+    uint8_t msb = 0;  // most significant 4 bits
+    uint8_t lsb = 0;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 2], &msb) || !CharToDigit<16>(input[i * 2 + 1], &lsb)) {
+      return false;
+    }
+    output->push_back((msb << 4) | lsb);
+  }
+  return true;
+}
+
+template <typename T>
+T hex_encode_impl(const T& input, bool is_lower) {
+  static const char uHexChars[] = "0123456789ABCDEF";
+  static const char lHexChars[] = "0123456789abcdef";
+
+  typedef typename T::value_type value_type;
+  const typename T::size_type size = input.size();
+  T decoded;
+  decoded.resize(size * 2);
+
+  for (size_t i = 0; i < size; ++i) {
+    value_type b = input[i];
+    if (is_lower) {
+      decoded[(i * 2)] = lHexChars[(b >> 4) & 0xf];
+      decoded[(i * 2) + 1] = lHexChars[b & 0xf];
+    } else {
+      decoded[(i * 2)] = uHexChars[(b >> 4) & 0xf];
+      decoded[(i * 2) + 1] = uHexChars[b & 0xf];
+    }
+  }
+  return decoded;
+}
+
+template <typename T>
+T hex_decode_impl(const T& input) {
+  std::vector<uint8_t> vec;
+  bool res = HexStringToBytesT(input, &vec);
+  if (!res) {
+    return T();
+  }
+
+  return T(vec.begin(), vec.end());
 }
 
 }  // namespace
@@ -1264,44 +1299,27 @@ bool ConvertFromBytes(const buffer_t& from, double* out) {
 
 //
 
-std::string HexEncode(const void* bytes, size_t size, bool isLower) {
-  static const char uHexChars[] = "0123456789ABCDEF";
-  static const char lHexChars[] = "0123456789abcdef";
+namespace utils {
+namespace hex {
 
-  // Each input byte creates two output hex characters.
-  std::string ret(size * 2, '\0');
-
-  for (size_t i = 0; i < size; ++i) {
-    char b = reinterpret_cast<const char*>(bytes)[i];
-    if (isLower) {
-      ret[(i * 2)] = lHexChars[(b >> 4) & 0xf];
-      ret[(i * 2) + 1] = lHexChars[b & 0xf];
-    } else {
-      ret[(i * 2)] = uHexChars[(b >> 4) & 0xf];
-      ret[(i * 2) + 1] = uHexChars[b & 0xf];
-    }
-  }
-  return ret;
+buffer_t encode(const buffer_t& input, bool is_lower) {
+  return hex_encode_impl(input, is_lower);
 }
 
-std::string HexEncode(const std::string& data, bool isLower) {
-  return HexEncode(data.c_str(), data.size(), isLower);
+std::string encode(const std::string& input, bool is_lower) {
+  return hex_encode_impl(input, is_lower);
 }
 
-buffer_t HexDecode(const void* bytes, size_t size) {
-  std::vector<uint8_t> vec;
-  const char* c = reinterpret_cast<const char*>(bytes);
-  bool res = HexStringToBytesT(StringPiece(c, size), &vec);
-  if (!res) {
-    return buffer_t();
-  }
-
-  return buffer_t(vec.begin(), vec.end());
+buffer_t decode(const buffer_t& input) {
+  return hex_decode_impl(input);
 }
 
-buffer_t HexDecode(const std::string& data) {
-  return HexDecode(data.c_str(), data.size());
+std::string decode(const std::string& input) {
+  return hex_decode_impl(input);
 }
+
+}  // namespace hex
+}  // namespace utils
 
 bool HexStringToInt(const StringPiece& input, int* output) {
   return IteratorRangeToNumber<HexIteratorRangeToIntTraits>::Invoke(input.begin(), input.end(), output);

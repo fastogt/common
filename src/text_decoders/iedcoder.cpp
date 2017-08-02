@@ -67,7 +67,7 @@ IEDcoder::IEDcoder(EDTypes type) : type_(type) {}
 
 common::Error IEDcoder::Encode(const std::string& data, std::string* out) {
   if (data.empty()) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   return EncodeImpl(data, out);
@@ -75,7 +75,7 @@ common::Error IEDcoder::Encode(const std::string& data, std::string* out) {
 
 common::Error IEDcoder::Decode(const std::string& data, std::string* out) {
   if (data.empty()) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   return DecodeImpl(data, out);

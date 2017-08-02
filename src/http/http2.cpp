@@ -2120,7 +2120,7 @@ frames_t find_frames_by_type(const frames_t& frames, frame_t type) {
 
 std::pair<http::http_status, Error> parse_http_request(const frame_headers& frame, http::http_request* req_out) {
   if (!frame.IsValid() || frame.type() != HTTP2_HEADERS || !req_out) {
-    return std::make_pair(http::HS_FORBIDDEN, make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_FORBIDDEN, make_inval_error_value(ErrorValue::E_ERROR));
   }
 
   uint8_t validation_flags = 0;

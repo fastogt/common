@@ -31,6 +31,7 @@
 
 #include <string>
 
+#include <common/convert2string.h>
 #include <common/string_compress.h>
 
 namespace common {
@@ -39,7 +40,23 @@ CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(CompressZlib) {}
 
 common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
-  return common::EncodeZlib(data, out);
+  buffer_t buff_data;
+  if (!ConvertFromString(data, &buff_data)) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  buffer_t buff_out;
+  if (!ConvertFromString(data, &buff_out)) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  Error err = common::EncodeZlib(buff_data, &buff_out);
+  if (err && err->IsError()) {
+    return err;
+  }
+
+  *out = ConvertToString(buff_out);
+  return Error();
 #else
   UNUSED(data);
   UNUSED(out);
@@ -49,7 +66,23 @@ common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::stri
 
 common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
-  return common::DecodeZlib(data, out);
+  buffer_t buff_data;
+  if (!ConvertFromString(data, &buff_data)) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  buffer_t buff_out;
+  if (!ConvertFromString(data, &buff_out)) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  Error err = common::DecodeZlib(buff_data, &buff_out);
+  if (err && err->IsError()) {
+    return err;
+  }
+
+  *out = ConvertToString(buff_out);
+  return Error();
 #else
   UNUSED(data);
   UNUSED(out);

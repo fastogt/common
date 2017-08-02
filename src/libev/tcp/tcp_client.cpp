@@ -54,7 +54,7 @@ descriptor_t TcpClient::GetFd() const {
 
 common::Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   if (!data || !size || !nwrite) {
-    return common::make_error_value("Invalid input argument(s)", common::ErrorValue::E_ERROR);
+    return make_inval_error_value(common::ErrorValue::E_ERROR);
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -76,7 +76,7 @@ common::Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
 
 common::Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   if (!out || !size || !nread) {
-    return common::make_error_value("Invalid input argument(s)", common::ErrorValue::E_ERROR);
+    return make_inval_error_value(common::ErrorValue::E_ERROR);
   }
 
   size_t total = 0;          // how many bytes we've readed

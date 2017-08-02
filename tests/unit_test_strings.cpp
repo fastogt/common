@@ -6,6 +6,8 @@
 #include <common/string_util.h>
 #include <common/utf_string_conversions.h>
 
+#include <common/string_compress.h>
+
 #define OPENSSL_VERSION_NUMBER_EXAMPLE 0x00090301
 #define OPENSSL_VERSION_TEXT_EXAMPLE "0.9.3.1"
 
@@ -106,3 +108,82 @@ TEST(string, StringPiece) {
   ASSERT_EQ(str_sasha, str_sasha2);
   ASSERT_EQ(str_sasha.as_string(), sasha_string);
 }
+
+TEST(string, HexCompress) {
+  const common::buffer_t json = MAKE_BUFFER(R"("{"back_end_credentials" : {"creds" :
+      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
+      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
+      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
+      "http_root" : "/home/sasha/timeshift/26"} ]},
+      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
+      "type" : "1"},"type" : "relay"})");
+  common::buffer_t encoded_hex;
+  common::Error err = common::EncodeHex(json, false, &encoded_hex);
+  ASSERT_FALSE(err && err->IsError());
+
+  common::buffer_t decoded;
+  err = common::DecodeHex(encoded_hex, &decoded);
+  ASSERT_FALSE(err && err->IsError());
+  ASSERT_EQ(json, decoded);
+}
+
+TEST(string, Base64Compress) {
+  const common::buffer_t json = MAKE_BUFFER(
+      R"("{"back_end_credentials" : {"creds" :
+      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
+      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
+      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
+      "http_root" : "/home/sasha/timeshift/26"} ]},
+      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
+      "type" : "1"},"type" : "relay"})");
+  common::buffer_t encoded_hex;
+  common::Error err = common::EncodeBase64(json, &encoded_hex);
+  ASSERT_FALSE(err && err->IsError());
+
+  common::buffer_t decoded;
+  err = common::DecodeBase64(encoded_hex, &decoded);
+  ASSERT_FALSE(err && err->IsError());
+  ASSERT_EQ(json, decoded);
+}
+
+#ifdef HAVE_ZLIB
+TEST(string, ZlibCompress) {
+  const common::buffer_t json = MAKE_BUFFER(
+      R"("{"back_end_credentials" : {"creds" :
+      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
+      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
+      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
+      "http_root" : "/home/sasha/timeshift/26"} ]},
+      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
+      "type" : "1"},"type" : "relay"})");
+  common::buffer_t encoded_zlib;
+  common::Error err = common::EncodeZlib(json, &encoded_zlib);
+  ASSERT_FALSE(err && err->IsError());
+
+  common::buffer_t decoded;
+  err = common::DecodeZlib(encoded_zlib, &decoded);
+  ASSERT_FALSE(err && err->IsError());
+  ASSERT_EQ(json, decoded);
+}
+#endif
+
+#ifdef HAVE_SNAPPY
+TEST(string, SnappyCompress) {
+  const std::string json =
+      R"("{"back_end_credentials" : {"creds" :
+      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
+      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
+      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
+      "http_root" : "/home/sasha/timeshift/26"} ]},
+      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
+      "type" : "1"},"type" : "relay"})";
+  std::string encoded_snappy;
+  common::Error err = common::EncodeSnappy(json, &encoded_snappy);
+  ASSERT_FALSE(err && err->IsError());
+
+  std::string decoded;
+  err = common::DecodeSnappy(encoded_snappy, &decoded);
+  ASSERT_FALSE(err && err->IsError());
+  ASSERT_EQ(json, decoded);
+}
+#endif

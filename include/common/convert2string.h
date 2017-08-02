@@ -34,10 +34,9 @@
 
 #include <string>
 
-#include <common/macros.h>        // for buffer_t
-#include <common/string16.h>      // for string16
-#include <common/string_piece.h>  // for StringPiece
-#include <common/types.h>         // for buffer_t
+#include <common/string16.h>
+#include <common/string_piece.h>
+#include <common/types.h>
 
 namespace common {
 
@@ -148,10 +147,17 @@ bool ConvertFromBytes(const buffer_t& from, unsigned long long* out) WARN_UNUSED
 bool ConvertFromBytes(const buffer_t& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, double* out) WARN_UNUSED_RESULT;
 
-std::string HexEncode(const void* bytes, size_t size, bool isLower);
-std::string HexEncode(const std::string& data, bool isLower);
-buffer_t HexDecode(const void* bytes, size_t size);
-buffer_t HexDecode(const std::string& data);
+namespace utils {
+namespace hex {
+
+buffer_t encode(const buffer_t& input, bool is_lower);
+std::string encode(const std::string& input, bool is_lower);
+
+buffer_t decode(const buffer_t& input);
+std::string decode(const std::string& input);
+
+}  // namespace hex
+}  // namespace utils
 
 bool HexStringToInt(const StringPiece& input, int* output);
 bool HexStringToInt64(const StringPiece& input, int64_t* output);

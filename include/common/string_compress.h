@@ -32,17 +32,27 @@
 #include <string>
 
 #include <common/error.h>
-#include <common/macros.h>
+
+namespace common {
+
+Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeHex(const std::string& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
+
+Error DecodeHex(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeHex(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+
+Error EncodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+
+}  // namespace common
 
 #ifdef HAVE_ZLIB
 
 #include <zlib.h>
 
 namespace common {
-Error EncodeZlib(const std::string& data,
-                 std::string* out,
-                 int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
-Error DecodeZlib(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
+Error DecodeZlib(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 }  // namespace common
 
 #endif

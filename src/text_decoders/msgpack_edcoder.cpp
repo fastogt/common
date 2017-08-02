@@ -75,7 +75,7 @@ MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
 
 common::Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
   if (!out || data.empty()) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   cmp_ctx_t cmp;
@@ -91,7 +91,7 @@ common::Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* o
 
 common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
   if (!out || data.empty()) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
   cmp_ctx_t cmp;
   char* copy = reinterpret_cast<char*>(calloc(data.size() + 1, sizeof(char)));

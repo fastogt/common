@@ -167,7 +167,7 @@ header_t http_request::findHeaderByValue(const std::string& value, bool caseSens
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, http_request* req_out) {
   if (request.empty() || !req_out) {
-    return std::make_pair(HS_FORBIDDEN, make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR));
+    return std::make_pair(HS_FORBIDDEN, make_inval_error_value(ErrorValue::E_ERROR));
   }
 
   typedef std::string::size_type string_size_t;

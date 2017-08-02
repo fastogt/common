@@ -156,10 +156,11 @@ struct RuntimeCmp<std::pair<T, U> > : public std::binary_function<const std::pai
 }  // namespace compare
 
 namespace base64 {
-std::string encode64(const std::string& input);
-std::string decode64(const std::string& input);
 buffer_t encode64(const buffer_t& input);
+std::string encode64(const std::string& input);
+
 buffer_t decode64(const buffer_t& input);
+std::string decode64(const std::string& input);
 }  // namespace base64
 
 namespace html {

@@ -31,22 +31,18 @@
 
 #include <string>  // for string
 
-#include <common/convert2string.h>  // for ConvertToString, HexDecode, etc
-#include <common/types.h>           // for buffer_t
+#include <common/string_compress.h>
 
 namespace common {
 
 HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
 
 common::Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  *out = common::HexEncode(data, false);
-  return common::Error();
+  return EncodeHex(data, false, out);
 }
 
 common::Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  buffer_t result = common::HexDecode(data);
-  *out = ConvertToString(result);
-  return common::Error();
+  return DecodeHex(data, out);
 }
 
 }  // namespace common

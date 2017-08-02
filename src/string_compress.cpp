@@ -33,8 +33,67 @@
 
 #include <string>  // for string
 
+#include <common/convert2string.h>
 #include <common/sprintf.h>  // for SNPrintf
-#include <common/value.h>    // for ErrorValue, etc
+#include <common/utils.h>
+
+namespace common {
+
+Error EncodeHex(const std::string& data, bool is_lower, std::string* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::encode(data, is_lower);
+  return Error();
+}
+
+Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::encode(data, is_lower);
+  return Error();
+}
+
+Error DecodeHex(const buffer_t& data, buffer_t* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::decode(data);
+  return Error();
+}
+
+Error DecodeHex(const std::string& data, std::string* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::decode(data);
+  return Error();
+}
+
+Error EncodeBase64(const buffer_t& data, buffer_t* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::base64::encode64(data);
+  return Error();
+}
+
+Error DecodeBase64(const buffer_t& data, buffer_t* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::base64::decode64(data);
+  return Error();
+}
+
+}  // namespace common
 
 #ifdef HAVE_ZLIB
 
@@ -44,9 +103,9 @@
 
 namespace common {
 
-Error EncodeZlib(const std::string& data, std::string* out, int compressionlevel) {
+Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   if (data.empty() || !out) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   z_stream zs;  // z_stream is zlib's control structure
@@ -56,24 +115,24 @@ Error EncodeZlib(const std::string& data, std::string* out, int compressionlevel
     return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
   }
 
-  zs.next_in = reinterpret_cast<Byte*>(const_cast<char*>(data.c_str()));
+  zs.next_in = const_cast<z_const Bytef*>(data.data());
   zs.avail_in = data.size();  // set the z_stream's input
 
   int ret;
-  char* outbuffer = new char[BUFFER_SIZE];
+  Bytef* outbuffer = new Bytef[BUFFER_SIZE];
 
-  std::string lout;
+  buffer_t lout;
 
   // retrieve the compressed bytes blockwise
   do {
-    zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+    zs.next_out = outbuffer;
     zs.avail_out = BUFFER_SIZE;
 
     ret = deflate(&zs, Z_FINISH);
 
     if (lout.size() < zs.total_out) {
       // append the block to the output string
-      lout.append(outbuffer, zs.total_out - lout.size());
+      lout = MAKE_BUFFER_SIZE(outbuffer, zs.total_out - lout.size());
     }
   } while (ret == Z_OK);
 
@@ -91,9 +150,9 @@ Error EncodeZlib(const std::string& data, std::string* out, int compressionlevel
   return Error();
 }
 
-Error DecodeZlib(const std::string& data, std::string* out) {
+Error DecodeZlib(const buffer_t& data, buffer_t* out) {
   if (data.empty() || !out) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   z_stream zs;  // z_stream is zlib's control structure
@@ -103,21 +162,21 @@ Error DecodeZlib(const std::string& data, std::string* out) {
     return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
   }
 
-  zs.next_in = reinterpret_cast<Byte*>(const_cast<char*>(data.data()));
+  zs.next_in = const_cast<z_const Bytef*>(data.data());
   zs.avail_in = data.size();
 
   int ret;
-  char* outbuffer = new char[BUFFER_SIZE];
-  std::string lout;
+  Bytef* outbuffer = new Bytef[BUFFER_SIZE];
+  buffer_t lout;
   // get the decompressed bytes blockwise using repeated calls to inflate
   do {
-    zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+    zs.next_out = outbuffer;
     zs.avail_out = BUFFER_SIZE;
 
     ret = inflate(&zs, 0);
 
     if (lout.size() < zs.total_out) {
-      lout.append(outbuffer, zs.total_out - lout.size());
+      lout = MAKE_BUFFER_SIZE(outbuffer, zs.total_out - lout.size());
     }
   } while (ret == Z_OK);
 
@@ -146,13 +205,13 @@ namespace common {
 
 Error EncodeSnappy(const std::string& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Compress(data.c_str(), data.length(), &lout);
   if (writed_bytes == 0) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   *out = lout;
@@ -161,13 +220,13 @@ Error EncodeSnappy(const std::string& data, std::string* out) {
 
 Error DecodeSnappy(const std::string& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Uncompress(data.c_str(), data.length(), &lout);
   if (writed_bytes == 0) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   *out = lout;
