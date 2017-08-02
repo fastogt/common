@@ -62,7 +62,7 @@ class EventThread {
   static const identifier_t id = etraits_t::id;
   typedef unique_lock<mutex> mutex_lock_t;
 
-  ~EventThread() {}
+  ~EventThread() { thread_->Join(); }
 
   void Subscribe(listener_t* listener, events_size_t id) { dispatcher_.Subscribe(listener, id); }
 

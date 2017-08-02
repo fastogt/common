@@ -114,8 +114,11 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   if (deflateInit(&zs, compressionlevel) != Z_OK) {
     return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
   }
-
-  zs.next_in = const_cast<z_const Bytef*>(data.data());
+#if defined(ZLIB_CONST) && !defined(z_const)
+  zs.next_in = data.data();
+#else
+  zs.next_in = const_cast<Bytef*>(data.data());
+#endif
   zs.avail_in = data.size();  // set the z_stream's input
 
   int ret;
@@ -162,7 +165,11 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
     return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
   }
 
-  zs.next_in = const_cast<z_const Bytef*>(data.data());
+#if defined(ZLIB_CONST) && !defined(z_const)
+  zs.next_in = data.data();
+#else
+  zs.next_in = const_cast<Bytef*>(data.data());
+#endif
   zs.avail_in = data.size();
 
   int ret;
