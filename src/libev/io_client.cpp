@@ -79,7 +79,7 @@ void IoClient::SetFlags(flags_t flags) {
   }
 }
 
-common::patterns::id_counter<IoClient>::type_t IoClient::Id() const {
+patterns::id_counter<IoClient>::type_t IoClient::Id() const {
   return id_.id();
 }
 
@@ -88,7 +88,7 @@ const char* IoClient::ClassName() const {
 }
 
 std::string IoClient::FormatedName() const {
-  return common::MemSPrintf("[%s][%s(%" PRIuMAX ")]", Name(), ClassName(), Id());
+  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", Name(), ClassName(), Id());
 }
 
 }  // namespace libev

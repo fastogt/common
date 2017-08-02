@@ -43,20 +43,20 @@ namespace tcp {
 
 class TcpClient : public IoClient {
  public:
-  TcpClient(IoLoop* server, const common::net::socket_info& info, flags_t flags = EV_READ);
+  TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
   virtual ~TcpClient();
 
-  common::net::socket_info Info() const;
+  net::socket_info Info() const;
 
-  virtual common::Error Write(const char* data, size_t size, size_t* nwrite) override;
-  virtual common::Error Read(char* out, size_t size, size_t* nread) override;
+  virtual Error Write(const char* data, size_t size, size_t* nwrite) override;
+  virtual Error Read(char* out, size_t size, size_t* nread) override;
 
  protected:
   virtual descriptor_t GetFd() const override;
   virtual void CloseImpl() override;
 
  private:
-  common::net::SocketHolder sock_;
+  net::SocketHolder sock_;
 };
 
 }  // namespace tcp

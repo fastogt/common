@@ -73,7 +73,7 @@ size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
 namespace common {
 MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
 
-common::Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
   if (!out || data.empty()) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -83,20 +83,20 @@ common::Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* o
   cmp_init(&cmp, &lout, NULL, stream_writer);
   bool res = cmp_write_str(&cmp, data.c_str(), data.size());
   if (!res) {
-    return common::make_error_value("MsgPackEDcoder internal error!", common::ErrorValue::E_ERROR);
+    return make_error_value("MsgPackEDcoder internal error!", ErrorValue::E_ERROR);
   }
   *out = lout;
-  return common::Error();
+  return Error();
 }
 
-common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
   if (!out || data.empty()) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
   cmp_ctx_t cmp;
   char* copy = reinterpret_cast<char*>(calloc(data.size() + 1, sizeof(char)));
   if (!copy) {
-    return common::make_error_value("Memory allocation failed!", common::ErrorValue::E_ERROR);
+    return make_error_value("Memory allocation failed!", ErrorValue::E_ERROR);
   }
 
   memcpy(copy, data.c_str(), data.size());
@@ -113,7 +113,7 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
         break;
       }
 
-      return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+      return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
     }
 
     char sbuf[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -121,7 +121,7 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
     switch (obj.type) {
       case CMP_TYPE_POSITIVE_FIXNUM:
       case CMP_TYPE_UINT8:
-        lout += common::ConvertToString(obj.as.u8);
+        lout += ConvertToString(obj.as.u8);
         break;
       case CMP_TYPE_FIXMAP:
       case CMP_TYPE_MAP16:
@@ -137,7 +137,7 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
       case CMP_TYPE_STR32:
         if (!read_bytes(sbuf, obj.as.str_size, copy)) {
           free(copy);
-          return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+          return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
         }
         sbuf[obj.as.str_size] = 0;
         lout += sbuf;
@@ -148,7 +148,7 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
         memset(sbuf, 0, sizeof(sbuf));
         if (!read_bytes(sbuf, obj.as.bin_size, copy)) {
           free(copy);
-          return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+          return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
         }
         lout.append(sbuf, obj.as.bin_size);
         break;
@@ -176,75 +176,72 @@ common::Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* o
           uint8_t day = 0;
           if (!read_bytes(&year, sizeof(uint16_t), copy)) {
             free(copy);
-            return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+            return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
           }
 
           if (!read_bytes(&month, sizeof(uint8_t), copy)) {
             free(copy);
-            return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+            return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
           }
 
           if (!read_bytes(&day, sizeof(uint8_t), copy)) {
             free(copy);
-            return common::make_error_value(cmp_strerror(&cmp), common::ErrorValue::E_ERROR);
+            return make_error_value(cmp_strerror(&cmp), ErrorValue::E_ERROR);
           }
 
           char buff[32] = {0};
-          common::SNPrintf(buff, sizeof(buff), "%u/%u/%u", year, month, day);
+          SNPrintf(buff, sizeof(buff), "%u/%u/%u", year, month, day);
           lout += buff;
         } else {
           while (obj.as.ext.size--) {
             read_bytes(sbuf, sizeof(uint8_t), copy);
             char buff[32] = {0};
-            common::SNPrintf(buff, sizeof(buff), "%02x ", sbuf[0]);
+            SNPrintf(buff, sizeof(buff), "%02x ", sbuf[0]);
             lout += buff;
           }
         }
         break;
       case CMP_TYPE_FLOAT:
-        lout += common::ConvertToString(obj.as.flt);
+        lout += ConvertToString(obj.as.flt);
         break;
       case CMP_TYPE_DOUBLE:
-        lout += common::ConvertToString(obj.as.dbl);
+        lout += ConvertToString(obj.as.dbl);
         break;
       case CMP_TYPE_UINT16:
-        lout += common::ConvertToString(obj.as.u16);
+        lout += ConvertToString(obj.as.u16);
         break;
       case CMP_TYPE_UINT32:
-        lout += common::ConvertToString(obj.as.u32);
+        lout += ConvertToString(obj.as.u32);
         break;
       case CMP_TYPE_UINT64: {
         char buff[32] = {0};
-        common::SNPrintf(buff, sizeof(buff), "%" PRIu64 "", obj.as.u64);
+        SNPrintf(buff, sizeof(buff), "%" PRIu64 "", obj.as.u64);
         lout += buff;
         break;
       }
       case CMP_TYPE_NEGATIVE_FIXNUM:
       case CMP_TYPE_SINT8:
-        lout += common::ConvertToString(obj.as.s8);
+        lout += ConvertToString(obj.as.s8);
         break;
       case CMP_TYPE_SINT16:
-        lout += common::ConvertToString(obj.as.s16);
+        lout += ConvertToString(obj.as.s16);
         break;
       case CMP_TYPE_SINT32:
-        lout += common::ConvertToString(obj.as.s32);
+        lout += ConvertToString(obj.as.s32);
         break;
       case CMP_TYPE_SINT64: {
         char buff[32] = {0};
-        common::SNPrintf(buff, sizeof(buff), "%" PRId64 "", obj.as.s64);
+        SNPrintf(buff, sizeof(buff), "%" PRId64 "", obj.as.s64);
         lout += buff;
         break;
       }
-      default: {
-        return common::make_error_value(MemSPrintf("Unrecognized object type %u\n", obj.type),
-                                        common::ErrorValue::E_ERROR);
-      }
+      default: { return make_error_value(MemSPrintf("Unrecognized object type %u\n", obj.type), ErrorValue::E_ERROR); }
     }
   }
 
   *out = lout;
   free(copy);
-  return common::Error();
+  return Error();
 }
 
 }  // namespace common

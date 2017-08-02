@@ -37,14 +37,14 @@ namespace common {
 
 HtmlEscEDcoder::HtmlEscEDcoder() : IEDcoder(Hex) {}
 
-common::Error HtmlEscEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  *out = common::utils::html::encode(data);
-  return common::Error();
+Error HtmlEscEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+  *out = utils::html::encode(data);
+  return Error();
 }
 
-common::Error HtmlEscEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  *out = common::utils::html::decode(data);
-  return common::Error();
+Error HtmlEscEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+  *out = utils::html::decode(data);
+  return Error();
 }
 
 }  // namespace common

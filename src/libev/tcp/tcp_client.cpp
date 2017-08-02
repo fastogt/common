@@ -39,12 +39,12 @@ namespace common {
 namespace libev {
 namespace tcp {
 
-TcpClient::TcpClient(IoLoop* server, const common::net::socket_info& info, flags_t flags)
+TcpClient::TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags)
     : IoClient(server, flags), sock_(info) {}
 
 TcpClient::~TcpClient() {}
 
-common::net::socket_info TcpClient::Info() const {
+net::socket_info TcpClient::Info() const {
   return sock_.GetInfo();
 }
 
@@ -52,9 +52,9 @@ descriptor_t TcpClient::GetFd() const {
   return sock_.GetFd();
 }
 
-common::Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
+Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   if (!data || !size || !nwrite) {
-    return make_inval_error_value(common::ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -62,7 +62,7 @@ common::Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
 
   while (total < size) {
     size_t n;
-    common::Error err = sock_.Write(data, size, &n);
+    Error err = sock_.Write(data, size, &n);
     if (err && err->IsError()) {
       return err;
     }
@@ -71,12 +71,12 @@ common::Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   }
 
   *nwrite = total;  // return number actually sent here
-  return common::Error();
+  return Error();
 }
 
-common::Error TcpClient::Read(char* out, size_t size, size_t* nread) {
+Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   if (!out || !size || !nread) {
-    return make_inval_error_value(common::ErrorValue::E_ERROR);
+    return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
   size_t total = 0;          // how many bytes we've readed
@@ -84,7 +84,7 @@ common::Error TcpClient::Read(char* out, size_t size, size_t* nread) {
 
   while (total < size) {
     size_t n;
-    common::Error err = sock_.Read(out + total, bytes_left, &n);
+    Error err = sock_.Read(out + total, bytes_left, &n);
     if (err && err->IsError()) {
       return err;
     }
@@ -93,11 +93,11 @@ common::Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   }
 
   *nread = total;  // return number actually readed here
-  return common::Error();
+  return Error();
 }
 
 void TcpClient::CloseImpl() {
-  common::Error err = sock_.Close();
+  Error err = sock_.Close();
   if (err && err->IsError()) {
     DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log
   }

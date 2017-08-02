@@ -79,7 +79,7 @@ namespace libev {
 namespace tcp {
 
 // server
-TcpServer::TcpServer(const common::net::HostAndPort& host, IoLoopObserver* observer)
+TcpServer::TcpServer(const net::HostAndPort& host, IoLoopObserver* observer)
     : IoLoop(observer), sock_(host), accept_io_(new LibevIO) {
   accept_io_->SetUserData(this);
 }
@@ -88,7 +88,7 @@ TcpServer::~TcpServer() {
   destroy(&accept_io_);
 }
 
-IoLoop* TcpServer::FindExistServerByHost(const common::net::HostAndPort& host) {
+IoLoop* TcpServer::FindExistServerByHost(const net::HostAndPort& host) {
   if (!host.IsValid()) {
     return nullptr;
   }
@@ -105,7 +105,7 @@ IoLoop* TcpServer::FindExistServerByHost(const common::net::HostAndPort& host) {
   return FindExistLoopByPredicate(find_by_host);
 }
 
-TcpClient* TcpServer::CreateClient(const common::net::socket_info& info) {
+TcpClient* TcpServer::CreateClient(const net::socket_info& info) {
   return new TcpClient(this, info);
 }
 
@@ -121,7 +121,7 @@ void TcpServer::PostLooped(LibEvLoop* loop) {
 }
 
 void TcpServer::Stoped(LibEvLoop* loop) {
-  common::Error err = sock_.Close();
+  Error err = sock_.Close();
   if (err && err->IsError()) {
     DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log
   }
@@ -130,11 +130,11 @@ void TcpServer::Stoped(LibEvLoop* loop) {
   IoLoop::Stoped(loop);
 }
 
-common::Error TcpServer::Bind() {
+Error TcpServer::Bind() {
   return sock_.Bind();
 }
 
-common::Error TcpServer::Listen(int backlog) {
+Error TcpServer::Listen(int backlog) {
   return sock_.Listen(backlog);
 }
 
@@ -142,11 +142,11 @@ const char* TcpServer::ClassName() const {
   return "TcpServer";
 }
 
-common::net::HostAndPort TcpServer::GetHost() const {
+net::HostAndPort TcpServer::GetHost() const {
   return sock_.GetHost();
 }
 
-common::Error TcpServer::Accept(common::net::socket_info* info) {
+Error TcpServer::Accept(net::socket_info* info) {
   return sock_.Accept(info);
 }
 
@@ -159,8 +159,8 @@ void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
     return;
   }
 
-  common::net::socket_info sinfo;
-  common::Error err = pserver->Accept(&sinfo);
+  net::socket_info sinfo;
+  Error err = pserver->Accept(&sinfo);
 
   if (err && err->IsError()) {
     DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log

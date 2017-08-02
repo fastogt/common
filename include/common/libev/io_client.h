@@ -42,7 +42,7 @@ namespace libev {
 
 class IoLoop;
 
-class IoClient : common::IMetaClassInfo {
+class IoClient : IMetaClassInfo {
  public:
   friend class IoLoop;
   IoClient(IoLoop* server, flags_t flags = EV_READ);
@@ -58,12 +58,12 @@ class IoClient : common::IMetaClassInfo {
   flags_t Flags() const;
   void SetFlags(flags_t flags);
 
-  common::patterns::id_counter<IoClient>::type_t Id() const;
+  patterns::id_counter<IoClient>::type_t Id() const;
   virtual const char* ClassName() const override;
   std::string FormatedName() const;
 
-  virtual common::Error Write(const char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;
-  virtual common::Error Read(char* out, size_t max_size, size_t* nread) WARN_UNUSED_RESULT = 0;
+  virtual Error Write(const char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;
+  virtual Error Read(char* out, size_t max_size, size_t* nread) WARN_UNUSED_RESULT = 0;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
@@ -75,7 +75,7 @@ class IoClient : common::IMetaClassInfo {
   flags_t flags_;
 
   std::string name_;
-  const common::patterns::id_counter<IoClient> id_;
+  const patterns::id_counter<IoClient> id_;
 };
 
 }  // namespace libev

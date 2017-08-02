@@ -44,7 +44,7 @@ int ErrnoErrorValue::GetErrno() const {
 }
 
 Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level) {
-  return common::make_error_value("Invalid input argument(s)", errorType, level);
+  return make_error_value("Invalid input argument(s)", errorType, level);
 }
 
 Error make_error_value(const std::string& in_value, Value::ErrorsType errorType, logging::LEVEL_LOG level) {

@@ -73,7 +73,7 @@ socket_descr_t SocketHolder::GetFd() const {
 
 ErrnoError SocketHolder::Close() {
   const int fd = info_.fd();
-  ErrnoError err = common::net::close(fd);
+  ErrnoError err = close(fd);
   if (err && err->IsError()) {
     DNOTREACHED();
     return err;
@@ -101,7 +101,7 @@ ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
 ErrnoError ServerSocketTcp::Bind() {
   socket_info linfo;
-  ErrnoError err = common::net::socket(IP_DOMAIN, common::net::ST_SOCK_STREAM, 0, &linfo);  // init fd
+  ErrnoError err = socket(IP_DOMAIN, ST_SOCK_STREAM, 0, &linfo);  // init fd
   if (err && err->IsError()) {
     return err;
   }
@@ -124,24 +124,24 @@ ErrnoError ServerSocketTcp::Bind() {
   addrinfo* ainf = linfo.addr_info();
 
   if (is_random_port) {  // random port
-    err = common::net::bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
-                            &info_);  // init sockaddr
+    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
+               &info_);  // init sockaddr
     if (err && err->IsError()) {
       return err;
     }
 
     sockaddr_t addr2;
     memset(&addr2, 0, sizeof(sockaddr_t));
-    err = common::net::getsockname(fd, reinterpret_cast<struct sockaddr*>(&addr2), sizeof(sockaddr_t),
-                                   &info_);  // init sockaddr
+    err = getsockname(fd, reinterpret_cast<struct sockaddr*>(&addr2), sizeof(sockaddr_t),
+                      &info_);  // init sockaddr
     if (err && err->IsError()) {
       return err;
     }
 
     host_.port = ntohs(get_in_port(reinterpret_cast<struct sockaddr*>(&addr2)));
   } else {
-    err = common::net::bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
-                            &info_);  // init sockaddr
+    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
+               &info_);  // init sockaddr
     if (err && err->IsError()) {
       return err;
     }
@@ -151,11 +151,11 @@ ErrnoError ServerSocketTcp::Bind() {
 }
 
 ErrnoError ServerSocketTcp::Listen(int backlog) {
-  return common::net::listen(info_, backlog);
+  return listen(info_, backlog);
 }
 
 ErrnoError ServerSocketTcp::Accept(socket_info* info) {
-  return common::net::accept(info_, info);
+  return accept(info_, info);
 }
 
 }  // namespace net

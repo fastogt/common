@@ -191,7 +191,7 @@ void LibEvLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
 }
 
 int LibEvLoop::Exec() {
-  exec_id_ = common::threads::PlatformThread::GetCurrentId();
+  exec_id_ = threads::PlatformThread::GetCurrentId();
 
   async_custom_->Init(this, AsyncCustom::custom_cb);
   async_custom_->Start();
@@ -208,7 +208,7 @@ int LibEvLoop::Exec() {
 }
 
 bool LibEvLoop::IsLoopThread() const {
-  return exec_id_ == common::threads::PlatformThread::GetCurrentId();
+  return exec_id_ == threads::PlatformThread::GetCurrentId();
 }
 
 void LibEvLoop::Stop() {

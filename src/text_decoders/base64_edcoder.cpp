@@ -37,14 +37,14 @@ namespace common {
 
 Base64EDcoder::Base64EDcoder() : IEDcoder(Base64) {}
 
-common::Error Base64EDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  *out = common::utils::base64::encode64(data);
-  return common::Error();
+Error Base64EDcoder::EncodeImpl(const std::string& data, std::string* out) {
+  *out = utils::base64::encode64(data);
+  return Error();
 }
 
-common::Error Base64EDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  *out = common::utils::base64::decode64(data);
-  return common::Error();
+Error Base64EDcoder::DecodeImpl(const std::string& data, std::string* out) {
+  *out = utils::base64::decode64(data);
+  return Error();
 }
 
 }  // namespace common

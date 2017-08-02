@@ -96,7 +96,7 @@ class IListenerEx : public IListener {
   typedef IEventEx<type_t> event_t;
 
   virtual void HandleEvent(event_t* event) = 0;
-  virtual void HandleExceptionEvent(event_t* event, common::Error err) = 0;
+  virtual void HandleExceptionEvent(event_t* event, Error err) = 0;
   virtual ~IListenerEx() {}
 
  private:
@@ -125,22 +125,22 @@ class IExceptionEvent : public IEventEx<type> {
   typedef type type_t;
   typedef IEventEx<type_t> event_t;
 
-  explicit IExceptionEvent(event_t* event, common::Error err)  // take ownerships event
+  explicit IExceptionEvent(event_t* event, Error err)  // take ownerships event
       : IEventEx<type>(static_cast<type_t>(event_traits<type_t>::max_count)), event_(event), err_(err) {}
 
   virtual ~IExceptionEvent() { delete event_; }
 
-  common::Error GetError() const { return err_; }
+  Error GetError() const { return err_; }
 
   event_t* Event() const { return event_; }
 
  protected:
   event_t* event_;
-  common::Error err_;
+  Error err_;
 };
 
 template <typename type>
-IExceptionEvent<type>* make_exception_event(IEventEx<type>* event, common::Error err) {
+IExceptionEvent<type>* make_exception_event(IEventEx<type>* event, Error err) {
   return new IExceptionEvent<type>(event, err);
 }
 

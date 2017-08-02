@@ -136,7 +136,7 @@ HashValue* Value::CreateHashValue() {
 
 ErrorValue* Value::CreateErrorValue(const std::string& in_value,
                                     Value::ErrorsType errorType,
-                                    common::logging::LEVEL_LOG level) {
+                                    logging::LEVEL_LOG level) {
   if (in_value.empty()) {
     DNOTREACHED();
     return new ErrorValue("Create error invalid input argument!", errorType, level);
@@ -179,7 +179,7 @@ Value* Value::CreateEmptyValueFromType(Type t) {
     case TYPE_HASH:
       return CreateHashValue();
     case TYPE_ERROR:
-      return CreateErrorValue(std::string(), E_NONE, common::logging::L_DEBUG);
+      return CreateErrorValue(std::string(), E_NONE, logging::L_DEBUG);
   }
 
   return nullptr;
@@ -488,7 +488,7 @@ bool FundamentalValue::Equals(const Value* other) const {
 
 StringValue::StringValue(const std::string& in_value) : Value(TYPE_STRING), value_(in_value) {}
 
-StringValue::StringValue(const string16& in_value) : Value(TYPE_STRING), value_(common::ConvertToString(in_value)) {}
+StringValue::StringValue(const string16& in_value) : Value(TYPE_STRING), value_(ConvertToString(in_value)) {}
 
 StringValue::~StringValue() {}
 
@@ -737,7 +737,7 @@ ArrayValue* ArrayValue::DeepCopy() const {
 
   for (const_iterator i = list_.begin(); i != list_.end(); ++i) {
     Value* cur = *i;
-    common::Value* val = cur->DeepCopy();
+    Value* val = cur->DeepCopy();
     result->Append(val);
   }
 
@@ -884,7 +884,7 @@ SetValue* SetValue::DeepCopy() const {
 
   for (const_iterator i = set_.begin(); i != set_.end(); ++i) {
     Value* cur = *i;
-    common::Value* val = cur->DeepCopy();
+    Value* val = cur->DeepCopy();
     result->Insert(val);
   }
 
@@ -937,7 +937,7 @@ bool ZSetValue::Insert(Value* key, Value* value) {
 }
 
 void ZSetValue::Insert(const std::string& key, const std::string& value) {
-  Insert(common::Value::CreateStringValue(key), common::Value::CreateStringValue(value));
+  Insert(Value::CreateStringValue(key), Value::CreateStringValue(value));
 }
 
 bool ZSetValue::GetAsZSet(ZSetValue** out_value) {
@@ -961,8 +961,8 @@ ZSetValue* ZSetValue::DeepCopy() const {
 
   for (const_iterator i = map_.begin(); i != map_.end(); ++i) {
     auto key_value = *i;
-    common::Value* key = key_value.first->DeepCopy();
-    common::Value* val = key_value.second->DeepCopy();
+    Value* key = key_value.first->DeepCopy();
+    Value* val = key_value.second->DeepCopy();
     result->Insert(key, val);
   }
 
@@ -978,10 +978,10 @@ bool ZSetValue::Equals(const Value* other) const {
   const_iterator lhs_it, rhs_it;
   for (lhs_it = begin(), rhs_it = other_zset->begin(); lhs_it != end() && rhs_it != other_zset->end();
        ++lhs_it, ++rhs_it) {
-    common::Value* rkey = (*rhs_it).first;
-    common::Value* rval = (*rhs_it).second;
-    common::Value* lkey = (*lhs_it).first;
-    common::Value* lval = (*lhs_it).second;
+    Value* rkey = (*rhs_it).first;
+    Value* rval = (*rhs_it).second;
+    Value* lkey = (*lhs_it).first;
+    Value* lval = (*lhs_it).second;
 
     if (!lkey->Equals(rkey) || lval->Equals(rval)) {
       return false;
@@ -1020,7 +1020,7 @@ bool HashValue::Insert(Value* key, Value* value) {
 }
 
 void HashValue::Insert(const std::string& key, const std::string& value) {
-  Insert(common::Value::CreateStringValue(key), common::Value::CreateStringValue(value));
+  Insert(Value::CreateStringValue(key), Value::CreateStringValue(value));
 }
 
 bool HashValue::GetAsHash(HashValue** out_value) {
@@ -1043,8 +1043,8 @@ HashValue* HashValue::DeepCopy() const {
 
   for (const_iterator i = hash_.begin(); i != hash_.end(); ++i) {
     auto key_value = *i;
-    common::Value* key = key_value.first->DeepCopy();
-    common::Value* val = key_value.second->DeepCopy();
+    Value* key = key_value.first->DeepCopy();
+    Value* val = key_value.second->DeepCopy();
     result->Insert(key, val);
   }
 
@@ -1060,10 +1060,10 @@ bool HashValue::Equals(const Value* other) const {
   const_iterator lhs_it, rhs_it;
   for (lhs_it = begin(), rhs_it = other_zset->begin(); lhs_it != end() && rhs_it != other_zset->end();
        ++lhs_it, ++rhs_it) {
-    common::Value* rkey = (*rhs_it).first;
-    common::Value* rval = (*rhs_it).second;
-    common::Value* lkey = (*lhs_it).first;
-    common::Value* lval = (*lhs_it).second;
+    Value* rkey = (*rhs_it).first;
+    Value* rval = (*rhs_it).second;
+    Value* lkey = (*lhs_it).first;
+    Value* lval = (*lhs_it).second;
 
     if (!lkey->Equals(rkey) || lval->Equals(rval)) {
       return false;
@@ -1077,7 +1077,7 @@ bool HashValue::Equals(const Value* other) const {
   return true;
 }
 
-ErrorValue::ErrorValue(const std::string& in_value, ErrorsType errorType, common::logging::LEVEL_LOG level)
+ErrorValue::ErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level)
     : Value(TYPE_ERROR), description_(in_value), error_type_(errorType), level_(level) {}
 
 ErrorValue::~ErrorValue() {}
@@ -1090,7 +1090,7 @@ ErrorValue::ErrorsType ErrorValue::GetErrorType() const {
   return error_type_;
 }
 
-common::logging::LEVEL_LOG ErrorValue::GetLevel() const {
+logging::LEVEL_LOG ErrorValue::GetLevel() const {
   return level_;
 }
 

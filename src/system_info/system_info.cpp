@@ -12,7 +12,7 @@ struct CurrentSystemInfo {
 
   const SystemInfo info;
 
-  static CurrentSystemInfo* Instance() { return &common::patterns::LazySingleton<CurrentSystemInfo>::Instance(); }
+  static CurrentSystemInfo* Instance() { return &patterns::LazySingleton<CurrentSystemInfo>::Instance(); }
 };
 
 }  // namespace

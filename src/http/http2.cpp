@@ -2033,12 +2033,12 @@ http2_priority_spec* frame_headers::priority() const {
 
 http2_nvs_t frame_headers::nva() const {
   http2_nvs_t res;
-  common::http2::http2_inflater ihd;
-  uint8_t* in = const_cast<uint8_t*>(c_payload() + sizeof(common::http2::http2_priority_spec));
-  uint32_t inlen = payload_size() - sizeof(common::http2::http2_priority_spec);
+  http2::http2_inflater ihd;
+  uint8_t* in = const_cast<uint8_t*>(c_payload() + sizeof(http2::http2_priority_spec));
+  uint32_t inlen = payload_size() - sizeof(http2::http2_priority_spec);
 
   for (;;) {
-    common::http2::http2_nv nv;
+    http2::http2_nv nv;
     int inflate_flags = 0;
     ssize_t sz = ihd.http2_inflate_hd(&nv, &inflate_flags, in, inlen, 0);
     if (sz == -1) {
@@ -2048,10 +2048,10 @@ http2_nvs_t frame_headers::nva() const {
     in += sz;
     inlen -= sz;
 
-    if (inflate_flags & common::http2::HTTP2_INFLATE_FINAL) {
+    if (inflate_flags & http2::HTTP2_INFLATE_FINAL) {
       break;
     }
-    if ((inflate_flags & common::http2::HTTP2_INFLATE_EMIT) == 0 && inlen == 0) {
+    if ((inflate_flags & http2::HTTP2_INFLATE_EMIT) == 0 && inlen == 0) {
       break;
     }
 
@@ -2162,18 +2162,17 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
 
   if ((validation_flags & 1) == 0) {
     return std::make_pair(http::HS_NOT_IMPLEMENTED,
-                          common::make_error_value("That method not specified.", common::ErrorValue::E_ERROR));
+                          make_error_value("That method not specified.", ErrorValue::E_ERROR));
   } else if ((validation_flags & 2) == 0) {
-    return std::make_pair(http::HS_BAD_REQUEST, common::make_error_value("Bad filename.", common::ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_BAD_REQUEST, make_error_value("Bad filename.", ErrorValue::E_ERROR));
   } else if ((validation_flags & 4) == 0) {
-    return std::make_pair(http::HS_FORBIDDEN,
-                          common::make_error_value("Scheme not found.", common::ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_FORBIDDEN, make_error_value("Scheme not found.", ErrorValue::E_ERROR));
   }
 
   lprotocol = HTTP_2_0_PROTOCOL_NAME;
   *req_out = http::http_request(lmethod, lpath, lprotocol, lheaders, lbody);
 
-  return std::make_pair(http::HS_OK, common::Error());
+  return std::make_pair(http::HS_OK, Error());
 }
 
 }  // namespace http2

@@ -40,31 +40,15 @@
 #include <common/types.h>  // for byte_array_t
 
 namespace common {
-class ArrayValue;
-}  // namespace common
-namespace common {
-class ByteArrayValue;
-}  // namespace common
-namespace common {
-class ErrorValue;
-}  // namespace common
-namespace common {
-class FundamentalValue;
-}  // namespace common
-namespace common {
-class HashValue;
-}  // namespace common
-namespace common {
-class SetValue;
-}  // namespace common
-namespace common {
-class StringValue;
-}  // namespace common
-namespace common {
-class ZSetValue;
-}  // namespace common
 
-namespace common {
+class ArrayValue;
+class ByteArrayValue;
+class ErrorValue;
+class FundamentalValue;
+class HashValue;
+class SetValue;
+class StringValue;
+class ZSetValue;
 
 class Value {
  public:
@@ -108,9 +92,7 @@ class Value {
   static SetValue* CreateSetValue();
   static ZSetValue* CreateZSetValue();
   static HashValue* CreateHashValue();
-  static ErrorValue* CreateErrorValue(const std::string& in_value,
-                                      ErrorsType errorType,
-                                      common::logging::LEVEL_LOG level);
+  static ErrorValue* CreateErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level);
 
   static Value* CreateEmptyValueFromType(Type t);
 
@@ -227,7 +209,7 @@ class ArrayValue : public Value {
   size_t GetSize() const { return list_.size(); }
 
   // Returns whether the list is empty.
-  bool empty() const { return list_.empty(); }
+  bool IsEmpty() const { return list_.empty(); }
 
   bool Set(size_t index, Value* in_value);
 
@@ -296,7 +278,7 @@ class ByteArrayValue : public Value {
   size_t GetSize() const { return array_.size(); }
 
   // Returns whether the list is empty.
-  bool empty() const { return array_.empty(); }
+  bool IsEmpty() const { return array_.empty(); }
 
   // Convenience forms of Append.
   void AppendBoolean(bool in_value);
@@ -336,7 +318,7 @@ class SetValue : public Value {
   size_t GetSize() const { return set_.size(); }
 
   // Returns whether the list is empty.
-  bool empty() const { return set_.empty(); }
+  bool IsEmpty() const { return set_.empty(); }
 
   // Insert a Value to the set.
   bool Insert(Value* in_value);
@@ -375,7 +357,7 @@ class ZSetValue : public Value {
   size_t GetSize() const { return map_.size(); }
 
   // Returns whether the list is empty.
-  bool empty() const { return map_.empty(); }
+  bool IsEmpty() const { return map_.empty(); }
 
   // Insert a Value to the map.
   bool Insert(Value* key, Value* value);
@@ -416,7 +398,7 @@ class HashValue : public Value {
   size_t GetSize() const { return hash_.size(); }
 
   // Returns whether the list is empty.
-  bool empty() const { return hash_.empty(); }
+  bool IsEmpty() const { return hash_.empty(); }
 
   // Insert a Value to the map.
   bool Insert(Value* key, Value* value);
@@ -441,12 +423,12 @@ class HashValue : public Value {
 
 class ErrorValue : public Value {
  public:
-  ErrorValue(const std::string& in_value, ErrorsType errorType, common::logging::LEVEL_LOG level);
+  ErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level);
 
   bool IsError() const;
 
   ErrorsType GetErrorType() const;
-  common::logging::LEVEL_LOG GetLevel() const;
+  logging::LEVEL_LOG GetLevel() const;
   std::string GetDescription() const;
   void SetDescription(const std::string& descr);
 
@@ -457,7 +439,7 @@ class ErrorValue : public Value {
  private:
   std::string description_;
   ErrorsType error_type_;
-  common::logging::LEVEL_LOG level_;
+  logging::LEVEL_LOG level_;
   DISALLOW_COPY_AND_ASSIGN(ErrorValue);
 };
 

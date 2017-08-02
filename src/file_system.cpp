@@ -147,7 +147,7 @@ ErrnoError call_fcntl_flock(descriptor_t fd_desc, bool do_lock) {
   lock.l_len = 0;  // Lock entire file.
   int res = fcntl(fd_desc, F_SETLK, &lock);
   if (res == -1) {
-    return make_error_value_perror("fcntl", errno, common::ErrorValue::E_ERROR);
+    return make_error_value_perror("fcntl", errno, ErrorValue::E_ERROR);
   }
 #else
   HANDLE fh = reinterpret_cast<HANDLE>(_get_osfhandle(fd_desc));
@@ -197,17 +197,17 @@ bool realpath_without_exist(const std::basic_string<CharT>& relative_path, std::
   return true;
 }
 
-common::ErrnoError create_directory_impl(const char* path) {
+ErrnoError create_directory_impl(const char* path) {
 #ifdef OS_WIN
   bool result = mkdir(path) != ERROR_RESULT_VALUE;
 #else
   bool result = mkdir(path, S_IRWXU | S_IRWXG | S_IRWXO) != ERROR_RESULT_VALUE;
 #endif
   if (!result && errno != EEXIST) {
-    return common::make_error_value_perror("mkdir", errno, common::ErrorValue::E_ERROR);
+    return make_error_value_perror("mkdir", errno, ErrorValue::E_ERROR);
   }
 
-  return common::ErrnoError();
+  return ErrnoError();
 }
 }  // namespace
 
@@ -496,7 +496,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
       }
 
       char pathBuffer[PATH_MAX] = {0};
-      common::SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
+      SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
       struct stat statbuf;
       if (!stat(pathBuffer, &statbuf)) {
         if (S_ISDIR(statbuf.st_mode)) {
@@ -962,7 +962,7 @@ bool ANSIFile::Write(const std::string& data) {
   return res == data.length();
 }
 
-bool ANSIFile::Write(const common::string16& data) {
+bool ANSIFile::Write(const string16& data) {
   if (!file_) {
     return false;
   }

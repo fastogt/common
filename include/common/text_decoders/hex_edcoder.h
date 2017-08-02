@@ -42,8 +42,8 @@ class HexEDcoder : public IEDcoder {
   HexEDcoder();
 
  private:
-  virtual common::Error EncodeImpl(const std::string& data, std::string* out) override;
-  virtual common::Error DecodeImpl(const std::string& data, std::string* out) override;
+  virtual Error EncodeImpl(const std::string& data, std::string* out) override;
+  virtual Error DecodeImpl(const std::string& data, std::string* out) override;
 };
 
 }  // namespace common

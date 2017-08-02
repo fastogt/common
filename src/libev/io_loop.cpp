@@ -64,7 +64,7 @@ void IoLoop::Stop() {
   loop_->Stop();
 }
 
-void IoLoop::RegisterClient(const common::net::socket_info& info) {
+void IoLoop::RegisterClient(const net::socket_info& info) {
   IoClient* client = CreateClient(info);
   RegisterClient(client);
 }
@@ -136,7 +136,7 @@ void IoLoop::RemoveTimer(timer_id_t id) {
   loop_->RemoveTimer(id);
 }
 
-common::patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const {
+patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const {
   return id_.id();
 }
 
@@ -179,7 +179,7 @@ std::string IoLoop::Name() const {
 }
 
 std::string IoLoop::FormatedName() const {
-  return common::MemSPrintf("[%s][%s(%llu)]", Name(), ClassName(), GetId());
+  return MemSPrintf("[%s][%s(%llu)]", Name(), ClassName(), GetId());
 }
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {

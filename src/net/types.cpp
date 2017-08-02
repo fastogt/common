@@ -57,7 +57,7 @@ bool HostAndPort::IsValid() const {
 }
 
 bool HostAndPort::IsLocalHost() const {
-  return common::net::IsLocalHost(host);
+  return net::IsLocalHost(host);
 }
 
 bool IsLocalHost(const std::string& host) {

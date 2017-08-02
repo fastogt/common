@@ -51,11 +51,11 @@ std::string Application::AppPath() const {
 }
 std::string Application::AppDir() const {
 #ifdef OS_MACOSX
-  std::string appP = common::file_system::pwd();
+  std::string appP = file_system::pwd();
 #else
   std::string appP = AppPath();
 #endif
-  return common::file_system::get_dir_path(appP);
+  return file_system::get_dir_path(appP);
 }
 int Application::Argc() const {
   return argc_;

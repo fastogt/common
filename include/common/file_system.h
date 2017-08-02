@@ -407,7 +407,7 @@ class StringPath {
 };
 
 typedef StringPath<char> ascii_string_path;
-typedef StringPath<char16, common::string16_char_traits> utf_string_path;
+typedef StringPath<char16, string16_char_traits> utf_string_path;
 
 template <typename CharT, typename Traits>
 inline bool operator==(const StringPath<CharT, Traits>& lhs, const StringPath<CharT, Traits>& rhs) {
@@ -502,14 +502,14 @@ class ANSIFile {
 
   bool Write(const buffer_t& data);
   bool Write(const std::string& data);
-  bool Write(const common::string16& data);
+  bool Write(const string16& data);
   template <typename... Args>
   bool WriteFormated(const char* format, Args... args) {
     if (!file_) {
       return false;
     }
 
-    std::string data = common::MemSPrintf(format, args...);
+    std::string data = MemSPrintf(format, args...);
     return Write(data);
   }
 

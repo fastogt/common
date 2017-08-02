@@ -42,8 +42,8 @@ class Base64EDcoder : public IEDcoder {
   Base64EDcoder();
 
  private:
-  virtual common::Error EncodeImpl(const std::string& data, std::string* out) override;
-  virtual common::Error DecodeImpl(const std::string& data, std::string* out) override;
+  virtual Error EncodeImpl(const std::string& data, std::string* out) override;
+  virtual Error DecodeImpl(const std::string& data, std::string* out) override;
 };
 
 }  // namespace common

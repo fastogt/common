@@ -112,7 +112,7 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   memset(&zs, 0, sizeof(zs));
 
   if (deflateInit(&zs, compressionlevel) != Z_OK) {
-    return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
+    return make_error_value("Zlib init error", ErrorValue::E_ERROR);
   }
 #if defined(ZLIB_CONST) && !defined(z_const)
   zs.next_in = data.data();
@@ -146,7 +146,7 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   if (ret != Z_STREAM_END) {  // an error occurred that was not EOF
     char buffer[256];
     SNPrintf(buffer, sizeof(buffer), "Zlib encode error returned code: %d", ret);
-    return common::make_error_value(buffer, common::ErrorValue::E_ERROR);
+    return make_error_value(buffer, ErrorValue::E_ERROR);
   }
 
   *out = lout;
@@ -162,7 +162,7 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
   memset(&zs, 0, sizeof(zs));
 
   if (inflateInit(&zs) != Z_OK) {
-    return common::make_error_value("Zlib init error", common::ErrorValue::E_ERROR);
+    return make_error_value("Zlib init error", ErrorValue::E_ERROR);
   }
 
 #if defined(ZLIB_CONST) && !defined(z_const)
@@ -194,7 +194,7 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
   if (ret != Z_STREAM_END) {  // an error occurred that was not EOF
     char buffer[256];
     SNPrintf(buffer, sizeof(buffer), "Zlib decode error returned code: %d", ret);
-    return common::make_error_value(buffer, common::ErrorValue::E_ERROR);
+    return make_error_value(buffer, ErrorValue::E_ERROR);
   }
 
   *out = lout;

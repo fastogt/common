@@ -203,22 +203,21 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
           if (spaceP != std::string::npos) {
             std::string path = protcolAndPath.substr(1, spaceP - 2);
             if (protcolAndPath[0] != '/') {  // must start with /
-              return std::make_pair(HS_BAD_REQUEST,
-                                    common::make_error_value("Bad filename.", common::ErrorValue::E_ERROR));
+              return std::make_pair(HS_BAD_REQUEST, make_error_value("Bad filename.", ErrorValue::E_ERROR));
             }
 
             lprotocol = protcolAndPath.substr(spaceP);
-            lpath = common::uri::Upath(path);
+            lpath = uri::Upath(path);
           } else {
-            return std::make_pair(HS_FORBIDDEN, common::make_error_value("Not allowed.", common::ErrorValue::E_ERROR));
+            return std::make_pair(HS_FORBIDDEN, make_error_value("Not allowed.", ErrorValue::E_ERROR));
           }
         } else {
-          return std::make_pair(HS_NOT_IMPLEMENTED, common::make_error_value("That method is not implemented.",
-                                                                             common::ErrorValue::E_ERROR));
+          return std::make_pair(HS_NOT_IMPLEMENTED,
+                                make_error_value("That method is not implemented.", ErrorValue::E_ERROR));
         }
       } else {
         return std::make_pair(HS_NOT_IMPLEMENTED,
-                              common::make_error_value("That method is not implemented.", common::ErrorValue::E_ERROR));
+                              make_error_value("That method is not implemented.", ErrorValue::E_ERROR));
       }
     } else {
       string_size_t delem = line.find_first_of(':');
@@ -244,11 +243,11 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
   }
 
   if (line_count == 0) {
-    return std::make_pair(HS_BAD_REQUEST, common::make_error_value("Not found CRLF", common::ErrorValue::E_ERROR));
+    return std::make_pair(HS_BAD_REQUEST, make_error_value("Not found CRLF", ErrorValue::E_ERROR));
   }
 
   *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody);
-  return std::make_pair(HS_OK, common::Error());
+  return std::make_pair(HS_OK, Error());
 }
 
 }  // namespace http
@@ -396,8 +395,8 @@ std::string ConvertToString(http::http_request request) {
   uri::Upath upath = request.path();
   http::http_method method = request.method();
 
-  std::string headerout = common::MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.GetPath(),
-                                             ConvertToString(request.protocol()));  // "GET /hello.htm HTTP/1.1\r\n"
+  std::string headerout = MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.GetPath(),
+                                     ConvertToString(request.protocol()));  // "GET /hello.htm HTTP/1.1\r\n"
   http::http_request::headers_t headers = request.headers();
   for (size_t i = 0; i < headers.size(); ++i) {
     http::header_t header = headers[i];

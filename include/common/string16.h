@@ -125,7 +125,7 @@ struct string16_char_traits {
   static int_type eof() { return static_cast<int_type>(EOF); }
 };
 
-typedef std::basic_string<char16, common::string16_char_traits> string16;
+typedef std::basic_string<char16, string16_char_traits> string16;
 
 extern std::ostream& operator<<(std::ostream& out, const string16& str);
 

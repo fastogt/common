@@ -43,16 +43,16 @@
 namespace common {
 namespace qt {
 
-class Logger : public QObject, public common::patterns::LazySingleton<Logger> {
-  friend class common::patterns::LazySingleton<Logger>;
+class Logger : public QObject, public patterns::LazySingleton<Logger> {
+  friend class patterns::LazySingleton<Logger>;
   Q_OBJECT
  public:
-  void print(const char* mess, common::logging::LEVEL_LOG level, bool notify);
-  void print(const QString& mess, common::logging::LEVEL_LOG level, bool notify);
-  void print(const std::string& mess, common::logging::LEVEL_LOG level, bool notify);
+  void print(const char* mess, logging::LEVEL_LOG level, bool notify);
+  void print(const QString& mess, logging::LEVEL_LOG level, bool notify);
+  void print(const std::string& mess, logging::LEVEL_LOG level, bool notify);
 
  Q_SIGNALS:
-  void printed(const QString& mess, common::logging::LEVEL_LOG level);
+  void printed(const QString& mess, logging::LEVEL_LOG level);
 
  private:
   Logger();

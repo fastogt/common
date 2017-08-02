@@ -38,7 +38,7 @@ namespace common {
 
 CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(CompressZlib) {}
 
-common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
   buffer_t buff_data;
   if (!ConvertFromString(data, &buff_data)) {
@@ -50,7 +50,7 @@ common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::stri
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
-  Error err = common::EncodeZlib(buff_data, &buff_out);
+  Error err = EncodeZlib(buff_data, &buff_out);
   if (err && err->IsError()) {
     return err;
   }
@@ -60,11 +60,11 @@ common::Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::stri
 #else
   UNUSED(data);
   UNUSED(out);
-  return common::make_error_value("CompressZlib encode not supported", common::ErrorValue::E_ERROR);
+  return make_error_value("CompressZlib encode not supported", ErrorValue::E_ERROR);
 #endif
 }
 
-common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_ZLIB
   buffer_t buff_data;
   if (!ConvertFromString(data, &buff_data)) {
@@ -76,7 +76,7 @@ common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::stri
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
-  Error err = common::DecodeZlib(buff_data, &buff_out);
+  Error err = DecodeZlib(buff_data, &buff_out);
   if (err && err->IsError()) {
     return err;
   }
@@ -86,7 +86,7 @@ common::Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::stri
 #else
   UNUSED(data);
   UNUSED(out);
-  return common::make_error_value("CompressZlib decode not supported", common::ErrorValue::E_ERROR);
+  return make_error_value("CompressZlib decode not supported", ErrorValue::E_ERROR);
 #endif
 }
 
