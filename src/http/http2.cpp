@@ -40,6 +40,7 @@
 #include <vector>     // for operator==, vector
 
 #include <common/convert2string.h>  // for ConvertToString, etc
+#include <common/portable_endian.h>
 
 #define MAKE_STATIC_ENT(N, V, T, H) \
   { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, NULL, 0, (H), (T) }
