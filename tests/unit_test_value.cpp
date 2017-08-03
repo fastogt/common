@@ -22,6 +22,7 @@ void CheckValue(U* (*create_ptr)(T t), bool (U::*get_ptr)(T* t) const, T val, co
 TEST(Value, create_and_get_simple_type) {
   common::Value* val_null = common::Value::CreateNullValue();
   ASSERT_TRUE(val_null && val_null->GetType() == common::Value::TYPE_NULL);
+  delete val_null;
 
   CheckValue(&common::Value::CreateBooleanValue, &common::FundamentalValue::GetAsBoolean, true,
              common::Value::TYPE_BOOLEAN);
@@ -48,9 +49,11 @@ TEST(Value, create_and_get_complex_type) {
   std::string data2;
   ASSERT_TRUE(val_string->GetAsString(&data2));
   ASSERT_EQ(data, data2);
+  delete val_string;
 
   common::Value* val_arr = common::Value::CreateArrayValue();
   ASSERT_TRUE(val_arr && val_arr->GetType() == common::Value::TYPE_ARRAY);
+  delete val_arr;
 
   const common::byte_array_t bt = {0, 1};
   common::Value* val_barr = common::Value::CreateByteArrayValue(bt);
@@ -58,15 +61,19 @@ TEST(Value, create_and_get_complex_type) {
   common::byte_array_t bt2;
   ASSERT_TRUE(val_barr->GetAsByteArray(&bt2));
   ASSERT_EQ(bt2, bt);
+  delete val_barr;
 
   common::Value* val_set = common::Value::CreateSetValue();
   ASSERT_TRUE(val_set && val_set->GetType() == common::Value::TYPE_SET);
+  delete val_set;
 
   common::Value* val_zset = common::Value::CreateZSetValue();
   ASSERT_TRUE(val_zset && val_zset->GetType() == common::Value::TYPE_ZSET);
+  delete val_zset;
 
   common::Value* val_hash = common::Value::CreateHashValue();
   ASSERT_TRUE(val_hash && val_hash->GetType() == common::Value::TYPE_HASH);
+  delete val_hash;
 
   const std::string err_descr = "err";
   const common::Value::ErrorsType ert = common::Value::E_INTERRUPTED;
@@ -76,4 +83,5 @@ TEST(Value, create_and_get_complex_type) {
   ASSERT_EQ(val_error->GetDescription(), err_descr);
   ASSERT_EQ(val_error->GetErrorType(), ert);
   ASSERT_EQ(val_error->GetLevel(), lg);
+  delete val_error;
 }

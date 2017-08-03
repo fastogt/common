@@ -1353,8 +1353,8 @@ http2_context::~http2_context() {}
 
 http2_inflater::http2_inflater()
     : ctx(),
-      ent_keep(NULL),
-      nv_keep(NULL),
+      ent_keep(nullptr),
+      nv_keep(nullptr),
       settings_hd_table_bufsize_max(HTTP2_DEFAULT_MAX_BUFFER_SIZE),
       opcode(HTTP2_OPCODE_NONE),
       state(HTTP2_STATE_INFLATE_START) {
@@ -1365,6 +1365,10 @@ http2_inflater::http2_inflater()
   newnamelen = 0;
   index_required = 0;
   no_index = 0;
+}
+
+http2_inflater::~http2_inflater() {
+  delete ent_keep;
 }
 
 ssize_t http2_inflater::http2_inflate_hd(http2_nv* nv_out,

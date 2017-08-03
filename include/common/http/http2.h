@@ -242,6 +242,8 @@ enum http2_inflate_flag { HTTP2_INFLATE_NONE = 0, HTTP2_INFLATE_FINAL = 0x01, HT
 
 struct http2_inflater {
   http2_inflater();
+  ~http2_inflater();
+
   ssize_t http2_inflate_hd(http2_nv* nv_out, int* inflate_flags, uint8_t* in, uint32_t inlen, int in_final);
   ssize_t http2_inflate_hd2(http2_nv* nv_out,
                             int* inflate_flags,
@@ -265,6 +267,9 @@ struct http2_inflater {
   uint8_t huffman_encoded;
   uint8_t index_required;
   uint8_t no_index;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(http2_inflater);
 };
 
 struct sid {
