@@ -58,5 +58,23 @@ Error DecodeBase64(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
+Error EncodeBase64(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::base64::encode64(data);
+  return Error();
+}
+
+Error DecodeBase64(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::base64::decode64(data);
+  return Error();
+}
+
 }  // namespace compress
 }  // namespace common

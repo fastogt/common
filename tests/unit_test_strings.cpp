@@ -139,12 +139,12 @@ TEST(string, Base64Compress) {
       "http_root" : "/home/sasha/timeshift/26"} ]},
       "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
       "type" : "1"},"type" : "relay"})");
-  common::buffer_t encoded_hex;
-  common::Error err = common::compress::EncodeBase64(json, &encoded_hex);
+  common::buffer_t encoded_base64;
+  common::Error err = common::compress::EncodeBase64(json, &encoded_base64);
   ASSERT_FALSE(err && err->IsError());
 
   common::buffer_t decoded;
-  err = common::compress::DecodeBase64(encoded_hex, &decoded);
+  err = common::compress::DecodeBase64(encoded_base64, &decoded);
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(json, decoded);
 }
