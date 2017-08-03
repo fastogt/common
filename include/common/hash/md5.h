@@ -29,6 +29,8 @@
 
 #pragma once
 
+#define MD5_HASH_LENGHT 16
+
 namespace common {
 namespace hash {
 
