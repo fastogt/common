@@ -27,22 +27,44 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/hex_edcoder.h>
+#include <common/compress/snappy_compress.h>
 
-#include <string>  // for string
-
-#include <common/compress/hex.h>
+#ifdef HAVE_SNAPPY
+#include <snappy.h>
 
 namespace common {
+namespace compress {
 
-HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
+Error EncodeSnappy(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
 
-Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  return compress::EncodeHex(data, false, out);
+  std::string lout;
+  size_t writed_bytes = snappy::Compress(data.c_str(), data.length(), &lout);
+  if (writed_bytes == 0) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = lout;
+  return Error();
 }
 
-Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  return compress::DecodeHex(data, out);
+Error DecodeSnappy(const std::string& data, std::string* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  std::string lout;
+  size_t writed_bytes = snappy::Uncompress(data.c_str(), data.length(), &lout);
+  if (writed_bytes == 0) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = lout;
+  return Error();
 }
 
+}  // namespace compress
 }  // namespace common
+#endif

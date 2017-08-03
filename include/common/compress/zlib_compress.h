@@ -27,22 +27,21 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/hex_edcoder.h>
+#pragma once
 
-#include <string>  // for string
+#include <common/error.h>
 
-#include <common/compress/hex.h>
+#ifdef HAVE_ZLIB
+
+#include <zlib.h>
 
 namespace common {
+namespace compress {
 
-HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
+Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
+Error DecodeZlib(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 
-Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  return compress::EncodeHex(data, false, out);
-}
-
-Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  return compress::DecodeHex(data, out);
-}
-
+}  // namespace compress
 }  // namespace common
+
+#endif

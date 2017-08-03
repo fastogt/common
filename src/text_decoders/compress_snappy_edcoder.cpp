@@ -31,7 +31,7 @@
 
 #include <string>
 
-#include <common/string_compress.h>
+#include <common/compress/snappy_compress.h>
 
 namespace common {
 
@@ -39,7 +39,7 @@ CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(CompressSnappy) {}
 
 Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_SNAPPY
-  return EncodeSnappy(data, out);
+  return compress::EncodeSnappy(data, out);
 #else
   UNUSED(data);
   UNUSED(out);
@@ -49,7 +49,7 @@ Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::string* ou
 
 Error CompressSnappyEDcoder::DecodeImpl(const std::string& data, std::string* out) {
 #ifdef HAVE_SNAPPY
-  return DecodeSnappy(data, out);
+  return compress::DecodeSnappy(data, out);
 #else
   UNUSED(data);
   UNUSED(out);

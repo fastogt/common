@@ -27,39 +27,54 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/compress/hex.h>
 
-#include <string>
+#include <string.h>  // for memset
 
-#include <common/error.h>
+#include <string>  // for string
 
-namespace common {
-
-Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) WARN_UNUSED_RESULT;
-Error EncodeHex(const std::string& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
-
-Error DecodeHex(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeHex(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-
-Error EncodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-
-}  // namespace common
-
-#ifdef HAVE_ZLIB
-
-#include <zlib.h>
+#include <common/convert2string.h>
+#include <common/sprintf.h>  // for SNPrintf
+#include <common/utils.h>
 
 namespace common {
-Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
-Error DecodeZlib(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-}  // namespace common
+namespace compress {
 
-#endif
+Error EncodeHex(const std::string& data, bool is_lower, std::string* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
 
-#ifdef HAVE_SNAPPY
-namespace common {
-Error EncodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+  *out = utils::hex::encode(data, is_lower);
+  return Error();
+}
+
+Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::encode(data, is_lower);
+  return Error();
+}
+
+Error DecodeHex(const buffer_t& data, buffer_t* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::decode(data);
+  return Error();
+}
+
+Error DecodeHex(const std::string& data, std::string* out) {
+  if (!out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::hex::decode(data);
+  return Error();
+}
+
+}  // namespace compress
 }  // namespace common
-#endif

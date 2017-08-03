@@ -29,10 +29,8 @@
 
 #include <common/text_decoders/compress_zlib_edcoder.h>
 
-#include <string>
-
+#include <common/compress/zlib_compress.h>
 #include <common/convert2string.h>
-#include <common/string_compress.h>
 
 namespace common {
 
@@ -50,7 +48,7 @@ Error CompressZlibEDcoder::EncodeImpl(const std::string& data, std::string* out)
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
-  Error err = EncodeZlib(buff_data, &buff_out);
+  Error err = compress::EncodeZlib(buff_data, &buff_out);
   if (err && err->IsError()) {
     return err;
   }
@@ -76,7 +74,7 @@ Error CompressZlibEDcoder::DecodeImpl(const std::string& data, std::string* out)
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
 
-  Error err = DecodeZlib(buff_data, &buff_out);
+  Error err = compress::DecodeZlib(buff_data, &buff_out);
   if (err && err->IsError()) {
     return err;
   }

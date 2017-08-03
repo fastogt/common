@@ -27,22 +27,17 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/hex_edcoder.h>
+#pragma once
 
-#include <string>  // for string
+#include <string>
 
-#include <common/compress/hex.h>
+#include <common/error.h>
 
 namespace common {
+namespace compress {
 
-HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
+Error EncodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 
-Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  return compress::EncodeHex(data, false, out);
-}
-
-Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  return compress::DecodeHex(data, out);
-}
-
+}  // namespace compress
 }  // namespace common

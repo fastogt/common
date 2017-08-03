@@ -27,73 +27,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/string_compress.h>
-
-#include <string.h>  // for memset
-
-#include <string>  // for string
-
-#include <common/convert2string.h>
-#include <common/sprintf.h>  // for SNPrintf
-#include <common/utils.h>
-
-namespace common {
-
-Error EncodeHex(const std::string& data, bool is_lower, std::string* out) {
-  if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::hex::encode(data, is_lower);
-  return Error();
-}
-
-Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
-  if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::hex::encode(data, is_lower);
-  return Error();
-}
-
-Error DecodeHex(const buffer_t& data, buffer_t* out) {
-  if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::hex::decode(data);
-  return Error();
-}
-
-Error DecodeHex(const std::string& data, std::string* out) {
-  if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::hex::decode(data);
-  return Error();
-}
-
-Error EncodeBase64(const buffer_t& data, buffer_t* out) {
-  if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::base64::encode64(data);
-  return Error();
-}
-
-Error DecodeBase64(const buffer_t& data, buffer_t* out) {
-  if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = utils::base64::decode64(data);
-  return Error();
-}
-
-}  // namespace common
+#include <common/compress/zlib_compress.h>
 
 #ifdef HAVE_ZLIB
 
@@ -102,6 +36,7 @@ Error DecodeBase64(const buffer_t& data, buffer_t* out) {
 #define BUFFER_SIZE 1024 * 32
 
 namespace common {
+namespace compress {
 
 Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   if (data.empty() || !out) {
@@ -201,44 +136,7 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
+}  // namespace compress
 }  // namespace common
 
-#endif
-
-#ifdef HAVE_SNAPPY
-#include <snappy.h>
-
-namespace common {
-
-Error EncodeSnappy(const std::string& data, std::string* out) {
-  if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  std::string lout;
-  size_t writed_bytes = snappy::Compress(data.c_str(), data.length(), &lout);
-  if (writed_bytes == 0) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = lout;
-  return Error();
-}
-
-Error DecodeSnappy(const std::string& data, std::string* out) {
-  if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  std::string lout;
-  size_t writed_bytes = snappy::Uncompress(data.c_str(), data.length(), &lout);
-  if (writed_bytes == 0) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
-  }
-
-  *out = lout;
-  return Error();
-}
-
-}  // namespace common
 #endif

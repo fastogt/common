@@ -27,22 +27,36 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/hex_edcoder.h>
+#include <common/compress/base64.h>
+
+#include <string.h>  // for memset
 
 #include <string>  // for string
 
-#include <common/compress/hex.h>
+#include <common/convert2string.h>
+#include <common/sprintf.h>  // for SNPrintf
+#include <common/utils.h>
 
 namespace common {
+namespace compress {
 
-HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
+Error EncodeBase64(const buffer_t& data, buffer_t* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
 
-Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  return compress::EncodeHex(data, false, out);
+  *out = utils::base64::encode64(data);
+  return Error();
 }
 
-Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  return compress::DecodeHex(data, out);
+Error DecodeBase64(const buffer_t& data, buffer_t* out) {
+  if (data.empty() || !out) {
+    return make_inval_error_value(ErrorValue::E_ERROR);
+  }
+
+  *out = utils::base64::decode64(data);
+  return Error();
 }
 
+}  // namespace compress
 }  // namespace common

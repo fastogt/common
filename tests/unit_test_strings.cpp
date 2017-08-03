@@ -6,7 +6,10 @@
 #include <common/string_util.h>
 #include <common/utf_string_conversions.h>
 
-#include <common/string_compress.h>
+#include <common/compress/base64.h>
+#include <common/compress/hex.h>
+#include <common/compress/snappy_compress.h>
+#include <common/compress/zlib_compress.h>
 
 #define OPENSSL_VERSION_NUMBER_EXAMPLE 0x00090301
 #define OPENSSL_VERSION_TEXT_EXAMPLE "0.9.3.1"
@@ -118,11 +121,11 @@ TEST(string, HexCompress) {
       "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_hex;
-  common::Error err = common::EncodeHex(json, false, &encoded_hex);
+  common::Error err = common::compress::EncodeHex(json, false, &encoded_hex);
   ASSERT_FALSE(err && err->IsError());
 
   common::buffer_t decoded;
-  err = common::DecodeHex(encoded_hex, &decoded);
+  err = common::compress::DecodeHex(encoded_hex, &decoded);
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(json, decoded);
 }
@@ -137,11 +140,11 @@ TEST(string, Base64Compress) {
       "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_hex;
-  common::Error err = common::EncodeBase64(json, &encoded_hex);
+  common::Error err = common::compress::EncodeBase64(json, &encoded_hex);
   ASSERT_FALSE(err && err->IsError());
 
   common::buffer_t decoded;
-  err = common::DecodeBase64(encoded_hex, &decoded);
+  err = common::compress::DecodeBase64(encoded_hex, &decoded);
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(json, decoded);
 }
@@ -157,11 +160,11 @@ TEST(string, ZlibCompress) {
       "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_zlib;
-  common::Error err = common::EncodeZlib(json, &encoded_zlib);
+  common::Error err = common::compress::EncodeZlib(json, &encoded_zlib);
   ASSERT_FALSE(err && err->IsError());
 
   common::buffer_t decoded;
-  err = common::DecodeZlib(encoded_zlib, &decoded);
+  err = common::compress::DecodeZlib(encoded_zlib, &decoded);
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(json, decoded);
 }
@@ -178,11 +181,11 @@ TEST(string, SnappyCompress) {
       "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
       "type" : "1"},"type" : "relay"})";
   std::string encoded_snappy;
-  common::Error err = common::EncodeSnappy(json, &encoded_snappy);
+  common::Error err = common::compress::EncodeSnappy(json, &encoded_snappy);
   ASSERT_FALSE(err && err->IsError());
 
   std::string decoded;
-  err = common::DecodeSnappy(encoded_snappy, &decoded);
+  err = common::compress::DecodeSnappy(encoded_snappy, &decoded);
   ASSERT_FALSE(err && err->IsError());
   ASSERT_EQ(json, decoded);
 }
