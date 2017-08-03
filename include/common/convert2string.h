@@ -42,6 +42,7 @@ namespace common {
 
 string16 ConvertToString16(const std::string& from);
 string16 ConvertToString16(const buffer_t& from);
+string16 ConvertToString16(const string16& from);
 
 string16 ConvertToString16(bool value);
 string16 ConvertToString16(char value);
@@ -61,6 +62,7 @@ string16 ConvertToString16(double value);
 
 std::string ConvertToString(const buffer_t& from);
 std::string ConvertToString(const string16& from);
+std::string ConvertToString(const std::string& from);
 
 std::string ConvertToString(bool value);
 std::string ConvertToString(char value);
@@ -80,6 +82,7 @@ std::string ConvertToString(double value, int prec = 2);
 
 buffer_t ConvertToBytes(const std::string& from);
 buffer_t ConvertToBytes(const string16& from);
+buffer_t ConvertToBytes(const buffer_t& from);
 
 buffer_t ConvertToBytes(bool value);
 buffer_t ConvertToBytes(char value);
@@ -110,6 +113,7 @@ bool ConvertFromString16(const string16& from, long long* out) WARN_UNUSED_RESUL
 bool ConvertFromString16(const string16& from, unsigned long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, double* out) WARN_UNUSED_RESULT;
+bool ConvertFromString16(const string16& from, string16* out) WARN_UNUSED_RESULT;
 
 bool ConvertFromString(const std::string& from, string16* out) WARN_UNUSED_RESULT;
 #if defined(WCHAR_T_IS_UTF16)
@@ -130,6 +134,7 @@ bool ConvertFromString(const std::string& from, long long* out) WARN_UNUSED_RESU
 bool ConvertFromString(const std::string& from, unsigned long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, double* out) WARN_UNUSED_RESULT;
+bool ConvertFromString(const std::string& from, std::string* out) WARN_UNUSED_RESULT;
 
 bool ConvertFromBytes(const buffer_t& from, string16* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, std::string* out) WARN_UNUSED_RESULT;
@@ -146,6 +151,7 @@ bool ConvertFromBytes(const buffer_t& from, long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, unsigned long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, double* out) WARN_UNUSED_RESULT;
+bool ConvertFromBytes(const buffer_t& from, buffer_t* out) WARN_UNUSED_RESULT;
 
 namespace utils {
 namespace hex {

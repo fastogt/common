@@ -418,6 +418,10 @@ string16 ConvertToString16(const buffer_t& from) {
   return ConvertToString16(str);
 }
 
+string16 ConvertToString16(const string16& from) {
+  return from;
+}
+
 string16 ConvertToString16(bool value) {
   return value ? ASCIIToUTF16("true") : ASCIIToUTF16("false");
 }
@@ -687,6 +691,15 @@ bool ConvertFromString16(const string16& from, double* out) {
   return ConvertFromString(ascii, out);
 }
 
+bool ConvertFromString16(const string16& from, string16* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = from;
+  return true;
+}
+
 // std string
 
 std::string ConvertToString(const buffer_t& from) {
@@ -700,6 +713,10 @@ std::string ConvertToString(const string16& from) {
   }
 
   return ascii;
+}
+
+std::string ConvertToString(const std::string& from) {
+  return from;
 }
 
 std::string ConvertToString(bool value) {
@@ -994,6 +1011,15 @@ bool ConvertFromString(const std::string& from, double* out) {
   return true;
 }
 
+bool ConvertFromString(const std::string& from, std::string* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = from;
+  return true;
+}
+
 // buffer_t
 
 buffer_t ConvertToBytes(const std::string& from) {
@@ -1012,6 +1038,10 @@ buffer_t ConvertToBytes(const string16& from) {
   }
 
   return buff;
+}
+
+buffer_t ConvertToBytes(const buffer_t& from) {
+  return from;
 }
 
 buffer_t ConvertToBytes(bool value) {
@@ -1294,6 +1324,15 @@ bool ConvertFromBytes(const buffer_t& from, double* out) {
   }
 
   *out = atof(reinterpret_cast<const char*>(from.data()));
+  return true;
+}
+
+bool ConvertFromBytes(const buffer_t& from, buffer_t* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = from;
   return true;
 }
 

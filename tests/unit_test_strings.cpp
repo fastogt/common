@@ -190,3 +190,368 @@ TEST(string, SnappyCompress) {
   ASSERT_EQ(json, decoded);
 }
 #endif
+
+TEST(Utils, hex) {
+  const std::string invalid_hex = "C";
+  auto invalid_dec = common::utils::hex::decode(invalid_hex);
+  ASSERT_TRUE(invalid_dec.empty());
+
+  const std::string invalid_hex_2 = "CY";
+  auto invalid_dec2 = common::utils::hex::decode(invalid_hex_2);
+  ASSERT_TRUE(invalid_dec2.empty());
+
+  std::string empty_hex;
+  invalid_dec = common::utils::hex::decode(empty_hex);
+  ASSERT_TRUE(invalid_dec.empty());
+
+  const common::buffer_t hex = MAKE_BUFFER("CDFF");
+  auto dec = common::utils::hex::decode(hex);
+
+  ASSERT_EQ(dec.size(), 2);
+  ASSERT_EQ(dec[0], 0xCD);
+  ASSERT_EQ(dec[1], 0xFF);
+
+  common::buffer_t enc = common::utils::hex::encode(dec, false);
+  ASSERT_EQ(hex, enc);
+
+  const common::buffer_t hex2 = MAKE_BUFFER("11ff");
+  dec = common::utils::hex::decode(hex2);
+
+  ASSERT_EQ(dec.size(), 2);
+  ASSERT_EQ(dec[0], 0x11);
+  ASSERT_EQ(dec[1], 0xFF);
+
+  enc = common::utils::hex::encode(dec, true);
+  ASSERT_EQ(hex2, enc);
+
+  const common::buffer_t seq = MAKE_BUFFER("1234567890");
+  const std::vector<uint8_t> dec_seq = {18, 52, 86, 120, 144};
+  std::vector<uint8_t> dec2 = common::utils::hex::decode(seq);
+  ASSERT_EQ(dec_seq, dec2);
+
+  common::buffer_t enc2 = common::utils::hex::encode(dec2, false);
+  ASSERT_EQ(seq, enc2);
+}
+
+TEST(ConvertFromString, boolean) {
+  bool b = false;
+  bool* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("true", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("true", &b));
+  ASSERT_TRUE(b);
+
+  ASSERT_TRUE(common::ConvertFromString("TRUE", &b));
+  ASSERT_TRUE(b);
+
+  ASSERT_TRUE(common::ConvertFromString("false", &b));
+  ASSERT_FALSE(b);
+
+  ASSERT_TRUE(common::ConvertFromString("abc", &b));
+  ASSERT_FALSE(b);
+}
+
+TEST(ConvertFromString, uint8) {
+  uint8_t val;
+  uint8_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("0", &val));
+  ASSERT_EQ(val, 0);
+
+  ASSERT_TRUE(common::ConvertFromString("255", &val));
+  ASSERT_EQ(val, 255);
+
+  ASSERT_FALSE(common::ConvertFromString("256", &val));
+  ASSERT_FALSE(common::ConvertFromString("-1", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, int8) {
+  char val;
+  char* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("-128", &val));
+  ASSERT_EQ(val, -128);
+
+  ASSERT_TRUE(common::ConvertFromString("127", &val));
+  ASSERT_EQ(val, 127);
+
+  ASSERT_FALSE(common::ConvertFromString("128", &val));
+  ASSERT_FALSE(common::ConvertFromString("-129", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, uint16) {
+  uint16_t val;
+  uint16_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("0", &val));
+  ASSERT_EQ(val, 0);
+
+  ASSERT_TRUE(common::ConvertFromString("65535", &val));
+  ASSERT_EQ(val, 65535);
+
+  ASSERT_FALSE(common::ConvertFromString("-1", &val));
+  ASSERT_FALSE(common::ConvertFromString("65536", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, int16) {
+  int16_t val;
+  int16_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("-32768", &val));
+  ASSERT_EQ(val, -32768);
+
+  ASSERT_TRUE(common::ConvertFromString("32767", &val));
+  ASSERT_EQ(val, 32767);
+
+  ASSERT_FALSE(common::ConvertFromString("-32769", &val));
+  ASSERT_FALSE(common::ConvertFromString("32768", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, uint32) {
+  uint32_t val;
+  uint32_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("0", &val));
+  ASSERT_EQ(val, 0);
+
+  ASSERT_TRUE(common::ConvertFromString("4294967295", &val));
+  ASSERT_EQ(val, 4294967295);
+
+  ASSERT_FALSE(common::ConvertFromString("-1", &val));
+  ASSERT_FALSE(common::ConvertFromString("4294967297", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, int32) {
+  int32_t val;
+  int16_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("-2147483648", &val));
+  ASSERT_EQ(val, -2147483648);
+
+  ASSERT_TRUE(common::ConvertFromString("2147483647", &val));
+  ASSERT_EQ(val, 2147483647);
+
+  ASSERT_FALSE(common::ConvertFromString("-2147483649", &val));
+  ASSERT_FALSE(common::ConvertFromString("2147483648", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, uint64) {
+  uint64_t val;
+  uint64_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("0", &val));
+  ASSERT_EQ(val, 0);
+
+  ASSERT_TRUE(common::ConvertFromString("18446744073709551615", &val));
+  ASSERT_EQ(val, 18446744073709551615ULL);
+
+  ASSERT_FALSE(common::ConvertFromString("18446744073709551616", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, int64) {
+  int64_t val;
+  int64_t* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("1", &val));
+  ASSERT_EQ(val, 1);
+
+  ASSERT_TRUE(common::ConvertFromString("-9223372036854775807", &val));
+  ASSERT_EQ(val, -9223372036854775807LL);
+
+  ASSERT_TRUE(common::ConvertFromString("9223372036854775807", &val));
+  ASSERT_EQ(val, 9223372036854775807LL);
+
+  ASSERT_FALSE(common::ConvertFromString("-9223372036854775809", &val));
+  ASSERT_FALSE(common::ConvertFromString("9223372036854775808", &val));
+
+  ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
+  ASSERT_FALSE(common::ConvertFromString("abc42", &val));
+}
+
+TEST(ConvertFromString, string) {
+  std::string val;
+  std::string* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("", &val));
+  ASSERT_EQ(val, "");
+
+  ASSERT_TRUE(common::ConvertFromString(std::string(), &val));
+  ASSERT_EQ(val, std::string());
+
+  ASSERT_TRUE(common::ConvertFromString("abc\n ", &val));
+  ASSERT_EQ(val, "abc\n ");
+}
+
+TEST(ConvertFromString, float) {
+  float val;
+  float* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("3.1415926", &val));
+  ASSERT_FLOAT_EQ(val, 3.1415926f);
+
+  ASSERT_TRUE(common::ConvertFromString("3.4028234e38", &val));
+  ASSERT_FLOAT_EQ(val, 3.4028234e38f);
+
+  ASSERT_TRUE(common::ConvertFromString("1.1754943e-38", &val));
+  ASSERT_FLOAT_EQ(val, 1.1754943e-38f);
+
+  ASSERT_TRUE(common::ConvertFromString("0.0000001", &val));
+  ASSERT_FLOAT_EQ(val, 0.0000001f);
+}
+
+TEST(ConvertFromString, double) {
+  double val;
+  double* ptr = nullptr;
+  ASSERT_FALSE(common::ConvertFromString("1", ptr));
+
+  ASSERT_TRUE(common::ConvertFromString("3.1415926", &val));
+  ASSERT_DOUBLE_EQ(val, 3.1415926);
+
+  ASSERT_TRUE(common::ConvertFromString("1.7976931348623157e308", &val));
+  ASSERT_DOUBLE_EQ(val, 1.7976931348623157e308);
+
+  ASSERT_TRUE(common::ConvertFromString("2.2250738585072014e-308", &val));
+  ASSERT_DOUBLE_EQ(val, 2.2250738585072014e-308);
+
+  ASSERT_TRUE(common::ConvertFromString("0.0000000000000001", &val));
+  ASSERT_DOUBLE_EQ(val, 0.0000000000000001);
+}
+
+TEST(ConvertToString, boolean) {
+  std::string s = common::ConvertToString(true);
+  ASSERT_EQ(s, "true");
+  s = common::ConvertToString(false);
+  ASSERT_EQ(s, "false");
+}
+
+TEST(ConvertToString, uint8) {
+  std::string s = common::ConvertToString(std::numeric_limits<uint8_t>::min());
+  ASSERT_EQ(s, "0");
+  s = common::ConvertToString(std::numeric_limits<uint8_t>::max());
+  ASSERT_EQ(s, "255");
+}
+
+TEST(ConvertToString, int8) {
+  std::string s = common::ConvertToString(std::numeric_limits<int8_t>::min());
+  ASSERT_EQ(s, "-128");
+  s = common::ConvertToString(std::numeric_limits<int8_t>::max());
+  ASSERT_EQ(s, "127");
+}
+
+TEST(ConvertToString, uint16) {
+  std::string s = common::ConvertToString(std::numeric_limits<uint16_t>::min());
+  ASSERT_EQ(s, "0");
+  s = common::ConvertToString(std::numeric_limits<uint16_t>::max());
+  ASSERT_EQ(s, "65535");
+}
+
+TEST(ConvertToString, int16) {
+  std::string s = common::ConvertToString(std::numeric_limits<int16_t>::min());
+  ASSERT_EQ(s, "-32768");
+  s = common::ConvertToString(std::numeric_limits<int16_t>::max());
+  ASSERT_EQ(s, "32767");
+}
+
+TEST(ConvertToString, uint32) {
+  std::string s = common::ConvertToString(std::numeric_limits<uint32_t>::min());
+  ASSERT_EQ(s, "0");
+  s = common::ConvertToString(std::numeric_limits<uint32_t>::max());
+  ASSERT_EQ(s, "4294967295");
+}
+
+TEST(ConvertToString, int32) {
+  std::string s = common::ConvertToString(std::numeric_limits<int32_t>::min());
+  ASSERT_EQ(s, "-2147483648");
+  s = common::ConvertToString(std::numeric_limits<int32_t>::max());
+  ASSERT_EQ(s, "2147483647");
+}
+
+TEST(ConvertToString, uint64) {
+  std::string s = common::ConvertToString(std::numeric_limits<uint64_t>::min());
+  ASSERT_EQ(s, "0");
+  s = common::ConvertToString(std::numeric_limits<uint64_t>::max());
+  ASSERT_EQ(s, "18446744073709551615");
+}
+
+TEST(ConvertToString, int64) {
+  std::string s = common::ConvertToString(std::numeric_limits<int64_t>::min());
+  ASSERT_EQ(s, "-9223372036854775808");
+  s = common::ConvertToString(std::numeric_limits<int64_t>::max());
+  ASSERT_EQ(s, "9223372036854775807");
+}
+
+TEST(ConvertToString, string) {
+  std::string val = "  \tabcDEF\n";
+  std::string s = common::ConvertToString(val);
+  ASSERT_EQ(s, val);
+}
+
+TEST(ConvertToString, float) {
+  std::string s = common::ConvertToString(3.141593f, 6);
+  ASSERT_EQ(s, "3.141593");
+}
+
+TEST(ConvertToString, double) {
+  std::string s = common::ConvertToString(3.141593, 6);
+  ASSERT_EQ(s, "3.141593");
+}
