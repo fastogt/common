@@ -64,9 +64,10 @@ void IoLoop::Stop() {
   loop_->Stop();
 }
 
-void IoLoop::RegisterClient(const net::socket_info& info) {
+IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
   IoClient* client = CreateClient(info);
   RegisterClient(client);
+  return client;
 }
 
 void IoLoop::UnRegisterClient(IoClient* client) {
@@ -164,7 +165,7 @@ IoLoop* IoLoop::FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred) {
   return nullptr;
 }
 
-std::vector<IoClient*> IoLoop::Clients() const {
+std::vector<IoClient*> IoLoop::GetClients() const {
   CHECK(IsLoopThread());
 
   return clients_;
@@ -227,7 +228,7 @@ void IoLoop::Stoped(LibEvLoop* loop) {
   UNUSED(loop);
   CHECK(IsLoopThread());
 
-  const std::vector<IoClient*> cl = Clients();
+  const std::vector<IoClient*> cl = GetClients();
 
   for (size_t i = 0; i < cl.size(); ++i) {
     IoClient* client = cl[i];

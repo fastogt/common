@@ -59,7 +59,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   int Exec() WARN_UNUSED_RESULT;
   virtual void Stop();
 
-  void RegisterClient(const net::socket_info& info);
+  IoClient* RegisterClient(const net::socket_info& info);
   void RegisterClient(IoClient* client);
   void UnRegisterClient(IoClient* client);
   virtual void CloseClient(IoClient* client);
@@ -79,7 +79,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
 
   bool IsLoopThread() const;
 
-  std::vector<IoClient*> Clients() const;
+  std::vector<IoClient*> GetClients() const;
 
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
