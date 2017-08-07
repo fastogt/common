@@ -213,6 +213,12 @@ ErrnoError socket(int domain, socket_t type, int protocol, socket_info* out_info
     return make_error_value_perror("socket", errno, Value::E_ERROR);
   }
 
+  int on = 1;
+  if (setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1) {
+    ::close(sd);
+    return make_error_value_perror("setsockopt", errno, Value::E_ERROR);
+  }
+
   out_info->set_fd(sd);
 
   addrinfo* ainf = alloc_addrinfo();

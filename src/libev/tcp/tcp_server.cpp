@@ -121,13 +121,14 @@ void TcpServer::PostLooped(LibEvLoop* loop) {
 }
 
 void TcpServer::Stoped(LibEvLoop* loop) {
-  Error err = sock_.Close();
-  if (err && err->IsError()) {
-    DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log
-  }
-
   loop->StopIO(accept_io_);
   IoLoop::Stoped(loop);
+
+  Error err = sock_.Close();
+  if (err && err->IsError()) {
+    DNOTREACHED() << err->GetDescription();
+    return;
+  }
 }
 
 Error TcpServer::Bind() {
@@ -161,14 +162,12 @@ void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
 
   net::socket_info sinfo;
   Error err = pserver->Accept(&sinfo);
-
   if (err && err->IsError()) {
-    DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log
+    DNOTREACHED() << err->GetDescription();
     return;
   }
 
-  IoClient* pclient = pserver->CreateClient(sinfo);
-  pserver->RegisterClient(pclient);
+  pserver->RegisterClient(sinfo);
 }
 
 }  // namespace tcp
