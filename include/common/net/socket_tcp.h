@@ -87,7 +87,7 @@ class ServerSocketTcp : public SocketTcp {
  public:
   explicit ServerSocketTcp(const HostAndPort& host);
 
-  ErrnoError Bind() WARN_UNUSED_RESULT;
+  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
   ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
 

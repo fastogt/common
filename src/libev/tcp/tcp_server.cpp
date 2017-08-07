@@ -131,8 +131,8 @@ void TcpServer::Stoped(LibEvLoop* loop) {
   }
 }
 
-Error TcpServer::Bind() {
-  return sock_.Bind();
+Error TcpServer::Bind(bool reuseaddr) {
+  return sock_.Bind(reuseaddr);
 }
 
 Error TcpServer::Listen(int backlog) {

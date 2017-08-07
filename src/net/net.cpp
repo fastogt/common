@@ -236,16 +236,19 @@ ErrnoError bind(socket_descr_t fd,
                 const struct sockaddr* addr,
                 socklen_t addr_len,
                 const struct addrinfo* ainf,
+                bool reuseaddr,
                 socket_info* out_info) {
   if (!addr || fd == INVALID_SOCKET_VALUE || !out_info) {
     return make_error_value_perror("bind", EINVAL, ErrorValue::E_ERROR);
   }
 
-  /*const int optionval = 1;
-  int res = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optionval, sizeof(optionval));
-  if (res == ERROR_RESULT_VALUE){
+  if (reuseaddr) {
+    const int optionval = 1;
+    int res = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optionval, sizeof(optionval));
+    if (res == ERROR_RESULT_VALUE) {
       return make_error_value_perror("setsockopt", errno, ErrorValue::E_ERROR);
-  }*/
+    }
+  }
 
   int res = ::bind(fd, addr, addr_len);
   if (res == ERROR_RESULT_VALUE) {

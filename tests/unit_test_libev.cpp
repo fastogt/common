@@ -70,7 +70,7 @@ void ExitServer(common::libev::tcp::TcpServer* ser) {
 TEST(Libev, IoServer) {
   ServerHandler hand;
   common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(g_hs, &hand);
-  common::Error err = serv->Bind();
+  common::Error err = serv->Bind(true);
   ASSERT_FALSE(err && err->IsError());
 
   err = serv->Listen(5);

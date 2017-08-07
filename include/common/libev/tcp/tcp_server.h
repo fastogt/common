@@ -57,7 +57,7 @@ class TcpServer : public IoLoop {
   explicit TcpServer(const net::HostAndPort& host, IoLoopObserver* observer = nullptr);
   virtual ~TcpServer();
 
-  Error Bind() WARN_UNUSED_RESULT;
+  Error Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   Error Listen(int backlog) WARN_UNUSED_RESULT;
 
   const char* ClassName() const override;

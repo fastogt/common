@@ -14,7 +14,7 @@ TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   using namespace common::net;
   HostAndPort host("localhost", 4567);
   ServerSocketTcp serv(host);
-  common::ErrnoError err = serv.Bind();
+  common::ErrnoError err = serv.Bind(true);
   ASSERT_FALSE(err && err->IsError());
   err = serv.Listen(5);
   ASSERT_FALSE(err && err->IsError());
@@ -42,7 +42,7 @@ TEST(SocketTcp, bindRandomWorkflow) {
   HostAndPort host("localhost", RANDOM_PORT);
   ServerSocketTcp serv(host);
 
-  common::ErrnoError err = serv.Bind();
+  common::ErrnoError err = serv.Bind(false);
   ASSERT_FALSE(err && err->IsError());
   err = serv.Listen(5);
   ASSERT_FALSE(err && err->IsError());

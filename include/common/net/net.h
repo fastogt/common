@@ -50,6 +50,7 @@ ErrnoError bind(socket_descr_t fd,
                 const struct sockaddr* addr,
                 socklen_t addr_len,
                 const addrinfo* ainf,
+                bool reuseaddr,
                 socket_info* out_info) WARN_UNUSED_RESULT;
 ErrnoError getsockname(socket_descr_t fd, struct sockaddr* addr, socklen_t addr_len, socket_info* out_info)
     WARN_UNUSED_RESULT;

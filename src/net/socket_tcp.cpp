@@ -99,7 +99,7 @@ ErrnoError ClientSocketTcp::Connect() {
 
 ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
-ErrnoError ServerSocketTcp::Bind() {
+ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   socket_info linfo;
   ErrnoError err = socket(IP_DOMAIN, ST_SOCK_STREAM, 0, &linfo);  // init fd
   if (err && err->IsError()) {
@@ -124,7 +124,7 @@ ErrnoError ServerSocketTcp::Bind() {
   addrinfo* ainf = linfo.addr_info();
 
   if (is_random_port) {  // random port
-    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
+    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
                &info_);  // init sockaddr
     if (err && err->IsError()) {
       return err;
@@ -140,7 +140,7 @@ ErrnoError ServerSocketTcp::Bind() {
 
     host_.port = ntohs(get_in_port(reinterpret_cast<struct sockaddr*>(&addr2)));
   } else {
-    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf,
+    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
                &info_);  // init sockaddr
     if (err && err->IsError()) {
       return err;
