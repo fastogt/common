@@ -35,6 +35,7 @@
 #include <winsock2.h>
 #endif
 
+#include <inttypes.h>
 #include <stddef.h>  // for size_t
 #include <stdlib.h>  // for NULL, free, calloc, malloc
 #include <string.h>  // for memcpy
@@ -274,7 +275,7 @@ std::string ConvertToString(const net::HostAndPort& host) {
 
   static const uint16_t size_buff = 512;
   char buff[size_buff] = {0};
-  SNPrintf(buff, size_buff, "%s:%d", host.host, host.port);
+  SNPrintf(buff, size_buff, "%s:%" PRIu16, host.host, host.port);
   return buff;
 }
 
@@ -289,8 +290,9 @@ bool ConvertFromString(const std::string& from, net::HostAndPort* out) {
     res.host = from.substr(0, del);
     uint16_t lport;
     bool ok = ConvertFromString(from.substr(del + 1), &lport);
-    UNUSED(ok);
-    res.port = lport;
+    if (ok) {
+      res.port = lport;
+    }
   }
 
   *out = res;
@@ -304,7 +306,7 @@ std::string ConvertToString(const net::HostAndPortAndSlot& host) {
 
   static const uint16_t size_buff = 512;
   char buff[size_buff] = {0};
-  SNPrintf(buff, size_buff, "%s:%d@%d", host.host, host.port, host.slot);
+  SNPrintf(buff, size_buff, "%s:%" PRIu16 "@%" PRIu16, host.host, host.port, host.slot);
   return buff;
 }
 
@@ -321,18 +323,21 @@ bool ConvertFromString(const std::string& from, net::HostAndPortAndSlot* out) {
     if (del_s != std::string::npos) {
       uint16_t lport;
       bool res = ConvertFromString(from.substr(del + 1, del_s - del - 1), &lport);
-      UNUSED(res);
-      lout.port = lport;
+      if (res) {
+        lout.port = lport;
+      }
 
       uint16_t lslot;
       res = ConvertFromString(from.substr(del_s + 1), &lslot);
-      UNUSED(res);
-      lout.slot = lslot;
+      if (res) {
+        lout.slot = lslot;
+      }
     } else {
       uint16_t lport;
       bool res = ConvertFromString(from.substr(del + 1), &lport);
-      UNUSED(res);
-      lout.port = lport;
+      if (res) {
+        lout.port = lport;
+      }
     }
   }
 

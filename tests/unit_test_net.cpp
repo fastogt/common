@@ -10,6 +10,76 @@ void exec_serv(common::net::ServerSocketTcp* serv) {
   ASSERT_FALSE(err && err->IsError());
 }
 
+TEST(HostAndPort, methods) {
+  common::net::HostAndPort invalid;
+  ASSERT_FALSE(invalid.IsValid());
+  ASSERT_FALSE(invalid.IsLocalHost());
+
+  const common::net::HostAndPort local_host = common::net::HostAndPort::CreateLocalHost(RANDOM_PORT);
+  ASSERT_TRUE(local_host.IsValid());
+  ASSERT_TRUE(local_host.IsLocalHost());
+  ASSERT_EQ(local_host.port, RANDOM_PORT);
+
+  const uint16_t valid_port = 8080;
+  const common::net::HostAndPort valid_host = common::net::HostAndPort("192.168.1.2", valid_port);
+  ASSERT_TRUE(valid_host.IsValid());
+  ASSERT_FALSE(valid_host.IsLocalHost());
+  ASSERT_EQ(valid_host.port, valid_port);
+}
+
+TEST(HostAndPort, ConvertToString) {
+  const uint16_t valid_port = 8080;
+  const std::string host_str = common::MemSPrintf("localhost:%u", valid_port);
+  common::net::HostAndPort local_host;
+  ASSERT_TRUE(common::ConvertFromString(host_str, &local_host));
+  ASSERT_TRUE(local_host.IsValid());
+  ASSERT_TRUE(local_host.IsLocalHost());
+  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(host_str, common::ConvertToString(local_host));
+
+  const std::string host_str2 = common::MemSPrintf("127.0.0.1:%u", valid_port);
+  ASSERT_TRUE(common::ConvertFromString(host_str2, &local_host));
+  ASSERT_TRUE(local_host.IsValid());
+  ASSERT_TRUE(local_host.IsLocalHost());
+  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(host_str2, common::ConvertToString(local_host));
+}
+
+TEST(HostAndPortAndSlot, methods) {
+  common::net::HostAndPortAndSlot invalid;
+  ASSERT_FALSE(invalid.IsValid());
+  ASSERT_FALSE(invalid.IsLocalHost());
+
+  const uint16_t valid_port = 8080;
+  const uint16_t valid_slot = 100;
+  const common::net::HostAndPortAndSlot valid_host_slot =
+      common::net::HostAndPortAndSlot("192.168.1.2", valid_port, valid_slot);
+  ASSERT_TRUE(valid_host_slot.IsValid());
+  ASSERT_FALSE(valid_host_slot.IsLocalHost());
+  ASSERT_EQ(valid_host_slot.port, valid_port);
+  ASSERT_EQ(valid_host_slot.slot, valid_slot);
+}
+
+TEST(HostAndPortAndSlot, ConvertToString) {
+  const uint16_t valid_port = 8080;
+  const uint16_t valid_slot = 100;
+  const std::string host_str = common::MemSPrintf("localhost:%u@%u", valid_port, valid_slot);
+  common::net::HostAndPortAndSlot local_host;
+  ASSERT_TRUE(common::ConvertFromString(host_str, &local_host));
+  ASSERT_TRUE(local_host.IsValid());
+  ASSERT_TRUE(local_host.IsLocalHost());
+  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(local_host.slot, valid_slot);
+  ASSERT_EQ(host_str, common::ConvertToString(local_host));
+
+  const std::string host_str2 = common::MemSPrintf("127.0.0.1:%u@%u", valid_port, valid_slot);
+  ASSERT_TRUE(common::ConvertFromString(host_str2, &local_host));
+  ASSERT_TRUE(local_host.IsValid());
+  ASSERT_TRUE(local_host.IsLocalHost());
+  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(host_str2, common::ConvertToString(local_host));
+}
+
 TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   using namespace common::net;
   HostAndPort host("localhost", 4567);
