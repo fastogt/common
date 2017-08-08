@@ -27,6 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+// StringPiece is a simple structure containing a pointer into some external
+// storage and a size.  The user of a StringPiece must ensure that the stringpiece
+// is not used after the corresponding external storage has been
+// deallocated.
+//
+// Multiple threads can invoke const methods on a StringPiece without
+// external synchronization, but if any of the threads may call a
+// non-const method, all threads accessing the same StringPiece must use
+// external synchronization.
+
 #pragma once
 
 #include <stddef.h>  // for size_t, NULL, ptrdiff_t

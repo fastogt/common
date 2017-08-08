@@ -562,8 +562,6 @@ TEST(ConvertToString, double) {
 
 #ifdef QT_ENABLED
 void ConvertQtTests(const char* test_str) {
-  const common::StringPiece spiece_str = test_str;
-  const common::StringPiece16 spiece16_str = common::UTF8ToUTF16(test_str);
   const common::string16 string16_str = common::UTF8ToUTF16(test_str);
   const std::string str = test_str;
   const QString qstr = test_str;
@@ -576,39 +574,21 @@ void ConvertQtTests(const char* test_str) {
   ASSERT_EQ(qs, qstr);
 
   QString qs2;
-  ASSERT_TRUE(common::ConvertFromString(spiece_str, &qs2));
+  ASSERT_TRUE(common::ConvertFromString16(string16_str, &qs2));
   ASSERT_EQ(qs2, qstr);
 
-  QString qs3;
-  ASSERT_TRUE(common::ConvertFromString(spiece16_str, &qs3));
-  ASSERT_EQ(qs3, qstr);
-
-  QString qs4;
-  ASSERT_TRUE(common::ConvertFromString(string16_str, &qs4));
-  ASSERT_EQ(qs4, qstr);
-
-  std::string ss = common::ConvertToString(spiece_str);
+  std::string ss = common::ConvertToString(string16_str);
   ASSERT_EQ(ss, str);
 
   common::StringPiece spiece_s;
   ASSERT_TRUE(common::ConvertFromString(ss, &spiece_s));
-  ASSERT_EQ(spiece_s, spiece_str);
-
-  QString qs5;
-  ASSERT_TRUE(common::ConvertFromString(spiece_s, &qs5));
-  ASSERT_EQ(qs5, qstr);
-
-  common::string16 ss16 = common::ConvertToString16(spiece16_str);
-  ASSERT_EQ(ss16, string16_str);
+  ASSERT_EQ(str, spiece_s);
 
   common::StringPiece16 spiece16_s;
-  ASSERT_TRUE(common::ConvertFromString16(ss16, &spiece16_s));
-  ASSERT_EQ(spiece16_s, spiece16_str);
-
-  QString qs6;
-  ASSERT_TRUE(common::ConvertFromString16(spiece16_s, &qs6));
-  ASSERT_EQ(qs6, qstr);
+  ASSERT_TRUE(common::ConvertFromString16(string16_str, &spiece16_s));
+  ASSERT_EQ(spiece16_s, string16_str);
 }
+
 TEST(ConvertToString, qt) {
   ConvertQtTests("Sasha");
   ConvertQtTests("Привет Андрей");

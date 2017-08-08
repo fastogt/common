@@ -423,9 +423,7 @@ string16 ConvertToString16(const string16& from) {
 }
 
 string16 ConvertToString16(const StringPiece16& from) {
-  string16 tg;
-  internal::CopyToString(from, &tg);
-  return tg;
+  return from.as_string();
 }
 
 string16 ConvertToString16(bool value) {
@@ -723,7 +721,7 @@ std::string ConvertToString(const buffer_t& from) {
 
 std::string ConvertToString(const string16& from) {
   std::string ascii;
-  if (ConvertFromString16(from, &ascii)) {
+  if (!ConvertFromString16(from, &ascii)) {
     return std::string();
   }
 
@@ -735,9 +733,7 @@ std::string ConvertToString(const std::string& from) {
 }
 
 std::string ConvertToString(const StringPiece& from) {
-  std::string tg;
-  internal::CopyToString(from, &tg);
-  return tg;
+  return from.as_string();
 }
 
 std::string ConvertToString(bool value) {
