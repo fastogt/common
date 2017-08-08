@@ -54,6 +54,29 @@ bool ConvertFromString16(const string16& value, QString* out) {
   return true;
 }
 
+bool ConvertFromString16(const StringPiece& value, QString* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = QString::fromUtf8(value.data(), value.size());
+  return true;
+}
+
+bool ConvertFromString16(const StringPiece16& value, QString* out) {
+  if (!out) {
+    return false;
+  }
+
+#if defined(WCHAR_T_IS_UTF16)
+  const QChar* unicode = reinterpret_cast<const QChar*>(value.data());
+  *out = QString(unicode, value.size());
+#elif defined(WCHAR_T_IS_UTF32)
+  *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size() * 2);
+#endif
+  return true;
+}
+
 std::string ConvertToString(const QString& from) {
   QByteArray sUtf8 = from.toUtf8();
   return std::string(sUtf8.constData(), sUtf8.length());
@@ -65,6 +88,24 @@ bool ConvertFromString(const std::string& value, QString* out) {
   }
 
   *out = QString::fromUtf8(value.c_str(), value.size());
+  return true;
+}
+
+bool ConvertFromString(const StringPiece16& value, QString* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size());
+  return true;
+}
+
+bool ConvertFromString(const StringPiece& value, QString* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = QString::fromUtf8(value.data(), value.size());
   return true;
 }
 

@@ -34,13 +34,20 @@
 #include <QString>
 
 #include <common/string16.h>
+#include <common/string_piece.h>
 
 namespace common {
 string16 ConvertToString16(const QString& from);
 bool ConvertFromString16(const string16& value, QString* out);
 
+bool ConvertFromString16(const StringPiece& value, QString* out);
+bool ConvertFromString16(const StringPiece16& value, QString* out);
+
 std::string ConvertToString(const QString& from);
 bool ConvertFromString(const std::string& value, QString* out);
+
+bool ConvertFromString(const StringPiece16& value, QString* out);
+bool ConvertFromString(const StringPiece& value, QString* out);
 
 QString EscapedText(const QString& str);
 }  // namespace common

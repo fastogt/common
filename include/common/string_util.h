@@ -440,13 +440,24 @@ size_t Tokenize(const string16& str, const string16& delimiters, std::vector<str
 size_t Tokenize(const std::string& str, const std::string& delimiters, std::vector<std::string>* tokens);
 size_t Tokenize(const StringPiece& str, const StringPiece& delimiters, std::vector<StringPiece>* tokens);
 
-// Does the opposite of SplitString().
-string16 JoinString(const std::vector<string16>& parts, char16 s);
-std::string JoinString(const std::vector<std::string>& parts, char s);
-
-// Join |parts| using |separator|.
-std::string JoinString(const std::vector<std::string>& parts, const std::string& separator);
-string16 JoinString(const std::vector<string16>& parts, const string16& separator);
+// Does the opposite of SplitString()/SplitStringPiece(). Joins a vector or list
+// of strings into a single string, inserting |separator| (which may be empty)
+// in between all elements.
+//
+// If possible, callers should build a vector of StringPieces and use the
+// StringPiece variant, so that they do not create unnecessary copies of
+// strings. For example, instead of using SplitString, modifying the vector,
+// then using JoinString, use SplitStringPiece followed by JoinString so that no
+// copies of those strings are created until the final join operation.
+std::string JoinString(const std::vector<std::string>& parts, StringPiece separator);
+string16 JoinString(const std::vector<string16>& parts, StringPiece16 separator);
+std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separator);
+string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator);
+// Explicit initializer_list overloads are required to break ambiguity when used
+// with a literal initializer list (otherwise the compiler would not be able to
+// decide between the string and StringPiece overloads).
+std::string JoinString(std::initializer_list<StringPiece> parts, StringPiece separator);
+string16 JoinString(std::initializer_list<StringPiece16> parts, StringPiece16 separator);
 
 // Replace $1-$2-$3..$9 in the format string with |a|-|b|-|c|..|i| respectively.
 // Additionally, any number of consecutive '$' characters is replaced by that

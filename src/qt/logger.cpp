@@ -46,7 +46,7 @@ void Logger::print(const char* mess, common::logging::LEVEL_LOG level, bool noti
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;
-    bool res = common::ConvertFromString(mess, &qmess);
+    bool res = common::ConvertFromString(std::string(mess), &qmess);
     UNUSED(res);
     emit printed(qmess, level);
   }
