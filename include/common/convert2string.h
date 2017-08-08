@@ -43,6 +43,7 @@ namespace common {
 string16 ConvertToString16(const std::string& from);
 string16 ConvertToString16(const buffer_t& from);
 string16 ConvertToString16(const string16& from);
+string16 ConvertToString16(const StringPiece16& from);
 
 string16 ConvertToString16(bool value);
 string16 ConvertToString16(char value);
@@ -63,6 +64,7 @@ string16 ConvertToString16(double value);
 std::string ConvertToString(const buffer_t& from);
 std::string ConvertToString(const string16& from);
 std::string ConvertToString(const std::string& from);
+std::string ConvertToString(const StringPiece& from);
 
 std::string ConvertToString(bool value);
 std::string ConvertToString(char value);
@@ -114,6 +116,7 @@ bool ConvertFromString16(const string16& from, unsigned long long* out) WARN_UNU
 bool ConvertFromString16(const string16& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, double* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, string16* out) WARN_UNUSED_RESULT;
+bool ConvertFromString16(const string16& from, StringPiece16* out) WARN_UNUSED_RESULT;
 
 bool ConvertFromString(const std::string& from, string16* out) WARN_UNUSED_RESULT;
 #if defined(WCHAR_T_IS_UTF16)
@@ -135,6 +138,7 @@ bool ConvertFromString(const std::string& from, unsigned long long* out) WARN_UN
 bool ConvertFromString(const std::string& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, double* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, std::string* out) WARN_UNUSED_RESULT;
+bool ConvertFromString(const std::string& from, StringPiece* out) WARN_UNUSED_RESULT;
 
 bool ConvertFromBytes(const buffer_t& from, string16* out) WARN_UNUSED_RESULT;
 bool ConvertFromBytes(const buffer_t& from, std::string* out) WARN_UNUSED_RESULT;

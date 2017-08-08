@@ -422,6 +422,12 @@ string16 ConvertToString16(const string16& from) {
   return from;
 }
 
+string16 ConvertToString16(const StringPiece16& from) {
+  string16 tg;
+  internal::CopyToString(from, &tg);
+  return tg;
+}
+
 string16 ConvertToString16(bool value) {
   return value ? ASCIIToUTF16("true") : ASCIIToUTF16("false");
 }
@@ -700,6 +706,15 @@ bool ConvertFromString16(const string16& from, string16* out) {
   return true;
 }
 
+bool ConvertFromString16(const string16& from, StringPiece16* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = from;
+  return true;
+}
+
 // std string
 
 std::string ConvertToString(const buffer_t& from) {
@@ -717,6 +732,12 @@ std::string ConvertToString(const string16& from) {
 
 std::string ConvertToString(const std::string& from) {
   return from;
+}
+
+std::string ConvertToString(const StringPiece& from) {
+  std::string tg;
+  internal::CopyToString(from, &tg);
+  return tg;
 }
 
 std::string ConvertToString(bool value) {
@@ -1012,6 +1033,15 @@ bool ConvertFromString(const std::string& from, double* out) {
 }
 
 bool ConvertFromString(const std::string& from, std::string* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = from;
+  return true;
+}
+
+bool ConvertFromString(const std::string& from, StringPiece* out) {
   if (!out) {
     return false;
   }

@@ -11,6 +11,10 @@
 #include <common/compress/snappy_compress.h>
 #include <common/compress/zlib_compress.h>
 
+#ifdef QT_ENABLED
+#include <common/qt/convert2string.h>
+#endif
+
 #define OPENSSL_VERSION_NUMBER_EXAMPLE 0x00090301
 #define OPENSSL_VERSION_TEXT_EXAMPLE "0.9.3.1"
 
@@ -555,3 +559,59 @@ TEST(ConvertToString, double) {
   std::string s = common::ConvertToString(3.141593, 6);
   ASSERT_EQ(s, "3.141593");
 }
+
+#ifdef QT_ENABLED
+void ConvertQtTests(const char* test_str) {
+  const common::StringPiece spiece_str = test_str;
+  const common::StringPiece16 spiece16_str = common::UTF8ToUTF16(test_str);
+  const common::string16 string16_str = common::UTF8ToUTF16(test_str);
+  const std::string str = test_str;
+  const QString qstr = test_str;
+
+  std::string s = common::ConvertToString(qstr);
+  ASSERT_EQ(s, str);
+
+  QString qs;
+  ASSERT_TRUE(common::ConvertFromString(s, &qs));
+  ASSERT_EQ(qs, qstr);
+
+  QString qs2;
+  ASSERT_TRUE(common::ConvertFromString(spiece_str, &qs2));
+  ASSERT_EQ(qs2, qstr);
+
+  QString qs3;
+  ASSERT_TRUE(common::ConvertFromString(spiece16_str, &qs3));
+  ASSERT_EQ(qs3, qstr);
+
+  QString qs4;
+  ASSERT_TRUE(common::ConvertFromString(string16_str, &qs4));
+  ASSERT_EQ(qs4, qstr);
+
+  std::string ss = common::ConvertToString(spiece_str);
+  ASSERT_EQ(ss, str);
+
+  common::StringPiece spiece_s;
+  ASSERT_TRUE(common::ConvertFromString(ss, &spiece_s));
+  ASSERT_EQ(spiece_s, spiece_str);
+
+  QString qs5;
+  ASSERT_TRUE(common::ConvertFromString(spiece_s, &qs5));
+  ASSERT_EQ(qs5, qstr);
+
+  common::string16 ss16 = common::ConvertToString16(spiece16_str);
+  ASSERT_EQ(ss16, string16_str);
+
+  common::StringPiece16 spiece16_s;
+  ASSERT_TRUE(common::ConvertFromString16(ss16, &spiece16_s));
+  ASSERT_EQ(spiece16_s, spiece16_str);
+
+  QString qs6;
+  ASSERT_TRUE(common::ConvertFromString16(spiece16_s, &qs6));
+  ASSERT_EQ(qs6, qstr);
+}
+TEST(ConvertToString, qt) {
+  ConvertQtTests("Sasha");
+  ConvertQtTests("Привет Андрей");
+  ConvertQtTests("Привет Sasha");
+}
+#endif

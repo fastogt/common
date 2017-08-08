@@ -72,7 +72,7 @@ bool ConvertFromString16(const StringPiece16& value, QString* out) {
   const QChar* unicode = reinterpret_cast<const QChar*>(value.data());
   *out = QString(unicode, value.size());
 #elif defined(WCHAR_T_IS_UTF32)
-  *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size() * 2);
+  *out = QString::fromUtf16(reinterpret_cast<const char16*>(value.data()), value.size());
 #endif
   return true;
 }
@@ -96,7 +96,7 @@ bool ConvertFromString(const StringPiece16& value, QString* out) {
     return false;
   }
 
-  *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size());
+  *out = QString::fromUtf16(reinterpret_cast<const char16*>(value.data()), value.size());
   return true;
 }
 
