@@ -1050,7 +1050,7 @@ bool ConvertFromString(const std::string& from, StringPiece* out) {
 
 buffer_t ConvertToBytes(const std::string& from) {
   buffer_t buff;
-  if (ConvertFromString(from, &buff)) {
+  if (!ConvertFromString(from, &buff)) {
     return buffer_t();
   }
 
@@ -1059,7 +1059,7 @@ buffer_t ConvertToBytes(const std::string& from) {
 
 buffer_t ConvertToBytes(const string16& from) {
   buffer_t buff;
-  if (ConvertFromString16(from, &buff)) {
+  if (!ConvertFromString16(from, &buff)) {
     return buffer_t();
   }
 

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <common/byte_writer.h>
 #include <common/convert2string.h>
 #include <common/sprintf.h>
 #include <common/string_piece.h>
@@ -85,6 +86,18 @@ TEST(string, MemSPrintf) {
   ASSERT_EQ(esc, val_esc_string);
   esc = common::EscapedText(esc);
   ASSERT_EQ(esc, val_esc_string);
+
+  const common::buffer_t buff = {0, 1, 2};
+  const std::string buff_str = common::ConvertToString(buff);
+  const std::string get_command = "GET";
+  const std::string plus = get_command + " " + buff_str;
+  common::ByteWriter bw;
+  bw << get_command << " " << buff;
+  result = bw.GetString();
+  ASSERT_EQ(result, plus);
+
+  const common::buffer_t result_buff = bw.GetBuffer();
+  ASSERT_EQ(result_buff, common::ConvertToBytes(plus));
 }
 
 TEST(string, utils) {

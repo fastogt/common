@@ -29,14 +29,7 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-#include <stdlib.h>  // for free, NULL
-
-#include <string>  // for string
-
-#include <common/macros.h>       // for DCHECK, DCHECK_NE
 #include <common/string_util.h>  // for snprintf
-#include <common/types.h>        // for buffer_t
 
 namespace common {
 
@@ -49,23 +42,25 @@ inline const char* normalize(const std::string& text) {
   return text.c_str();
 }
 
-inline const char* normalize(const buffer_t& buffer) {
-  return (const char*)buffer.data();
-}
-
 template <typename... Args>
 inline int SNPrintf(char* buff, size_t buff_size, const char* fmt, Args... args) {
   int res = snprintf(buff, buff_size, fmt, normalize(args)...);
-  DCHECK(res != -1 && res < (int)buff_size);
+  if (res < 0 || buff_size < static_cast<size_t>(res)) {
+    DNOTREACHED();
+    return res;
+  }
   return res;
 }
 
 template <typename... Args>
-std::string MemSPrintf(const char* fmt, Args... args) {
+std::string MemSPrintf(const char* fmt, Args... args) {  // args should be not null terminated strings or simple types
   char* ret = NULL;
   int res = vasprintf(&ret, fmt, normalize(args)...);
-  DCHECK_NE(res, -1);
-  std::string str(ret);
+  if (res == -1) {
+    DNOTREACHED();
+    return std::string();
+  }
+  std::string str(ret, res);
   free(ret);
   return str;
 }

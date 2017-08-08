@@ -27,6 +27,38 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/sprintf.h>
+#pragma once
 
-namespace common {}  // namespace common
+#include <sstream>
+
+#include <common/types.h>
+
+namespace common {
+
+class ByteWriter {
+ public:
+  ByteWriter();
+
+  std::string GetString() const;
+  buffer_t GetBuffer() const;
+
+  template <typename T>
+  inline void AppendObject(T obj) {
+    buffer_ << obj;
+  }
+
+  std::ostream& Print(std::ostream& os) const;
+
+ private:
+  std::ostringstream buffer_;
+};
+
+template <typename T>
+inline ByteWriter& operator<<(ByteWriter& os, T obj) {
+  os.AppendObject(obj);
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const ByteWriter& bt);
+
+}  // namespace common

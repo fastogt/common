@@ -27,6 +27,27 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/sprintf.h>
+#include <common/byte_writer.h>
 
-namespace common {}  // namespace common
+namespace common {
+
+ByteWriter::ByteWriter() : buffer_() {}
+
+std::string ByteWriter::GetString() const {
+  return buffer_.str();
+}
+
+buffer_t ByteWriter::GetBuffer() const {
+  std::string str = buffer_.str();
+  return buffer_t(str.begin(), str.end());
+}
+
+std::ostream& ByteWriter::Print(std::ostream& os) const {
+  return os << buffer_;
+}
+
+std::ostream& operator<<(std::ostream& os, const ByteWriter& bt) {
+  return bt.Print(os);
+}
+
+}  // namespace common

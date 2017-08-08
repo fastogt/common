@@ -341,6 +341,7 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/event.h
     ${CMAKE_SOURCE_DIR}/include/common/safe_sprintf.h
     ${CMAKE_SOURCE_DIR}/include/common/sprintf.h
+    ${CMAKE_SOURCE_DIR}/include/common/byte_writer.h
     ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversions.h
     ${CMAKE_SOURCE_DIR}/include/common/icu_utf.h
     ${CMAKE_SOURCE_DIR}/include/common/string_piece.h
@@ -383,6 +384,7 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/event.cpp
   ${CMAKE_SOURCE_DIR}/src/safe_sprintf.cpp
   ${CMAKE_SOURCE_DIR}/src/sprintf.cpp
+  ${CMAKE_SOURCE_DIR}/src/byte_writer.cpp
   ${CMAKE_SOURCE_DIR}/src/utf_string_conversions.cpp
   ${CMAKE_SOURCE_DIR}/src/utf_string_conversion_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/string_util.cpp

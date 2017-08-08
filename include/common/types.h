@@ -79,6 +79,8 @@ class ClonableBase {
   virtual ~ClonableBase() {}
 };
 
+std::ostream& operator<<(std::ostream& out, const buffer_t& buff);
+
 }  // namespace common
 
 #define MAKE_BUFFER_SIZE(STR, SIZE) common::buffer_t(STR, STR + SIZE)
