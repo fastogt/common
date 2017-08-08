@@ -356,6 +356,7 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
     ${CMAKE_SOURCE_DIR}/include/common/file_system.h
     ${CMAKE_SOURCE_DIR}/include/common/portable_endian.h
+    ${CMAKE_SOURCE_DIR}/include/common/sys_byteorder.h
     ${CMAKE_SOURCE_DIR}/include/common/error.h
     ${CMAKE_SOURCE_DIR}/include/common/value.h
     ${CMAKE_SOURCE_DIR}/include/common/intrusive_ptr.h
