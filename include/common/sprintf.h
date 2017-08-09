@@ -42,42 +42,47 @@ inline char normalize(char t) {
 }
 
 template <>
-inline int8_t normalize(int8_t t) {
+inline unsigned char normalize(unsigned char t) {
   return t;
 }
 
 template <>
-inline uint8_t normalize(uint8_t t) {
+inline short normalize(short t) {
   return t;
 }
 
 template <>
-inline int16_t normalize(int16_t t) {
+inline unsigned short normalize(unsigned short t) {
   return t;
 }
 
 template <>
-inline uint16_t normalize(uint16_t t) {
+inline int normalize(int t) {
   return t;
 }
 
 template <>
-inline int32_t normalize(int32_t t) {
+inline unsigned int normalize(unsigned int t) {
   return t;
 }
 
 template <>
-inline uint32_t normalize(uint32_t t) {
+inline long normalize(long t) {
   return t;
 }
 
 template <>
-inline int64_t normalize(int64_t t) {
+inline unsigned long normalize(unsigned long t) {
   return t;
 }
 
 template <>
-inline uint64_t normalize(uint64_t t) {
+inline long long normalize(long long t) {
+  return t;
+}
+
+template <>
+inline unsigned long long normalize(unsigned long long t) {
   return t;
 }
 
