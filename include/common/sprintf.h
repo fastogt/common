@@ -112,12 +112,17 @@ inline void* normalize(void* t) {
 }
 
 template <>
-inline const char* normalize(const char* t) {
+inline const void* normalize(const void* t) {
   return t;
 }
 
 template <>
 inline char* normalize(char* t) {
+  return t;
+}
+
+template <>
+inline const char* normalize(const char* t) {
   return t;
 }
 
