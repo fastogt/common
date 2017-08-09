@@ -47,8 +47,6 @@ class ByteWriter {
     buffer_ << obj;
   }
 
-  std::ostream& Print(std::ostream& os) const;
-
  private:
   std::ostringstream buffer_;
 };
@@ -58,7 +56,5 @@ inline ByteWriter& operator<<(ByteWriter& os, T obj) {
   os.AppendObject(obj);
   return os;
 }
-
-std::ostream& operator<<(std::ostream& os, const ByteWriter& bt);
 
 }  // namespace common

@@ -42,12 +42,4 @@ buffer_t ByteWriter::GetBuffer() const {
   return buffer_t(str.begin(), str.end());
 }
 
-std::ostream& ByteWriter::Print(std::ostream& os) const {
-  return os << buffer_;
-}
-
-std::ostream& operator<<(std::ostream& os, const ByteWriter& bt) {
-  return bt.Print(os);
-}
-
 }  // namespace common
