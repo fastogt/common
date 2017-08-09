@@ -37,6 +37,11 @@ template <typename T>
 inline T normalize(T t);
 
 template <>
+inline bool normalize(bool t) {
+  return t;
+}
+
+template <>
 inline char normalize(char t) {
   return t;
 }
