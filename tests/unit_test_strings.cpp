@@ -245,6 +245,29 @@ TEST(Utils, hex) {
 
   common::buffer_t enc2 = common::utils::hex::encode(dec2, false);
   ASSERT_EQ(seq, enc2);
+
+  const common::buffer_t dec_seq_x = {103, 101, 116, 32, 39, 00, 171, 32, 39};
+  const common::buffer_t dec_seq_x2 = MAKE_BUFFER("get '\x00\xAB\x20'");
+  ASSERT_EQ(dec_seq_x, dec_seq_x2);
+
+  const std::string bin_data_x = std::string("get '\x00\xAB\x20'", 9);
+  const std::string bin_data_x_fail = R"(get '\x00\xAB\x20')";
+  const std::string bin_data_x_ok = MAKE_STRING("get '\x00\xAB\x20'");
+  std::string dec_seq_x_str = common::ConvertToString(dec_seq_x);
+  ASSERT_EQ(dec_seq_x_str, bin_data_x);
+  ASSERT_NE(dec_seq_x_str, bin_data_x_fail);
+  ASSERT_EQ(dec_seq_x_str, bin_data_x_ok);
+  common::buffer_t dec_seq_x3;
+  ASSERT_TRUE(common::ConvertFromString(dec_seq_x_str, &dec_seq_x3));
+  ASSERT_EQ(dec_seq_x, dec_seq_x3);
+
+  common::buffer_t enc_bin_x = common::utils::hex::encode(dec_seq_x, true);
+  common::buffer_t dec_bin_x = common::utils::hex::decode(enc_bin_x);
+  ASSERT_EQ(dec_seq_x, dec_bin_x);
+
+  std::string enc_bin_x2 = common::utils::hex::encode(bin_data_x, true);
+  std::string dec_bin_x2 = common::utils::hex::decode(enc_bin_x2);
+  ASSERT_EQ(bin_data_x, dec_bin_x2);
 }
 
 TEST(ConvertFromString, boolean) {

@@ -91,3 +91,6 @@ inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, T
 
 #define MAKE_BUFFER_SIZE(STR, SIZE) common::buffer_t(STR, STR + SIZE)
 #define MAKE_BUFFER(STR) MAKE_BUFFER_SIZE(STR, sizeof(STR) - 1)
+
+#define MAKE_STRING_SIZE(STR, SIZE) std::string(STR, STR + SIZE)
+#define MAKE_STRING(STR) MAKE_STRING_SIZE(STR, sizeof(STR) - 1)
