@@ -91,13 +91,10 @@ TEST(string, MemSPrintf) {
   const std::string buff_str = common::ConvertToString(buff);
   const std::string get_command = "GET";
   const std::string plus = get_command + " " + buff_str;
-  common::ByteWriter bw;
+  common::string_byte_writer bw;
   bw << get_command << " " << buff;
-  result = bw.GetString();
+  result = bw.GetBuffer();
   ASSERT_EQ(result, plus);
-
-  const common::buffer_t result_buff = bw.GetBuffer();
-  ASSERT_EQ(result_buff, common::ConvertToBytes(plus));
 }
 
 TEST(string, utils) {

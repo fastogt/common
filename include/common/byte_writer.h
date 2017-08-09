@@ -35,12 +35,15 @@
 
 namespace common {
 
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 class ByteWriter {
  public:
-  ByteWriter();
+  typedef typename std::basic_ostringstream<CharT, Traits> ostringstream_t;
+  typedef typename std::basic_string<CharT, Traits> string_t;
 
-  std::string GetString() const;
-  buffer_t GetBuffer() const;
+  ByteWriter() : buffer_() {}
+
+  inline string_t GetBuffer() const { return buffer_.str(); }
 
   template <typename T>
   inline void AppendObject(T obj) {
@@ -48,11 +51,13 @@ class ByteWriter {
   }
 
  private:
-  std::ostringstream buffer_;
+  ostringstream_t buffer_;
 };
 
-template <typename T>
-inline ByteWriter& operator<<(ByteWriter& os, T obj) {
+typedef ByteWriter<char> string_byte_writer;
+
+template <typename CharT, typename Traits, typename T>
+inline ByteWriter<CharT, Traits>& operator<<(ByteWriter<CharT, Traits>& os, T obj) {
   os.AppendObject(obj);
   return os;
 }

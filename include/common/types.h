@@ -79,7 +79,13 @@ class ClonableBase {
   virtual ~ClonableBase() {}
 };
 
-std::ostream& operator<<(std::ostream& out, const buffer_t& buff);
+template <typename CharT, typename Traits>
+inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& out, const buffer_t& buff) {
+  for (size_t i = 0; i < buff.size(); ++i) {
+    out << buff[i];
+  }
+  return out;
+}
 
 }  // namespace common
 

@@ -29,17 +29,4 @@
 
 #include <common/byte_writer.h>
 
-namespace common {
-
-ByteWriter::ByteWriter() : buffer_() {}
-
-std::string ByteWriter::GetString() const {
-  return buffer_.str();
-}
-
-buffer_t ByteWriter::GetBuffer() const {
-  std::string str = buffer_.str();
-  return buffer_t(str.begin(), str.end());
-}
-
-}  // namespace common
+namespace common {}  // namespace common

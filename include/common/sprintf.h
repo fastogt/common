@@ -34,7 +34,80 @@
 namespace common {
 
 template <typename T>
-inline T normalize(T t) {
+inline T normalize(T t);
+
+template <>
+inline char normalize(char t) {
+  return t;
+}
+
+template <>
+inline int8_t normalize(int8_t t) {
+  return t;
+}
+
+template <>
+inline uint8_t normalize(uint8_t t) {
+  return t;
+}
+
+template <>
+inline int16_t normalize(int16_t t) {
+  return t;
+}
+
+template <>
+inline uint16_t normalize(uint16_t t) {
+  return t;
+}
+
+template <>
+inline int32_t normalize(int32_t t) {
+  return t;
+}
+
+template <>
+inline uint32_t normalize(uint32_t t) {
+  return t;
+}
+
+template <>
+inline int64_t normalize(int64_t t) {
+  return t;
+}
+
+template <>
+inline uint64_t normalize(uint64_t t) {
+  return t;
+}
+
+template <>
+inline float normalize(float t) {
+  return t;
+}
+
+template <>
+inline double normalize(double t) {
+  return t;
+}
+
+template <>
+inline long double normalize(long double t) {
+  return t;
+}
+
+template <>
+inline void* normalize(void* t) {
+  return t;
+}
+
+template <>
+inline const char* normalize(const char* t) {
+  return t;
+}
+
+template <>
+inline char* normalize(char* t) {
   return t;
 }
 
