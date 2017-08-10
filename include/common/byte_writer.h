@@ -53,6 +53,10 @@ class ByteWriter<CharT, sz, typename is_byte<CharT>::type> {
 
   inline vector_t GetBuffer() const { return buffer_; }
 
+  inline bool empty() const { return buffer_.empty(); }
+
+  inline void clear() { buffer_.clear(); }
+
   /*template<typename T>
   void AppendObject(T in_value) {
     CharT arr[sizeof(T)];
@@ -63,16 +67,29 @@ class ByteWriter<CharT, sz, typename is_byte<CharT>::type> {
     }
   }*/
 
-  inline void AppendObject(const std::string& obj) {
+  template <typename ch>
+  inline void AppendObject(ch obj) {
+    buffer_.push_back(obj);
+  }
+
+  template <typename ch>
+  inline void AppendObject(const ch* obj) {
+    for (const ch* s = obj; *s; ++s) {
+      AppendObject(*s);
+    }
+  }
+
+  template <typename ch>
+  inline void AppendObject(const std::basic_string<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
-      buffer_.push_back(obj[i]);
+      AppendObject(obj[i]);
     }
   }
 
   template <typename ch>
   inline void AppendObject(const std::vector<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
-      buffer_.push_back(obj[i]);
+      AppendObject(obj[i]);
     }
   }
 
@@ -88,7 +105,7 @@ using unsigned_char_writer = ByteWriter<unsigned char, sz>;
 
 template <typename CharT, size_t sz, typename T>
 inline ByteWriter<CharT, sz>& operator<<(ByteWriter<CharT, sz>& os, T obj) {
-  os.AppendObject(obj);
+  os.AppendObject(std::forward<T>(obj));
   return os;
 }
 

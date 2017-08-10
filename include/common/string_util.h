@@ -440,6 +440,30 @@ size_t Tokenize(const string16& str, const string16& delimiters, std::vector<str
 size_t Tokenize(const std::string& str, const std::string& delimiters, std::vector<std::string>* tokens);
 size_t Tokenize(const StringPiece& str, const StringPiece& delimiters, std::vector<StringPiece>* tokens);
 
+template <typename CharT>
+inline size_t Tokenize(const std::vector<CharT>& str,
+                       const std::vector<CharT>& delimiters,
+                       std::vector<std::vector<CharT>>* tokens) {
+  if (!tokens) {
+    return 0;
+  }
+  tokens->clear();
+#if 0
+  auto result = std::find_if_not(str, delimiters);
+  while (result != str.end()) {
+    auto end = std::find_first_of(delimiters, result + 1);
+    if (end == delimiters.end()) {
+      tokens->push_back(str.substr(result));
+      break;
+    } else {
+      tokens->push_back(str.substr(result, end - result));
+      result = std::find_if_not(delimiters, end + 1);
+    }
+  }
+#endif
+  return tokens->size();
+}
+
 // Does the opposite of SplitString()/SplitStringPiece(). Joins a vector or list
 // of strings into a single string, inserting |separator| (which may be empty)
 // in between all elements.
@@ -453,6 +477,11 @@ std::string JoinString(const std::vector<std::string>& parts, StringPiece separa
 string16 JoinString(const std::vector<string16>& parts, StringPiece16 separator);
 std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separator);
 string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator);
+
+std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator);
+std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
+                                      std::vector<unsigned char> separator);
+
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
 // decide between the string and StringPiece overloads).

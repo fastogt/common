@@ -86,6 +86,13 @@ inline void AppendToString(string_type* target, const BasicStringPiece<string_ty
   source.AppendToString(target);
 }
 
+template <typename char_type>
+inline void AppendToVector(std::vector<char_type>* target, const std::vector<char_type>& source) {
+  for (char_type c : source) {
+    target->push_back(c);
+  }
+}
+
 bool IsWprintfFormatPortable(const wchar_t* format) {
   for (const wchar_t* position = format; *position != '\0'; ++position) {
     if (*position == '%') {
@@ -585,6 +592,34 @@ static string_type JoinStringT(const list_type& parts, BasicStringPiece<string_t
   return result;
 }
 
+template <typename list_type, typename string_type>
+static string_type JoinStringTEX(const list_type& parts, string_type sep) {
+  if (parts.size() == 0)
+    return string_type();
+  // Pre-allocate the eventual size of the string. Start with the size of all of
+  // the separators (note that this *assumes* parts.size() > 0).
+  size_t total_size = (parts.size() - 1) * 1;
+  for (const auto& part : parts)
+    total_size += part.size();
+  string_type result;
+  result.reserve(total_size);
+  auto iter = parts.begin();
+  DCHECK(iter != parts.end());
+  AppendToVector(&result, *iter);
+  ++iter;
+
+  for (; iter != parts.end(); ++iter) {
+    AppendToVector(&result, sep);
+    // Using the overloaded AppendToString allows this template function to work
+    // on both strings and StringPieces without creating an intermediate
+    // StringPiece object.
+    AppendToVector(&result, *iter);
+  }
+  // Sanity-check that we pre-allocated correctly.
+  DCHECK_EQ(total_size, result.size());
+  return result;
+}
+
 std::string JoinString(const std::vector<std::string>& parts, StringPiece separator) {
   return JoinStringT(parts, separator);
 }
@@ -597,6 +632,16 @@ std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separa
 string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator) {
   return JoinStringT(parts, separator);
 }
+
+std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator) {
+  return JoinStringTEX(parts, separator);
+}
+
+std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
+                                      std::vector<unsigned char> separator) {
+  return JoinStringTEX(parts, separator);
+}
+
 std::string JoinString(std::initializer_list<StringPiece> parts, StringPiece separator) {
   return JoinStringT(parts, separator);
 }
