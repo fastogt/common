@@ -72,13 +72,6 @@ class ByteWriter<CharT, sz, typename is_byte<CharT>::type> {
   inline void AppendObject(unsigned char obj) { buffer_.push_back(obj); }
 
   template <typename ch>
-  inline void AppendObject(const ch* obj) {
-    for (const ch* s = obj; *s; ++s) {
-      AppendObject(*s);
-    }
-  }
-
-  template <typename ch>
   inline void AppendObject(const std::basic_string<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
       AppendObject(obj[i]);
