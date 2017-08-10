@@ -29,20 +29,4 @@
 
 #include <common/byte_writer.h>
 
-namespace common {
-
-std::basic_ostream<byte_t>& operator<<(std::basic_ostream<byte_t>& out, const buffer_t& buff) {
-  for (size_t i = 0; i < buff.size(); ++i) {
-    out << buff[i];
-  }
-  return out;
-}
-
-std::basic_ostream<byte_t>& operator<<(std::basic_ostream<byte_t>& out, const std::string& buff) {
-  for (size_t i = 0; i < buff.size(); ++i) {
-    out << buff[i];
-  }
-  return out;
-}
-
-}  // namespace common
+namespace common {}  // namespace common

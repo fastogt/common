@@ -92,15 +92,21 @@ TEST(string, MemSPrintf) {
   const std::string get_command = "GET";
   const std::string plus = get_command + " " + buff_str;
 
-  common::string_byte_writer bw;
+  common::char_writer<512> bw;
   bw << get_command << " " << buff;
-  result = bw.GetBuffer();
-  ASSERT_EQ(result, plus);
+  auto vec_result = bw.GetBuffer();
+  ASSERT_EQ(std::string(vec_result.begin(), vec_result.end()), plus);
+  bw << common::ConvertToString(true);
+  vec_result = bw.GetBuffer();
+  ASSERT_EQ(std::string(vec_result.begin(), vec_result.end()), plus + common::ConvertToString(true));
 
-  /*common::buffer_byte_writer bw2;
+  common::unsigned_char_writer<512> bw2;
   bw2 << get_command << " " << buff;
   common::buffer_t result2 = bw2.GetBuffer();
-  ASSERT_EQ(result2, common::ConvertToBytes(plus));*/
+  ASSERT_EQ(result2, common::ConvertToBytes(plus));
+  bw2 << common::ConvertToString(11);
+  result2 = bw2.GetBuffer();
+  ASSERT_EQ(result2, common::ConvertToBytes(plus + common::ConvertToString(11)));
 }
 
 TEST(string, utils) {
