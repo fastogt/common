@@ -118,6 +118,13 @@ TEST(string, utils) {
   const std::string merged = common::JoinString(splited, ",");
   ASSERT_EQ(test_data_low, merged);
 
+  const common::buffer_t test_data_low2 = MAKE_BUFFER("alex,palec,malec");
+  std::vector<common::buffer_t> splited2;
+  size_t tok2 = common::Tokenize(test_data_low2, {','}, &splited2);
+  ASSERT_EQ(tok2, splited2.size());
+  const common::buffer_t merged2 = common::JoinString(splited2, {','});
+  ASSERT_EQ(test_data_low2, merged2);
+
   const std::string test_data_upper = common::StringToUpperASCII(test_data_low);
   ASSERT_EQ(test_data_upper, test_data_up);
 

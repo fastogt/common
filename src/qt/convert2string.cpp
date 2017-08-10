@@ -66,6 +66,20 @@ bool ConvertFromString(const std::string& value, QString* out) {
   return true;
 }
 
+buffer_t ConvertToBytes(const QString& from) {
+  QByteArray sUtf8 = from.toUtf8();
+  return MAKE_BUFFER_SIZE(sUtf8.constData(), sUtf8.length());
+}
+
+bool ConvertFromBytes(const buffer_t& value, QString* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size());
+  return true;
+}
+
 QString EscapedText(const QString& str) {
   if (!str.isEmpty() && str[str.length() - 1] != '\n') {
     return str + "\n";

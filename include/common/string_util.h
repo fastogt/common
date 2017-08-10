@@ -448,19 +448,29 @@ inline size_t Tokenize(const std::vector<CharT>& str,
     return 0;
   }
   tokens->clear();
-#if 0
-  auto result = std::find_if_not(str, delimiters);
-  while (result != str.end()) {
-    auto end = std::find_first_of(delimiters, result + 1);
-    if (end == delimiters.end()) {
-      tokens->push_back(str.substr(result));
-      break;
-    } else {
-      tokens->push_back(str.substr(result, end - result));
-      result = std::find_if_not(delimiters, end + 1);
+
+  std::vector<CharT> chunk;
+  for (size_t i = 0; i < str.size(); ++i) {
+    bool is_last = i == str.size() - 1;
+    CharT c = str[i];
+    bool found = false;
+    for (size_t j = 0; j < delimiters.size(); ++j) {
+      if (c == delimiters[j]) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      chunk.push_back(c);
+    }
+
+    if (found || is_last) {  // if founded or last symbol
+      tokens->push_back(chunk);
+      chunk.clear();
     }
   }
-#endif
+
   return tokens->size();
 }
 
