@@ -31,6 +31,8 @@
 
 #include <stddef.h>  // for size_t
 
+#include <atomic>
+#include <condition_variable>
 #include <deque>   // for deque
 #include <memory>  // for shared_ptr, __shared_ptr
 #include <vector>  // for vector
@@ -60,7 +62,7 @@ class EventThread {
   typedef typename etraits_t::listener_t listener_t;
   static const events_size_t max_events_count = etraits_t::max_count;
   static const identifier_t id = etraits_t::id;
-  typedef unique_lock<mutex> mutex_lock_t;
+  typedef std::unique_lock<std::mutex> mutex_lock_t;
 
   ~EventThread() { thread_->Join(); }
 
@@ -126,12 +128,12 @@ class EventThread {
 
   EventDispatcher<type_t> dispatcher_;
 
-  shared_ptr<event_thread_t> thread_;
-  common::atomic_bool stop_;
+  std::shared_ptr<event_thread_t> thread_;
+  std::atomic_bool stop_;
 
-  mutex queue_mutex_;
+  std::mutex queue_mutex_;
   std::deque<event_t*> events_;
-  condition_variable condition_;
+  std::condition_variable condition_;
 };
 
 class EventBus : public patterns::TSSingleton<EventBus> {
@@ -288,7 +290,7 @@ class EventBus : public patterns::TSSingleton<EventBus> {
   }
 
   void* registeredThreads_[max_events_loop];
-  common::atomic_bool stop_;
+  std::atomic_bool stop_;
 
   EventBus() : stop_(false) {
     for (identifier_t i = 0; i < max_events_loop; ++i) {

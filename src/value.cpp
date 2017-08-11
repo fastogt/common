@@ -615,7 +615,7 @@ bool ArrayValue::GetList(size_t index, ArrayValue** out_value) {
   return static_cast<const ArrayValue&>(*this).GetList(index, const_cast<const ArrayValue**>(out_value));
 }
 
-bool ArrayValue::Remove(size_t index, common::scoped_ptr<Value>* out_value) {
+bool ArrayValue::Remove(size_t index, std::unique_ptr<Value>* out_value) {
   if (index >= list_.size()) {
     return false;
   }
@@ -647,7 +647,7 @@ bool ArrayValue::Remove(const Value& value, size_t* index) {
   return false;
 }
 
-ArrayValue::iterator ArrayValue::Erase(iterator iter, common::scoped_ptr<Value>* out_value) {
+ArrayValue::iterator ArrayValue::Erase(iterator iter, std::unique_ptr<Value>* out_value) {
   if (out_value) {
     out_value->reset(*iter);
   } else {

@@ -29,8 +29,9 @@
 
 #pragma once
 
+#include <mutex>
+
 #include <common/macros.h>
-#include <common/threads/types.h>
 
 namespace common {
 namespace patterns {
@@ -90,7 +91,7 @@ class TSSingleton {
  public:
   static T* Instance() {
     if (!self_) {
-      lock_guard<mutex> lock(mutex_);
+      std::lock_guard<std::mutex> lock(mutex_);
       if (!self_) {
         self_ = new T;
       }
@@ -99,7 +100,7 @@ class TSSingleton {
   }
 
   void FreeInstance() {
-    lock_guard<mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(mutex_);
     delete self_;
     self_ = nullptr;
   }
@@ -110,14 +111,14 @@ class TSSingleton {
 
  private:
   static T* self_;
-  static mutex mutex_;
+  static std::mutex mutex_;
 };
 
 template <class T>
 T* TSSingleton<T>::self_ = nullptr;
 
 template <class T>
-mutex TSSingleton<T>::mutex_;
+std::mutex TSSingleton<T>::mutex_;
 
 }  // namespace patterns
 }  // namespace common

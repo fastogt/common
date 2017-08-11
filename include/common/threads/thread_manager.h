@@ -31,17 +31,17 @@
 
 #include <stdint.h>  // for uintptr_t
 
-#include <algorithm>    // for forward
-#include <functional>   // for bind
+#include <algorithm>   // for forward
+#include <functional>  // for bind
+#include <memory>
 #include <type_traits>  // for result_of
 
 #include <common/bind_simple.h>                 // for bind_simple
 #include <common/patterns/singleton_pattern.h>  // for TSSingleton
-#include <common/smart_ptr.h>                   // for shared_ptr
 #include <common/system_info/types.h>           // for lcpu_count_t
 
 #include <common/threads/platform_thread.h>  // for PlatformThread, etc
-#include <common/threads/thread.h>           // for Thread
+#include <common/threads/thread.h>
 
 namespace common {
 namespace system_info {
@@ -57,11 +57,11 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   friend class patterns::TSSingleton<ThreadManager>;
 
   template <typename Callable, typename T, typename... Args>
-  inline shared_ptr<Thread<typename std::result_of<Callable(T, Args...)>::type> > CreateThread(Callable&& func,
-                                                                                               T&& t,
-                                                                                               Args&&... args) {
+  inline std::shared_ptr<Thread<typename std::result_of<Callable(T, Args...)>::type> > CreateThread(Callable&& func,
+                                                                                                    T&& t,
+                                                                                                    Args&&... args) {
     typedef Thread<typename std::result_of<Callable(T, Args...)>::type> thread_type;
-    typedef shared_ptr<thread_type> ThreadSPtr;
+    typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
     thread_type* rthr =
         new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...), func_addr, -1);
@@ -69,10 +69,10 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   }
 
   template <typename Callable, typename... Args>
-  inline shared_ptr<Thread<typename std::result_of<Callable(Args...)>::type> > CreateThread(Callable&& func,
-                                                                                            Args&&... args) {
+  inline std::shared_ptr<Thread<typename std::result_of<Callable(Args...)>::type> > CreateThread(Callable&& func,
+                                                                                                 Args&&... args) {
     typedef Thread<typename std::result_of<Callable(Args...)>::type> thread_type;
-    typedef shared_ptr<thread_type> ThreadSPtr;
+    typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
     thread_type* rthr = new thread_type(
         common::utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...), func_addr, -1);

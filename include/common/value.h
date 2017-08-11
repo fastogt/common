@@ -31,13 +31,13 @@
 
 #include <iosfwd>  // for ostream
 #include <map>
+#include <memory>
 #include <set>
 #include <string>  // for string
 #include <unordered_map>
 
 #include <common/macros.h>  // for WARN_UNUSED_RESULT, DISALLOW_COPY_AND...
-#include <common/smart_ptr.h>
-#include <common/types.h>  // for byte_array_t
+#include <common/types.h>   // for byte_array_t
 
 namespace common {
 
@@ -223,8 +223,8 @@ class ArrayValue : public Value {
   bool GetList(size_t index, const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, ArrayValue** out_value) WARN_UNUSED_RESULT;
 
-  virtual bool Remove(size_t index, common::scoped_ptr<Value>* out_value);
-  iterator Erase(iterator iter, common::scoped_ptr<Value>* out_value);
+  virtual bool Remove(size_t index, std::unique_ptr<Value>* out_value);
+  iterator Erase(iterator iter, std::unique_ptr<Value>* out_value);
 
   bool Remove(const Value& value, size_t* index);
 
@@ -443,7 +443,7 @@ class ErrorValue : public Value {
   DISALLOW_COPY_AND_ASSIGN(ErrorValue);
 };
 
-typedef common::shared_ptr<Value> ValueSPtr;
+typedef std::shared_ptr<Value> ValueSPtr;
 
 std::ostream& operator<<(std::ostream& out, const Value& value);
 

@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <thread>
+
 #include "test_thread_func.h"
 
 #include <common/threads/thread_manager.h>
@@ -26,11 +28,11 @@ closure_t getFunction(int index) {
 }
 
 TEST(Thread, basic_many_empty_function) {
-  common::thread tp[THREAD_COUNTS];
+  std::thread tp[THREAD_COUNTS];
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     closure_t cl = getFunction(i % (MANY_EMPTY_FUNCTION_COUNT + 1));
-    tp[i] = common::thread(cl);
+    tp[i] = std::thread(cl);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {

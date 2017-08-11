@@ -31,6 +31,7 @@
 
 #include <stddef.h>  // for size_t
 
+#include <mutex>
 #include <vector>  // for vector
 
 #include <common/event.h>  // for event_traits, events_size_t, etc
@@ -44,7 +45,7 @@ class DynamicEventDispatcher {
  public:
   typedef IEvent event_t;
   typedef IListener listener_t;
-  typedef unique_lock<mutex> mutex_lock_t;
+  typedef std::unique_lock<std::mutex> mutex_lock_t;
   typedef std::vector<listener_t*> listener_t_array_t;
 
   void Subscribe(listener_t* listener, events_size_t id);
@@ -58,7 +59,7 @@ class DynamicEventDispatcher {
 
  private:
   const size_t max_events_count_;
-  mutex listeners_mutex_;
+  std::mutex listeners_mutex_;
   listener_t_array_t* listeners_;
 };
 
@@ -71,7 +72,7 @@ class EventDispatcher {
   typedef typename etraits_t::listener_t listener_t;
   static const events_size_t max_events_count = etraits_t::max_count;
   static const identifier_t id = etraits_t::id;
-  typedef unique_lock<mutex> mutex_lock_t;
+  typedef std::unique_lock<std::mutex> mutex_lock_t;
 
   void Subscribe(listener_t* listener, events_size_t id) {
     if (!listener) {
@@ -151,7 +152,7 @@ class EventDispatcher {
   }
 
  private:
-  mutex listeners_mutex_;
+  std::mutex listeners_mutex_;
   std::vector<listener_t*> listeners_[max_events_count];
 };
 

@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <limits>
 
 #include <common/types.h>
@@ -36,7 +37,7 @@
 namespace common {
 namespace patterns {
 
-template <typename T, typename count_t = atomic<uint32_t> >
+template <typename T, typename count_t = std::atomic<uint32_t> >
 class object_counter {
  public:
   static count_t count() { return object_counter<T, count_t>::count_; }
@@ -60,10 +61,10 @@ class object_counter {
 template <typename T, typename count_t>
 count_t object_counter<T, count_t>::count_(0);
 
-template <typename T, typename count_t = uintmax_t>
+template <typename T, typename count_t = size_t>
 class id_counter : public object_counter<T, count_t> {
  public:
-  typedef atomic<count_t> atomic_t;
+  typedef std::atomic<count_t> atomic_t;
   typedef count_t type_t;
 
   id_counter() : id_(count_++) {}

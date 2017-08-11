@@ -46,8 +46,8 @@ class ErrnoErrorValue : public ErrorValue {
   const int errno_;
 };
 
-typedef shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && err->IsError()) => error
-typedef shared_ptr<ErrnoErrorValue> ErrnoError;
+typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && err->IsError()) => error
+typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
 Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERR);

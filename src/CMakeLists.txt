@@ -351,7 +351,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
     ${CMAKE_SOURCE_DIR}/include/common/types.h
     ${CMAKE_SOURCE_DIR}/include/common/lexical_cast.h
-    ${CMAKE_SOURCE_DIR}/include/common/smart_ptr.h
     ${CMAKE_SOURCE_DIR}/include/common/macros.h
     ${CMAKE_SOURCE_DIR}/include/common/utils.h
     ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h

@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <thread>
+
 #include "test_thread_func.h"
 
 #include <common/threads/thread_manager.h>
@@ -47,11 +49,11 @@ closure_t getOneBodyMultFunction(int index) {
 }
 
 TEST(Thread, basic_many_function) {
-  common::thread tp[THREAD_COUNTS];
+  std::thread tp[THREAD_COUNTS];
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     closure_t cl = getWFunction(i % (MANY_FUNCTION_COUNT + 1));
-    tp[i] = common::thread(cl);
+    tp[i] = std::thread(cl);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
@@ -76,11 +78,11 @@ TEST(Thread, fasto_many_function) {
 }
 
 TEST(Thread, basic_many_onebody_function) {
-  common::thread tp[THREAD_COUNTS];
+  std::thread tp[THREAD_COUNTS];
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
     closure_t cl = getOneBodyMultFunction(i % (MANY_FUNCTION_COUNT + 1));
-    tp[i] = common::thread(cl);
+    tp[i] = std::thread(cl);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {

@@ -29,9 +29,9 @@
 
 #pragma once
 
+#include <memory>
 #include <string>  // for string
 
-#include <common/smart_ptr.h>
 #include <common/system_info/types.h>  // for lcpu_count_t, core_count_t
 
 namespace common {
@@ -53,7 +53,7 @@ class CpuInfo {
   CpuInfo();
 
   struct CpuInfoImpl;
-  common::scoped_ptr<CpuInfoImpl> impl_;
+  std::shared_ptr<CpuInfoImpl> impl_;
 };
 
 inline bool operator==(const CpuInfo& lhs, const CpuInfo& rhs) {

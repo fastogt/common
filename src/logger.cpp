@@ -35,12 +35,12 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <mutex>
 #include <string>  // for allocator, string, etc
 
-#include <common/smart_ptr.h>
 #include <common/sprintf.h>
-
-#include <common/threads/types.h>
+#include <common/types.h>
 
 #ifdef OS_MACOSX
 #include <mach/clock.h>
@@ -53,8 +53,8 @@ namespace logging {
 namespace {
 
 std::string g_project_name = "Unknown";
-common::unique_ptr<std::ofstream> g_logger_file_helper = common::unique_ptr<std::ofstream>(new std::ofstream);
-common::mutex g_mutex;
+std::unique_ptr<std::ofstream> g_logger_file_helper = std::unique_ptr<std::ofstream>(new std::ofstream);
+std::mutex g_mutex;
 std::ostream* g_logger = &std::cout;
 LEVEL_LOG g_level_log = L_NOTICE;
 

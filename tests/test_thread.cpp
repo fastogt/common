@@ -1,14 +1,16 @@
 #include <gtest/gtest.h>
 
+#include <thread>
+
 #include "test_thread_func.h"
 
 #include <common/threads/thread_manager.h>
 
 TEST(Thread, basic_loop) {
-  common::thread tp[THREAD_COUNTS];
+  std::thread tp[THREAD_COUNTS];
   DCHECK(SIZEOFMASS(tp) == THREAD_COUNTS);
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
-    tp[i] = common::thread(&test);
+    tp[i] = std::thread(&test);
   }
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {

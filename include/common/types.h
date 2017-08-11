@@ -31,7 +31,6 @@
 
 #include <stdint.h>  // for int64_t, uint8_t
 
-#include <atomic>
 #include <iosfwd>  // for basic_ifstream, etc
 #include <string>  // for string
 #include <vector>  // for vector
@@ -39,15 +38,6 @@
 #include <common/string16.h>  // for char16, etc
 
 namespace common {
-
-typedef std::atomic<bool> atomic_bool;
-typedef std::atomic_uchar atomic_uchar;
-typedef std::atomic_uint atomic_uint;
-typedef std::atomic_ulong atomic_ulong;
-typedef std::atomic_ullong atomic_ullong;
-typedef std::atomic_size_t atomic_size;
-template <typename Tp>
-using atomic = std::atomic<Tp>;
 
 enum tribool { FAIL = 0, SUCCESS = 1, INDETERMINATE = -1 };
 

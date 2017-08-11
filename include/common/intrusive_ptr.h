@@ -30,6 +30,7 @@
 #pragma once
 
 #include <algorithm>
+#include <atomic>
 #include <functional>
 
 #include <common/types.h>
@@ -218,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, const intrusive_ptr<Y>& p) {
   return os;
 }
 
-template <typename T, typename refcount_t = atomic_uchar>
+template <typename T, typename refcount_t = std::atomic_size_t>
 struct intrusive_ptr_base {
   typedef refcount_t refcount_type;
   typedef intrusive_ptr_base<T, refcount_t> class_type;

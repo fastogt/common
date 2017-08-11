@@ -29,20 +29,4 @@
 
 #pragma once
 
-#include <condition_variable>
-#include <mutex>
-#include <thread>
-
-namespace common {
-
-typedef std::thread thread;
-typedef std::mutex mutex;
-typedef std::condition_variable condition_variable;
-
-template <class T>
-using lock_guard = std::lock_guard<T>;
-
-template <class T>
-using unique_lock = std::unique_lock<T>;
-
-}  // namespace common
+namespace common {}  // namespace common

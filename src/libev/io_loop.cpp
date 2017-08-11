@@ -29,6 +29,7 @@
 
 #include <common/libev/io_loop.h>
 
+#include <mutex>
 #include <string>
 
 #include <common/threads/types.h>
@@ -38,8 +39,8 @@
 
 namespace {
 
-typedef common::unique_lock<common::mutex> lock_t;
-common::mutex g_exists_loops_mutex_;
+typedef std::unique_lock<std::mutex> lock_t;
+std::mutex g_exists_loops_mutex_;
 std::vector<common::libev::IoLoop*> g_exists_loops_;
 
 }  // namespace

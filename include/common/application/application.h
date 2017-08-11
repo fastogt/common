@@ -114,7 +114,7 @@ class Application {
   int argc_;
   char** argv_;
 
-  const common::scoped_ptr<IApplicationImpl> impl_;
+  const std::unique_ptr<IApplicationImpl> impl_;
 };
 
 }  // namespace application

@@ -31,9 +31,9 @@
 
 #include <stdlib.h>
 
-#include "libev/src/ev.h"
+#include <mutex>
 
-#include <common/threads/types.h>
+#include "libev/src/ev.h"
 
 #include <common/libev/event_async.h>
 #include <common/libev/event_io.h>
@@ -44,7 +44,7 @@ namespace libev {
 
 class LibEvLoop::AsyncCustom : public LibevAsync {
  public:
-  typedef unique_lock<mutex> mutex_lock_t;
+  typedef std::unique_lock<std::mutex> mutex_lock_t;
   AsyncCustom() : queue_mutex_(), custom_callbacks_() {}
   ~AsyncCustom() { custom_callbacks_.clear(); }
   void Push(custom_loop_exec_function_t func) {
@@ -76,7 +76,7 @@ class LibEvLoop::AsyncCustom : public LibevAsync {
       func();
     }
   }
-  mutex queue_mutex_;
+  std::mutex queue_mutex_;
   std::vector<custom_loop_exec_function_t> custom_callbacks_;
 };
 
