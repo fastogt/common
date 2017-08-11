@@ -37,8 +37,6 @@ SET(THREADS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/threads/types.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/event.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/event_dispatcher.h
-  ${CMAKE_SOURCE_DIR}/include/common/threads/thread_pool.h
-  ${CMAKE_SOURCE_DIR}/include/common/threads/std_thread_pool_impl.hpp
 )
 
 SET(THREADS_SOURCES
