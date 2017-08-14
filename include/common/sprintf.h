@@ -33,95 +33,74 @@
 
 namespace common {
 
-template <typename T>
-inline T normalize(T t);
-
-template <>
 inline bool normalize(bool t) {
   return t;
 }
 
-template <>
 inline char normalize(char t) {
   return t;
 }
 
-template <>
 inline unsigned char normalize(unsigned char t) {
   return t;
 }
 
-template <>
 inline short normalize(short t) {
   return t;
 }
 
-template <>
 inline unsigned short normalize(unsigned short t) {
   return t;
 }
 
-template <>
 inline int normalize(int t) {
   return t;
 }
 
-template <>
 inline unsigned int normalize(unsigned int t) {
   return t;
 }
 
-template <>
 inline long normalize(long t) {
   return t;
 }
 
-template <>
 inline unsigned long normalize(unsigned long t) {
   return t;
 }
 
-template <>
 inline long long normalize(long long t) {
   return t;
 }
 
-template <>
 inline unsigned long long normalize(unsigned long long t) {
   return t;
 }
 
-template <>
 inline float normalize(float t) {
   return t;
 }
 
-template <>
 inline double normalize(double t) {
   return t;
 }
 
-template <>
 inline long double normalize(long double t) {
   return t;
 }
 
-template <>
 inline void* normalize(void* t) {
   return t;
 }
 
-template <>
 inline const void* normalize(const void* t) {
   return t;
 }
 
-template <>
-inline char* normalize(char* t) {
+inline const char* normalize(char* t) {
   return t;
 }
 
-template <>
 inline const char* normalize(const char* t) {
   return t;
 }
