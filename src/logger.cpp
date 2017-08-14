@@ -81,11 +81,10 @@ std::string PrepareHeader(const char* file, int line, LEVEL_LOG level) {
   strftime(buf, sizeof(buf), "%H:%M:%S", &info);
 
   if (file) {
-    return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, normalize(g_project_name),
-                      log_level_to_text(level));
+    return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, g_project_name, log_level_to_text(level));
   }
 
-  return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, normalize(g_project_name), log_level_to_text(level));
+  return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, g_project_name, log_level_to_text(level));
 }
 
 }  // namespace

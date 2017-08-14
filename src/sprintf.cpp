@@ -29,4 +29,82 @@
 
 #include <common/sprintf.h>
 
-namespace common {}  // namespace common
+namespace common {
+
+bool normalize_for_printf(bool t) {
+  return t;
+}
+
+char normalize_for_printf(char t) {
+  return t;
+}
+
+unsigned char normalize_for_printf(unsigned char t) {
+  return t;
+}
+
+short normalize_for_printf(short t) {
+  return t;
+}
+
+unsigned short normalize_for_printf(unsigned short t) {
+  return t;
+}
+
+int normalize_for_printf(int t) {
+  return t;
+}
+
+unsigned int normalize_for_printf(unsigned int t) {
+  return t;
+}
+
+long normalize_for_printf(long t) {
+  return t;
+}
+
+unsigned long normalize_for_printf(unsigned long t) {
+  return t;
+}
+
+long long normalize_for_printf(long long t) {
+  return t;
+}
+
+unsigned long long normalize_for_printf(unsigned long long t) {
+  return t;
+}
+
+float normalize_for_printf(float t) {
+  return t;
+}
+
+double normalize_for_printf(double t) {
+  return t;
+}
+
+long double normalize_for_printf(long double t) {
+  return t;
+}
+
+void* normalize_for_printf(void* t) {
+  return t;
+}
+
+const void* normalize_for_printf(const void* t) {
+  return t;
+}
+
+const char* normalize_for_printf(char* t) {
+  return t;
+}
+
+const char* normalize_for_printf(const char* t) {
+  return t;
+}
+
+const char* normalize_for_printf(const std::string& text) {
+  return text.c_str();
+}
+
+}  // namespace common

@@ -33,85 +33,29 @@
 
 namespace common {
 
-inline bool normalize(bool t) {
-  return t;
-}
-
-inline char normalize(char t) {
-  return t;
-}
-
-inline unsigned char normalize(unsigned char t) {
-  return t;
-}
-
-inline short normalize(short t) {
-  return t;
-}
-
-inline unsigned short normalize(unsigned short t) {
-  return t;
-}
-
-inline int normalize(int t) {
-  return t;
-}
-
-inline unsigned int normalize(unsigned int t) {
-  return t;
-}
-
-inline long normalize(long t) {
-  return t;
-}
-
-inline unsigned long normalize(unsigned long t) {
-  return t;
-}
-
-inline long long normalize(long long t) {
-  return t;
-}
-
-inline unsigned long long normalize(unsigned long long t) {
-  return t;
-}
-
-inline float normalize(float t) {
-  return t;
-}
-
-inline double normalize(double t) {
-  return t;
-}
-
-inline long double normalize(long double t) {
-  return t;
-}
-
-inline void* normalize(void* t) {
-  return t;
-}
-
-inline const void* normalize(const void* t) {
-  return t;
-}
-
-inline const char* normalize(char* t) {
-  return t;
-}
-
-inline const char* normalize(const char* t) {
-  return t;
-}
-
-inline const char* normalize(const std::string& text) {
-  return text.c_str();
-}
+bool normalize_for_printf(bool t);
+char normalize_for_printf(char t);
+unsigned char normalize_for_printf(unsigned char t);
+short normalize_for_printf(short t);
+unsigned short normalize_for_printf(unsigned short t);
+int normalize_for_printf(int t);
+unsigned int normalize_for_printf(unsigned int t);
+long normalize_for_printf(long t);
+unsigned long normalize_for_printf(unsigned long t);
+long long normalize_for_printf(long long t);
+unsigned long long normalize_for_printf(unsigned long long t);
+float normalize_for_printf(float t);
+double normalize_for_printf(double t);
+long double normalize_for_printf(long double t);
+void* normalize_for_printf(void* t);
+const void* normalize_for_printf(const void* t);
+const char* normalize_for_printf(char* t);
+const char* normalize_for_printf(const char* t);
+const char* normalize_for_printf(const std::string& text);
 
 template <typename... Args>
 inline int SNPrintf(char* buff, size_t buff_size, const char* fmt, Args... args) {
-  int res = snprintf(buff, buff_size, fmt, normalize(args)...);
+  int res = snprintf(buff, buff_size, fmt, normalize_for_printf(args)...);
   if (res < 0 || buff_size < static_cast<size_t>(res)) {
     DNOTREACHED();
     return res;
@@ -122,7 +66,7 @@ inline int SNPrintf(char* buff, size_t buff_size, const char* fmt, Args... args)
 template <typename... Args>
 std::string MemSPrintf(const char* fmt, Args... args) {  // args should be not null terminated strings or simple types
   char* ret = NULL;
-  int res = vasprintf(&ret, fmt, normalize(args)...);
+  int res = vasprintf(&ret, fmt, normalize_for_printf(args)...);
   if (res == -1) {
     DNOTREACHED();
     return std::string();
