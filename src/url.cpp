@@ -405,15 +405,15 @@ bool Uri::IsValid() const {
   return schemes_ != unknown && (!host_.empty() || path_.IsValid());
 }
 
-Uri::schemes Uri::Scheme() const {
+Uri::schemes Uri::GetScheme() const {
   return schemes_;
 }
 
-std::string Uri::Protocol() const {
+std::string Uri::GetProtocol() const {
   return schemes_array[schemes_];
 }
 
-Upath Uri::Path() const {
+Upath Uri::GetPath() const {
   return path_;
 }
 
@@ -421,7 +421,7 @@ void Uri::SetPath(const Upath& path) {
   path_ = path;
 }
 
-const std::string& Uri::Host() const {
+const std::string& Uri::GetHost() const {
   return host_;
 }
 
@@ -429,44 +429,44 @@ void Uri::SetHost(const std::string& host) {
   host_ = host;
 }
 
-std::string Uri::Url() const {
+std::string Uri::GetUrl() const {
   DCHECK(IsValid());
 
   if (host_.empty()) {
-    return MemSPrintf("%s://%s", Protocol(), path_.GetUpath());
+    return MemSPrintf("%s://%s", GetProtocol(), path_.GetUpath());
   }
 
-  return MemSPrintf("%s://%s/%s", Protocol(), host_, path_.GetUpath());
+  return MemSPrintf("%s://%s/%s", GetProtocol(), host_, path_.GetUpath());
 }
 
-std::string Uri::Hroot() const {
+std::string Uri::GetHroot() const {
   DCHECK(IsValid());
 
-  return MemSPrintf("%s://%s", Protocol(), host_);
+  return MemSPrintf("%s://%s", GetProtocol(), host_);
 }
 
-std::string Uri::Hpath() const {
+std::string Uri::GetHpath() const {
   DCHECK(IsValid());
 
   if (host_.empty()) {
-    return MemSPrintf("%s://%s", Protocol(), path_.GetHpath());
+    return MemSPrintf("%s://%s", GetProtocol(), path_.GetHpath());
   }
 
-  return MemSPrintf("%s://%s/%s", Protocol(), host_, path_.GetHpath());
+  return MemSPrintf("%s://%s/%s", GetProtocol(), host_, path_.GetHpath());
 }
 
 bool Uri::Equals(const Uri& uri) const {
   if (!IsValid()) {
-    return uri.IsValid() ? false : host_ == uri.Host();
+    return uri.IsValid() ? false : host_ == uri.GetHost();
   }
 
-  return uri.IsValid() == IsValid() && uri.Url() == Url();
+  return uri.IsValid() == IsValid() && uri.GetUrl() == GetUrl();
 }
 
 }  // namespace uri
 
 std::string ConvertToString(const uri::Uri& value) {
-  return value.IsValid() ? value.Url() : value.Host();
+  return value.IsValid() ? value.GetUrl() : value.GetHost();
 }
 
 bool ConvertFromString(const std::string& from, uri::Uri* out) {

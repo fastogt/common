@@ -51,37 +51,27 @@ class ByteWriter<CharT, sz, typename is_byte<CharT>::type> {
 
   ByteWriter() : buffer_() { buffer_.reserve(sz); }
 
-  inline vector_t GetBuffer() const { return buffer_; }
+  inline vector_t str() const { return buffer_; }
 
   inline bool empty() const { return buffer_.empty(); }
 
   inline void clear() { buffer_.clear(); }
 
-  /*template<typename T>
-  void AppendObject(T in_value) {
-    CharT arr[sizeof(T)];
-    memcpy(arr, &in_value, sizeof(T));
-    for (size_t i = 0; i < sizeof(T); ++i) {
-      CharT b = arr[i];
-      buffer_.push_back(b);
-    }
-  }*/
+  inline void append_object(char obj) { buffer_.push_back(obj); }
 
-  inline void AppendObject(char obj) { buffer_.push_back(obj); }
-
-  inline void AppendObject(unsigned char obj) { buffer_.push_back(obj); }
+  inline void append_object(unsigned char obj) { buffer_.push_back(obj); }
 
   template <typename ch>
-  inline void AppendObject(const std::basic_string<ch>& obj) {
+  inline void append_object(const std::basic_string<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
-      AppendObject(obj[i]);
+      append_object(obj[i]);
     }
   }
 
   template <typename ch>
-  inline void AppendObject(const std::vector<ch>& obj) {
+  inline void append_object(const std::vector<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
-      AppendObject(obj[i]);
+      append_object(obj[i]);
     }
   }
 
@@ -97,7 +87,7 @@ using unsigned_char_writer = ByteWriter<unsigned char, sz>;
 
 template <typename CharT, size_t sz, typename T>
 inline ByteWriter<CharT, sz>& operator<<(ByteWriter<CharT, sz>& os, T obj) {
-  os.AppendObject(std::forward<T>(obj));
+  os.append_object(std::forward<T>(obj));
   return os;
 }
 

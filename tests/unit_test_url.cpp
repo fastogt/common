@@ -55,9 +55,9 @@ TEST(Uri, IsValid) {
 
 TEST(Uri, Scheme) {
   common::uri::Uri http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
-  ASSERT_EQ(http_uri.Scheme(), common::uri::Uri::http);
-  ASSERT_EQ(http_uri.Host(), "localhost:8080");
-  common::uri::Upath http_path = http_uri.Path();
+  ASSERT_EQ(http_uri.GetScheme(), common::uri::Uri::http);
+  ASSERT_EQ(http_uri.GetHost(), "localhost:8080");
+  common::uri::Upath http_path = http_uri.GetPath();
   ASSERT_EQ(http_path.GetHpath(), "hls/69_avformat_test_alex_2/");
   ASSERT_EQ(http_path.GetPath(), "hls/69_avformat_test_alex_2/play.m3u8");
   ASSERT_EQ(http_path.GetFilename(), "play.m3u8");
@@ -65,9 +65,9 @@ TEST(Uri, Scheme) {
   ASSERT_EQ(http_path.GetPath(), http_path.GetHpath() + http_path.GetFilename());
 
   common::uri::Uri ftp_uri("ftp://localhost:8080");
-  ASSERT_EQ(ftp_uri.Scheme(), common::uri::Uri::ftp);
-  ASSERT_EQ(ftp_uri.Host(), "localhost:8080");
-  common::uri::Upath ftp_path = ftp_uri.Path();
+  ASSERT_EQ(ftp_uri.GetScheme(), common::uri::Uri::ftp);
+  ASSERT_EQ(ftp_uri.GetHost(), "localhost:8080");
+  common::uri::Upath ftp_path = ftp_uri.GetPath();
   ASSERT_EQ(ftp_path.GetHpath(), std::string());
   ASSERT_EQ(ftp_path.GetPath(), std::string());
   ASSERT_EQ(ftp_path.GetFilename(), std::string());
@@ -75,26 +75,26 @@ TEST(Uri, Scheme) {
   ASSERT_EQ(ftp_path.GetPath(), ftp_path.GetHpath() + ftp_path.GetFilename());
 
   common::uri::Uri file_uri("file:///home/sasha/2.txt");
-  ASSERT_EQ(file_uri.Scheme(), common::uri::Uri::file);
-  ASSERT_EQ(file_uri.Path(), common::uri::Upath("/home/sasha/2.txt"));
-  ASSERT_EQ(file_uri.Host(), std::string());
+  ASSERT_EQ(file_uri.GetScheme(), common::uri::Uri::file);
+  ASSERT_EQ(file_uri.GetPath(), common::uri::Upath("/home/sasha/2.txt"));
+  ASSERT_EQ(file_uri.GetHost(), std::string());
 
   common::uri::Uri ws_uri("ws://localhost:8080");
-  ASSERT_EQ(ws_uri.Scheme(), common::uri::Uri::ws);
-  ASSERT_EQ(ws_uri.Host(), "localhost:8080");
+  ASSERT_EQ(ws_uri.GetScheme(), common::uri::Uri::ws);
+  ASSERT_EQ(ws_uri.GetHost(), "localhost:8080");
 
   common::uri::Uri udp_uri("udp://localhost:8080");
-  ASSERT_EQ(udp_uri.Scheme(), common::uri::Uri::udp);
-  ASSERT_EQ(udp_uri.Host(), "localhost:8080");
+  ASSERT_EQ(udp_uri.GetScheme(), common::uri::Uri::udp);
+  ASSERT_EQ(udp_uri.GetHost(), "localhost:8080");
 
   common::uri::Uri rtmp_uri("rtmp://localhost:8080");
-  ASSERT_EQ(rtmp_uri.Scheme(), common::uri::Uri::rtmp);
-  ASSERT_EQ(rtmp_uri.Host(), "localhost:8080");
+  ASSERT_EQ(rtmp_uri.GetScheme(), common::uri::Uri::rtmp);
+  ASSERT_EQ(rtmp_uri.GetHost(), "localhost:8080");
 }
 
 TEST(Uri, level) {
   common::uri::Uri http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
-  common::uri::Upath p = http_uri.Path();
+  common::uri::Upath p = http_uri.GetPath();
   size_t lv = p.GetLevels();
   ASSERT_EQ(lv, 2);
   std::string l1 = p.GetHpathLevel(1);

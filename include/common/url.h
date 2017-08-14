@@ -92,16 +92,16 @@ class Uri {
 
   bool IsValid() const;
 
-  schemes Scheme() const;
-  std::string Protocol() const;
-  const std::string& Host() const;
+  schemes GetScheme() const;
+  std::string GetProtocol() const;
+  const std::string& GetHost() const;
   void SetHost(const std::string& host);
-  Upath Path() const;
+  Upath GetPath() const;
   void SetPath(const Upath& path);
 
-  std::string Url() const;    // IsValid == true
-  std::string Hroot() const;  // IsValid == true
-  std::string Hpath() const;  // IsValid == true
+  std::string GetUrl() const;    // IsValid == true
+  std::string GetHroot() const;  // IsValid == true
+  std::string GetHpath() const;  // IsValid == true
   bool Equals(const Uri& uri) const;
 
  private:
