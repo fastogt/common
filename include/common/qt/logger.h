@@ -63,9 +63,9 @@ class Logger : public QObject, public patterns::LazySingleton<Logger> {
 
 template <typename T>
 inline void LOG_MSG(T mess, common::logging::LEVEL_LOG level, bool notify) {
-  return common::qt::Logger::Instance().print(mess, level, notify);
+  return common::qt::Logger::GetInstance().print(mess, level, notify);
 }
 
 inline void LOG_ERROR(common::Error er, bool notify) {
-  return common::qt::Logger::Instance().print(er->GetDescription(), er->GetLevel(), notify);
+  return common::qt::Logger::GetInstance().print(er->GetDescription(), er->GetLevel(), notify);
 }

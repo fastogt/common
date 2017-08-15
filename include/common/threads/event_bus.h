@@ -304,4 +304,4 @@ class EventBus : public patterns::TSSingleton<EventBus> {
 }  // namespace threads
 }  // namespace common
 
-#define EVENT_BUS() common::threads::EventBus::Instance()
+#define EVENT_BUS() common::threads::EventBus::GetInstance()

@@ -42,7 +42,7 @@ class Singleton {
 
  public:
   void FreeInstance();
-  static T* Instance();
+  static T* GetInstance();
 
  protected:
   ~Singleton() {}
@@ -53,7 +53,7 @@ template <class T>
 T* Singleton<T>::_self = nullptr;
 
 template <class T>
-T* Singleton<T>::Instance() {
+T* Singleton<T>::GetInstance() {
   if (!_self) {
     _self = new T;
   }
@@ -70,7 +70,7 @@ template <class T>
 class LazySingleton {
  public:
   typedef LazySingleton<T> class_type;
-  static T& Instance();
+  static T& GetInstance();
 
  protected:
   LazySingleton() {}
@@ -81,7 +81,7 @@ class LazySingleton {
 };
 
 template <class T>
-T& LazySingleton<T>::Instance() {
+T& LazySingleton<T>::GetInstance() {
   static T _self;
   return _self;
 }
@@ -89,7 +89,7 @@ T& LazySingleton<T>::Instance() {
 template <class T>
 class TSSingleton {
  public:
-  static T* Instance() {
+  static T* GetInstance() {
     if (!self_) {
       std::lock_guard<std::mutex> lock(mutex_);
       if (!self_) {

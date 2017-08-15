@@ -42,7 +42,7 @@ struct CurrentCpuInfo {
 
   const common::system_info::CpuInfo info;
 
-  static CurrentCpuInfo* Instance() { return &common::patterns::LazySingleton<CurrentCpuInfo>::Instance(); }
+  static CurrentCpuInfo* GetInstance() { return &common::patterns::LazySingleton<CurrentCpuInfo>::GetInstance(); }
 };
 
 }  // namespace
@@ -93,7 +93,7 @@ bool CpuInfo::Equals(const CpuInfo& other) const {
 }
 
 const CpuInfo& CurrentCpuInfo() {
-  return CurrentCpuInfo::Instance()->info;
+  return CurrentCpuInfo::GetInstance()->info;
 }
 
 CpuInfo CpuInfo::MakeCpuInfo() {

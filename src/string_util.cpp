@@ -50,7 +50,7 @@ struct EmptyStrings {
   const std::string s;
   const common::string16 s16;
 
-  static EmptyStrings* GetInstance() { return &common::patterns::LazySingleton<EmptyStrings>::Instance(); }
+  static EmptyStrings* GetInstance() { return &common::patterns::LazySingleton<EmptyStrings>::GetInstance(); }
 };
 
 // Used by ReplaceStringPlaceholders to track the position in the string of

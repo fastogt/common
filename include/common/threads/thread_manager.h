@@ -125,4 +125,4 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
 }  // namespace threads
 }  // namespace common
 
-#define THREAD_MANAGER() common::threads::ThreadManager::Instance()
+#define THREAD_MANAGER() common::threads::ThreadManager::GetInstance()

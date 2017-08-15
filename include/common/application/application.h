@@ -64,23 +64,22 @@ class IApplicationImpl {
   virtual ~IApplicationImpl();
 };
 
-typedef IApplicationImpl* (*CreateApplicationImpl)(int argc, char** argv);
+typedef IApplicationImpl* (*CreateApplicationImpl)(int argc, char** argv);  // Create implementation
 
-class Application {
+class Application {  // Bridge pattern
  public:
   typedef IEvent event_t;
   typedef IListener listener_t;
 
   Application(int argc, char** argv, CreateApplicationImpl ptr);
-
   ~Application();
 
-  std::string AppPath() const;
-  std::string AppDir() const;
-  int Argc() const;
-  char** Argv() const;
+  std::string GetAppPath() const;
+  std::string GetAppDir() const;
+  int GetArgc() const;
+  char** GetArgv() const;
 
-  static Application* Instance();
+  static Application* GetInstance();
 
   void PostEvent(event_t* event);
   void SendEvent(event_t* event);
@@ -120,4 +119,4 @@ class Application {
 }  // namespace application
 }  // namespace common
 
-#define fApp common::application::Application::Instance()
+#define fApp common::application::Application::GetInstance()

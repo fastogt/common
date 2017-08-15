@@ -46,25 +46,25 @@ Application::~Application() {
   self_ = nullptr;
 }
 
-std::string Application::AppPath() const {
+std::string Application::GetAppPath() const {
   return argv_[0];
 }
-std::string Application::AppDir() const {
+std::string Application::GetAppDir() const {
 #ifdef OS_MACOSX
   std::string appP = file_system::pwd();
 #else
-  std::string appP = AppPath();
+  std::string appP = GetAppPath();
 #endif
   return file_system::get_dir_path(appP);
 }
-int Application::Argc() const {
+int Application::GetArgc() const {
   return argc_;
 }
-char** Application::Argv() const {
+char** Application::GetArgv() const {
   return argv_;
 }
 
-Application* Application::Instance() {
+Application* Application::GetInstance() {
   return self_;
 }
 

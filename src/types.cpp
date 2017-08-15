@@ -31,8 +31,6 @@
 
 #include <string.h>
 
-#include <string>
-
 namespace common {
 
 #ifdef OS_WIN
