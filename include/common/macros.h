@@ -248,8 +248,6 @@ void immediate_exit();
 #define IGNORE_EINTR(x) (x)
 #endif
 
-void* betoh_memcpy(void* dst, const void* src, unsigned int sz);
-
 template <typename T>
 inline void destroy(T** v) {
   if (!v) {

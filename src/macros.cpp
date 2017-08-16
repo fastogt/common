@@ -42,12 +42,3 @@ void immediate_exit() {
   assert(0);
   exit(EXIT_FAILURE);
 }
-
-void* betoh_memcpy(void* dst, const void* src, unsigned int sz) {
-  char* dst8 = reinterpret_cast<char*>(dst);
-  const char* src8 = reinterpret_cast<const char*>(src);
-  for (unsigned int i = 0; i < sz; ++i) {
-    dst8[i] = src8[sz - i - 1];
-  }
-  return dst;
-}
