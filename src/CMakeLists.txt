@@ -135,6 +135,7 @@ SET(TEXT_DECODERS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/hex_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/html_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/iedcoder.h
+  ${CMAKE_SOURCE_DIR}/include/common/text_decoders/iedcoder_factory.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/base64_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/compress_zlib_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/compress_snappy_edcoder.h
@@ -145,6 +146,7 @@ SET(TEXT_DECODERS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/text_decoders/hex_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/html_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/iedcoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/text_decoders/iedcoder_factory.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/base64_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/compress_zlib_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/compress_snappy_edcoder.cpp

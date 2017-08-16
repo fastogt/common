@@ -29,34 +29,11 @@
 
 #pragma once
 
-#include <string>  // for string
-
-#include <common/error.h>  // for Error
+#include <common/text_decoders/iedcoder.h>
 
 namespace common {
 
-enum EDTypes { Base64, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
-
-static const char* EDecoderTypes[] = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
-
-class IEDcoder {
- public:
-  Error Encode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-  Error Decode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-  EDTypes GetType() const;
-
-  virtual ~IEDcoder();
-
- protected:
-  explicit IEDcoder(EDTypes type);
-
- private:
-  virtual Error EncodeImpl(const std::string& data, std::string* out) = 0;
-  virtual Error DecodeImpl(const std::string& data, std::string* out) = 0;
-  const EDTypes type_;
-};
-
-std::string ConvertToString(EDTypes t);
-bool ConvertFromString(const std::string& from, EDTypes* out) WARN_UNUSED_RESULT;
+IEDcoder* CreateEDCoder(EDTypes type);
+IEDcoder* CreateEDCoder(const std::string& name);
 
 }  // namespace common

@@ -6,6 +6,7 @@
 #include <common/text_decoders/hex_edcoder.h>
 #include <common/text_decoders/html_edcoder.h>
 #include <common/text_decoders/iedcoder.h>
+#include <common/text_decoders/iedcoder_factory.h>
 #include <common/text_decoders/msgpack_edcoder.h>
 
 #if 0
@@ -95,14 +96,14 @@ TEST(snappy, enc_dec) {
 TEST(iedcoder, factory) {
   for (uint32_t i = 0; i < SIZEOFMASS(common::EDecoderTypes); ++i) {
     std::string fac = common::EDecoderTypes[i];
-    common::IEDcoder* dec = common::IEDcoder::CreateEDCoder(fac);
+    common::IEDcoder* dec = common::CreateEDCoder(fac);
     ASSERT_TRUE(dec);
 
     common::EDTypes t;
     ASSERT_TRUE(common::ConvertFromString(fac, &t));
     ASSERT_EQ(fac, common::ConvertToString(t));
 
-    common::IEDcoder* dec2 = common::IEDcoder::CreateEDCoder(t);
+    common::IEDcoder* dec2 = common::CreateEDCoder(t);
     ASSERT_TRUE(dec2);
     ASSERT_EQ(dec->GetType(), dec2->GetType());
 

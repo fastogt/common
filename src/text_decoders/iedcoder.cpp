@@ -29,18 +29,6 @@
 
 #include <common/text_decoders/iedcoder.h>
 
-#include <stdint.h>  // for uint32_t
-#include <string>    // for string, operator==
-
-#include <common/convert2string.h>
-
-#include <common/text_decoders/base64_edcoder.h>  // for Base64EDcoder
-#include <common/text_decoders/compress_snappy_edcoder.h>
-#include <common/text_decoders/compress_zlib_edcoder.h>  // for CompressZlibEDcoder
-#include <common/text_decoders/hex_edcoder.h>            // for HexEDcoder
-#include <common/text_decoders/html_edcoder.h>           // for HtmlEscEDcoder
-#include <common/text_decoders/msgpack_edcoder.h>        // for MsgPackEDcoder
-
 namespace common {
 std::string ConvertToString(EDTypes t) {
   return EDecoderTypes[t];
@@ -83,35 +71,6 @@ Error IEDcoder::Decode(const std::string& data, std::string* out) {
 
 EDTypes IEDcoder::GetType() const {
   return type_;
-}
-
-IEDcoder* IEDcoder::CreateEDCoder(EDTypes type) {
-  if (type == Base64) {
-    return new Base64EDcoder;
-  } else if (type == CompressZlib) {
-    return new CompressZlibEDcoder;
-  } else if (type == CompressSnappy) {
-    return new CompressSnappyEDcoder;
-  } else if (type == Hex) {
-    return new HexEDcoder;
-  } else if (type == MsgPack) {
-    return new MsgPackEDcoder;
-  } else if (type == HtmlEsc) {
-    return new HtmlEscEDcoder;
-  }
-
-  NOTREACHED();
-  return nullptr;
-}
-
-IEDcoder* IEDcoder::CreateEDCoder(const std::string& name) {
-  EDTypes t;
-  if (!ConvertFromString(name, &t)) {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  return CreateEDCoder(t);
 }
 
 }  // namespace common

@@ -27,36 +27,44 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/text_decoders/iedcoder_factory.h>
 
-#include <string>  // for string
-
-#include <common/error.h>  // for Error
+#include <common/text_decoders/base64_edcoder.h>  // for Base64EDcoder
+#include <common/text_decoders/compress_snappy_edcoder.h>
+#include <common/text_decoders/compress_zlib_edcoder.h>  // for CompressZlibEDcoder
+#include <common/text_decoders/hex_edcoder.h>            // for HexEDcoder
+#include <common/text_decoders/html_edcoder.h>           // for HtmlEscEDcoder
+#include <common/text_decoders/msgpack_edcoder.h>        // for MsgPackEDcoder
 
 namespace common {
 
-enum EDTypes { Base64, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
+IEDcoder* CreateEDCoder(EDTypes type) {
+  if (type == Base64) {
+    return new Base64EDcoder;
+  } else if (type == CompressZlib) {
+    return new CompressZlibEDcoder;
+  } else if (type == CompressSnappy) {
+    return new CompressSnappyEDcoder;
+  } else if (type == Hex) {
+    return new HexEDcoder;
+  } else if (type == MsgPack) {
+    return new MsgPackEDcoder;
+  } else if (type == HtmlEsc) {
+    return new HtmlEscEDcoder;
+  }
 
-static const char* EDecoderTypes[] = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
+  NOTREACHED();
+  return nullptr;
+}
 
-class IEDcoder {
- public:
-  Error Encode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-  Error Decode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-  EDTypes GetType() const;
+IEDcoder* CreateEDCoder(const std::string& name) {
+  EDTypes t;
+  if (!ConvertFromString(name, &t)) {
+    NOTREACHED();
+    return nullptr;
+  }
 
-  virtual ~IEDcoder();
-
- protected:
-  explicit IEDcoder(EDTypes type);
-
- private:
-  virtual Error EncodeImpl(const std::string& data, std::string* out) = 0;
-  virtual Error DecodeImpl(const std::string& data, std::string* out) = 0;
-  const EDTypes type_;
-};
-
-std::string ConvertToString(EDTypes t);
-bool ConvertFromString(const std::string& from, EDTypes* out) WARN_UNUSED_RESULT;
+  return CreateEDCoder(t);
+}
 
 }  // namespace common
