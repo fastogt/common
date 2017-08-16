@@ -58,7 +58,7 @@ typedef int64_t time64_t;  // millisecond
 
 class IMetaClassInfo {
  public:
-  virtual const char* ClassName() const = 0;
+  virtual const char* GetClassName() const = 0;
   virtual ~IMetaClassInfo();
 };
 

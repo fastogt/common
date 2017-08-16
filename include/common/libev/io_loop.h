@@ -70,9 +70,9 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   patterns::id_counter<IoLoop>::type_t GetId() const;
 
   void SetName(const std::string& name);
-  std::string Name() const;
+  std::string GetName() const;
 
-  virtual const char* ClassName() const override = 0;
+  virtual const char* GetClassName() const override = 0;
   std::string FormatedName() const;
 
   void ExecInLoopThread(custom_loop_exec_function_t func);

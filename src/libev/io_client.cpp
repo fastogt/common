@@ -54,7 +54,7 @@ void IoClient::Close() {
   CloseImpl();
 }
 
-IoLoop* IoClient::Server() const {
+IoLoop* IoClient::GetServer() const {
   return server_;
 }
 
@@ -62,11 +62,11 @@ void IoClient::SetName(const std::string& name) {
   name_ = name;
 }
 
-std::string IoClient::Name() const {
+std::string IoClient::GetName() const {
   return name_;
 }
 
-flags_t IoClient::Flags() const {
+flags_t IoClient::GetFlags() const {
   return flags_;
 }
 
@@ -79,16 +79,16 @@ void IoClient::SetFlags(flags_t flags) {
   }
 }
 
-patterns::id_counter<IoClient>::type_t IoClient::Id() const {
+patterns::id_counter<IoClient>::type_t IoClient::GetId() const {
   return id_.id();
 }
 
-const char* IoClient::ClassName() const {
+const char* IoClient::GetClassName() const {
   return "IoClient";
 }
 
 std::string IoClient::FormatedName() const {
-  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", Name(), ClassName(), Id());
+  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), GetClassName(), GetId());
 }
 
 }  // namespace libev

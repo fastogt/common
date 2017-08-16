@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <common/libev/io_loop_observer.h>
-#include <common/libev/tcp/tcp_server.h>
-
 #include <common/libev/tcp/tcp_client.h>
+#include <common/libev/tcp/tcp_server.h>
 
 #include <common/threads/thread_manager.h>
 
@@ -31,7 +30,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
   }
 
   virtual void Accepted(common::libev::IoClient* client) override {
-    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->Server());
+    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->GetServer());
     std::vector<common::libev::IoClient*> cl = sserver->GetClients();
     ASSERT_TRUE(cl.empty());
   }
@@ -42,7 +41,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
   }
 
   virtual void Closed(common::libev::IoClient* client) override {
-    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->Server());
+    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->GetServer());
     std::vector<common::libev::IoClient*> cl = sserver->GetClients();
     ASSERT_EQ(cl.size(), 1);
   }

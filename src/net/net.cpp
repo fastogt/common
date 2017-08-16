@@ -474,6 +474,36 @@ ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) {
 #endif
 }
 
+#ifdef OS_POSIX
+ErrnoError write_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nwritten_out) {
+  if (fd == INVALID_SOCKET_VALUE || !iovec || count <= 0 || !nwritten_out) {
+    return make_error_value_perror("write_ev_to_socket", EINVAL, ErrorValue::E_ERROR);
+  }
+
+  ssize_t lnwritten = writev(fd, iovec, count);
+  if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_value_perror("writev", errno, ErrorValue::E_ERROR);
+  }
+
+  *nwritten_out = lnwritten;
+  return ErrnoError();
+}
+
+ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nread_out) {
+  if (fd == INVALID_SOCKET_VALUE || !iovec || count <= 0 || !nread_out) {
+    return make_error_value_perror("write_ev_to_socket", EINVAL, ErrorValue::E_ERROR);
+  }
+
+  ssize_t lnread = readv(fd, iovec, count);
+  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_value_perror("writev", errno, ErrorValue::E_ERROR);
+  }
+
+  *nread_out = lnread;
+  return ErrnoError();
+}
+#endif
+
 ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten) {
   if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
     return make_error_value_perror("write_to_socket", EINVAL, ErrorValue::E_ERROR);

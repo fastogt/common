@@ -55,6 +55,16 @@ SocketHolder::~SocketHolder() {}
 
 SocketHolder::SocketHolder(socket_descr_t fd) : info_(fd) {}
 
+#ifdef OS_POSIX
+ErrnoError SocketHolder::WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
+  return net::write_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
+}
+
+ErrnoError SocketHolder::ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
+  return net::read_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
+}
+#endif
+
 ErrnoError SocketHolder::Write(const char* data, size_t size, size_t* nwrite_out) {
   return net::write_to_socket(info_.fd(), data, size, nwrite_out);
 }

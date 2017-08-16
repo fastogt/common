@@ -46,7 +46,7 @@ class TcpClient : public IoClient {
   TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
   virtual ~TcpClient();
 
-  net::socket_info Info() const;
+  net::socket_info GetInfo() const;
 
   virtual Error Write(const char* data, size_t size, size_t* nwrite) override;
   virtual Error Read(char* out, size_t size, size_t* nread) override;

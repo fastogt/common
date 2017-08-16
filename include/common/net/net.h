@@ -66,6 +66,11 @@ ErrnoError close(socket_descr_t fd) WARN_UNUSED_RESULT;
 
 ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) WARN_UNUSED_RESULT;
 
+#ifdef OS_POSIX
+ErrnoError write_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nwritten_out);
+ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nread_out);
+#endif
+
 ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten_out) WARN_UNUSED_RESULT;
 ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
 

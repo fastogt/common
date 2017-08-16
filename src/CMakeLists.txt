@@ -348,7 +348,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/string_util.h
     ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
     ${CMAKE_SOURCE_DIR}/include/common/types.h
-    ${CMAKE_SOURCE_DIR}/include/common/lexical_cast.h
     ${CMAKE_SOURCE_DIR}/include/common/macros.h
     ${CMAKE_SOURCE_DIR}/include/common/utils.h
     ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
@@ -391,7 +390,6 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/string_util_constants.cpp
   ${CMAKE_SOURCE_DIR}/src/convert2string.cpp
   ${CMAKE_SOURCE_DIR}/src/types.cpp
-  ${CMAKE_SOURCE_DIR}/src/lexical_cast.cpp
   ${CMAKE_SOURCE_DIR}/src/macros.cpp
   ${CMAKE_SOURCE_DIR}/src/file_system.cpp
   ${CMAKE_SOURCE_DIR}/src/value.cpp

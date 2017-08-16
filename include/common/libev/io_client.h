@@ -50,16 +50,16 @@ class IoClient : IMetaClassInfo {
 
   void Close();
 
-  IoLoop* Server() const;
+  IoLoop* GetServer() const;
 
   void SetName(const std::string& name);
-  std::string Name() const;
+  std::string GetName() const;
 
-  flags_t Flags() const;
+  flags_t GetFlags() const;
   void SetFlags(flags_t flags);
 
-  patterns::id_counter<IoClient>::type_t Id() const;
-  virtual const char* ClassName() const override;
+  patterns::id_counter<IoClient>::type_t GetId() const;
+  virtual const char* GetClassName() const override;
   std::string FormatedName() const;
 
   virtual Error Write(const char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;

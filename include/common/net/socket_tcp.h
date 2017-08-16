@@ -49,6 +49,11 @@ class SocketHolder {
   socket_info GetInfo() const;
   socket_descr_t GetFd() const;
 
+#ifdef OS_POSIX
+  ErrnoError WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
+#endif
+
   ErrnoError Write(const char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Read(char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Close() WARN_UNUSED_RESULT;

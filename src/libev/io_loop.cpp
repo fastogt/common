@@ -73,7 +73,7 @@ IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
 
 void IoLoop::UnRegisterClient(IoClient* client) {
   CHECK(IsLoopThread());
-  CHECK(client && client->Server() == this);
+  CHECK(client && client->GetServer() == this);
   const std::string formated_name = client->FormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
@@ -94,15 +94,15 @@ void IoLoop::RegisterClient(IoClient* client) {
   CHECK(client);
   const std::string formated_name = client->FormatedName();
 
-  if (client->Server()) {
-    CHECK(client->Server() == this);
+  if (client->GetServer()) {
+    CHECK(client->GetServer() == this);
   } else {
     client->server_ = this;
   }
 
   // Initialize and start watcher to read client requests
   LibevIO* client_ev = client->read_write_io_;
-  client_ev->Init(loop_, read_write_cb, client->GetFd(), client->Flags());
+  client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
   client_ev->Start();
 
   if (observer_) {
@@ -116,7 +116,7 @@ void IoLoop::RegisterClient(IoClient* client) {
 
 void IoLoop::CloseClient(IoClient* client) {
   CHECK(IsLoopThread());
-  CHECK(client && client->Server() == this);
+  CHECK(client && client->GetServer() == this);
   const std::string formated_name = client->FormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
@@ -176,24 +176,24 @@ void IoLoop::SetName(const std::string& name) {
   name_ = name;
 }
 
-std::string IoLoop::Name() const {
+std::string IoLoop::GetName() const {
   return name_;
 }
 
 std::string IoLoop::FormatedName() const {
-  return MemSPrintf("[%s][%s(%llu)]", Name(), ClassName(), GetId());
+  return MemSPrintf("[%s][%s(%llu)]", GetName(), GetClassName(), GetId());
 }
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
   IoClient* pclient = reinterpret_cast<IoClient*>(io->UserData());
-  IoLoop* pserver = pclient->Server();
+  IoLoop* pserver = pclient->GetServer();
   pserver->ReadWrite(loop, pclient, revents);
 }
 
 void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
   CHECK(IsLoopThread());
   CHECK(loop_ == loop);
-  CHECK(client && client->Server() == this);
+  CHECK(client && client->GetServer() == this);
 
   if (EV_ERROR & revents) {
     NOTREACHED();
