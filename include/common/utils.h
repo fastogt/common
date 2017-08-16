@@ -37,7 +37,8 @@
 #include <utility>      // for pair
 
 #include <common/string16.h>  // for char16
-#include <common/types.h>     // for buffer_t, byte_t
+#include <common/string_piece.h>
+#include <common/types.h>  // for buffer_t, byte_t
 
 #define HAS_MEMBER(CLASS_NAME, FUNC_MUST_BE)                                                  \
   COMPILE_ASSERT(std::is_member_function_pointer<decltype(&CLASS_NAME::FUNC_MUST_BE)>::value, \
@@ -157,15 +158,15 @@ struct RuntimeCmp<std::pair<T, U> > : public std::binary_function<const std::pai
 
 namespace base64 {
 buffer_t encode64(const buffer_t& input);
-std::string encode64(const std::string& input);
+std::string encode64(const StringPiece& input);
 
 buffer_t decode64(const buffer_t& input);
-std::string decode64(const std::string& input);
+std::string decode64(const StringPiece& input);
 }  // namespace base64
 
 namespace html {
-std::string encode(const std::string& input);
-std::string decode(const std::string& input);
+std::string encode(const StringPiece& input);
+std::string decode(const StringPiece& input);
 }  // namespace html
 
 void msleep(useconds_t msec);

@@ -37,8 +37,8 @@ namespace compress {
 Error EncodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 Error DecodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeBase64(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeBase64(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeBase64(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeBase64(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

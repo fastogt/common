@@ -29,14 +29,18 @@
 
 #pragma once
 
-#include <common/error.h>
-
 #ifdef HAVE_SNAPPY
+#include <common/error.h>
+#include <common/string_piece.h>
+
 namespace common {
 namespace compress {
 
-Error EncodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeSnappy(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeSnappy(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeSnappy(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+
+Error EncodeSnappy(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeSnappy(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

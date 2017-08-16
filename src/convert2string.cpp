@@ -365,14 +365,14 @@ bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
   return true;
 }
 
-template <typename T>
-T hex_encode_impl(const T& input, bool is_lower) {
+template <typename R, typename T>
+R hex_encode_impl(const T& input, bool is_lower) {
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
   typedef typename T::value_type value_type;
   const typename T::size_type size = input.size();
-  T decoded;
+  R decoded;
   decoded.resize(size * 2);
 
   for (size_t i = 0; i < size; ++i) {
@@ -388,15 +388,15 @@ T hex_encode_impl(const T& input, bool is_lower) {
   return decoded;
 }
 
-template <typename T>
-T hex_decode_impl(const T& input) {
+template <typename R, typename T>
+R hex_decode_impl(const T& input) {
   std::vector<uint8_t> vec;
   bool res = HexStringToBytesT(input, &vec);
   if (!res) {
-    return T();
+    return R();
   }
 
-  return T(vec.begin(), vec.end());
+  return R(vec.begin(), vec.end());
 }
 
 }  // namespace
@@ -1368,19 +1368,19 @@ namespace utils {
 namespace hex {
 
 buffer_t encode(const buffer_t& input, bool is_lower) {
-  return hex_encode_impl(input, is_lower);
+  return hex_encode_impl<buffer_t>(input, is_lower);
 }
 
-std::string encode(const std::string& input, bool is_lower) {
-  return hex_encode_impl(input, is_lower);
+std::string encode(const StringPiece& input, bool is_lower) {
+  return hex_encode_impl<std::string>(input, is_lower);
 }
 
 buffer_t decode(const buffer_t& input) {
-  return hex_decode_impl(input);
+  return hex_decode_impl<buffer_t>(input);
 }
 
-std::string decode(const std::string& input) {
-  return hex_decode_impl(input);
+std::string decode(const StringPiece& input) {
+  return hex_decode_impl<std::string>(input);
 }
 
 }  // namespace hex

@@ -31,20 +31,18 @@
 
 #include <string>
 
-#include <common/utils.h>
+#include <common/compress/base64.h>
 
 namespace common {
 
 Base64EDcoder::Base64EDcoder() : IEDcoder(Base64) {}
 
-Error Base64EDcoder::EncodeImpl(const std::string& data, std::string* out) {
-  *out = utils::base64::encode64(data);
-  return Error();
+Error Base64EDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
+  return compress::EncodeBase64(data, out);
 }
 
-Error Base64EDcoder::DecodeImpl(const std::string& data, std::string* out) {
-  *out = utils::base64::decode64(data);
-  return Error();
+Error Base64EDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
+  return compress::DecodeBase64(data, out);
 }
 
 }  // namespace common

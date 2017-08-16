@@ -145,10 +145,10 @@ char table64(unsigned char c) {
   return (c < 43 || c > 122) ? np : table64vals[c - 43];
 }
 
-template <typename T>
-T encode64_impl(const T& input) {
-  T encoded;
+template <typename R, typename T>
+R encode64_impl(const T& input) {
   typedef typename T::value_type value_type;
+  R encoded;
   value_type c;
   const typename T::size_type length = input.size();
 
@@ -188,12 +188,12 @@ T encode64_impl(const T& input) {
   return encoded;
 }
 
-template <typename T>
-T decode64_impl(const T& input) {
+template <typename R, typename T>
+R decode64_impl(const T& input) {
   typedef typename T::value_type value_type;
   value_type c, d;
   const typename T::size_type length = input.size();
-  T decoded;
+  R decoded;
 
   decoded.reserve(length);
 
@@ -252,31 +252,32 @@ uint64_t crc64(uint64_t crc, const buffer_t& data) {
 
 namespace base64 {
 
-std::string encode64(const std::string& input) {
-  return encode64_impl(input);
+std::string encode64(const StringPiece& input) {
+  return encode64_impl<std::string>(input);
 }
 
-std::string decode64(const std::string& input) {
-  return decode64_impl(input);
+std::string decode64(const StringPiece& input) {
+  return decode64_impl<std::string>(input);
 }
 
 buffer_t encode64(const buffer_t& input) {
-  return encode64_impl(input);
+  return encode64_impl<buffer_t>(input);
 }
 
 buffer_t decode64(const buffer_t& input) {
-  return decode64_impl(input);
+  return decode64_impl<buffer_t>(input);
 }
 
 }  // namespace base64
 
 namespace html {
 
-std::string encode(const std::string& input) {
+std::string encode(const StringPiece& input) {
   std::string buffer;
   buffer.reserve(input.size());
   for (size_t pos = 0; pos != input.size(); ++pos) {
-    switch (input[pos]) {
+    char c = input[pos];
+    switch (c) {
       case '&':
         buffer.append("&amp;");
         break;
@@ -293,15 +294,15 @@ std::string encode(const std::string& input) {
         buffer.append("&gt;");
         break;
       default:
-        buffer.append(&input[pos], 1);
+        buffer += c;
         break;
     }
   }
   return buffer;
 }
 
-std::string decode(const std::string& input) {
-  std::string str = input;
+std::string decode(const StringPiece& input) {
+  std::string str(input.begin(), input.end());
   std::string subs[] = {"& #34;", "&quot;", "& #39;", "&apos;", "& #38;", "&amp;", "& #60;", "&lt;",
                         "& #62;", "&gt;",   "&34;",   "&39;",   "&38;",   "&60;",  "&62;"};
 

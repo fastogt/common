@@ -73,7 +73,7 @@ size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
 namespace common {
 MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
 
-Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -81,7 +81,7 @@ Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
   cmp_ctx_t cmp;
   std::string lout;
   cmp_init(&cmp, &lout, NULL, stream_writer);
-  bool res = cmp_write_str(&cmp, data.c_str(), data.size());
+  bool res = cmp_write_str(&cmp, data.data(), data.size());
   if (!res) {
     return make_error_value("MsgPackEDcoder internal error!", ErrorValue::E_ERROR);
   }
@@ -89,7 +89,7 @@ Error MsgPackEDcoder::EncodeImpl(const std::string& data, std::string* out) {
   return Error();
 }
 
-Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -99,7 +99,7 @@ Error MsgPackEDcoder::DecodeImpl(const std::string& data, std::string* out) {
     return make_error_value("Memory allocation failed!", ErrorValue::E_ERROR);
   }
 
-  memcpy(copy, data.c_str(), data.size());
+  memcpy(copy, data.data(), data.size());
 
   cmp_init(&cmp, copy, stream_reader, NULL);
 

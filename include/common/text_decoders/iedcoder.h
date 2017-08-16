@@ -41,8 +41,8 @@ static const char* EDecoderTypes[] = {"Base64", "GZip", "Snappy", "Hex", "MsgPac
 
 class IEDcoder {
  public:
-  Error Encode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
-  Error Decode(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+  Error Encode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+  Error Decode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
   EDTypes GetType() const;
 
   virtual ~IEDcoder();
@@ -51,8 +51,8 @@ class IEDcoder {
   explicit IEDcoder(EDTypes type);
 
  private:
-  virtual Error EncodeImpl(const std::string& data, std::string* out) = 0;
-  virtual Error DecodeImpl(const std::string& data, std::string* out) = 0;
+  virtual Error EncodeImpl(const StringPiece& data, std::string* out) = 0;
+  virtual Error DecodeImpl(const StringPiece& data, std::string* out) = 0;
   const EDTypes type_;
 };
 

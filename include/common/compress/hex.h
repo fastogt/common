@@ -37,10 +37,10 @@ namespace common {
 namespace compress {
 
 Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) WARN_UNUSED_RESULT;
-Error EncodeHex(const std::string& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
-
 Error DecodeHex(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeHex(const std::string& data, std::string* out) WARN_UNUSED_RESULT;
+
+Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeHex(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

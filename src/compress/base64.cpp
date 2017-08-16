@@ -58,7 +58,7 @@ Error DecodeBase64(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
-Error EncodeBase64(const std::string& data, std::string* out) {
+Error EncodeBase64(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -67,7 +67,7 @@ Error EncodeBase64(const std::string& data, std::string* out) {
   return Error();
 }
 
-Error DecodeBase64(const std::string& data, std::string* out) {
+Error DecodeBase64(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }

@@ -38,7 +38,10 @@
 namespace common {
 namespace compress {
 
-Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
+namespace {
+template <typename STR, typename STR2>
+Error EncodeZlibT(const STR& data, STR2* out, int compressionlevel) {
+  typedef typename STR2::value_type value_type2;
   if (data.empty() || !out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -50,16 +53,16 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
     return make_error_value("Zlib init error", ErrorValue::E_ERROR);
   }
 #if defined(ZLIB_CONST) && !defined(z_const)
-  zs.next_in = data.data();
+  zs.next_in = reinterpret_cast<const Bytef*>(data.data());
 #else
-  zs.next_in = const_cast<Bytef*>(data.data());
+  zs.next_in = reinterpret_cast<Bytef*>(const_cast<value_type2*>((data.data())));
 #endif
   zs.avail_in = data.size();  // set the z_stream's input
 
   int ret;
   Bytef* outbuffer = new Bytef[BUFFER_SIZE];
 
-  buffer_t lout;
+  STR2 lout;
 
   // retrieve the compressed bytes blockwise
   do {
@@ -70,7 +73,8 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
 
     if (lout.size() < zs.total_out) {
       // append the block to the output string
-      lout = MAKE_BUFFER_SIZE(outbuffer, zs.total_out - lout.size());
+      uLong diff = zs.total_out - lout.size();
+      lout = STR2(outbuffer, outbuffer + diff);
     }
   } while (ret == Z_OK);
 
@@ -88,7 +92,9 @@ Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
   return Error();
 }
 
-Error DecodeZlib(const buffer_t& data, buffer_t* out) {
+template <typename STR, typename STR2>
+Error DecodeZlibT(const STR& data, STR2* out) {
+  typedef typename STR2::value_type value_type2;
   if (data.empty() || !out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -101,15 +107,15 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
   }
 
 #if defined(ZLIB_CONST) && !defined(z_const)
-  zs.next_in = data.data();
+  zs.next_in = reinterpret_cast<const Bytef*>(data.data());
 #else
-  zs.next_in = const_cast<Bytef*>(data.data());
+  zs.next_in = reinterpret_cast<Bytef*>(const_cast<value_type2*>((data.data())));
 #endif
   zs.avail_in = data.size();
 
   int ret;
   Bytef* outbuffer = new Bytef[BUFFER_SIZE];
-  buffer_t lout;
+  STR2 lout;
   // get the decompressed bytes blockwise using repeated calls to inflate
   do {
     zs.next_out = outbuffer;
@@ -118,7 +124,8 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
     ret = inflate(&zs, 0);
 
     if (lout.size() < zs.total_out) {
-      lout = MAKE_BUFFER_SIZE(outbuffer, zs.total_out - lout.size());
+      uLong diff = zs.total_out - lout.size();
+      lout = STR2(outbuffer, outbuffer + diff);
     }
   } while (ret == Z_OK);
 
@@ -134,6 +141,23 @@ Error DecodeZlib(const buffer_t& data, buffer_t* out) {
 
   *out = lout;
   return Error();
+}
+}  // namespace
+
+Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel) {
+  return EncodeZlibT(data, out, compressionlevel);
+}
+
+Error DecodeZlib(const buffer_t& data, buffer_t* out) {
+  return DecodeZlibT(data, out);
+}
+
+Error EncodeZlib(const StringPiece& data, std::string* out, int compressionlevel) {
+  return EncodeZlibT(data, out, compressionlevel);
+}
+
+Error DecodeZlib(const StringPiece& data, std::string* out) {
+  return DecodeZlibT(data, out);
 }
 
 }  // namespace compress

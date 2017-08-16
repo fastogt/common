@@ -41,6 +41,11 @@ namespace compress {
 Error EncodeZlib(const buffer_t& data, buffer_t* out, int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
 Error DecodeZlib(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
 
+Error EncodeZlib(const StringPiece& data,
+                 std::string* out,
+                 int compressionlevel = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
+Error DecodeZlib(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+
 }  // namespace compress
 }  // namespace common
 

@@ -40,7 +40,7 @@
 namespace common {
 namespace compress {
 
-Error EncodeHex(const std::string& data, bool is_lower, std::string* out) {
+Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) {
   if (!out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }
@@ -67,7 +67,7 @@ Error DecodeHex(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
-Error DecodeHex(const std::string& data, std::string* out) {
+Error DecodeHex(const StringPiece& data, std::string* out) {
   if (!out) {
     return make_inval_error_value(ErrorValue::E_ERROR);
   }

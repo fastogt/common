@@ -37,7 +37,7 @@ namespace common {
 
 CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(CompressSnappy) {}
 
-Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+Error CompressSnappyEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
 #ifdef HAVE_SNAPPY
   return compress::EncodeSnappy(data, out);
 #else
@@ -47,7 +47,7 @@ Error CompressSnappyEDcoder::EncodeImpl(const std::string& data, std::string* ou
 #endif
 }
 
-Error CompressSnappyEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+Error CompressSnappyEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
 #ifdef HAVE_SNAPPY
   return compress::DecodeSnappy(data, out);
 #else

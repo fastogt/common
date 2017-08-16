@@ -37,11 +37,11 @@ namespace common {
 
 HexEDcoder::HexEDcoder() : IEDcoder(Hex) {}
 
-Error HexEDcoder::EncodeImpl(const std::string& data, std::string* out) {
+Error HexEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   return compress::EncodeHex(data, false, out);
 }
 
-Error HexEDcoder::DecodeImpl(const std::string& data, std::string* out) {
+Error HexEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
   return compress::DecodeHex(data, out);
 }
 

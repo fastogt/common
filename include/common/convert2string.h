@@ -161,10 +161,10 @@ namespace utils {
 namespace hex {
 
 buffer_t encode(const buffer_t& input, bool is_lower);
-std::string encode(const std::string& input, bool is_lower);
+std::string encode(const StringPiece& input, bool is_lower);
 
 buffer_t decode(const buffer_t& input);
-std::string decode(const std::string& input);
+std::string decode(const StringPiece& input);
 
 }  // namespace hex
 }  // namespace utils
