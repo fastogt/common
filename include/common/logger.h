@@ -80,24 +80,24 @@ void SET_LOGER_STREAM(std::ostream* logger);
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
-#define COMPACT_LOG_EX_CRIT(GetClassName) common::logging::GetClassName(common::logging::L_CRIT)
-#define COMPACT_LOG_EX_ERR(GetClassName) common::logging::GetClassName(common::logging::L_ERR)
-#define COMPACT_LOG_EX_WARNING(GetClassName) common::logging::GetClassName(common::logging::L_WARNING)
-#define COMPACT_LOG_EX_NOTICE(GetClassName) common::logging::GetClassName(common::logging::L_NOTICE)
-#define COMPACT_LOG_EX_INFO(GetClassName) common::logging::GetClassName(common::logging::L_INFO)
-#define COMPACT_LOG_EX_DEBUG(GetClassName) common::logging::GetClassName(common::logging::L_DEBUG)
+#define COMPACT_LOG_EX_CRIT(ClassName) common::logging::ClassName(common::logging::L_CRIT)
+#define COMPACT_LOG_EX_ERR(ClassName) common::logging::ClassName(common::logging::L_ERR)
+#define COMPACT_LOG_EX_WARNING(ClassName) common::logging::ClassName(common::logging::L_WARNING)
+#define COMPACT_LOG_EX_NOTICE(ClassName) common::logging::ClassName(common::logging::L_NOTICE)
+#define COMPACT_LOG_EX_INFO(ClassName) common::logging::ClassName(common::logging::L_INFO)
+#define COMPACT_LOG_EX_DEBUG(ClassName) common::logging::ClassName(common::logging::L_DEBUG)
 
-#define COMPACT_LOG_FILE_EX_CRIT(GetClassName) \
-  common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_CRIT)
-#define COMPACT_LOG_FILE_EX_ERR(GetClassName) common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_ERR)
-#define COMPACT_LOG_FILE_EX_WARNING(GetClassName) \
-  common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_WARNING)
-#define COMPACT_LOG_FILE_EX_NOTICE(GetClassName) \
-  common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_NOTICE)
-#define COMPACT_LOG_FILE_EX_INFO(GetClassName) \
-  common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_INFO)
-#define COMPACT_LOG_FILE_EX_DEBUG(GetClassName) \
-  common::logging::GetClassName(__FILE__, __LINE__, common::logging::L_DEBUG)
+#define COMPACT_LOG_FILE_EX_CRIT(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_CRIT)
+#define COMPACT_LOG_FILE_EX_ERR(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_ERR)
+#define COMPACT_LOG_FILE_EX_WARNING(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_WARNING)
+#define COMPACT_LOG_FILE_EX_NOTICE(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_NOTICE)
+#define COMPACT_LOG_FILE_EX_INFO(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_INFO)
+#define COMPACT_LOG_FILE_EX_DEBUG(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_DEBUG)
 
 #define COMPACT_LOG_CRIT COMPACT_LOG_EX_CRIT(LogMessage)
 #define COMPACT_LOG_ERR COMPACT_LOG_EX_ERR(LogMessage)

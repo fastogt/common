@@ -83,12 +83,12 @@ patterns::id_counter<IoClient>::type_t IoClient::GetId() const {
   return id_.id();
 }
 
-const char* IoClient::GetClassName() const {
+const char* IoClient::ClassName() const {
   return "IoClient";
 }
 
 std::string IoClient::FormatedName() const {
-  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), GetClassName(), GetId());
+  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
 }
 
 }  // namespace libev

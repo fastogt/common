@@ -59,7 +59,7 @@ class IoClient : IMetaClassInfo {
   void SetFlags(flags_t flags);
 
   patterns::id_counter<IoClient>::type_t GetId() const;
-  virtual const char* GetClassName() const override;
+  virtual const char* ClassName() const override;
   std::string FormatedName() const;
 
   virtual Error Write(const char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;

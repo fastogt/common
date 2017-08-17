@@ -181,7 +181,7 @@ std::string IoLoop::GetName() const {
 }
 
 std::string IoLoop::FormatedName() const {
-  return MemSPrintf("[%s][%s(%llu)]", GetName(), GetClassName(), GetId());
+  return MemSPrintf("[%s][%s(%llu)]", GetName(), ClassName(), GetId());
 }
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {

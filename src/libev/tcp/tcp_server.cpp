@@ -139,7 +139,7 @@ Error TcpServer::Listen(int backlog) {
   return sock_.Listen(backlog);
 }
 
-const char* TcpServer::GetClassName() const {
+const char* TcpServer::ClassName() const {
   return "TcpServer";
 }
 

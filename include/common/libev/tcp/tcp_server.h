@@ -60,7 +60,7 @@ class TcpServer : public IoLoop {
   Error Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   Error Listen(int backlog) WARN_UNUSED_RESULT;
 
-  const char* GetClassName() const override;
+  const char* ClassName() const override;
   net::HostAndPort GetHost() const;
 
   static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
