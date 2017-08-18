@@ -36,19 +36,20 @@ namespace application {
 typedef uint32_t (*timer_callback_t)(uint32_t interval, void* user_data);
 typedef int timer_id_t;
 
-class IApplicationImpl {
+class IApplication {
  public:
   typedef IEvent event_t;
   typedef IListener listener_t;
 
-  IApplicationImpl(int argc, char** argv);
+  IApplication(int argc, char** argv);
+
+  std::string GetAppPath() const;
+  std::string GetAppDir() const;
+  int GetArgc() const;
+  char** GetArgv() const;
 
   virtual timer_id_t AddTimer(uint32_t interval, timer_callback_t cb, void* user_data) = 0;
   virtual bool RemoveTimer(timer_id_t id) = 0;
-
-  virtual int PreExec() = 0;   // EXIT_FAILURE, EXIT_SUCCESS
-  virtual int Exec() = 0;      // EXIT_FAILURE, EXIT_SUCCESS
-  virtual int PostExec() = 0;  // EXIT_FAILURE, EXIT_SUCCESS
 
   virtual void PostEvent(event_t* event) = 0;
   virtual void SendEvent(event_t* event) = 0;
@@ -60,63 +61,27 @@ class IApplicationImpl {
   virtual void ShowCursor() = 0;
   virtual void HideCursor() = 0;
 
-  virtual void Exit(int result) = 0;
-  virtual ~IApplicationImpl();
-};
-
-typedef IApplicationImpl* (*CreateApplicationImpl)(int argc, char** argv);  // Create implementation
-
-class Application {  // Bridge pattern
- public:
-  typedef IEvent event_t;
-  typedef IListener listener_t;
-
-  Application(int argc, char** argv, CreateApplicationImpl ptr);
-  ~Application();
-
-  std::string GetAppPath() const;
-  std::string GetAppDir() const;
-  int GetArgc() const;
-  char** GetArgv() const;
-
-  static Application* GetInstance();
-
-  void PostEvent(event_t* event);
-  void SendEvent(event_t* event);
-
-  void Subscribe(listener_t* listener, events_size_t id);
-  void UnSubscribe(listener_t* listener, events_size_t id);
-  void UnSubscribe(listener_t* listener);
-
-  /**
-   * \brief Add a new timer to the pool of timers already running.
-   *
-   * \return A timer ID, or 0 when an error occurs.
-   */
-  timer_id_t AddTimer(uint32_t interval, timer_callback_t cb, void* user_data);
-  /**
-   * \brief Remove a timer knowing its ID.
-   *
-   * \return A boolean value indicating success or failure.
-   */
-  bool RemoveTimer(timer_id_t id);
-
-  void ShowCursor();
-  void HideCursor();
-
   int Exec();
+
+  static IApplication* GetInstance();
   static void Exit(int result);
 
+  virtual ~IApplication();
+
  private:
-  static Application* self_;
+  virtual void ExitImpl(int result) = 0;
+
+  virtual int PreExecImpl() = 0;   // EXIT_FAILURE, EXIT_SUCCESS
+  virtual int ExecImpl() = 0;      // EXIT_FAILURE, EXIT_SUCCESS
+  virtual int PostExecImpl() = 0;  // EXIT_FAILURE, EXIT_SUCCESS
+
+  static IApplication* self_;
 
   int argc_;
   char** argv_;
-
-  const std::unique_ptr<IApplicationImpl> impl_;
 };
 
 }  // namespace application
 }  // namespace common
 
-#define fApp common::application::Application::GetInstance()
+#define fApp common::application::IApplication::GetInstance()

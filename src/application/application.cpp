@@ -25,31 +25,24 @@
 namespace common {
 namespace application {
 
-IApplicationImpl::IApplicationImpl(int argc, char** argv) {
-  UNUSED(argc);
-  UNUSED(argv);
-}
+IApplication* IApplication::self_ = nullptr;
 
-IApplicationImpl::~IApplicationImpl() {}
-
-Application* Application::self_ = nullptr;
-
-Application::Application(int argc, char** argv, CreateApplicationImpl ptr)
-    : argc_(argc), argv_(argv), impl_(ptr(argc, argv)) {
+IApplication::IApplication(int argc, char** argv) : argc_(argc), argv_(argv) {
   CHECK(!self_);
   if (!self_) {
     self_ = this;
   }
 }
 
-Application::~Application() {
+IApplication::~IApplication() {
   self_ = nullptr;
 }
 
-std::string Application::GetAppPath() const {
+std::string IApplication::GetAppPath() const {
   return argv_[0];
 }
-std::string Application::GetAppDir() const {
+
+std::string IApplication::GetAppDir() const {
 #ifdef OS_MACOSX
   std::string appP = file_system::pwd();
 #else
@@ -57,80 +50,38 @@ std::string Application::GetAppDir() const {
 #endif
   return file_system::get_dir_path(appP);
 }
-int Application::GetArgc() const {
+
+int IApplication::GetArgc() const {
   return argc_;
 }
-char** Application::GetArgv() const {
+
+char** IApplication::GetArgv() const {
   return argv_;
 }
 
-Application* Application::GetInstance() {
+IApplication* IApplication::GetInstance() {
   return self_;
 }
 
-void Application::PostEvent(event_t* event) {
-  impl_->PostEvent(event);
-}
-
-void Application::SendEvent(event_t* event) {
-  impl_->SendEvent(event);
-}
-
-void Application::Subscribe(listener_t* listener, events_size_t id) {
-  impl_->Subscribe(listener, id);
-}
-
-void Application::UnSubscribe(listener_t* listener, events_size_t id) {
-  impl_->UnSubscribe(listener, id);
-}
-
-void Application::UnSubscribe(listener_t* listener) {
-  impl_->UnSubscribe(listener);
-}
-
-timer_id_t Application::AddTimer(uint32_t interval, timer_callback_t cb, void* user_data) {
-  return impl_->AddTimer(interval, cb, user_data);
-}
-
-bool Application::RemoveTimer(timer_id_t id) {
-  return impl_->RemoveTimer(id);
-}
-
-void Application::ShowCursor() {
-  impl_->ShowCursor();
-}
-
-void Application::HideCursor() {
-  impl_->HideCursor();
-}
-
-int Application::Exec() {  // EXIT_FAILURE, EXIT_SUCCESS
-  if (!impl_) {
-    return EXIT_FAILURE;
-  }
-
-  int res = impl_->PreExec();
+int IApplication::Exec() {  // EXIT_FAILURE, EXIT_SUCCESS
+  int res = PreExecImpl();
   if (res == EXIT_FAILURE) {
     return EXIT_FAILURE;
   }
 
-  res = impl_->Exec();
+  res = ExecImpl();
   if (res == EXIT_FAILURE) {
     return EXIT_FAILURE;
   }
-  return impl_->PostExec();
+  return PostExecImpl();
 }
 
-void Application::Exit(int result) {
+void IApplication::Exit(int result) {
   if (!self_) {
     return;
   }
 
-  if (!self_->impl_) {
-    return;
-  }
-
-  self_->impl_->Exit(result);
+  self_->ExitImpl(result);
 }
 
 }  // namespace application
