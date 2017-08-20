@@ -264,12 +264,14 @@ inline void destroy(T** v) {
 }
 
 template <typename T>
-inline T stable_value_in_range(T a, T amin, T amax) {
-  if (a < amin) {
-    return amin;
-  } else if (a > amax) {
-    return amax;
-  }
-
-  return a;
+constexpr inline T stable_value_in_range(T a, T amin, T amax) {
+  return (a < amin) ? amin : (a > amax) ? amax : a;
 }
+
+template <typename T, T amin, T amax>
+struct stable_value {
+  static constexpr T value(T a) {
+    COMPILE_ASSERT(amin <= amax, "max should be greater or equal min");
+    return stable_value_in_range(a, amin, amax);
+  }
+};
