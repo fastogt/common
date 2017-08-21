@@ -49,12 +49,12 @@ class BoundedValue {
   BoundedValue(const self_type& other) : val_(other) {}
   BoundedValue(self_type&& other) : val_(other) {}
 
-  template <typename otherT, value_type otherTmin, value_type otherTmax>
-  BoundedValue(const BoundedValue<otherT, otherTmin, otherTmax>& other)
+  template <typename otherT, value_type other_min, value_type other_max>
+  BoundedValue(const BoundedValue<otherT, other_min, other_max>& other)
       : val_(other)  // will just fail if T, otherT not convertible
   {
-    COMPILE_ASSERT(otherTmin >= Tmin, "conversion disallowed from BoundedValue with lower min");
-    COMPILE_ASSERT(otherTmax <= Tmax, "conversion disallowed from BoundedValue with higher max");
+    COMPILE_ASSERT(other_min >= Tmin, "conversion disallowed from BoundedValue with lower min");
+    COMPILE_ASSERT(other_max <= Tmax, "conversion disallowed from BoundedValue with higher max");
   }
 
   // compile-time checked assignments:
@@ -63,10 +63,10 @@ class BoundedValue {
     return *this;
   }
 
-  template <typename otherT, value_type otherTmin, value_type otherTmax>
-  BoundedValue& operator=(const BoundedValue<otherT, otherTmin, otherTmax>& other) {
-    COMPILE_ASSERT(otherTmin >= Tmin, "conversion disallowed from BoundedValue with lower min");
-    COMPILE_ASSERT(otherTmax <= Tmax, "conversion disallowed from BoundedValue with higher max");
+  template <typename otherT, value_type other_min, value_type other_max>
+  BoundedValue& operator=(const BoundedValue<otherT, other_min, other_max>& other) {
+    COMPILE_ASSERT(other_min >= Tmin, "conversion disallowed from BoundedValue with lower min");
+    COMPILE_ASSERT(other_max <= Tmax, "conversion disallowed from BoundedValue with higher max");
     val_ = other;  // will just fail if T, otherT not convertible
     return *this;
   }
@@ -77,7 +77,7 @@ class BoundedValue {
     return *this;
   }
 
-  operator T const&() const { return val_; }
+  operator T() const { return val_; }
 
  private:
   value_type val_;
