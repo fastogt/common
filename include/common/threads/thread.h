@@ -130,7 +130,7 @@ class Thread final : public ThreadBase {
         func_(function_type()),
         event_(1, 0),
         ptr_(0),
-        lcpu_number_(invalid_cpu_count),
+        lcpu_number_(invalid_cpu_number),
         priority_(PRIORITY_NORMAL) {}
   Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
       : res_(), func_(func), event_(1, 0), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
@@ -199,7 +199,7 @@ class Thread<void> : public ThreadBase {
   }
 
   Thread()
-      : func_(function_type()), event_(1, 0), ptr_(0), lcpu_number_(invalid_cpu_count), priority_(PRIORITY_NORMAL) {}
+      : func_(function_type()), event_(1, 0), ptr_(0), lcpu_number_(invalid_cpu_number), priority_(PRIORITY_NORMAL) {}
   Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
       : func_(func), event_(1, 0), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
 

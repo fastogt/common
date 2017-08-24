@@ -1,6 +1,6 @@
 #pragma once
 
-#define THREAD_COUNTS 5
+#define THREAD_COUNTS 500
 
 #define MANY_EMPTY_FUNCTION_COUNT 6
 #define MANY_FUNCTION_COUNT 6

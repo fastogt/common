@@ -63,8 +63,8 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
     typedef Thread<typename std::result_of<Callable(T, Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
-    thread_type* rthr =
-        new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...), func_addr, -1);
+    thread_type* rthr = new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...),
+                                        func_addr, invalid_cpu_number);
     return ThreadSPtr(rthr);
   }
 
@@ -74,8 +74,9 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
     typedef Thread<typename std::result_of<Callable(Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
-    thread_type* rthr = new thread_type(
-        common::utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...), func_addr, -1);
+    thread_type* rthr =
+        new thread_type(common::utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...),
+                        func_addr, invalid_cpu_number);
     return ThreadSPtr(rthr);
   }
 
@@ -94,7 +95,7 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   // for inner use
   template <typename RT>
   void WrapThread(Thread<RT>* thr) {
-    if (thr->lcpu_number_ == invalid_cpu_count) {
+    if (thr->lcpu_number_ == invalid_cpu_number) {
       thr->lcpu_number_ = AllocLCpuNumber(thr->ptr_);
     }
 

@@ -56,17 +56,21 @@ namespace common {
 namespace threads {
 
 lcpu_count_t ThreadManager::AllocLCpuNumber(uintptr_t fc) const {
+  if (fc == 0) {  // main loop or invalid func addr
+    return 0;
+  }
+
   const lcpu_count_t lc = LogicalCpusCount();
-  const lcpu_count_t toncore = ThreadsOnCore();
+  const lcpu_count_t threads_on_core = ThreadsOnCore();
   if (SIZEOFMASS(max_lcpu) < lc) {
     DNOTREACHED();
     return 0;
   }
 
   for (auto i = 0; i < COUNT_ADDRESSES; ++i) {
-    for (lcpu_count_t j = 0; j < lc; j += toncore) {
+    for (lcpu_count_t j = 0; j < lc; j += threads_on_core) {
       uintptr_t cur = max_lcpu[j].addr[i];
-      if (!cur) {
+      if (cur == 0) {
         max_lcpu[j].addr[i] = fc;
         return j;
       }
