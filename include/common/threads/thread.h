@@ -29,13 +29,9 @@
 
 #pragma once
 
-#include <stddef.h>  // for NULL
 #include <stdint.h>  // for uintptr_t
 
 #include <functional>  // for function
-
-#include <common/macros.h>             // for DNOTREACHED
-#include <common/system_info/types.h>  // for lcpu_count_t
 
 #include <common/threads/event.h>            // for Event
 #include <common/threads/platform_thread.h>  // for PlatformThread, etc

@@ -29,11 +29,6 @@
 
 #include <common/url.h>
 
-#include <ctype.h>   // for isalnum
-#include <stdlib.h>  // for NULL
-#include <string.h>  // for strcmp, strrchr
-#include <string>    // for string
-
 #include <common/file_system.h>
 
 namespace {

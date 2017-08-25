@@ -32,8 +32,6 @@
 #include <assert.h>
 #include <stdlib.h>  // for exit, EXIT_FAILURE
 
-#include <common/logger.h>  // for DEBUG_MSG_FORMAT
-
 void immediate_assert() {
   assert(0);
 }

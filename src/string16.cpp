@@ -31,8 +31,6 @@
 
 #include <string.h>
 
-#include <string>
-
 #if defined(WCHAR_T_IS_UTF16)
 namespace common {
 // #error This file should not be used on 2-byte wchar_t systems
@@ -59,8 +57,6 @@ int c16memcmp(const char16* s1, const char16* s2, size_t n) {
 }  // namespace common
 
 #elif defined(WCHAR_T_IS_UTF32)
-
-#include <ostream>
 
 #include <common/utf_string_conversions.h>
 

@@ -29,13 +29,7 @@
 
 #pragma once
 
-#include <stdint.h>     // for uint32_t
-#include <stdio.h>      // for FILE
-#include <sys/types.h>  // for off_t, mode_t
-#include <string>       // for string, char_traits
-
 #include <common/error.h>     // for ErrnoError, Error
-#include <common/sprintf.h>   // for MemSPrintf
 #include <common/string16.h>  // for string16, char16
 
 namespace common {

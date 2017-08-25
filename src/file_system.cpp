@@ -30,11 +30,7 @@
 #include <common/file_system.h>
 
 #include <dirent.h>    // for closedir, readdir, DIR, DT_REG, dirent
-#include <errno.h>     // for errno, EINVAL, EEXIST, etc
 #include <fcntl.h>     // for open, SEEK_CUR, SEEK_SET, etc
-#include <limits.h>    // for PATH_MAX
-#include <stdlib.h>    // for free, getenv, malloc
-#include <string.h>    // for NULL, strlen
 #include <sys/stat.h>  // for stat, S_IRWXG, S_IRWXO, etc
 #include <unistd.h>    // for close, lseek, read, ssize_t, etc
 
@@ -43,7 +39,6 @@
 #endif
 
 #include <sstream>  // for stringstream
-#include <string>   // for string, char_traits, etc
 
 #if defined(COMPILER_MSVC)
 #include <direct.h>

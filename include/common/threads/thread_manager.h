@@ -31,10 +31,7 @@
 
 #include <stdint.h>  // for uintptr_t
 
-#include <algorithm>   // for forward
-#include <functional>  // for bind
 #include <memory>
-#include <type_traits>  // for result_of
 
 #include <common/bind_simple.h>                 // for bind_simple
 #include <common/patterns/singleton_pattern.h>  // for TSSingleton

@@ -29,9 +29,7 @@
 
 #include <common/threads/platform_thread.h>
 
-#include <pthread.h>  // for pthread_attr_destroy, etc
-#include <sched.h>    // for sched_get_priority_max, etc
-#include <stddef.h>   // for NULL
+#include <sched.h>  // for sched_get_priority_max, etc
 
 #if defined(OS_LINUX) || defined(OS_ANDROID)
 #ifdef OS_ANDROID

@@ -29,15 +29,10 @@
 
 #include <common/logger.h>
 
-#include <stdio.h>     // for fflush, fprintf, FILE, etc
-#include <sys/time.h>  // for CLOCK_REALTIME
-#include <time.h>      // for timespec, clock_gettime, etc
-
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <mutex>
-#include <string>  // for allocator, string, etc
 
 #include <common/sprintf.h>
 #include <common/types.h>

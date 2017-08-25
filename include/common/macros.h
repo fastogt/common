@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include <common/logger.h>
 
 #define INVALID_DESCRIPTOR -1

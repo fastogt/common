@@ -29,10 +29,6 @@
 
 #include <common/utf_string_conversions.h>
 
-#include <stdint.h>  // for int32_t, uint32_t
-#include <string>    // for basic_string, wstring, etc
-
-#include <common/macros.h>  // for UNICODE
 #include <common/utf_string_conversion_utils.h>
 
 namespace common {

@@ -30,7 +30,6 @@
 #include <common/value.h>
 
 #include <string.h>  // for memcpy
-#include <string>    // for string
 
 #include <common/convert2string.h>
 

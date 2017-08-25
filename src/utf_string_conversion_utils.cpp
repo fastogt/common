@@ -29,14 +29,7 @@
 
 #include <common/utf_string_conversion_utils.h>
 
-#include <stddef.h>  // for size_t
-#include <stdint.h>  // for uint32_t, int32_t
-
-#include <string>  // for string, wstring
-
 #include <common/icu_utf.h>
-#include <common/macros.h>    // for WCHAR_T_IS_UTF32
-#include <common/string16.h>  // for char16, string16
 
 namespace common {
 

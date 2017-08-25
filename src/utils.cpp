@@ -29,14 +29,10 @@
 
 #include <common/utils.h>
 
-#include <chrono>
 #include <thread>
 
-#include <stdlib.h>    // for exit, EXIT_FAILURE, EXIT_SUCCESS, free
-#include <string.h>    // for NULL, strdup
 #include <sys/stat.h>  // for umask
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...
-#include <string>      // for string
 
 #ifndef UINT64_C
 #define UINT64_C(val) val##ULL

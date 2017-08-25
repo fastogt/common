@@ -29,12 +29,6 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-#include <stdint.h>  // for uint32_t, int64_t, uint64_t, etc
-
-#include <string>
-
-#include <common/string16.h>
 #include <common/string_piece.h>
 #include <common/types.h>
 

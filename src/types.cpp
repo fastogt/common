@@ -31,6 +31,8 @@
 
 #include <string.h>
 
+#include <sstream>
+
 namespace common {
 
 #ifdef OS_WIN

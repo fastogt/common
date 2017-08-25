@@ -32,10 +32,6 @@
 #include <limits.h>
 #include <string.h>
 
-#include <algorithm>
-#include <ostream>
-#include <string>
-
 namespace common {
 namespace {
 

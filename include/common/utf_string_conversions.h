@@ -29,11 +29,6 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-
-#include <string>  // for wstring, string
-
-#include <common/string16.h>      // for string16, char16
 #include <common/string_piece.h>  // for StringPiece
 
 namespace common {

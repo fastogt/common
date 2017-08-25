@@ -29,14 +29,9 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-#include <stdint.h>  // for uint16_t
 #include <unistd.h>  // for socklen_t, ssize_t, off_t
 
-#include <string>  // for string
-
 #include <common/error.h>      // for ErrnoError
-#include <common/macros.h>     // for WARN_UNUSED_RESULT
 #include <common/net/types.h>  // for socket_descr_t, etc
 
 struct addrinfo;

@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <ostream>
+#include <iosfwd>
 #include <string>
 
 #include <common/log_levels.h>
@@ -87,17 +87,13 @@ void SET_LOGER_STREAM(std::ostream* logger);
 #define COMPACT_LOG_EX_INFO(ClassName) common::logging::ClassName(common::logging::L_INFO)
 #define COMPACT_LOG_EX_DEBUG(ClassName) common::logging::ClassName(common::logging::L_DEBUG)
 
-#define COMPACT_LOG_FILE_EX_CRIT(ClassName) \
-  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_CRIT)
+#define COMPACT_LOG_FILE_EX_CRIT(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_CRIT)
 #define COMPACT_LOG_FILE_EX_ERR(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_ERR)
 #define COMPACT_LOG_FILE_EX_WARNING(ClassName) \
   common::logging::ClassName(__FILE__, __LINE__, common::logging::L_WARNING)
-#define COMPACT_LOG_FILE_EX_NOTICE(ClassName) \
-  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_NOTICE)
-#define COMPACT_LOG_FILE_EX_INFO(ClassName) \
-  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_INFO)
-#define COMPACT_LOG_FILE_EX_DEBUG(ClassName) \
-  common::logging::ClassName(__FILE__, __LINE__, common::logging::L_DEBUG)
+#define COMPACT_LOG_FILE_EX_NOTICE(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_NOTICE)
+#define COMPACT_LOG_FILE_EX_INFO(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_INFO)
+#define COMPACT_LOG_FILE_EX_DEBUG(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_DEBUG)
 
 #define COMPACT_LOG_CRIT COMPACT_LOG_EX_CRIT(LogMessage)
 #define COMPACT_LOG_ERR COMPACT_LOG_EX_ERR(LogMessage)

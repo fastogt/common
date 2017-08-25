@@ -50,14 +50,6 @@
 // libc functions with custom, 2-byte-char compatible routines. It is capable
 // of carrying UTF-16-encoded data.
 
-#include <stddef.h>  // for size_t
-#include <stdint.h>  // for uint16_t
-#include <stdio.h>   // for EOF
-
-#include <wchar.h>  // for mbstate_t
-#include <iosfwd>   // for ostream
-#include <string>   // for basic_string, fpos, etc
-
 #include <common/macros.h>  // for COMPILE_ASSERT, etc
 
 #if defined(WCHAR_T_IS_UTF16)
@@ -131,6 +123,11 @@ extern std::ostream& operator<<(std::ostream& out, const string16& str);
 
 // This is required by googletest to print a readable output on test failures.
 extern void PrintTo(const string16& str, std::ostream* out);
+
+typedef std::basic_ostream<char16, string16_char_traits> string16_ostream;
+typedef std::basic_istream<char16, string16_char_traits> string16_istream;
+typedef std::basic_ofstream<char16, string16_char_traits> string16_ofstream;
+typedef std::basic_ifstream<char16, string16_char_traits> string16_ifstream;
 
 }  // namespace common
 

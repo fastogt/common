@@ -29,13 +29,10 @@
 
 #pragma once
 
-#include <stdint.h>  // for int64_t, uint8_t
+#include <stdint.h>
 
-#include <iosfwd>  // for basic_ifstream, etc
-#include <string>  // for string
+#include <string>
 #include <vector>  // for vector
-
-#include <common/string16.h>  // for char16, etc
 
 namespace common {
 
@@ -44,11 +41,6 @@ enum tribool { FAIL = 0, SUCCESS = 1, INDETERMINATE = -1 };
 typedef uint8_t byte_t;
 typedef std::vector<byte_t> byte_array_t;
 typedef byte_array_t buffer_t;
-
-typedef std::basic_ostream<char16, string16_char_traits> string16_ostream;
-typedef std::basic_istream<char16, string16_char_traits> string16_istream;
-typedef std::basic_ofstream<char16, string16_char_traits> string16_ofstream;
-typedef std::basic_ifstream<char16, string16_char_traits> string16_ifstream;
 
 const char* common_strerror(int err);
 

@@ -29,11 +29,6 @@
 
 #include <common/convert2string.h>
 
-#include <ctype.h>   // for isspace
-#include <wctype.h>  // for iswspace
-#include <limits>    // for numeric_limits
-#include <string>    // for string, wstring
-
 #include <common/sprintf.h>
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
 

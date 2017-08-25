@@ -29,12 +29,6 @@
 
 #include <common/string_util.h>
 
-#include <wchar.h>  // for wcschr
-
-#include <algorithm>  // for equal, lower_bound
-#include <string>     // for basic_string, string
-#include <vector>     // for vector, etc
-
 #include <common/icu_utf.h>                      // for UChar32, CBU8_NEXT, etc
 #include <common/patterns/singleton_pattern.h>   // for LazySingleton
 #include <common/utf_string_conversion_utils.h>  // for IsValidCharacter, etc

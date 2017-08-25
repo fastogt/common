@@ -29,8 +29,6 @@
 
 #include <common/log_levels.h>
 
-#include <common/macros.h>
-
 #include <common/string_util.h>
 
 namespace {

@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <utility>
-
 #include <common/string16.h>
 
 #if defined(COMPILER_MSVC)

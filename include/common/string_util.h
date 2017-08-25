@@ -30,14 +30,7 @@
 #pragma once
 
 #include <stdarg.h>  // for va_list, va_end, va_start
-#include <stddef.h>  // for size_t, NULL
-#include <stdint.h>  // for int64_t, uint32_t
-#include <wchar.h>   // for wcschr
 
-#include <string>  // for string
-#include <vector>  // for vector
-
-#include <common/string16.h>      // for string16, char16
 #include <common/string_piece.h>  // for StringPiece, StringPiece16
 
 namespace common {

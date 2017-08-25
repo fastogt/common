@@ -29,14 +29,9 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-
 #include <mutex>
-#include <vector>  // for vector
 
 #include <common/event.h>  // for event_traits, events_size_t, etc
-
-#include <common/threads/types.h>  // for condition_variable_t, etc
 
 namespace common {
 namespace threads {

@@ -29,9 +29,6 @@
 
 #include <common/threads/thread_manager.h>
 
-#include <sched.h>  // for __CPU_SETSIZE, __NCPUBITS
-
-#include <common/macros.h>                // for WORDSIZE, SIZEOFMASS, etc
 #include <common/system_info/cpu_info.h>  // for CpuInfo, CurrentCpuInfo
 
 #define THREADS_PER_CORE_DEFAULT 4

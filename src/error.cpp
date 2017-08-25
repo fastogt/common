@@ -29,11 +29,6 @@
 
 #include <common/error.h>
 
-#include <string>  // for string
-
-#include <common/logger.h>  // for RUNTIME_LOG
-#include <common/types.h>   // for common_strerror
-
 namespace common {
 
 ErrnoErrorValue::ErrnoErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level, int err)

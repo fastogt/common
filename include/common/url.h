@@ -29,9 +29,6 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-#include <string>    // for string, basic_string
-
 #include <common/macros.h>
 
 namespace common {

@@ -41,12 +41,7 @@
 
 #include <stddef.h>  // for size_t, NULL, ptrdiff_t
 
-#include <iosfwd>    // for size_t, ostream
-#include <iterator>  // for reverse_iterator
-#include <string>    // for string, basic_string
-
 #include <common/hash_tables.h>  // for BASE_HASH_NAMESPACE
-#include <common/string16.h>     // for string16, char16
 
 namespace common {
 

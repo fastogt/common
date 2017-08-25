@@ -29,12 +29,7 @@
 
 #include <common/threads/event.h>
 
-#include <pthread.h>   // for pthread_mutex_lock, etc
 #include <sys/time.h>  // for timeval, gettimeofday
-#include <time.h>      // for timespec, NULL
-
-#include <common/threads/event.h>  // for Event, etc
-#include <common/types.h>          // for time64_t
 
 namespace {
 

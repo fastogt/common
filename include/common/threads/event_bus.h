@@ -29,23 +29,13 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-
 #include <atomic>
 #include <condition_variable>
 #include <deque>   // for deque
 #include <memory>  // for shared_ptr, __shared_ptr
-#include <vector>  // for vector
-
-#include <common/event.h>                       // for event_traits, events_size_t, etc
-#include <common/macros.h>                      // for CHECK, NOTREACHED, UNUSED
-#include <common/patterns/singleton_pattern.h>  // for TSSingleton
-#include <common/types.h>                       // for atomic_bool_t
 
 #include <common/threads/event_dispatcher.h>
-#include <common/threads/thread.h>          // for Thread
 #include <common/threads/thread_manager.h>  // for ThreadManager, etc
-#include <common/threads/types.h>           // for condition_variable_t, etc
 
 namespace common {
 namespace threads {

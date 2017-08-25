@@ -29,15 +29,13 @@
 
 #pragma once
 
-#include <iosfwd>  // for ostream
 #include <map>
 #include <memory>
 #include <set>
-#include <string>  // for string
 #include <unordered_map>
 
-#include <common/macros.h>  // for WARN_UNUSED_RESULT, DISALLOW_COPY_AND...
-#include <common/types.h>   // for byte_array_t
+#include <common/string16.h>
+#include <common/types.h>  // for byte_array_t
 
 namespace common {
 
