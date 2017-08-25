@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include <string>  // for string
-
 #include <common/event.h>
 
 namespace common {

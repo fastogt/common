@@ -29,6 +29,8 @@
 
 #include <common/threads/event.h>
 
+#include <pthread.h>
+
 #include <sys/time.h>  // for timeval, gettimeofday
 
 namespace {

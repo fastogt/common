@@ -29,13 +29,7 @@
 
 #include <common/compress/hex.h>
 
-#include <string.h>  // for memset
-
-#include <string>  // for string
-
 #include <common/convert2string.h>
-#include <common/sprintf.h>  // for SNPrintf
-#include <common/utils.h>
 
 namespace common {
 namespace compress {
