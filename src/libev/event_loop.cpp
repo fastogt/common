@@ -29,8 +29,6 @@
 
 #include <common/libev/event_loop.h>
 
-#include <stdlib.h>
-
 #include <mutex>
 
 #include "libev/src/ev.h"

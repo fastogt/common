@@ -29,14 +29,6 @@
 
 #include <common/http/http.h>
 
-#include <stddef.h>  // for size_t
-#include <stdint.h>  // for uint8_t
-#include <string.h>  // for strlen
-
-#include <memory>   // for shared_ptr
-#include <string>   // for string, allocator, etc
-#include <utility>  // for make_pair, pair
-
 #include <common/convert2string.h>  // for ConvertFromString
 
 namespace common {

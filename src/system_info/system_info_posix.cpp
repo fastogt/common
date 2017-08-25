@@ -31,8 +31,6 @@
 
 #include <sys/utsname.h>
 
-#include <string>
-
 #include <common/macros.h>
 
 namespace common {

@@ -49,9 +49,9 @@ class SystemInfo {
  public:
   SystemInfo(const std::string& name, const std::string& version, const std::string& arch);
 
-  const std::string& name() const;
-  const std::string& version() const;
-  const std::string& arch() const;
+  const std::string& GetName() const;
+  const std::string& GetVersion() const;
+  const std::string& GetArch() const;
 
  private:
   const std::string name_;

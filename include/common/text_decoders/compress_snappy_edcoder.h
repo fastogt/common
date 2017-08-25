@@ -29,10 +29,6 @@
 
 #pragma once
 
-#include <string>  // for string
-
-#include <common/error.h>  // for Error
-
 #include <common/text_decoders/iedcoder.h>  // for IEDcoder
 
 namespace common {

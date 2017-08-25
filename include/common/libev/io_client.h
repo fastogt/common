@@ -29,13 +29,10 @@
 
 #pragma once
 
-#include <string>
-
-#include <common/net/socket_tcp.h>
+#include <common/error.h>
 #include <common/patterns/crtp_pattern.h>
 
-#include <common/libev/event_io.h>
-#include <common/libev/event_loop.h>
+#include <common/libev/types.h>
 
 namespace common {
 namespace libev {

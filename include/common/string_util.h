@@ -31,6 +31,8 @@
 
 #include <stdarg.h>  // for va_list, va_end, va_start
 
+#include <vector>
+
 #include <common/string_piece.h>  // for StringPiece, StringPiece16
 
 namespace common {

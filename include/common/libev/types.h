@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <stdint.h>    // for uintmax_t, intmax_t
-#include <stdlib.h>    // for NULL, calloc, free
 #include <functional>  // for function
 
 #include <common/macros.h>  // for DISALLOW_COPY_AND_ASSIGN

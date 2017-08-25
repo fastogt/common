@@ -29,16 +29,12 @@
 
 #pragma once
 
-#include <stdint.h>  // for uint16_t
-
 #ifdef OS_POSIX
 #include <netinet/in.h>
 #include <sys/socket.h>
 #else
 #include <ws2tcpip.h>
 #endif
-
-#include <string>  // for string, operator==
 
 #include <common/macros.h>  // for INVALID_DESCRIPTOR
 

@@ -29,8 +29,6 @@
 
 #include <common/text_decoders/compress_snappy_edcoder.h>
 
-#include <string>
-
 #include <common/compress/snappy_compress.h>
 
 namespace common {

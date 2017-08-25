@@ -29,9 +29,6 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
-
 #include <common/libev/event_loop.h>
 
 namespace common {

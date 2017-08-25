@@ -29,8 +29,6 @@
 
 #include <common/text_decoders/hex_edcoder.h>
 
-#include <string>  // for string
-
 #include <common/compress/hex.h>
 
 namespace common {

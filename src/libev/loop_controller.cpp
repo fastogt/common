@@ -29,8 +29,6 @@
 
 #include <common/libev/loop_controller.h>
 
-#include <stdlib.h>
-
 #include <common/libev/io_loop.h>  // for IoLoop
 #include <common/libev/io_loop_observer.h>
 

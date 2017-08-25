@@ -35,7 +35,7 @@
 
 namespace common {
 
-enum EDTypes { Base64, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
+enum EDTypes { Base64 = 0, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
 
 static const char* EDecoderTypes[] = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
 

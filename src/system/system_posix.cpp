@@ -29,9 +29,7 @@
 
 #include <common/system/system.h>
 
-#include <errno.h>       // for EINVAL, errno
-#include <sys/reboot.h>  // for reboot
-#include <unistd.h>      // for sync
+#include <unistd.h>  // for sync
 
 #define SYSTEM_CALL 1
 #define REBOOT_CALL 0

@@ -29,20 +29,10 @@
 
 #include <common/libev/tcp/tcp_server.h>
 
-#include <errno.h>   // for errno
-#include <signal.h>  // for signal, SIGPIPE, SIG_ERR
-#include <stdlib.h>  // for exit, EXIT_FAILURE
+#include <signal.h>
 
-namespace common {
-namespace libev {
-class IoClient;
-}
-}  // namespace common
-namespace common {
-namespace libev {
-class IoLoopObserver;
-}
-}  // namespace common
+#include <common/libev/event_io.h>
+#include <common/libev/io_loop.h>
 
 namespace {
 

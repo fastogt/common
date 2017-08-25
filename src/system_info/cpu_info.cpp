@@ -29,8 +29,6 @@
 
 #include <common/system_info/cpu_info.h>
 
-#include <string>
-
 #include <common/patterns/singleton_pattern.h>
 
 #include "cpuid/libcpuid/libcpuid/libcpuid.h"

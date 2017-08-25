@@ -30,6 +30,7 @@
 #include <common/text_decoders/iedcoder.h>
 
 namespace common {
+
 std::string ConvertToString(EDTypes t) {
   return EDecoderTypes[t];
 }

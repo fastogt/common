@@ -20,15 +20,15 @@ struct CurrentSystemInfo {
 SystemInfo::SystemInfo(const std::string& name, const std::string& version, const std::string& arch)
     : name_(name), version_(version), arch_(arch) {}
 
-const std::string& SystemInfo::name() const {
+const std::string& SystemInfo::GetName() const {
   return name_;
 }
 
-const std::string& SystemInfo::version() const {
+const std::string& SystemInfo::GetVersion() const {
   return version_;
 }
 
-const std::string& SystemInfo::arch() const {
+const std::string& SystemInfo::GetArch() const {
   return arch_;
 }
 

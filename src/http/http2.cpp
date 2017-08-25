@@ -29,16 +29,6 @@
 
 #include <common/http/http2.h>
 
-#include <stddef.h>  // for size_t
-#include <stdlib.h>  // for NULL, malloc, free
-#include <string.h>  // for memcmp, memcpy, memset, etc
-
-#include <algorithm>  // for min
-#include <memory>     // for shared_ptr
-#include <string>     // for operator==, basic_string, etc
-#include <utility>    // for make_pair, pair
-#include <vector>     // for operator==, vector
-
 #include <common/convert2string.h>  // for ConvertToString, etc
 #include <common/portable_endian.h>
 

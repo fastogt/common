@@ -29,7 +29,6 @@
 
 #include <common/system_info/system_info.h>
 
-#include <stdint.h>  // for int64_t
 #include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
 
 #include <common/macros.h>  // for NOTREACHED

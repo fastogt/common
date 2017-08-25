@@ -30,12 +30,6 @@
 #include <common/text_decoders/msgpack_edcoder.h>
 
 #include <inttypes.h>  // for PRId64, PRIu64
-#include <stddef.h>    // for size_t
-#include <stdint.h>    // for uint8_t, uint16_t
-#include <stdlib.h>    // for free, calloc
-#include <string.h>    // for memcpy, memmove, memset, etc
-
-#include <string>  // for string
 
 #include <cmp/cmp.h>  // for cmp_object_t, etc
 
@@ -71,6 +65,7 @@ size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
 }  // namespace
 
 namespace common {
+
 MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
 
 Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {

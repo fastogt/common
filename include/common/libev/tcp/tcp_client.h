@@ -30,12 +30,7 @@
 #pragma once
 
 #include <common/libev/io_client.h>  // for IoClient
-
-namespace common {
-namespace libev {
-class IoLoop;
-}
-}  // namespace common
+#include <common/net/socket_tcp.h>
 
 namespace common {
 namespace libev {

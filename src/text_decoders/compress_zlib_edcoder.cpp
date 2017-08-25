@@ -30,7 +30,6 @@
 #include <common/text_decoders/compress_zlib_edcoder.h>
 
 #include <common/compress/zlib_compress.h>
-#include <common/convert2string.h>
 
 namespace common {
 

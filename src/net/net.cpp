@@ -30,13 +30,8 @@
 #include <common/net/net.h>
 
 #include <sys/stat.h>
-#include <sys/time.h>
 
-#include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 
 #ifdef OS_POSIX
 #include <netdb.h>
@@ -59,11 +54,6 @@
 #ifdef COMPILER_MSVC
 #include <io.h>
 #endif
-
-#include <memory>  // for __shared_ptr
-#include <string>  // for string
-
-#include <common/macros.h>  // for ERROR_RESULT_VALUE, etc
 
 #if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD)
 

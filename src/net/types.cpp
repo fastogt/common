@@ -36,12 +36,8 @@
 #endif
 
 #include <inttypes.h>
-#include <stddef.h>  // for size_t
-#include <stdlib.h>  // for NULL, free, calloc, malloc
-#include <string.h>  // for memcpy
 
 #include <algorithm>  // for transform
-#include <string>     // for string, basic_string, etc
 
 #include <common/convert2string.h>  // for ConvertFromString
 #include <common/sprintf.h>         // for SNPrintf

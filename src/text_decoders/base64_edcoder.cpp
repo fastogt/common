@@ -29,8 +29,6 @@
 
 #include <common/text_decoders/base64_edcoder.h>
 
-#include <string>
-
 #include <common/compress/base64.h>
 
 namespace common {

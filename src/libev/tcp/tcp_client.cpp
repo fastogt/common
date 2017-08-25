@@ -31,12 +31,6 @@
 
 namespace common {
 namespace libev {
-class IoLoop;
-}
-}  // namespace common
-
-namespace common {
-namespace libev {
 namespace tcp {
 
 TcpClient::TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags)
