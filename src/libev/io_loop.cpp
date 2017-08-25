@@ -38,8 +38,8 @@
 namespace {
 
 typedef std::unique_lock<std::mutex> lock_t;
-std::mutex g_exists_loops_mutex_;
-std::vector<common::libev::IoLoop*> g_exists_loops_;
+std::mutex g_exists_loops_mutex;
+std::vector<common::libev::IoLoop*> g_exists_loops;
 
 }  // namespace
 
@@ -153,9 +153,9 @@ IoLoop* IoLoop::FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred) {
     return nullptr;
   }
 
-  lock_t loc(g_exists_loops_mutex_);
-  for (size_t i = 0; i < g_exists_loops_.size(); ++i) {
-    IoLoop* loop = g_exists_loops_[i];
+  lock_t loc(g_exists_loops_mutex);
+  for (size_t i = 0; i < g_exists_loops.size(); ++i) {
+    IoLoop* loop = g_exists_loops[i];
     if (loop && pred(loop)) {
       return loop;
     }
@@ -214,8 +214,8 @@ void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
 void IoLoop::PreLooped(LibEvLoop* loop) {
   UNUSED(loop);
   {
-    lock_t loc(g_exists_loops_mutex_);
-    g_exists_loops_.push_back(this);
+    lock_t loc(g_exists_loops_mutex);
+    g_exists_loops.push_back(this);
   }
 
   if (observer_) {
@@ -239,8 +239,8 @@ void IoLoop::Stoped(LibEvLoop* loop) {
 void IoLoop::PostLooped(LibEvLoop* loop) {
   UNUSED(loop);
   {
-    lock_t loc(g_exists_loops_mutex_);
-    g_exists_loops_.erase(std::remove(g_exists_loops_.begin(), g_exists_loops_.end(), this), g_exists_loops_.end());
+    lock_t loc(g_exists_loops_mutex);
+    g_exists_loops.erase(std::remove(g_exists_loops.begin(), g_exists_loops.end(), this), g_exists_loops.end());
   }
 
   if (observer_) {

@@ -39,9 +39,6 @@
 #include <io.h>
 #endif
 
-#include <string.h>
-
-#include <common/macros.h>   // for INVALID_DESCRIPTOR
 #include <common/net/net.h>  // for bind, accept, close, etc
 
 struct addrinfo;

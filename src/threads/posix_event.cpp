@@ -33,9 +33,10 @@
 
 #include <sys/time.h>  // for timeval, gettimeofday
 
+namespace common {
 namespace {
 
-int wait_condition(pthread_cond_t* condition, pthread_mutex_t* mutex, common::time64_t milliseconds) {
+int wait_condition(pthread_cond_t* condition, pthread_mutex_t* mutex, time64_t milliseconds) {
   if (milliseconds != INFINITE_TIMEOUT_MSEC) {
     // Converting from seconds and microseconds (1e-6) plus
     // milliseconds (1e-3) to seconds and nanoseconds (1e-9).
@@ -57,8 +58,6 @@ int wait_condition(pthread_cond_t* condition, pthread_mutex_t* mutex, common::ti
 }
 
 }  // namespace
-
-namespace common {
 namespace threads {
 
 struct Event::event_t {

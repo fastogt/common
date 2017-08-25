@@ -33,7 +33,6 @@
 #include <QModelIndex>
 
 #include <common/error.h>
-#include <common/macros.h>
 
 namespace common {
 namespace qt {

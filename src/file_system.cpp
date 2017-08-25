@@ -61,14 +61,6 @@ int ftruncate(descriptor_t fd, int64_t length) {
 #define FS_BUF_SIZE 1024 * 4
 
 namespace {
-common::ErrnoError rmdir_directory_impl(const char* path) {
-  bool result = rmdir(path) != ERROR_RESULT_VALUE;
-  if (!result && errno != ENOENT) {
-    return common::make_error_value_perror("rmdir", errno, common::ErrorValue::E_ERROR);
-  }
-
-  return common::ErrnoError();
-}
 
 int cp(const char* from, const char* to) {
   int fd_to, fd_from;
@@ -127,6 +119,18 @@ out_error:
 }  // namespace
 
 namespace common {
+namespace {
+
+ErrnoError rmdir_directory_impl(const char* path) {
+  bool result = rmdir(path) != ERROR_RESULT_VALUE;
+  if (!result && errno != ENOENT) {
+    return make_error_value_perror("rmdir", errno, ErrorValue::E_ERROR);
+  }
+
+  return ErrnoError();
+}
+
+}  // namespace
 namespace file_system {
 
 namespace {

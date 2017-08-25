@@ -34,6 +34,8 @@
 #include <common/utf_string_conversion_utils.h>  // for IsValidCharacter, etc
 #include <common/utf_string_conversions.h>       // for ASCIIToUTF16
 
+namespace common {
+
 namespace {
 
 // Force the singleton used by EmptyString[16] to be a unique type. This
@@ -42,9 +44,9 @@ namespace {
 struct EmptyStrings {
   EmptyStrings() {}
   const std::string s;
-  const common::string16 s16;
+  const string16 s16;
 
-  static EmptyStrings* GetInstance() { return &common::patterns::LazySingleton<EmptyStrings>::GetInstance(); }
+  static EmptyStrings* GetInstance() { return &patterns::LazySingleton<EmptyStrings>::GetInstance(); }
 };
 
 // Used by ReplaceStringPlaceholders to track the position in the string of
@@ -59,13 +61,11 @@ struct ReplacementOffset {
   size_t offset;
 };
 
-static bool CompareParameter(const ReplacementOffset& elem1, const ReplacementOffset& elem2) {
+bool CompareParameter(const ReplacementOffset& elem1, const ReplacementOffset& elem2) {
   return elem1.parameter < elem2.parameter;
 }
 
 }  // namespace
-
-namespace common {
 
 // Overloaded function to append one string onto the end of another. Having a
 // separate overload for |source| as both string and StringPiece allows for more

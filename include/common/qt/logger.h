@@ -32,13 +32,9 @@
 #include <QObject>
 #include <QString>
 
-#include <memory>  // for __shared_ptr
-#include <string>  // for string
-
 #include <common/error.h>                       // for Error
 #include <common/log_levels.h>                  // for LEVEL_LOG
 #include <common/patterns/singleton_pattern.h>  // for LazySingleton
-#include <common/value.h>                       // for ErrorValue
 
 namespace common {
 namespace qt {

@@ -42,29 +42,29 @@ Logger::Logger() {
   qRegisterMetaType<common::logging::LEVEL_LOG>("common::logging::LEVEL_LOG");
 }
 
-void Logger::print(const char* mess, common::logging::LEVEL_LOG level, bool notify) {
+void Logger::print(const char* mess, logging::LEVEL_LOG level, bool notify) {
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;
-    bool res = common::ConvertFromString(std::string(mess), &qmess);
+    bool res = ConvertFromString(std::string(mess), &qmess);
     UNUSED(res);
     emit printed(qmess, level);
   }
 }
 
-void Logger::print(const QString& mess, common::logging::LEVEL_LOG level, bool notify) {
-  const std::string smess = common::ConvertToString(mess);
+void Logger::print(const QString& mess, logging::LEVEL_LOG level, bool notify) {
+  const std::string smess = ConvertToString(mess);
   RUNTIME_LOG(level) << smess;
   if (notify) {
     emit printed(mess, level);
   }
 }
 
-void Logger::print(const std::string& mess, common::logging::LEVEL_LOG level, bool notify) {
+void Logger::print(const std::string& mess, logging::LEVEL_LOG level, bool notify) {
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;
-    bool res = common::ConvertFromString(mess, &qmess);
+    bool res = ConvertFromString(mess, &qmess);
     UNUSED(res);
     emit printed(qmess, level);
   }

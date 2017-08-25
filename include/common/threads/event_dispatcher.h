@@ -126,7 +126,7 @@ class EventDispatcher {
 
     if (pos == max_events_count) {
       ex_event_t* ex_event = static_cast<ex_event_t*>(event);
-      event_t* levent = ex_event->Event();
+      event_t* levent = ex_event->GetEvent();
       events_size_t lpos = levent->GetEventType();
       mutex_lock_t lock(listeners_mutex_);
       for (size_t i = 0; i < listeners_[lpos].size(); ++i) {

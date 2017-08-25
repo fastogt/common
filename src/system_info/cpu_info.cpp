@@ -33,19 +33,18 @@
 
 #include "cpuid/libcpuid/libcpuid/libcpuid.h"
 
+namespace common {
 namespace {
 
 struct CurrentCpuInfo {
-  CurrentCpuInfo() : info(common::system_info::CpuInfo::MakeCpuInfo()) {}
+  CurrentCpuInfo() : info(system_info::CpuInfo::MakeCpuInfo()) {}
 
-  const common::system_info::CpuInfo info;
+  const system_info::CpuInfo info;
 
-  static CurrentCpuInfo* GetInstance() { return &common::patterns::LazySingleton<CurrentCpuInfo>::GetInstance(); }
+  static CurrentCpuInfo* GetInstance() { return &patterns::LazySingleton<CurrentCpuInfo>::GetInstance(); }
 };
 
 }  // namespace
-
-namespace common {
 namespace system_info {
 
 struct CpuInfo::CpuInfoImpl {
@@ -86,8 +85,8 @@ bool CpuInfo::IsValid() const {
 }
 
 bool CpuInfo::Equals(const CpuInfo& other) const {
-  return BrandName() == other.BrandName() && CoreCount() == other.CoreCount() &&
-         LogicalCpusCount() == other.LogicalCpusCount() && ThreadsOnCore() == other.ThreadsOnCore();
+  return IsValid() == other.IsValid() && BrandName() == other.BrandName() && CoreCount() == other.CoreCount() &&
+         LogicalCpusCount() == other.LogicalCpusCount();
 }
 
 const CpuInfo& CurrentCpuInfo() {

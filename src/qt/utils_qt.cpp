@@ -34,7 +34,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-#include <common/macros.h>             // for UNUSED
 #include <common/qt/convert2string.h>  // for ConvertToString
 #include <common/value.h>              // for Value::ErrorsType::E_ERROR, etc
 
@@ -55,7 +54,7 @@ QString ApplicationDirPath() {
 
 Error LoadFromFileText(const QString& filePath, QString* outText) {
   if (!outText) {
-    return make_error_value("Invalid input argument(s)", common::ErrorValue::E_ERROR);
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
   }
 
   QFile file(filePath);
@@ -67,12 +66,12 @@ Error LoadFromFileText(const QString& filePath, QString* outText) {
     return Error();
   }
 
-  return common::make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
+  return make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
 }
 
 Error SaveToFileText(QString filePath, const QString& text) {
   if (filePath.isEmpty()) {
-    return make_error_value("Invalid input argument(s)", common::ErrorValue::E_ERROR);
+    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
   }
 
 #ifdef OS_LINUX
@@ -89,7 +88,7 @@ Error SaveToFileText(QString filePath, const QString& text) {
     return Error();
   }
 
-  return common::make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
+  return make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
 }
 
 }  // namespace qt

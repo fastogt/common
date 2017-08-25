@@ -29,11 +29,7 @@
 
 #pragma once
 
-#include <stddef.h>     // for size_t
-#include <sys/types.h>  // for ssize_t
-
 #include <common/error.h>      // for ErrnoError
-#include <common/macros.h>     // for WARN_UNUSED_RESULT
 #include <common/net/types.h>  // for HostAndPort, socket_info
 
 namespace common {

@@ -132,7 +132,7 @@ class IExceptionEvent : public IEventEx<type> {
 
   Error GetError() const { return err_; }
 
-  event_t* Event() const { return event_; }
+  event_t* GetEvent() const { return event_; }
 
  protected:
   event_t* event_;
