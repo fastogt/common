@@ -61,7 +61,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   void UnRegisterClient(IoClient* client);
   virtual void CloseClient(IoClient* client);
 
-  timer_id_t CreateTimer(double sec, double repeat);
+  timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
   patterns::id_counter<IoLoop>::type_t GetId() const;

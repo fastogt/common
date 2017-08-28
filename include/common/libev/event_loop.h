@@ -66,7 +66,7 @@ class LibEvLoop {
 
   void SetObserver(EvLoopObserver* observer);
 
-  timer_id_t CreateTimer(double sec, double repeat);
+  timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
   // async
@@ -81,7 +81,7 @@ class LibEvLoop {
   void StopIO(LibevIO* io);
 
   // timer
-  void InitTimer(LibevTimer* timer, timer_callback_t cb, double sec, double repeat);
+  void InitTimer(LibevTimer* timer, timer_callback_t cb, double sec, bool repeat);
   void StartTimer(LibevTimer* timer);
   void StopTimer(LibevTimer* timer);
 

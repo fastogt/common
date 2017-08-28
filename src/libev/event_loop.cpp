@@ -100,7 +100,7 @@ void LibEvLoop::SetObserver(EvLoopObserver* observer) {
   observer_ = observer;
 }
 
-timer_id_t LibEvLoop::CreateTimer(double sec, double repeat) {
+timer_id_t LibEvLoop::CreateTimer(double sec, bool repeat) {
   CHECK(IsLoopThread());
 
   LibevTimer* timer = new LibevTimer;
@@ -162,9 +162,9 @@ void LibEvLoop::StopIO(LibevIO* io) {
   ev_io_stop(loop_, eio);
 }
 
-void LibEvLoop::InitTimer(LibevTimer* timer, timer_callback_t cb, double sec, double repeat) {
+void LibEvLoop::InitTimer(LibevTimer* timer, timer_callback_t cb, double sec, bool repeat) {
   ev_timer* eit = timer->Handle();
-  ev_timer_init(eit, cb, sec, repeat);
+  ev_timer_init(eit, cb, sec, repeat ? sec : 0);
 }
 
 void LibEvLoop::StartTimer(LibevTimer* timer) {

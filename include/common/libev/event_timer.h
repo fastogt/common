@@ -43,7 +43,7 @@ class LibevTimer : public LibevBase<struct ev_timer, timer_id_t> {
   LibevTimer();
   ~LibevTimer();
 
-  void Init(LibEvLoop* loop, timer_loop_exec_function_t cb, double sec, double repeat);
+  void Init(LibEvLoop* loop, timer_loop_exec_function_t cb, double sec, bool repeat);
   void Start();
   void Stop();
 

@@ -128,7 +128,7 @@ void IoLoop::CloseClient(IoClient* client) {
              << clients_.size() << " client(s) connected.";
 }
 
-timer_id_t IoLoop::CreateTimer(double sec, double repeat) {
+timer_id_t IoLoop::CreateTimer(double sec, bool repeat) {
   return loop_->CreateTimer(sec, repeat);
 }
 

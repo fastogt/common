@@ -40,7 +40,7 @@ LibevTimer::LibevTimer() : base_class(), loop_(nullptr), func_() {}
 
 LibevTimer::~LibevTimer() {}
 
-void LibevTimer::Init(LibEvLoop* loop, timer_loop_exec_function_t cb, double sec, double repeat) {
+void LibevTimer::Init(LibEvLoop* loop, timer_loop_exec_function_t cb, double sec, bool repeat) {
   if (!loop || !cb) {
     return;
   }
