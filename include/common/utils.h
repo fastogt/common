@@ -29,14 +29,8 @@
 
 #pragma once
 
-#include <stdint.h>  // for uint64_t
 #include <string.h>
-#include <sys/types.h>  // for useconds_t
-#include <functional>   // for binary_function, unary_function
-#include <string>       // for string
-#include <utility>      // for pair
 
-#include <common/string16.h>  // for char16
 #include <common/string_piece.h>
 #include <common/types.h>  // for buffer_t, byte_t
 
