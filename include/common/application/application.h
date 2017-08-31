@@ -61,6 +61,7 @@ class IApplication {
 
   virtual void ShowCursor() = 0;
   virtual void HideCursor() = 0;
+  virtual bool IsCursorVisible() const = 0;
 
   int Exec();
 
