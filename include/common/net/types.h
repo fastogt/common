@@ -87,6 +87,10 @@ inline bool operator==(const HostAndPort& lhs, const HostAndPort& rhs) {
   return lhs.Equals(rhs);
 }
 
+inline bool operator!=(const HostAndPort& lhs, const HostAndPort& rhs) {
+  return !(lhs == rhs);
+}
+
 struct HostAndPortAndSlot : public HostAndPort {
   uint16_t slot;
 
@@ -98,6 +102,10 @@ struct HostAndPortAndSlot : public HostAndPort {
 
 inline bool operator==(const HostAndPortAndSlot& lhs, const HostAndPortAndSlot& rhs) {
   return lhs.Equals(rhs);
+}
+
+inline bool operator!=(const HostAndPortAndSlot& lhs, const HostAndPortAndSlot& rhs) {
+  return !(lhs == rhs);
 }
 
 bool IsLocalHost(const std::string& host);

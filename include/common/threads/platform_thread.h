@@ -89,7 +89,7 @@ inline bool operator==(const PlatformThreadHandle& lhs, const PlatformThreadHand
 }
 
 inline bool operator!=(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
-  return !lhs.Equals(rhs);
+  return !(lhs == rhs);
 }
 
 enum ThreadPriority {

@@ -60,6 +60,10 @@ inline bool operator==(const CpuInfo& lhs, const CpuInfo& rhs) {
   return lhs.Equals(rhs);
 }
 
+inline bool operator!=(const CpuInfo& lhs, const CpuInfo& rhs) {
+  return !(lhs == rhs);
+}
+
 const CpuInfo& CurrentCpuInfo();
 
 }  // namespace system_info

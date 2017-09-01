@@ -408,6 +408,11 @@ inline bool operator==(const StringPath<CharT, Traits>& lhs, const StringPath<Ch
   return lhs.Equals(rhs);
 }
 
+template <typename CharT, typename Traits>
+inline bool operator!=(const StringPath<CharT, Traits>& lhs, const StringPath<CharT, Traits>& rhs) {
+  return !(lhs == rhs);
+}
+
 //  ==============================File=====================================  //
 
 class DescriptorHolder {

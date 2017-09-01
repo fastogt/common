@@ -67,6 +67,10 @@ inline bool operator==(const Upath& left, const Upath& right) {
   return left.Equals(right);
 }
 
+inline bool operator!=(const Upath& lhs, const Upath& rhs) {
+  return !(lhs == rhs);
+}
+
 class Uri {
  public:
   enum schemes {
@@ -111,6 +115,10 @@ class Uri {
 
 inline bool operator==(const Uri& left, const Uri& right) {
   return left.Equals(right);
+}
+
+inline bool operator!=(const Uri& lhs, const Uri& rhs) {
+  return !(lhs == rhs);
 }
 
 namespace detail {
