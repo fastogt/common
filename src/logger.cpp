@@ -42,17 +42,18 @@
 #include <mach/mach.h>
 #endif
 
-namespace common {
-namespace logging {
-
 namespace {
-
 std::string g_project_name = "Unknown";
 std::unique_ptr<std::ofstream> g_logger_file_helper = std::unique_ptr<std::ofstream>(new std::ofstream);
 std::mutex g_mutex;
 std::ostream* g_logger = &std::cout;
-LEVEL_LOG g_level_log = L_NOTICE;
+}  // namespace
 
+namespace common {
+namespace logging {
+
+namespace {
+LEVEL_LOG g_level_log = L_NOTICE;
 std::string PrepareHeader(const char* file, int line, LEVEL_LOG level) {
   // We use fprintf() instead of cerr because we want this to work at static
   // initialization time.
@@ -86,7 +87,7 @@ std::string PrepareHeader(const char* file, int line, LEVEL_LOG level) {
 
 void INIT_LOGGER(const std::string& project_name, LEVEL_LOG level) {
   g_level_log = level;
-  common::logging::g_project_name = project_name;
+  g_project_name = project_name;
 }
 
 void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LEVEL_LOG level) {

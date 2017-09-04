@@ -29,8 +29,9 @@
 
 #pragma once
 
-#include <common/error.h>      // for ErrnoError
-#include <common/net/types.h>  // for HostAndPort, socket_info
+#include <common/error.h>  // for ErrnoError
+#include <common/net/socket_info.h>
+#include <common/net/types.h>
 
 namespace common {
 namespace net {

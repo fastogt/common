@@ -386,8 +386,8 @@ ErrnoError connect(const HostAndPort& from, socket_t socktype, struct timeval* t
     return make_error_value_perror("connect", EINVAL, ErrorValue::E_ERROR);
   }
 
-  std::string host = from.host;
-  uint16_t port = from.port;
+  const HostAndPort::host_t host = from.GetHost();
+  const HostAndPort::port_t port = from.GetPort();
 
   return connect(host.c_str(), port, socktype, timeout, out_info);
 }

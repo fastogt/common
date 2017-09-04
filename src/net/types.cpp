@@ -29,32 +29,36 @@
 
 #include <common/net/types.h>
 
-#ifdef OS_POSIX
-#include <netdb.h>  // for addrinfo
-#else
-#include <winsock2.h>
-#endif
-
-#include <inttypes.h>
-
-#include <algorithm>  // for transform
+#include <algorithm>
+#include <sstream>
 
 #include <common/convert2string.h>  // for ConvertFromString
-#include <common/sprintf.h>         // for SNPrintf
+
+namespace {
+const char localhost_text[] = "localhost";
+const char localhost_digits[] = "127.0.0.1";
+}  // namespace
 
 namespace common {
 namespace net {
 
-HostAndPort::HostAndPort() : host(), port(0) {}
+HostAndPort::HostAndPort() : host_(), port_(0) {}
 
-HostAndPort::HostAndPort(const std::string& host, uint16_t port) : host(host), port(port) {}
+HostAndPort::HostAndPort(const std::string& host, uint16_t port) : host_(), port_(port) {
+  SetHost(host);
+}
 
 bool HostAndPort::IsValid() const {
-  return !host.empty();
+  return !host_.empty();
 }
 
 bool HostAndPort::IsLocalHost() const {
-  return net::IsLocalHost(host);
+  return net::IsLocalHost(host_);
+}
+
+std::string StableHost(std::string host) {
+  std::transform(host.begin(), host.end(), host.begin(), ::tolower);
+  return host;
 }
 
 bool IsLocalHost(const std::string& host) {
@@ -62,204 +66,54 @@ bool IsLocalHost(const std::string& host) {
     return false;
   }
 
-  std::string lhost = host;
-  std::transform(lhost.begin(), lhost.end(), lhost.begin(), ::tolower);
+  COMPILE_ASSERT(SIZEOFMASS(localhost_text) == SIZEOFMASS(localhost_digits),
+                 "Size of constat should be same, because 1 condition.");
+  if (host.size() != SIZEOFMASS(localhost_text) - 1) {
+    return false;
+  }
 
-  return lhost == "localhost" || lhost == "127.0.0.1";
+  return host == localhost_text || host == localhost_digits;
 }
 
 HostAndPort HostAndPort::CreateLocalHost(uint16_t port) {
-  return HostAndPort("localhost", port);
+  return HostAndPort(localhost_text, port);
 }
 
 bool HostAndPort::Equals(const HostAndPort& other) const {
-  return host == other.host && port == other.port;
+  return host_ == other.host_ && port_ == other.port_;
 }
 
-HostAndPortAndSlot::HostAndPortAndSlot() : HostAndPort(), slot(0) {}
-
-HostAndPortAndSlot::HostAndPortAndSlot(const std::string& host, uint16_t port, uint16_t slot)
-    : HostAndPort(host, port), slot(slot) {}
-
-bool HostAndPortAndSlot::Equals(const HostAndPortAndSlot& other) const {
-  return host == other.host && port == other.port && slot == other.slot;
-}
-
-socket_info::socket_info() : fd_(INVALID_SOCKET_VALUE), addr_(NULL), host_(NULL), port_(0) {}
-
-socket_info::socket_info(socket_descr_t fd) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {}
-
-socket_info::socket_info(socket_descr_t fd, struct addrinfo* info) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {
-  addr_ = copy_addrinfo(info);
-}
-
-socket_info::socket_info(const socket_info& other) : fd_(other.fd_), addr_(NULL), host_(NULL), port_(other.port_) {
-  addr_ = copy_addrinfo(other.addr_);
-  if (other.host_) {
-    host_ = strdup(other.host_);
-  }
-}
-
-socket_info& socket_info::operator=(const socket_info& other) {
-  if (this == &other) {
-    NOTREACHED();
-    return *this;
-  }
-
-  freeaddrinfo_ex(&addr_);
-
-  fd_ = other.fd_;
-  addr_ = copy_addrinfo(other.addr_);
-  return *this;
-}
-
-socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_(NULL) {
-  fd_ = other.fd_;
-  addr_ = other.addr_;
-
-  other.fd_ = INVALID_SOCKET_VALUE;
-  other.addr_ = NULL;
-}
-
-socket_info& socket_info::operator=(socket_info&& other) {
-  if (this == &other) {
-    NOTREACHED();
-    return *this;
-  }
-
-  freeaddrinfo_ex(&addr_);
-
-  fd_ = other.fd_;
-  addr_ = other.addr_;
-
-  other.fd_ = INVALID_SOCKET_VALUE;
-  other.addr_ = NULL;
-
-  return *this;
-}
-
-socket_info::~socket_info() {
-  freeaddrinfo_ex(&addr_);
-  if (host_) {
-    free(host_);
-    host_ = NULL;
-  }
-}
-
-void socket_info::set_fd(socket_descr_t fd) {
-  fd_ = fd;
-}
-
-socket_descr_t socket_info::fd() const {
-  return fd_;
-}
-
-void socket_info::set_addrinfo(const struct addrinfo* info) {
-  freeaddrinfo_ex(&addr_);
-  addr_ = copy_addrinfo(info);
-}
-
-struct addrinfo* socket_info::addr_info() const {
-  return addr_;
-}
-
-void socket_info::set_sockaddr(const struct sockaddr* addr, socklen_t addr_len) {
-  free_sockaddr(&addr_->ai_addr);
-  addr_->ai_addr = copy_sockaddr(addr, addr_len);
-  addr_->ai_addrlen = addr_len;
-}
-
-const char* socket_info::host() const {
+HostAndPort::host_t HostAndPort::GetHost() const {
   return host_;
 }
 
-void socket_info::set_host(const char* host) {
-  if (host_) {
-    free(host_);
-    host_ = NULL;
-  }
-
-  if (host) {
-    host_ = strdup(host);
-  }
+void HostAndPort::SetHost(host_t host) {
+  host_ = StableHost(host);
 }
 
-uint16_t socket_info::port() const {
+HostAndPort::port_t HostAndPort::GetPort() const {
   return port_;
 }
 
-void socket_info::set_port(uint16_t port) {
+void HostAndPort::SetPort(port_t port) {
   port_ = port;
 }
 
-struct sockaddr* alloc_sockaddr(socklen_t addr_len) {
-  return reinterpret_cast<struct sockaddr*>(malloc(addr_len));
+HostAndPortAndSlot::HostAndPortAndSlot() : HostAndPort(), slot_(0) {}
+
+HostAndPortAndSlot::HostAndPortAndSlot(const std::string& host, uint16_t port, uint16_t slot)
+    : HostAndPort(host, port), slot_(slot) {}
+
+bool HostAndPortAndSlot::Equals(const HostAndPortAndSlot& other) const {
+  return HostAndPort::Equals(other) && slot_ == other.slot_;
 }
 
-struct sockaddr* copy_sockaddr(const struct sockaddr* addr, socklen_t addr_len) {
-  if (!addr) {
-    return NULL;
-  }
-
-  struct sockaddr* laddr = alloc_sockaddr(addr_len);
-  if (!laddr) {
-    return NULL;
-  }
-
-  memcpy(laddr, addr, addr_len);
-  return laddr;
+HostAndPortAndSlot::slot_t HostAndPortAndSlot::GetSlot() const {
+  return slot_;
 }
 
-void free_sockaddr(struct sockaddr** addr) {
-  if (!addr) {
-    return;
-  }
-
-  struct sockaddr* laddr = *addr;
-  if (laddr) {
-    free(laddr);
-    *addr = NULL;
-  }
-}
-
-struct addrinfo* alloc_addrinfo() {
-  return reinterpret_cast<struct addrinfo*>(calloc(1, sizeof(struct addrinfo)));
-}
-
-struct addrinfo* copy_addrinfo(const struct addrinfo* info) {
-  if (!info) {
-    return NULL;
-  }
-
-  struct addrinfo* linfo = alloc_addrinfo();
-  if (!linfo) {
-    return NULL;
-  }
-
-  if (info->ai_addr) {
-    linfo->ai_addr = copy_sockaddr(info->ai_addr, info->ai_addrlen);
-  }
-  linfo->ai_addrlen = info->ai_addrlen;
-  linfo->ai_family = info->ai_family;
-  linfo->ai_flags = info->ai_flags;
-  linfo->ai_protocol = info->ai_protocol;
-  linfo->ai_socktype = info->ai_socktype;
-  linfo->ai_next = NULL;
-  linfo->ai_canonname = NULL;
-  return linfo;
-}
-
-void freeaddrinfo_ex(struct addrinfo** info) {
-  if (!info) {
-    return;
-  }
-
-  struct addrinfo* linfo = *info;
-  if (linfo) {
-    free_sockaddr(&linfo->ai_addr);
-    free(linfo);
-    *info = NULL;
-  }
+void HostAndPortAndSlot::SetSlot(slot_t slot) {
+  slot_ = slot;
 }
 
 }  // namespace net
@@ -269,10 +123,9 @@ std::string ConvertToString(const net::HostAndPort& host) {
     return std::string();
   }
 
-  static const uint16_t size_buff = 512;
-  char buff[size_buff] = {0};
-  SNPrintf(buff, size_buff, "%s:%" PRIu16, host.host, host.port);
-  return buff;
+  std::ostringstream bw;
+  bw << host.GetHost() << ":" << host.GetPort();
+  return bw.str();
 }
 
 bool ConvertFromString(const std::string& from, net::HostAndPort* out) {
@@ -283,11 +136,11 @@ bool ConvertFromString(const std::string& from, net::HostAndPort* out) {
   net::HostAndPort res;
   size_t del = from.find_first_of(':');
   if (del != std::string::npos) {
-    res.host = from.substr(0, del);
+    res.SetHost(from.substr(0, del));
     uint16_t lport;
     bool ok = ConvertFromString(from.substr(del + 1), &lport);
     if (ok) {
-      res.port = lport;
+      res.SetPort(lport);
     }
   }
 
@@ -300,10 +153,9 @@ std::string ConvertToString(const net::HostAndPortAndSlot& host) {
     return std::string();
   }
 
-  static const uint16_t size_buff = 512;
-  char buff[size_buff] = {0};
-  SNPrintf(buff, size_buff, "%s:%" PRIu16 "@%" PRIu16, host.host, host.port, host.slot);
-  return buff;
+  std::ostringstream bw;
+  bw << host.GetHost() << ":" << host.GetPort() << "@" << host.GetSlot();
+  return bw.str();
 }
 
 bool ConvertFromString(const std::string& from, net::HostAndPortAndSlot* out) {
@@ -314,25 +166,25 @@ bool ConvertFromString(const std::string& from, net::HostAndPortAndSlot* out) {
   net::HostAndPortAndSlot lout;
   size_t del = from.find_first_of(':');
   if (del != std::string::npos) {
-    lout.host = from.substr(0, del);
+    lout.SetHost(from.substr(0, del));
     size_t del_s = from.find_first_of('@');
     if (del_s != std::string::npos) {
       uint16_t lport;
       bool res = ConvertFromString(from.substr(del + 1, del_s - del - 1), &lport);
       if (res) {
-        lout.port = lport;
+        lout.SetPort(lport);
       }
 
       uint16_t lslot;
       res = ConvertFromString(from.substr(del_s + 1), &lslot);
       if (res) {
-        lout.slot = lslot;
+        lout.SetSlot(lslot);
       }
     } else {
       uint16_t lport;
       bool res = ConvertFromString(from.substr(del + 1), &lport);
       if (res) {
-        lout.port = lport;
+        lout.SetPort(lport);
       }
     }
   }

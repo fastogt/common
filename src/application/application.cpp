@@ -29,9 +29,7 @@ IApplication* IApplication::self_ = nullptr;
 
 IApplication::IApplication(int argc, char** argv) : argc_(argc), argv_(argv) {
   CHECK(!self_);
-  if (!self_) {
-    self_ = this;
-  }
+  self_ = this;
 }
 
 IApplication::~IApplication() {
@@ -44,11 +42,11 @@ std::string IApplication::GetAppPath() const {
 
 std::string IApplication::GetAppDir() const {
 #ifdef OS_MACOSX
-  std::string appP = file_system::pwd();
+  const std::string app_path = file_system::pwd();
 #else
-  std::string appP = GetAppPath();
+  const std::string app_path = GetAppPath();
 #endif
-  return file_system::get_dir_path(appP);
+  return file_system::get_dir_path(app_path);
 }
 
 int IApplication::GetArgc() const {

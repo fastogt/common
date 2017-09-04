@@ -117,12 +117,12 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   memset(&addr, 0, sizeof(sockaddr_t));
 #ifdef IPV6_ENABLED
   addr.sin6_family = IP_DOMAIN;
-  addr.sin6_port = htons(host_.port);
+  addr.sin6_port = htons(host_.GetPort());
   addr.sin6_addr = in6addr_any;
   bool is_random_port = addr.sin6_port == 0;
 #else
   addr.sin_family = IP_DOMAIN;
-  addr.sin_port = htons(host_.port);
+  addr.sin_port = htons(host_.GetPort());
   addr.sin_addr.s_addr = INADDR_ANY;
   bool is_random_port = addr.sin_port == 0;
 #endif
@@ -145,7 +145,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
       return err;
     }
 
-    host_.port = ntohs(get_in_port(reinterpret_cast<struct sockaddr*>(&addr2)));
+    host_.SetPort(ntohs(get_in_port(reinterpret_cast<struct sockaddr*>(&addr2))));
   } else {
     err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
                &info_);  // init sockaddr

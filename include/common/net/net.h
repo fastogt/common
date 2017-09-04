@@ -31,8 +31,9 @@
 
 #include <unistd.h>  // for socklen_t, ssize_t, off_t
 
-#include <common/error.h>      // for ErrnoError
-#include <common/net/types.h>  // for socket_descr_t, etc
+#include <common/error.h>  // for ErrnoError
+#include <common/net/socket_info.h>
+#include <common/net/types.h>
 
 struct addrinfo;
 struct sockaddr;

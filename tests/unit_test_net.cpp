@@ -18,13 +18,19 @@ TEST(HostAndPort, methods) {
   const common::net::HostAndPort local_host = common::net::HostAndPort::CreateLocalHost(RANDOM_PORT);
   ASSERT_TRUE(local_host.IsValid());
   ASSERT_TRUE(local_host.IsLocalHost());
-  ASSERT_EQ(local_host.port, RANDOM_PORT);
+  ASSERT_EQ(local_host.GetPort(), RANDOM_PORT);
+
+  const common::net::HostAndPort local_host2("Localhost", RANDOM_PORT);
+  ASSERT_TRUE(local_host2.IsValid());
+  ASSERT_TRUE(local_host2.IsLocalHost());
+  ASSERT_EQ(local_host2.GetPort(), RANDOM_PORT);
+  ASSERT_EQ(local_host, local_host2);
 
   const uint16_t valid_port = 8080;
   const common::net::HostAndPort valid_host = common::net::HostAndPort("192.168.1.2", valid_port);
   ASSERT_TRUE(valid_host.IsValid());
   ASSERT_FALSE(valid_host.IsLocalHost());
-  ASSERT_EQ(valid_host.port, valid_port);
+  ASSERT_EQ(valid_host.GetPort(), valid_port);
 }
 
 TEST(HostAndPort, ConvertToString) {
@@ -34,14 +40,14 @@ TEST(HostAndPort, ConvertToString) {
   ASSERT_TRUE(common::ConvertFromString(host_str, &local_host));
   ASSERT_TRUE(local_host.IsValid());
   ASSERT_TRUE(local_host.IsLocalHost());
-  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(local_host.GetPort(), valid_port);
   ASSERT_EQ(host_str, common::ConvertToString(local_host));
 
   const std::string host_str2 = common::MemSPrintf("127.0.0.1:%u", valid_port);
   ASSERT_TRUE(common::ConvertFromString(host_str2, &local_host));
   ASSERT_TRUE(local_host.IsValid());
   ASSERT_TRUE(local_host.IsLocalHost());
-  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(local_host.GetPort(), valid_port);
   ASSERT_EQ(host_str2, common::ConvertToString(local_host));
 }
 
@@ -56,8 +62,8 @@ TEST(HostAndPortAndSlot, methods) {
       common::net::HostAndPortAndSlot("192.168.1.2", valid_port, valid_slot);
   ASSERT_TRUE(valid_host_slot.IsValid());
   ASSERT_FALSE(valid_host_slot.IsLocalHost());
-  ASSERT_EQ(valid_host_slot.port, valid_port);
-  ASSERT_EQ(valid_host_slot.slot, valid_slot);
+  ASSERT_EQ(valid_host_slot.GetPort(), valid_port);
+  ASSERT_EQ(valid_host_slot.GetSlot(), valid_slot);
 }
 
 TEST(HostAndPortAndSlot, ConvertToString) {
@@ -68,15 +74,15 @@ TEST(HostAndPortAndSlot, ConvertToString) {
   ASSERT_TRUE(common::ConvertFromString(host_str, &local_host));
   ASSERT_TRUE(local_host.IsValid());
   ASSERT_TRUE(local_host.IsLocalHost());
-  ASSERT_EQ(local_host.port, valid_port);
-  ASSERT_EQ(local_host.slot, valid_slot);
+  ASSERT_EQ(local_host.GetPort(), valid_port);
+  ASSERT_EQ(local_host.GetSlot(), valid_slot);
   ASSERT_EQ(host_str, common::ConvertToString(local_host));
 
   const std::string host_str2 = common::MemSPrintf("127.0.0.1:%u@%u", valid_port, valid_slot);
   ASSERT_TRUE(common::ConvertFromString(host_str2, &local_host));
   ASSERT_TRUE(local_host.IsValid());
   ASSERT_TRUE(local_host.IsLocalHost());
-  ASSERT_EQ(local_host.port, valid_port);
+  ASSERT_EQ(local_host.GetPort(), valid_port);
   ASSERT_EQ(host_str2, common::ConvertToString(local_host));
 }
 
