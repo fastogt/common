@@ -38,7 +38,7 @@ Error Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     eventToSendID = kAERestart;
   } else {
-    return make_error_value_perror("systemShutdown", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("systemShutdown", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   AEAddressDesc targetDesc;
