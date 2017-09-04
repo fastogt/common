@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <common/macros.h>  // for INVALID_DESCRIPTOR
+#include <common/macros.h>
 
 namespace common {
 namespace net {
@@ -40,7 +40,7 @@ class HostAndPort {
   typedef uint16_t port_t;
 
   HostAndPort();
-  HostAndPort(const std::string& host, uint16_t port);
+  HostAndPort(host_t host, port_t port);
   bool IsValid() const;
   bool IsLocalHost() const;
 

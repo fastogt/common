@@ -44,7 +44,7 @@ namespace net {
 
 HostAndPort::HostAndPort() : host_(), port_(0) {}
 
-HostAndPort::HostAndPort(const std::string& host, uint16_t port) : host_(), port_(port) {
+HostAndPort::HostAndPort(host_t host, port_t port) : host_(), port_(port) {
   SetHost(host);
 }
 

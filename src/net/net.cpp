@@ -381,13 +381,13 @@ ErrnoError connect(const char* host, int port, socket_t socktype, struct timeval
 
 }  // namespace
 
-ErrnoError connect(const HostAndPort& from, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
-  if (!from.IsValid() || !out_info) {
+ErrnoError connect(const HostAndPort& to, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
+  if (!to.IsValid() || !out_info) {
     return make_error_value_perror("connect", EINVAL, ErrorValue::E_ERROR);
   }
 
-  const HostAndPort::host_t host = from.GetHost();
-  const HostAndPort::port_t port = from.GetPort();
+  const HostAndPort::host_t host = to.GetHost();
+  const HostAndPort::port_t port = to.GetPort();
 
   return connect(host.c_str(), port, socktype, timeout, out_info);
 }

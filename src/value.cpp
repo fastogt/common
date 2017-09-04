@@ -35,22 +35,22 @@
 
 namespace common {
 namespace {
-const char* stringTypes[] = {"TYPE_NULL",
-                             "TYPE_BOOLEAN",
-                             "TYPE_INTEGER",
-                             "TYPE_UINTEGER",
-                             "TYPE_LONG_INTEGER",
-                             "TYPE_ULONG_INTEGER",
-                             "TYPE_LONG_LONG_INTEGER",
-                             "TYPE_ULONG_LONG_INTEGER",
-                             "TYPE_DOUBLE",
-                             "TYPE_STRING",
-                             "TYPE_ARRAY",
-                             "TYPE_BYTE_ARRAY",
-                             "TYPE_SET",
-                             "TYPE_ZSET",
-                             "TYPE_HASH",
-                             "TYPE_ERROR"};
+const char* string_types[] = {"TYPE_NULL",
+                              "TYPE_BOOLEAN",
+                              "TYPE_INTEGER",
+                              "TYPE_UINTEGER",
+                              "TYPE_LONG_INTEGER",
+                              "TYPE_ULONG_INTEGER",
+                              "TYPE_LONG_LONG_INTEGER",
+                              "TYPE_ULONG_LONG_INTEGER",
+                              "TYPE_DOUBLE",
+                              "TYPE_STRING",
+                              "TYPE_ARRAY",
+                              "TYPE_BYTE_ARRAY",
+                              "TYPE_SET",
+                              "TYPE_ZSET",
+                              "TYPE_HASH",
+                              "TYPE_ERROR"};
 
 class ValueEquals {
  public:
@@ -186,7 +186,7 @@ Value* Value::CreateEmptyValueFromType(Type t) {
 
 // static
 std::string Value::GetTypeName(Type t) {
-  return stringTypes[t];
+  return string_types[t];
 }
 
 bool Value::GetAsBoolean(bool* out_value) const {

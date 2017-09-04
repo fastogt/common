@@ -35,6 +35,7 @@
 #include <winsock2.h>
 #endif
 
+#include <stddef.h>
 #include <string.h>
 
 namespace common {

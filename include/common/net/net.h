@@ -35,9 +35,6 @@
 #include <common/net/socket_info.h>
 #include <common/net/types.h>
 
-struct addrinfo;
-struct sockaddr;
-
 namespace common {
 namespace net {
 
@@ -54,7 +51,7 @@ uint16_t get_in_port(struct sockaddr* sa);
 ErrnoError listen(const socket_info& info, int backlog) WARN_UNUSED_RESULT;
 ErrnoError accept(const socket_info& info, socket_info* out_info) WARN_UNUSED_RESULT;
 
-ErrnoError connect(const HostAndPort& from, socket_t socktype, struct timeval* timeout, socket_info* out_info)
+ErrnoError connect(const HostAndPort& to, socket_t socktype, struct timeval* timeout, socket_info* out_info)
     WARN_UNUSED_RESULT;
 ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info* out_info) WARN_UNUSED_RESULT;
 

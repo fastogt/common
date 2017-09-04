@@ -79,7 +79,7 @@ socket_descr_t SocketHolder::GetFd() const {
 }
 
 ErrnoError SocketHolder::Close() {
-  const int fd = info_.fd();
+  const socket_descr_t fd = info_.fd();
   ErrnoError err = close(fd);
   if (err && err->IsError()) {
     DNOTREACHED();
@@ -127,7 +127,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   bool is_random_port = addr.sin_port == 0;
 #endif
 
-  int fd = linfo.fd();
+  socket_descr_t fd = linfo.fd();
   addrinfo* ainf = linfo.addr_info();
 
   if (is_random_port) {  // random port
@@ -145,16 +145,13 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
       return err;
     }
 
-    host_.SetPort(ntohs(get_in_port(reinterpret_cast<struct sockaddr*>(&addr2))));
-  } else {
-    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
-               &info_);  // init sockaddr
-    if (err && err->IsError()) {
-      return err;
-    }
+    struct sockaddr* saddr = reinterpret_cast<struct sockaddr*>(&addr2);
+    host_.SetPort(ntohs(get_in_port(saddr)));
+    return ErrnoError();
   }
 
-  return ErrnoError();
+  return bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
+              &info_);  // init sockaddr
 }
 
 ErrnoError ServerSocketTcp::Listen(int backlog) {
