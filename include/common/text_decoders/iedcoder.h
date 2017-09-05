@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <common/error.h>  // for Error
 
 namespace common {
