@@ -78,11 +78,11 @@ Error Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     res = ::system("reboot");
   } else {
-    return make_error_value_perror("Shutdown", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("Shutdown", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("system", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("system", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 #endif
   return Error();
