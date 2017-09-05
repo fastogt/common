@@ -36,7 +36,7 @@
 namespace common {
 
 enum EDTypes { Base64 = 0, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
-extern const std::vector<std::string> g_edecoder_types;
+extern const std::vector<const char*> g_edecoder_types;
 
 class IEDcoder {
  public:

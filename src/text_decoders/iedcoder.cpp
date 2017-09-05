@@ -31,7 +31,7 @@
 
 namespace common {
 
-const std::vector<std::string> g_edecoder_types = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
+const std::vector<const char*> g_edecoder_types = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
 
 std::string ConvertToString(EDTypes t) {
   return g_edecoder_types[t];
