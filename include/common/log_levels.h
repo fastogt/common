@@ -32,20 +32,20 @@
 namespace common {
 namespace logging {
 
-enum LEVEL_LOG {
-  L_EMERG = 0,  // system is unusable
-  L_ALERT,      // action must be taken immediately
-  L_CRIT,       // critical conditions
-  L_ERR,        // error conditions
-  L_WARNING,    // warning conditions
-  L_NOTICE,     // normal, but significant, condition
-  L_INFO,       // informational message
-  L_DEBUG,      // debug-level message
-  LEVEL_LOG_COUNT
+enum LOG_LEVEL {
+  LOG_LEVEL_EMERG = 0,  // system is unusable
+  LOG_LEVEL_ALERT,      // action must be taken immediately
+  LOG_LEVEL_CRIT,       // critical conditions
+  LOG_LEVEL_ERR,        // error conditions
+  LOG_LEVEL_WARNING,    // warning conditions
+  LOG_LEVEL_NOTICE,     // normal, but significant, condition
+  LOG_LEVEL_INFO,       // informational message
+  LOG_LEVEL_DEBUG,      // debug-level message
+  LOG_LEVEL_COUNT
 };
 
-const char* log_level_to_text(LEVEL_LOG lev);
-bool text_to_log_level(const char* level_text, LEVEL_LOG* level);
+const char* log_level_to_text(LOG_LEVEL level);
+bool text_to_log_level(const char* level_text, LOG_LEVEL* level);
 
 }  // namespace logging
 }  // namespace common

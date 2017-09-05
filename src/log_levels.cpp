@@ -32,29 +32,31 @@
 #include <common/string_util.h>
 
 namespace {
-const char* level_names[] = {"EMERG", "ALLERT", "CRITICAL", "ERROR", "WARNING", "NOTICE", "INFO", "DEBUG"};
+const char* g_level_names[] = {"EMERG", "ALLERT", "CRITICAL", "ERROR", "WARNING", "NOTICE", "INFO", "DEBUG"};
 }
 
 namespace common {
 namespace logging {
 
-const char* log_level_to_text(LEVEL_LOG lev) {
-  if (lev >= LEVEL_LOG_COUNT) {
+const char* log_level_to_text(LOG_LEVEL level) {
+  if (level >= LOG_LEVEL_COUNT) {
+    DNOTREACHED() << "Ivalid input log level: " << level;
     return NULL;
   }
 
-  return level_names[lev];
+  return g_level_names[level];
 }
 
-bool text_to_log_level(const char* level_text, LEVEL_LOG* level) {
+bool text_to_log_level(const char* level_text, LOG_LEVEL* level) {
   if (!level_text || !level) {
+    DNOTREACHED() << "Ivalid input level_text: " << level_text << ", level out:" << level;
     return false;
   }
 
-  for (size_t i = 0; i < SIZEOFMASS(level_names); ++i) {
-    const char* name = level_names[i];
+  for (size_t i = 0; i < SIZEOFMASS(g_level_names); ++i) {
+    const char* name = g_level_names[i];
     if (strcasecmp(level_text, name) == 0) {
-      *level = static_cast<LEVEL_LOG>(i);
+      *level = static_cast<LOG_LEVEL>(i);
       return true;
     }
   }

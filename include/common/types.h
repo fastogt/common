@@ -29,7 +29,9 @@
 
 #pragma once
 
-#include <string>
+#include <stdint.h>
+
+#include <iosfwd>
 #include <vector>  // for vector
 
 namespace common {
@@ -39,10 +41,6 @@ enum tribool { FAIL = 0, SUCCESS = 1, INDETERMINATE = -1 };
 typedef uint8_t byte_t;
 typedef std::vector<byte_t> byte_array_t;
 typedef byte_array_t buffer_t;
-
-const char* common_strerror(int err);
-
-std::string EscapedText(const std::string& str);  // add \n at the end if needed
 
 typedef int64_t time64_t;  // millisecond
 

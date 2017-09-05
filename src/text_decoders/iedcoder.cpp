@@ -31,8 +31,10 @@
 
 namespace common {
 
+const std::vector<std::string> g_edecoder_types = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
+
 std::string ConvertToString(EDTypes t) {
-  return EDecoderTypes[t];
+  return g_edecoder_types[t];
 }
 
 bool ConvertFromString(const std::string& from, EDTypes* out) {
@@ -40,8 +42,8 @@ bool ConvertFromString(const std::string& from, EDTypes* out) {
     return false;
   }
 
-  for (uint32_t i = 0; i < SIZEOFMASS(EDecoderTypes); ++i) {
-    if (from == EDecoderTypes[i]) {
+  for (uint32_t i = 0; i < g_edecoder_types.size(); ++i) {
+    if (from == g_edecoder_types[i]) {
       *out = static_cast<EDTypes>(i);
       return true;
     }

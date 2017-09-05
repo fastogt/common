@@ -531,7 +531,7 @@ ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nr
   }
 
   if (lnread == 0) {
-    return make_error_value_errno(ECONNRESET, SYSTEM_ERRNO, Value::E_ERROR, logging::L_ERR);
+    return make_error_value_errno(ECONNRESET, SYSTEM_ERRNO, Value::E_ERROR, logging::LOG_LEVEL_ERR);
   }
 
   *nread = lnread;
@@ -649,9 +649,8 @@ ErrnoError send_file(const std::string& path, const HostAndPort& to) {
   return ErrnoError();
 }
 
+}  // namespace net
 const char* common_gai_strerror(int err) {
   return gai_strerror(err);
 }
-
-}  // namespace net
 }  // namespace common

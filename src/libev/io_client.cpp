@@ -46,11 +46,11 @@ IoClient::~IoClient() {
   destroy(&read_write_io_);
 }
 
-void IoClient::Close() {
+Error IoClient::Close() {
   if (server_) {
     server_->CloseClient(this);
   }
-  CloseImpl();
+  return CloseImpl();
 }
 
 IoLoop* IoClient::GetServer() const {

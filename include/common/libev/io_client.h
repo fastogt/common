@@ -45,7 +45,7 @@ class IoClient : IMetaClassInfo {
   IoClient(IoLoop* server, flags_t flags = EV_READ);
   virtual ~IoClient();
 
-  void Close();
+  Error Close() WARN_UNUSED_RESULT;
 
   IoLoop* GetServer() const;
 
@@ -64,9 +64,10 @@ class IoClient : IMetaClassInfo {
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
-  virtual void CloseImpl() = 0;
 
  private:
+  virtual Error CloseImpl() = 0;
+
   IoLoop* server_;
   LibevIO* read_write_io_;
   flags_t flags_;

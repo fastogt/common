@@ -11,5 +11,5 @@ TEST(Error, ErrorOnlyIFIsErrorSet) {
   ASSERT_EQ(errn->GetErrno(), EINVAL);
   ASSERT_NE(errn->GetDescription(), std::string());
   ASSERT_EQ(errn->GetErrorType(), common::Value::E_ERROR);
-  ASSERT_EQ(errn->GetLevel(), common::logging::L_ERR);
+  ASSERT_EQ(errn->GetLevel(), common::logging::LOG_LEVEL_ERR);
 }

@@ -94,8 +94,8 @@ TEST(snappy, enc_dec) {
 #endif
 
 TEST(iedcoder, factory) {
-  for (uint32_t i = 0; i < SIZEOFMASS(common::EDecoderTypes); ++i) {
-    std::string fac = common::EDecoderTypes[i];
+  for (size_t i = 0; i < common::g_edecoder_types.size(); ++i) {
+    std::string fac = common::g_edecoder_types[i];
     common::IEDcoder* dec = common::CreateEDCoder(fac);
     ASSERT_TRUE(dec);
 

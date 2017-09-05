@@ -39,10 +39,10 @@ namespace common {
 namespace qt {
 
 Logger::Logger() {
-  qRegisterMetaType<common::logging::LEVEL_LOG>("common::logging::LEVEL_LOG");
+  qRegisterMetaType<common::logging::LOG_LEVEL>("common::logging::LOG_LEVEL");
 }
 
-void Logger::print(const char* mess, logging::LEVEL_LOG level, bool notify) {
+void Logger::print(const char* mess, logging::LOG_LEVEL level, bool notify) {
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;
@@ -52,7 +52,7 @@ void Logger::print(const char* mess, logging::LEVEL_LOG level, bool notify) {
   }
 }
 
-void Logger::print(const QString& mess, logging::LEVEL_LOG level, bool notify) {
+void Logger::print(const QString& mess, logging::LOG_LEVEL level, bool notify) {
   const std::string smess = ConvertToString(mess);
   RUNTIME_LOG(level) << smess;
   if (notify) {
@@ -60,7 +60,7 @@ void Logger::print(const QString& mess, logging::LEVEL_LOG level, bool notify) {
   }
 }
 
-void Logger::print(const std::string& mess, logging::LEVEL_LOG level, bool notify) {
+void Logger::print(const std::string& mess, logging::LOG_LEVEL level, bool notify) {
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;

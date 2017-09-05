@@ -90,11 +90,8 @@ Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   return Error();
 }
 
-void TcpClient::CloseImpl() {
-  Error err = sock_.Close();
-  if (err && err->IsError()) {
-    DEBUG_MSG_ERROR(err);  // FIX ME, don't write to log
-  }
+Error TcpClient::CloseImpl() {
+  return sock_.Close();
 }
 
 }  // namespace tcp

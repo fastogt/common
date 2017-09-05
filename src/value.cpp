@@ -135,7 +135,7 @@ HashValue* Value::CreateHashValue() {
 
 ErrorValue* Value::CreateErrorValue(const std::string& in_value,
                                     Value::ErrorsType errorType,
-                                    logging::LEVEL_LOG level) {
+                                    logging::LOG_LEVEL level) {
   if (in_value.empty()) {
     DNOTREACHED();
     return new ErrorValue("Create error invalid input argument!", errorType, level);
@@ -178,7 +178,7 @@ Value* Value::CreateEmptyValueFromType(Type t) {
     case TYPE_HASH:
       return CreateHashValue();
     case TYPE_ERROR:
-      return CreateErrorValue(std::string(), E_NONE, logging::L_DEBUG);
+      return CreateErrorValue(std::string(), E_NONE, logging::LOG_LEVEL_DEBUG);
   }
 
   return nullptr;
@@ -1076,7 +1076,7 @@ bool HashValue::Equals(const Value* other) const {
   return true;
 }
 
-ErrorValue::ErrorValue(const std::string& description, ErrorsType error_type, logging::LEVEL_LOG level)
+ErrorValue::ErrorValue(const std::string& description, ErrorsType error_type, logging::LOG_LEVEL level)
     : Value(TYPE_ERROR), description_(description), error_type_(error_type), level_(level) {}
 
 ErrorValue::~ErrorValue() {}
@@ -1089,7 +1089,7 @@ ErrorValue::ErrorsType ErrorValue::GetErrorType() const {
   return error_type_;
 }
 
-logging::LEVEL_LOG ErrorValue::GetLevel() const {
+logging::LOG_LEVEL ErrorValue::GetLevel() const {
   return level_;
 }
 

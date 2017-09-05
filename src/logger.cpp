@@ -35,7 +35,6 @@
 #include <mutex>
 
 #include <common/sprintf.h>
-#include <common/types.h>
 
 #ifdef OS_MACOSX
 #include <mach/clock.h>
@@ -53,8 +52,8 @@ namespace common {
 namespace logging {
 
 namespace {
-LEVEL_LOG g_level_log = L_NOTICE;
-std::string PrepareHeader(const char* file, int line, LEVEL_LOG level) {
+LOG_LEVEL g_level_log = LOG_LEVEL_NOTICE;
+std::string PrepareHeader(const char* file, int line, LOG_LEVEL level) {
   // We use fprintf() instead of cerr because we want this to work at static
   // initialization time.
 
@@ -85,19 +84,18 @@ std::string PrepareHeader(const char* file, int line, LEVEL_LOG level) {
 
 }  // namespace
 
-void INIT_LOGGER(const std::string& project_name, LEVEL_LOG level) {
+void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level) {
   g_level_log = level;
   g_project_name = project_name;
 }
 
-void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LEVEL_LOG level) {
+void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level) {
   INIT_LOGGER(project_name, level);
   g_logger_file_helper->open(file_path, std::ofstream::out | std::ofstream::app);
   if (g_logger_file_helper->is_open()) {
     SET_LOGER_STREAM(g_logger_file_helper.get());
   } else {
-    const char* err_str = common_strerror(errno);
-    WARNING_LOG() << "Can't open file: " << file_path << " , error: " << err_str;
+    WARNING_LOG() << "Can't open file: " << file_path << " , error: " << strerror(errno);
   }
 }
 
@@ -109,27 +107,27 @@ void SET_LOGER_STREAM(std::ostream* logger) {
   g_logger = logger;
 }
 
-bool LOG_IS_ON(LEVEL_LOG level) {
+bool LOG_IS_ON(LOG_LEVEL level) {
   if (level > g_level_log) {
     return false;
   }
   return true;
 }
 
-LEVEL_LOG CURRENT_LOG_LEVEL() {
+LOG_LEVEL CURRENT_LOG_LEVEL() {
   return g_level_log;
 }
 
-void SET_CURRENT_LOG_LEVEL(LEVEL_LOG level) {
+void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level) {
   g_level_log = level;
 }
 
-LogMessage::LogMessage(LEVEL_LOG level, bool new_line) : file_(), line_(), level_(level), new_line_(new_line) {
+LogMessage::LogMessage(LOG_LEVEL level, bool new_line) : file_(), line_(), level_(level), new_line_(new_line) {
   g_mutex.lock();
   Stream() << PrepareHeader(NULL, 0, level);
 }
 
-LogMessage::LogMessage(const char* file, int line, LEVEL_LOG level, bool new_line)
+LogMessage::LogMessage(const char* file, int line, LOG_LEVEL level, bool new_line)
     : file_(file), line_(line), level_(level), new_line_(new_line) {
   g_mutex.lock();
   Stream() << PrepareHeader(file, line, level);
@@ -137,11 +135,11 @@ LogMessage::LogMessage(const char* file, int line, LEVEL_LOG level, bool new_lin
 
 LogMessage::~LogMessage() {
   if (new_line_) {
-    Stream() << std::endl;
+    Stream() << "\n";
   }
   g_mutex.unlock();
 
-  if (level_ <= common::logging::L_CRIT) {
+  if (level_ <= common::logging::LOG_LEVEL_CRIT) {
 #ifdef NDEBUG
     immediate_exit();
 #else

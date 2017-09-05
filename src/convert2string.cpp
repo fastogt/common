@@ -396,6 +396,14 @@ R hex_decode_impl(const T& input) {
 
 }  // namespace
 
+std::string EscapedText(const std::string& str) {
+  if (!str.empty() && str[str.length() - 1] != '\n') {
+    return str + "\n";
+  }
+
+  return str;
+}
+
 string16 ConvertToString16(const std::string& from) {
 #if defined(WCHAR_T_IS_UTF16)
   return UTF8ToWide(from);

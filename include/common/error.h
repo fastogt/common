@@ -36,16 +36,18 @@ namespace common {
 
 enum ErrnoType { SYSTEM_ERRNO, NETWORK_ERRNO };
 
-const char* common_strerror_full(int err, ErrnoType errno_type);
+const char* common_strerror(int err);
+extern const char* common_gai_strerror(int err);
+const char* common_strerror(int err, ErrnoType errno_type);
 
 class ErrnoErrorValue : public ErrorValue {
  public:
-  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LEVEL_LOG level);
+  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LOG_LEVEL level);
   ErrnoErrorValue(int err,
                   ErrnoType errno_type,
                   const std::string& description,
                   ErrorsType error_type,
-                  logging::LEVEL_LOG level);
+                  logging::LOG_LEVEL level);
 
   int GetErrno() const;
   ErrnoType GetErrnoType() const;
@@ -59,32 +61,32 @@ typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && 
 typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
-Error make_inval_error_value(Value::ErrorsType error_type, logging::LEVEL_LOG level = logging::L_ERR);
+Error make_inval_error_value(Value::ErrorsType error_type, logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 Error make_error_value(const std::string& description,
-                       Value::ErrorsType errorType,
-                       logging::LEVEL_LOG level = logging::L_ERR);
+                       Value::ErrorsType error_type,
+                       logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_errno(int err,
                                   ErrnoType errno_type,
                                   Value::ErrorsType error_type,
-                                  logging::LEVEL_LOG level = logging::L_ERR);
+                                  logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_errno(int err,
                                   ErrnoType errno_type,
                                   const std::string& description,
                                   Value::ErrorsType error_type,
-                                  logging::LEVEL_LOG level = logging::L_ERR);
+                                  logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
                                    ErrnoType errno_type,
                                    Value::ErrorsType error_type,
-                                   logging::LEVEL_LOG level = logging::L_ERR);
+                                   logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 }  // namespace common
 
-void DEBUG_MSG_ERROR(common::Error er);
+void DEBUG_MSG_ERROR(common::Error err);
 common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
                                     int err,
                                     common::ErrnoType errno_type,

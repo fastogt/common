@@ -33,7 +33,7 @@
 #include <QString>
 
 #include <common/error.h>                       // for Error
-#include <common/log_levels.h>                  // for LEVEL_LOG
+#include <common/log_levels.h>                  // for LOG_LEVEL
 #include <common/patterns/singleton_pattern.h>  // for LazySingleton
 
 namespace common {
@@ -43,12 +43,12 @@ class Logger : public QObject, public patterns::LazySingleton<Logger> {
   friend class patterns::LazySingleton<Logger>;
   Q_OBJECT
  public:
-  void print(const char* mess, logging::LEVEL_LOG level, bool notify);
-  void print(const QString& mess, logging::LEVEL_LOG level, bool notify);
-  void print(const std::string& mess, logging::LEVEL_LOG level, bool notify);
+  void print(const char* mess, logging::LOG_LEVEL level, bool notify);
+  void print(const QString& mess, logging::LOG_LEVEL level, bool notify);
+  void print(const std::string& mess, logging::LOG_LEVEL level, bool notify);
 
  Q_SIGNALS:
-  void printed(const QString& mess, logging::LEVEL_LOG level);
+  void printed(const QString& mess, logging::LOG_LEVEL level);
 
  private:
   Logger();
@@ -58,7 +58,7 @@ class Logger : public QObject, public patterns::LazySingleton<Logger> {
 }  // namespace common
 
 template <typename T>
-inline void LOG_MSG(T mess, common::logging::LEVEL_LOG level, bool notify) {
+inline void LOG_MSG(T mess, common::logging::LOG_LEVEL level, bool notify) {
   return common::qt::Logger::GetInstance().print(mess, level, notify);
 }
 

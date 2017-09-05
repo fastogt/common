@@ -47,14 +47,14 @@ class LogMessageVoidify {
   void operator&(std::ostream&)const {}
 };
 
-bool LOG_IS_ON(LEVEL_LOG level);
-LEVEL_LOG CURRENT_LOG_LEVEL();
-void SET_CURRENT_LOG_LEVEL(LEVEL_LOG level);
+bool LOG_IS_ON(LOG_LEVEL level);
+LOG_LEVEL CURRENT_LOG_LEVEL();
+void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level);
 
 class LogMessage {
  public:
-  explicit LogMessage(LEVEL_LOG level, bool new_line = true);
-  LogMessage(const char* file, int line, LEVEL_LOG level, bool new_line = true);
+  explicit LogMessage(LOG_LEVEL level, bool new_line = true);
+  LogMessage(const char* file, int line, LOG_LEVEL level, bool new_line = true);
   ~LogMessage();
 
   std::ostream& Stream();
@@ -65,12 +65,12 @@ class LogMessage {
 
   const char* file_;
   const int line_;
-  const LEVEL_LOG level_;
+  const LOG_LEVEL level_;
   const bool new_line_;
 };
 
-void INIT_LOGGER(const std::string& project_name, LEVEL_LOG level);                                // to console
-void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LEVEL_LOG level);  // to file
+void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level);                                // to console
+void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level);  // to file
 
 void SET_LOGER_STREAM(std::ostream* logger);
 
@@ -80,20 +80,25 @@ void SET_LOGER_STREAM(std::ostream* logger);
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
-#define COMPACT_LOG_EX_CRIT(ClassName) common::logging::ClassName(common::logging::L_CRIT)
-#define COMPACT_LOG_EX_ERR(ClassName) common::logging::ClassName(common::logging::L_ERR)
-#define COMPACT_LOG_EX_WARNING(ClassName) common::logging::ClassName(common::logging::L_WARNING)
-#define COMPACT_LOG_EX_NOTICE(ClassName) common::logging::ClassName(common::logging::L_NOTICE)
-#define COMPACT_LOG_EX_INFO(ClassName) common::logging::ClassName(common::logging::L_INFO)
-#define COMPACT_LOG_EX_DEBUG(ClassName) common::logging::ClassName(common::logging::L_DEBUG)
+#define COMPACT_LOG_EX_CRIT(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_CRIT)
+#define COMPACT_LOG_EX_ERR(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_ERR)
+#define COMPACT_LOG_EX_WARNING(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_WARNING)
+#define COMPACT_LOG_EX_NOTICE(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_NOTICE)
+#define COMPACT_LOG_EX_INFO(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_INFO)
+#define COMPACT_LOG_EX_DEBUG(ClassName) common::logging::ClassName(common::logging::LOG_LEVEL_DEBUG)
 
-#define COMPACT_LOG_FILE_EX_CRIT(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_CRIT)
-#define COMPACT_LOG_FILE_EX_ERR(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_ERR)
+#define COMPACT_LOG_FILE_EX_CRIT(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::LOG_LEVEL_CRIT)
+#define COMPACT_LOG_FILE_EX_ERR(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::LOG_LEVEL_ERR)
 #define COMPACT_LOG_FILE_EX_WARNING(ClassName) \
   common::logging::ClassName(__FILE__, __LINE__, common::logging::L_WARNING)
-#define COMPACT_LOG_FILE_EX_NOTICE(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_NOTICE)
-#define COMPACT_LOG_FILE_EX_INFO(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_INFO)
-#define COMPACT_LOG_FILE_EX_DEBUG(ClassName) common::logging::ClassName(__FILE__, __LINE__, common::logging::L_DEBUG)
+#define COMPACT_LOG_FILE_EX_NOTICE(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::LOG_LEVEL_NOTICE)
+#define COMPACT_LOG_FILE_EX_INFO(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::LOG_LEVEL_INFO)
+#define COMPACT_LOG_FILE_EX_DEBUG(ClassName) \
+  common::logging::ClassName(__FILE__, __LINE__, common::logging::LOG_LEVEL_DEBUG)
 
 #define COMPACT_LOG_CRIT COMPACT_LOG_EX_CRIT(LogMessage)
 #define COMPACT_LOG_ERR COMPACT_LOG_EX_ERR(LogMessage)
@@ -114,7 +119,7 @@ void SET_LOGER_STREAM(std::ostream* logger);
 
 #define LAZY_STREAM(stream, condition) !(condition) ? (void)0 : common::logging::LogMessageVoidify() & (stream)
 
-#define LOG(LEVEL) LAZY_STREAM(LOG_STREAM(LEVEL), common::logging::LOG_IS_ON(common::logging::L_##LEVEL))
+#define LOG(LEVEL) LAZY_STREAM(LOG_STREAM(LEVEL), common::logging::LOG_IS_ON(common::logging::LOG_LEVEL_##LEVEL))
 
 #define CRITICAL_LOG() LOG(CRIT)
 #define ERROR_LOG() LOG(ERR)

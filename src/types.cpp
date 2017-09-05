@@ -35,28 +35,6 @@
 
 namespace common {
 
-#ifdef OS_WIN
-const char* common_strerror(int err) {
-  if (err == ECONNRESET) {
-    return "Connection reset by peer";
-  }
-
-  return strerror(err);
-}
-#else
-const char* common_strerror(int err) {
-  return strerror(err);
-}
-#endif
-
-std::string EscapedText(const std::string& str) {
-  if (!str.empty() && str[str.length() - 1] != '\n') {
-    return str + "\n";
-  }
-
-  return str;
-}
-
 IMetaClassInfo::~IMetaClassInfo() {}
 
 std::ostream& operator<<(std::ostream& out, const buffer_t& buff) {

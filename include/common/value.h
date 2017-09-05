@@ -90,7 +90,7 @@ class Value {
   static SetValue* CreateSetValue();
   static ZSetValue* CreateZSetValue();
   static HashValue* CreateHashValue();
-  static ErrorValue* CreateErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level);
+  static ErrorValue* CreateErrorValue(const std::string& in_value, ErrorsType errorType, logging::LOG_LEVEL level);
 
   static Value* CreateEmptyValueFromType(Type t);
 
@@ -421,12 +421,12 @@ class HashValue : public Value {
 
 class ErrorValue : public Value {
  public:
-  ErrorValue(const std::string& description, ErrorsType error_type, logging::LEVEL_LOG level);
+  ErrorValue(const std::string& description, ErrorsType error_type, logging::LOG_LEVEL level);
 
   bool IsError() const;
 
   ErrorsType GetErrorType() const;
-  logging::LEVEL_LOG GetLevel() const;
+  logging::LOG_LEVEL GetLevel() const;
 
   std::string GetDescription() const;
   void SetDescription(const std::string& descr);
@@ -438,7 +438,7 @@ class ErrorValue : public Value {
  private:
   std::string description_;
   ErrorsType error_type_;
-  logging::LEVEL_LOG level_;
+  logging::LOG_LEVEL level_;
   DISALLOW_COPY_AND_ASSIGN(ErrorValue);
 };
 
