@@ -31,12 +31,11 @@
 
 namespace common {
 
-const char* const edecoder_types[ENCODER_DECODER_NUM_TYPES] = {"Base64", "GZip",    "Snappy",
-                                                               "Hex",    "MsgPack", "HtmlEscape"};
-COMPILE_ASSERT(ENCODER_DECODER_NUM_TYPES == arraysize(edecoder_types), "Incorrect number of edecoder_types");
+const std::array<const char*, ENCODER_DECODER_NUM_TYPES> edecoder_types = {"Base64", "GZip",    "Snappy",
+                                                                           "Hex",    "MsgPack", "HtmlEscape"};
 
 std::string ConvertToString(EDType ed_type) {
-  if (ed_type >= 0 && ed_type < ENCODER_DECODER_NUM_TYPES) {
+  if (ed_type >= 0 && ed_type < edecoder_types.size()) {
     return edecoder_types[ed_type];
   }
 
@@ -49,7 +48,7 @@ bool ConvertFromString(const std::string& from, EDType* out) {
     return false;
   }
 
-  for (size_t i = 0; i < ENCODER_DECODER_NUM_TYPES; ++i) {
+  for (size_t i = 0; i < edecoder_types.size(); ++i) {
     if (from == edecoder_types[i]) {
       *out = static_cast<EDType>(i);
       return true;

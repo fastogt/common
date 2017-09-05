@@ -34,7 +34,7 @@
 namespace common {
 
 enum EDType { ED_BASE64 = 0, ED_ZLIB, ED_SNAPPY, ED_HEX, ED_MSG_PACK, ED_HTML_ESC, ENCODER_DECODER_NUM_TYPES };
-extern const char* const edecoder_types[ENCODER_DECODER_NUM_TYPES];
+extern const std::array<const char*, ENCODER_DECODER_NUM_TYPES> edecoder_types;
 
 class IEDcoder {
  public:

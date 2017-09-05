@@ -39,7 +39,6 @@ namespace logging {
 namespace {
 const char* log_levels_names[LOG_NUM_LEVELS] = {"EMERG",   "ALLERT", "CRITICAL", "ERROR",
                                                 "WARNING", "NOTICE", "INFO",     "DEBUG"};
-COMPILE_ASSERT(LOG_NUM_LEVELS == arraysize(log_levels_names), "Incorrect number of log_levels_names");
 
 const char* log_levels_name(int level) {
   if (level >= 0 && level < LOG_NUM_LEVELS) {

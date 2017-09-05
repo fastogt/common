@@ -51,7 +51,6 @@ const char* string_types[Value::NUM_TYPES] = {"TYPE_NULL",
                                               "TYPE_ZSET",
                                               "TYPE_HASH",
                                               "TYPE_ERROR"};
-COMPILE_ASSERT(Value::NUM_TYPES == arraysize(string_types), "Incorrect number of string_types");
 
 class ValueEquals {
  public:
