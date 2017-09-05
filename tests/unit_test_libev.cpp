@@ -8,8 +8,6 @@
 
 #include <common/net/net.h>
 
-#include <common/utils.h>
-
 namespace {
 const common::net::HostAndPort g_hs("localhost", 8010);
 }
@@ -62,7 +60,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
 };
 
 void ExitServer(common::libev::tcp::TcpServer* ser) {
-  common::utils::msleep(1000);
+  common::threads::PlatformThread::Sleep(1000);
   ser->Stop();
 }
 

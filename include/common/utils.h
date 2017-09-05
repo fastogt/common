@@ -163,9 +163,6 @@ std::string encode(const StringPiece& input);
 std::string decode(const StringPiece& input);
 }  // namespace html
 
-void msleep(useconds_t msec);
-void usleep(useconds_t usec);
-
 char* strdupornull(const std::string& src);
 char* strdupornull(const char* src);
 void freeifnotnull(void* ptr);

@@ -38,6 +38,7 @@
 
 #include <common/macros.h>
 #include <common/system_info/types.h>
+#include <common/types.h>
 
 namespace common {
 namespace threads {
@@ -118,6 +119,8 @@ class PlatformThread {
   static bool ReleaseTlsKey(platform_tls_t key);
   static void* GetTlsDataByKey(platform_tls_t key);
   static bool SetTlsDataByKey(platform_tls_t key, void* data);
+
+  static void Sleep(time64_t milliseconds);
 };
 
 }  // namespace threads

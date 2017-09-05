@@ -38,7 +38,7 @@ TEST(Thread, isCurrentThread) {
 #endif
 
 void sleep5Sec() {
-  common::utils::msleep(5000);
+  common::threads::PlatformThread::Sleep(5000);
 }
 
 int valueGetFunc() {

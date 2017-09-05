@@ -48,7 +48,6 @@ typedef HANDLE descriptor_t;
 typedef int descriptor_t;
 #endif
 
-#define INVALID_TID std::thread::id()
 #define PTHREAD_INVALID_TID 0
 
 #ifndef PRIuS

@@ -1,5 +1,7 @@
 #include <common/threads/platform_thread.h>
 
+#include <common/time.h>
+
 namespace common {
 namespace threads {
 namespace {
@@ -148,6 +150,15 @@ void* PlatformThread::GetTlsDataByKey(platform_tls_t key) {
 
 bool PlatformThread::SetTlsDataByKey(platform_tls_t key, void* data) {
   return TlsSetValue(key, data) == 1;
+}
+
+void PlatformThread::Sleep(time64_t milliseconds) {
+  // When measured with a high resolution clock, Sleep() sometimes returns much
+  // too early. We may need to call it repeatedly to get the desired duration.
+  time64_t end = current_mstime() + milliseconds;
+  for (time64_t now = current_mstime(); now < end; now = current_mstime()) {
+    ::Sleep(static_cast<DWORD>(end - now));
+  }
 }
 
 }  // namespace threads

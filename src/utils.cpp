@@ -29,8 +29,6 @@
 
 #include <common/utils.h>
 
-#include <thread>
-
 #include <sys/stat.h>  // for umask
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...
 
@@ -318,14 +316,6 @@ std::string decode(const StringPiece& input) {
 }
 
 }  // namespace html
-
-void usleep(useconds_t usec) {
-  std::this_thread::sleep_for(std::chrono::microseconds(usec));
-}
-
-void msleep(useconds_t msec) {
-  usleep(msec * 1000);
-}
 
 char* strdupornull(const std::string& src) {
   if (src.empty()) {
