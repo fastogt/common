@@ -91,7 +91,7 @@ int sched_getaffinity(pid_t pid, size_t cpu_size, cpu_set_t* cpu_set) {
 
 #include <common/macros.h>             // for DCHECK, DNOTREACHED, UNUSED, etc
 #include <common/system_info/types.h>  // for lcpu_count_t
-#include <common/types.h>
+#include <common/time.h>
 
 namespace common {
 namespace threads {
@@ -277,7 +277,10 @@ bool PlatformThread::SetTlsDataByKey(platform_tls_t key, void* data) {
 }
 
 void PlatformThread::Sleep(time64_t milliseconds) {
-  usleep(milliseconds * 1000);
+  struct timespec sleep_time = time::mstime2timespec(milliseconds), remaining;
+  while (::nanosleep(&sleep_time, &remaining) == -1 && errno == EINTR) {
+    sleep_time = remaining;
+  }
 }
 
 }  // namespace threads
