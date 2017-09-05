@@ -549,7 +549,7 @@ ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* ou
   }
 
   static const int mode = S_IRUSR | S_IWUSR;
-  descriptor_t desc = HANDLE_EINTR(open(path.c_str(), oflags, mode));
+  descriptor_t desc = open(path.c_str(), oflags, mode);
   if (desc == INVALID_DESCRIPTOR) {
     return make_error_value_perror("open", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }

@@ -38,18 +38,18 @@
 
 namespace common {
 
-IEDcoder* CreateEDCoder(EDTypes type) {
-  if (type == Base64) {
+IEDcoder* CreateEDCoder(EDType type) {
+  if (type == ED_BASE64) {
     return new Base64EDcoder;
-  } else if (type == CompressZlib) {
+  } else if (type == ED_ZLIB) {
     return new CompressZlibEDcoder;
-  } else if (type == CompressSnappy) {
+  } else if (type == ED_SNAPPY) {
     return new CompressSnappyEDcoder;
-  } else if (type == Hex) {
+  } else if (type == ED_HEX) {
     return new HexEDcoder;
-  } else if (type == MsgPack) {
+  } else if (type == ED_MSG_PACK) {
     return new MsgPackEDcoder;
-  } else if (type == HtmlEsc) {
+  } else if (type == ED_HTML_ESC) {
     return new HtmlEscEDcoder;
   }
 
@@ -58,7 +58,7 @@ IEDcoder* CreateEDCoder(EDTypes type) {
 }
 
 IEDcoder* CreateEDCoder(const std::string& name) {
-  EDTypes t;
+  EDType t;
   if (!ConvertFromString(name, &t)) {
     NOTREACHED();
     return nullptr;

@@ -32,7 +32,7 @@
 namespace common {
 namespace logging {
 
-enum LOG_LEVEL {
+enum LOG_LEVEL : int {
   LOG_LEVEL_EMERG = 0,  // system is unusable
   LOG_LEVEL_ALERT,      // action must be taken immediately
   LOG_LEVEL_CRIT,       // critical conditions
@@ -41,7 +41,7 @@ enum LOG_LEVEL {
   LOG_LEVEL_NOTICE,     // normal, but significant, condition
   LOG_LEVEL_INFO,       // informational message
   LOG_LEVEL_DEBUG,      // debug-level message
-  LOG_LEVEL_COUNT
+  LOG_NUM_LEVELS
 };
 
 const char* log_level_to_text(LOG_LEVEL level);

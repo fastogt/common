@@ -66,7 +66,7 @@ size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
 
 namespace common {
 
-MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(MsgPack) {}
+MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(ED_MSG_PACK) {}
 
 Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {

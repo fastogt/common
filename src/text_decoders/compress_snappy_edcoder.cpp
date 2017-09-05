@@ -33,7 +33,7 @@
 
 namespace common {
 
-CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(CompressSnappy) {}
+CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(ED_SNAPPY) {}
 
 Error CompressSnappyEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
 #ifdef HAVE_SNAPPY
@@ -41,7 +41,7 @@ Error CompressSnappyEDcoder::EncodeImpl(const StringPiece& data, std::string* ou
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error_value("CompressSnappy encode not supported", ErrorValue::E_ERROR);
+  return make_error_value("ED_SNAPPY encode not supported", ErrorValue::E_ERROR);
 #endif
 }
 
@@ -51,7 +51,7 @@ Error CompressSnappyEDcoder::DecodeImpl(const StringPiece& data, std::string* ou
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error_value("CompressSnappy decode not supported", ErrorValue::E_ERROR);
+  return make_error_value("ED_SNAPPY decode not supported", ErrorValue::E_ERROR);
 #endif
 }
 

@@ -3,7 +3,7 @@
 #include <common/logger.h>
 
 TEST(Logger, log_level) {
-  for (size_t i = 0; i < common::logging::LOG_LEVEL_COUNT; ++i) {
+  for (size_t i = 0; i < common::logging::LOG_NUM_LEVELS; ++i) {
     common::logging::LOG_LEVEL cur = static_cast<common::logging::LOG_LEVEL>(i);
     const char* log_level_text = common::logging::log_level_to_text(cur);
     common::logging::LOG_LEVEL lg;

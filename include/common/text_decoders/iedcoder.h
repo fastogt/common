@@ -29,33 +29,32 @@
 
 #pragma once
 
-#include <string>  // for string
-
 #include <common/error.h>  // for Error
 
 namespace common {
 
-enum EDTypes { Base64 = 0, CompressZlib, CompressSnappy, Hex, MsgPack, HtmlEsc };
-extern const std::vector<const char*> g_edecoder_types;
+enum EDType { ED_BASE64 = 0, ED_ZLIB, ED_SNAPPY, ED_HEX, ED_MSG_PACK, ED_HTML_ESC, ENCODER_DECODER_NUM_TYPES };
+extern const char* const edecoder_types[ENCODER_DECODER_NUM_TYPES];
 
 class IEDcoder {
  public:
   Error Encode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
   Error Decode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
-  EDTypes GetType() const;
+  EDType GetType() const;
 
   virtual ~IEDcoder();
 
  protected:
-  explicit IEDcoder(EDTypes type);
+  explicit IEDcoder(EDType type);
 
  private:
   virtual Error EncodeImpl(const StringPiece& data, std::string* out) = 0;
   virtual Error DecodeImpl(const StringPiece& data, std::string* out) = 0;
-  const EDTypes type_;
+
+  const EDType type_;
 };
 
-std::string ConvertToString(EDTypes t);
-bool ConvertFromString(const std::string& from, EDTypes* out) WARN_UNUSED_RESULT;
+std::string ConvertToString(EDType ed_type);
+bool ConvertFromString(const std::string& from, EDType* out) WARN_UNUSED_RESULT;
 
 }  // namespace common

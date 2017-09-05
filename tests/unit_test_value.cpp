@@ -19,6 +19,14 @@ void CheckValue(U* (*create_ptr)(T t), bool (U::*get_ptr)(T* t) const, T val, co
   delete cval;
 }
 
+TEST(Value, log_level) {
+  for (size_t i = 0; i < common::Value::NUM_TYPES; ++i) {
+    common::Value::Type cur = static_cast<common::Value::Type>(i);
+    const char* type_text = common::Value::GetTypeName(cur);
+    ASSERT_TRUE(type_text);
+  }
+}
+
 TEST(Value, create_and_get_simple_type) {
   common::Value* val_null = common::Value::CreateNullValue();
   ASSERT_TRUE(val_null && val_null->GetType() == common::Value::TYPE_NULL);

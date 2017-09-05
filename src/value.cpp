@@ -35,22 +35,23 @@
 
 namespace common {
 namespace {
-const char* string_types[] = {"TYPE_NULL",
-                              "TYPE_BOOLEAN",
-                              "TYPE_INTEGER",
-                              "TYPE_UINTEGER",
-                              "TYPE_LONG_INTEGER",
-                              "TYPE_ULONG_INTEGER",
-                              "TYPE_LONG_LONG_INTEGER",
-                              "TYPE_ULONG_LONG_INTEGER",
-                              "TYPE_DOUBLE",
-                              "TYPE_STRING",
-                              "TYPE_ARRAY",
-                              "TYPE_BYTE_ARRAY",
-                              "TYPE_SET",
-                              "TYPE_ZSET",
-                              "TYPE_HASH",
-                              "TYPE_ERROR"};
+const char* string_types[Value::NUM_TYPES] = {"TYPE_NULL",
+                                              "TYPE_BOOLEAN",
+                                              "TYPE_INTEGER",
+                                              "TYPE_UINTEGER",
+                                              "TYPE_LONG_INTEGER",
+                                              "TYPE_ULONG_INTEGER",
+                                              "TYPE_LONG_LONG_INTEGER",
+                                              "TYPE_ULONG_LONG_INTEGER",
+                                              "TYPE_DOUBLE",
+                                              "TYPE_STRING",
+                                              "TYPE_ARRAY",
+                                              "TYPE_BYTE_ARRAY",
+                                              "TYPE_SET",
+                                              "TYPE_ZSET",
+                                              "TYPE_HASH",
+                                              "TYPE_ERROR"};
+COMPILE_ASSERT(Value::NUM_TYPES == arraysize(string_types), "Incorrect number of string_types");
 
 class ValueEquals {
  public:
@@ -145,8 +146,8 @@ ErrorValue* Value::CreateErrorValue(const std::string& in_value,
 }
 
 // static
-Value* Value::CreateEmptyValueFromType(Type t) {
-  switch (t) {
+Value* Value::CreateEmptyValueFromType(Type value_type) {
+  switch (value_type) {
     case TYPE_NULL:
       return CreateNullValue();
     case TYPE_BOOLEAN:
@@ -185,8 +186,13 @@ Value* Value::CreateEmptyValueFromType(Type t) {
 }
 
 // static
-std::string Value::GetTypeName(Type t) {
-  return string_types[t];
+const char* Value::GetTypeName(int value_type) {
+  if (value_type >= 0 && value_type < NUM_TYPES) {
+    return string_types[value_type];
+  }
+
+  DNOTREACHED();
+  return "UNKNOWN";
 }
 
 bool Value::GetAsBoolean(bool* out_value) const {

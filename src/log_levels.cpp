@@ -29,33 +29,46 @@
 
 #include <common/log_levels.h>
 
-#include <common/string_util.h>
+#include <string.h>
 
-namespace {
-const char* g_level_names[] = {"EMERG", "ALLERT", "CRITICAL", "ERROR", "WARNING", "NOTICE", "INFO", "DEBUG"};
-}
+#include <common/macros.h>
 
 namespace common {
 namespace logging {
 
+namespace {
+const char* log_levels_names[LOG_NUM_LEVELS] = {"EMERG",   "ALLERT", "CRITICAL", "ERROR",
+                                                "WARNING", "NOTICE", "INFO",     "DEBUG"};
+COMPILE_ASSERT(LOG_NUM_LEVELS == arraysize(log_levels_names), "Incorrect number of log_levels_names");
+
+const char* log_levels_name(int level) {
+  if (level >= 0 && level < LOG_NUM_LEVELS) {
+    return log_levels_names[level];
+  }
+
+  DNOTREACHED();
+  return "UNKNOWN";
+}
+}  // namespace
+
 const char* log_level_to_text(LOG_LEVEL level) {
-  if (level >= LOG_LEVEL_COUNT) {
-    DNOTREACHED() << "Ivalid input log level: " << level;
+  if (level < 0 || level >= LOG_NUM_LEVELS) {
+    DNOTREACHED() << "Invalid input log level: " << level;
     return NULL;
   }
 
-  return g_level_names[level];
+  return log_levels_name(level);
 }
 
 bool text_to_log_level(const char* level_text, LOG_LEVEL* level) {
   if (!level_text || !level) {
-    DNOTREACHED() << "Ivalid input level_text: " << level_text << ", level out:" << level;
+    DNOTREACHED() << "Invalid input level_text: " << level_text << ", level out:" << level;
     return false;
   }
 
-  for (size_t i = 0; i < SIZEOFMASS(g_level_names); ++i) {
-    const char* name = g_level_names[i];
-    if (strcasecmp(level_text, name) == 0) {
+  for (size_t i = 0; i < LOG_NUM_LEVELS; ++i) {
+    const char* name = log_levels_name(i);
+    if (strcmp(level_text, name) == 0) {
       *level = static_cast<LOG_LEVEL>(i);
       return true;
     }

@@ -31,20 +31,27 @@
 
 namespace common {
 
-const std::vector<const char*> g_edecoder_types = {"Base64", "GZip", "Snappy", "Hex", "MsgPack", "HtmlEscape"};
+const char* const edecoder_types[ENCODER_DECODER_NUM_TYPES] = {"Base64", "GZip",    "Snappy",
+                                                               "Hex",    "MsgPack", "HtmlEscape"};
+COMPILE_ASSERT(ENCODER_DECODER_NUM_TYPES == arraysize(edecoder_types), "Incorrect number of edecoder_types");
 
-std::string ConvertToString(EDTypes t) {
-  return g_edecoder_types[t];
+std::string ConvertToString(EDType ed_type) {
+  if (ed_type >= 0 && ed_type < ENCODER_DECODER_NUM_TYPES) {
+    return edecoder_types[ed_type];
+  }
+
+  DNOTREACHED();
+  return "UNKNOWN";
 }
 
-bool ConvertFromString(const std::string& from, EDTypes* out) {
+bool ConvertFromString(const std::string& from, EDType* out) {
   if (!out) {
     return false;
   }
 
-  for (uint32_t i = 0; i < g_edecoder_types.size(); ++i) {
-    if (from == g_edecoder_types[i]) {
-      *out = static_cast<EDTypes>(i);
+  for (size_t i = 0; i < ENCODER_DECODER_NUM_TYPES; ++i) {
+    if (from == edecoder_types[i]) {
+      *out = static_cast<EDType>(i);
       return true;
     }
   }
@@ -54,7 +61,7 @@ bool ConvertFromString(const std::string& from, EDTypes* out) {
 
 IEDcoder::~IEDcoder() {}
 
-IEDcoder::IEDcoder(EDTypes type) : type_(type) {}
+IEDcoder::IEDcoder(EDType type) : type_(type) {}
 
 Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
   if (data.empty()) {
@@ -72,7 +79,7 @@ Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
   return DecodeImpl(data, out);
 }
 
-EDTypes IEDcoder::GetType() const {
+EDType IEDcoder::GetType() const {
   return type_;
 }
 

@@ -33,7 +33,7 @@
 
 namespace common {
 
-IEDcoder* CreateEDCoder(EDTypes type);
+IEDcoder* CreateEDCoder(EDType type);
 IEDcoder* CreateEDCoder(const std::string& name);
 
 }  // namespace common

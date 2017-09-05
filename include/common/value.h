@@ -50,7 +50,7 @@ class ZSetValue;
 
 class Value {
  public:
-  enum Type {
+  enum Type : int {
     TYPE_NULL = 0,
     TYPE_BOOLEAN,
     TYPE_INTEGER,
@@ -66,8 +66,9 @@ class Value {
     TYPE_SET,  // set
     TYPE_ZSET,
     TYPE_HASH,
-    TYPE_ERROR
+    TYPE_ERROR  // should be last
   };
+  enum { NUM_TYPES = TYPE_ERROR + 1 };
 
   enum ErrorsType { E_NONE, E_EXCEPTION, E_ERROR, E_INTERRUPTED };
 
@@ -92,7 +93,7 @@ class Value {
   static HashValue* CreateHashValue();
   static ErrorValue* CreateErrorValue(const std::string& in_value, ErrorsType errorType, logging::LOG_LEVEL level);
 
-  static Value* CreateEmptyValueFromType(Type t);
+  static Value* CreateEmptyValueFromType(Type value_type);
 
   static bool IsIntegral(Type type) {
     return type == TYPE_BOOLEAN || type == TYPE_INTEGER || type == TYPE_UINTEGER || type == TYPE_LONG_INTEGER ||
@@ -100,7 +101,8 @@ class Value {
            type == TYPE_DOUBLE;
   }
 
-  static std::string GetTypeName(Type t);
+  static const char* GetTypeName(int value_type);
+
   Type GetType() const { return type_; }
 
   bool IsType(Type type) const { return type == type_; }
