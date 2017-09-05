@@ -1076,8 +1076,8 @@ bool HashValue::Equals(const Value* other) const {
   return true;
 }
 
-ErrorValue::ErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level)
-    : Value(TYPE_ERROR), description_(in_value), error_type_(errorType), level_(level) {}
+ErrorValue::ErrorValue(const std::string& description, ErrorsType error_type, logging::LEVEL_LOG level)
+    : Value(TYPE_ERROR), description_(description), error_type_(error_type), level_(level) {}
 
 ErrorValue::~ErrorValue() {}
 

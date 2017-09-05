@@ -34,6 +34,8 @@
 namespace common {
 namespace net {
 
+extern const char* common_gai_strerror(int err);
+
 class HostAndPort {
  public:
   typedef std::string host_t;

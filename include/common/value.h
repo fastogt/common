@@ -421,12 +421,13 @@ class HashValue : public Value {
 
 class ErrorValue : public Value {
  public:
-  ErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level);
+  ErrorValue(const std::string& description, ErrorsType error_type, logging::LEVEL_LOG level);
 
   bool IsError() const;
 
   ErrorsType GetErrorType() const;
   logging::LEVEL_LOG GetLevel() const;
+
   std::string GetDescription() const;
   void SetDescription(const std::string& descr);
 

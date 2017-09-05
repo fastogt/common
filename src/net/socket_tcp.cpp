@@ -27,13 +27,15 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/net/socket_tcp.h>
-
 #ifdef OS_WIN
 #include <winsock2.h>
 #else
 #include <netinet/in.h>
 #endif
+
+#undef SetPort
+
+#include <common/net/socket_tcp.h>
 
 #ifdef COMPILER_MSVC
 #include <io.h>

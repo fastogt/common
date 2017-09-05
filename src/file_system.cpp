@@ -124,7 +124,7 @@ namespace {
 ErrnoError rmdir_directory_impl(const char* path) {
   bool result = rmdir(path) != ERROR_RESULT_VALUE;
   if (!result && errno != ENOENT) {
-    return make_error_value_perror("rmdir", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("rmdir", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -136,7 +136,7 @@ namespace file_system {
 namespace {
 ErrnoError call_fcntl_flock(descriptor_t fd_desc, bool do_lock) {
   if (fd_desc == INVALID_DESCRIPTOR) {
-    return make_error_value_perror("call_fcntl_flock", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("call_fcntl_flock", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 #ifdef OS_POSIX
   struct flock lock;
@@ -146,16 +146,16 @@ ErrnoError call_fcntl_flock(descriptor_t fd_desc, bool do_lock) {
   lock.l_len = 0;  // Lock entire file.
   int res = fcntl(fd_desc, F_SETLK, &lock);
   if (res == -1) {
-    return make_error_value_perror("fcntl", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("fcntl", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 #else
   HANDLE fh = reinterpret_cast<HANDLE>(_get_osfhandle(fd_desc));
   if (!fh) {
-    return make_error_value_perror("_get_osfhandle", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("_get_osfhandle", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
   BOOL result = do_lock ? LockFile(fh, 0, 0, MAXDWORD, MAXDWORD) : UnlockFile(fh, 0, 0, MAXDWORD, MAXDWORD);
   if (!result) {
-    return make_error_value_perror(do_lock ? "LockFile" : "UnlockFile", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror(do_lock ? "LockFile" : "UnlockFile", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 #endif
   return ErrnoError();
@@ -203,7 +203,7 @@ ErrnoError create_directory_impl(const char* path) {
   bool result = mkdir(path, S_IRWXU | S_IRWXG | S_IRWXO) != ERROR_RESULT_VALUE;
 #endif
   if (!result && errno != EEXIST) {
-    return make_error_value_perror("mkdir", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("mkdir", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -270,12 +270,12 @@ tribool is_directory(const string16& path) {
 
 ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
   if (fd_desc == INVALID_DESCRIPTOR) {
-    return make_error_value_perror("clear_file_by_descriptor", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("clear_file_by_descriptor", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   bool result = ftruncate(fd_desc, 0) != ERROR_RESULT_VALUE;
   if (!result) {
-    return make_error_value_perror("ftruncate", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("ftruncate", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -283,7 +283,7 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
 
 ErrnoError create_node(const std::string& path) {
   if (path.empty()) {
-    return make_error_value_perror("create_node", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("create_node", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   File fl;
@@ -296,7 +296,7 @@ ErrnoError touch(const std::string& path) {
 
 Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
-    return make_error_value_perror("read_file_cb", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("read_file_cb", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   off_t orig = 0;
@@ -307,17 +307,17 @@ Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* use
 
     orig = lseek(in_fd, 0, SEEK_CUR);
     if (orig == -1) {
-      return make_error_value_perror("lseek", errno, ErrorValue::E_ERROR);
+      return make_error_value_perror("lseek", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
     }
     if (lseek(in_fd, *offset, SEEK_SET) == -1) {
-      return make_error_value_perror("lseek", errno, ErrorValue::E_ERROR);
+      return make_error_value_perror("lseek", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
     }
   }
 
   while (count > 0) {
     ssize_t numRead = read(in_fd, buf, FS_BUF_SIZE);
     if (numRead == -1) {
-      return make_error_value_perror("read", errno, ErrorValue::E_ERROR);
+      return make_error_value_perror("read", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
     }
     if (numRead == 0) {
       break; /* EOF */
@@ -338,10 +338,10 @@ Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* use
 
     *offset = lseek(in_fd, 0, SEEK_CUR);
     if (*offset == -1) {
-      return make_error_value_perror("lseek", errno, ErrorValue::E_ERROR);
+      return make_error_value_perror("lseek", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
     }
     if (lseek(in_fd, orig, SEEK_SET) == -1) {
-      return make_error_value_perror("lseek", errno, ErrorValue::E_ERROR);
+      return make_error_value_perror("lseek", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
     }
   }
 
@@ -350,11 +350,11 @@ Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* use
 
 ErrnoError copy_file(const std::string& pathFrom, const std::string& pathTo) {
   if (pathFrom.empty()) {
-    return make_error_value_perror("copy_file", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("copy_file", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   if (pathTo.empty()) {
-    return make_error_value_perror("copy_file", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("copy_file", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string pr_from = prepare_path(pathFrom);
@@ -363,7 +363,7 @@ ErrnoError copy_file(const std::string& pathFrom, const std::string& pathTo) {
   int cpRes = cp(pr_from.c_str(), pr_to.c_str());
   bool result = cpRes != ERROR_RESULT_VALUE;
   if (!result) {
-    return make_error_value_perror("cp", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("cp", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -371,11 +371,11 @@ ErrnoError copy_file(const std::string& pathFrom, const std::string& pathTo) {
 
 ErrnoError move_file(const std::string& pathFrom, const std::string& pathTo) {
   if (pathFrom.empty()) {
-    return make_error_value_perror("move_file", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("move_file", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   if (pathTo.empty()) {
-    return make_error_value_perror("move_file", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("move_file", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string pr_from = prepare_path(pathFrom);
@@ -384,7 +384,7 @@ ErrnoError move_file(const std::string& pathFrom, const std::string& pathTo) {
   int res = rename(pr_from.c_str(), pr_to.c_str());
   bool result = res != ERROR_RESULT_VALUE;
   if (!result) {
-    return make_error_value_perror("rename", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("rename", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -392,7 +392,7 @@ ErrnoError move_file(const std::string& pathFrom, const std::string& pathTo) {
 
 ErrnoError remove_file(const std::string& file_path) {
   if (file_path.empty()) {
-    return make_error_value_perror("remove_file", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("remove_file", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string pr_to = prepare_path(file_path);
@@ -400,7 +400,7 @@ ErrnoError remove_file(const std::string& file_path) {
   int res = remove(pr_to.c_str());
   bool result = res != ERROR_RESULT_VALUE;
   if (!result && errno != ENOENT) {
-    return make_error_value_perror("remove", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("remove", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -408,17 +408,17 @@ ErrnoError remove_file(const std::string& file_path) {
 
 ErrnoError node_access(const std::string& node) {
   if (node.empty()) {
-    return make_error_value_perror("node_access", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("node_access", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string pr_node = prepare_path(node);
   if (pr_node.empty()) {
-    return make_error_value_perror("node_access", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("node_access", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   int res = access(pr_node.c_str(), W_OK);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("access", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("access", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -426,17 +426,17 @@ ErrnoError node_access(const std::string& node) {
 
 ErrnoError create_directory(const std::string& path, bool is_recursive) {
   if (path.empty()) {
-    return make_error_value_perror("create_directory", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("create_directory", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string pr_path = prepare_path(path);
   if (pr_path.empty()) {
-    return make_error_value_perror("create_directory", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("create_directory", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   pr_path = stable_dir_path(pr_path);
   if (pr_path.empty()) {
-    return make_error_value_perror("create_directory", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("create_directory", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   const char* pr_path_ptr = pr_path.c_str();
@@ -476,7 +476,7 @@ ErrnoError create_directory(const std::string& path, bool is_recursive) {
 
 ErrnoError remove_directory(const std::string& path, bool is_recursive) {
   if (path.empty()) {
-    return make_error_value_perror("remove_directory", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("remove_directory", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string prPath = prepare_path(path);
@@ -521,13 +521,13 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
 
 ErrnoError change_directory(const std::string& path) {
   if (path.empty()) {
-    return make_error_value_perror("change_directory", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("change_directory", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   std::string spath = stable_dir_path(path);
   bool result = chdir(spath.c_str()) != ERROR_RESULT_VALUE;
   if (!result) {
-    return make_error_value_perror("chdir", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("chdir", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -545,13 +545,13 @@ std::string pwd() {
 
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) {
   if (path.empty() || !out_desc) {
-    return make_error_value_perror("open_descriptor", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("open_descriptor", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   static const int mode = S_IRUSR | S_IWUSR;
   descriptor_t desc = HANDLE_EINTR(open(path.c_str(), oflags, mode));
   if (desc == INVALID_DESCRIPTOR) {
-    return make_error_value_perror("open", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("open", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   *out_desc = desc;
@@ -565,7 +565,7 @@ ErrnoError close_descriptor(descriptor_t fd_desc) {
 
   int res = close(fd_desc);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("close", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("close", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -573,12 +573,12 @@ ErrnoError close_descriptor(descriptor_t fd_desc) {
 
 ErrnoError write_to_descriptor(descriptor_t fd_desc, const void* buf, size_t len, size_t* nwrite_out) {
   if (fd_desc == INVALID_DESCRIPTOR || !nwrite_out) {
-    return make_error_value_perror("write_to_descriptor", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("write_to_descriptor", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   ssize_t res = write(fd_desc, buf, len);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("write", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("write", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   *nwrite_out = res;
@@ -587,13 +587,13 @@ ErrnoError write_to_descriptor(descriptor_t fd_desc, const void* buf, size_t len
 
 ErrnoError read_from_descriptor(descriptor_t fd_desc, void* buf, size_t len, size_t* readlen) {
   if (fd_desc == INVALID_DESCRIPTOR || !readlen) {
-    return make_error_value_perror("read_from_descriptor", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("read_from_descriptor", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   ssize_t res = read(fd_desc, buf, len);
   bool result = res != ERROR_RESULT_VALUE;
   if (!result) {
-    return make_error_value_perror("read", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("read", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   *readlen = res;
@@ -782,7 +782,7 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   if (!open_flags && !(flags & FLAG_OPEN)) {
     NOTREACHED();
     errno = EOPNOTSUPP;
-    return make_error_value_perror("write_to_descriptor", EOPNOTSUPP, ErrorValue::E_ERROR);
+    return make_error_value_perror("write_to_descriptor", EOPNOTSUPP, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   if (flags & FLAG_WRITE && flags & FLAG_READ) {
@@ -827,7 +827,7 @@ ErrnoError ANSIFile::Open(const char* mode) {
     if (file_) {
       return ErrnoError();
     }
-    return make_error_value_perror("Open", errno, ErrorValue::E_ERROR);
+    return make_error_value_perror("Open", errno, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   return ErrnoError();
@@ -835,7 +835,7 @@ ErrnoError ANSIFile::Open(const char* mode) {
 
 ErrnoError ANSIFile::Lock() {
   if (!file_) {
-    return make_error_value_perror("Unlock", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("Unlock", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   int fd = fileno(file_);
@@ -844,7 +844,7 @@ ErrnoError ANSIFile::Lock() {
 
 ErrnoError ANSIFile::Unlock() {
   if (!file_) {
-    return make_error_value_perror("Unlock", EINVAL, ErrorValue::E_ERROR);
+    return make_error_value_perror("Unlock", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
 
   int fd = fileno(file_);

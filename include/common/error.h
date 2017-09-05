@@ -34,39 +34,64 @@
 
 namespace common {
 
+enum ErrnoType { SYSTEM_ERRNO, NETWORK_ERRNO };
+
+const char* common_strerror_full(int err, ErrnoType errno_type);
+
 class ErrnoErrorValue : public ErrorValue {
  public:
-  ErrnoErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level, int err);
+  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LEVEL_LOG level);
+  ErrnoErrorValue(int err,
+                  ErrnoType errno_type,
+                  const std::string& description,
+                  ErrorsType error_type,
+                  logging::LEVEL_LOG level);
+
   int GetErrno() const;
+  ErrnoType GetErrnoType() const;
 
  private:
   const int errno_;
+  const ErrnoType errno_type_;
 };
 
 typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && err->IsError()) => error
 typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
-Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERR);
+Error make_inval_error_value(Value::ErrorsType error_type, logging::LEVEL_LOG level = logging::L_ERR);
 
-Error make_error_value(const std::string& in_value,
+Error make_error_value(const std::string& description,
                        Value::ErrorsType errorType,
                        logging::LEVEL_LOG level = logging::L_ERR);
 
-ErrnoError make_error_value_errno(int err, Value::ErrorsType errorType, logging::LEVEL_LOG level = logging::L_ERR);
+ErrnoError make_error_value_errno(int err,
+                                  ErrnoType errno_type,
+                                  Value::ErrorsType error_type,
+                                  logging::LEVEL_LOG level = logging::L_ERR);
+
+ErrnoError make_error_value_errno(int err,
+                                  ErrnoType errno_type,
+                                  const std::string& description,
+                                  Value::ErrorsType error_type,
+                                  logging::LEVEL_LOG level = logging::L_ERR);
 
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
-                                   Value::ErrorsType errorType,
+                                   ErrnoType errno_type,
+                                   Value::ErrorsType error_type,
                                    logging::LEVEL_LOG level = logging::L_ERR);
 
 }  // namespace common
 
 void DEBUG_MSG_ERROR(common::Error er);
-common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, bool notify = true);
+common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
+                                    int err,
+                                    common::ErrnoType errno_type,
+                                    bool notify = true);
 
 template <typename... Args>
-common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt, int err, Args... args) {
+common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt, int err, common::ErrnoType errno_type, Args... args) {
   const std::string func_args = common::MemSPrintf(fmt, args...);
-  return DEBUG_MSG_PERROR(func_args, err, true);
+  return DEBUG_MSG_PERROR(func_args, err, errno_type, true);
 }

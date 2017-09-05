@@ -40,9 +40,10 @@ namespace {
 struct WinsockInit {
   WinsockInit() {
     WSADATA d;
-    int res = WSAStartup(MAKEWORD(2, 2), &d);
+    WORD version = MAKEWORD(2, 2);
+    int res = WSAStartup(version, &d);
     if (res != 0) {
-      DEBUG_MSG_PERROR("WSAStartup", res);
+      DEBUG_MSG_PERROR("WSAStartup", res, common::SYSTEM_ERRNO);
       exit(EXIT_FAILURE);
     }
   }

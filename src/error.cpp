@@ -29,39 +29,68 @@
 
 #include <common/error.h>
 
+#include <common/net/types.h>
+
 namespace common {
 
-ErrnoErrorValue::ErrnoErrorValue(const std::string& in_value, ErrorsType errorType, logging::LEVEL_LOG level, int err)
-    : ErrorValue(in_value, errorType, level), errno_(err) {}
+const char* common_strerror_full(int err, ErrnoType errno_type) {
+  if (errno_type == SYSTEM_ERRNO) {
+    return common_strerror(err);
+  }
+
+  return net::common_gai_strerror(err);
+}
+
+ErrnoErrorValue::ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LEVEL_LOG level)
+    : ErrorValue(common_strerror_full(err, errno_type), error_type, level), errno_(err), errno_type_(errno_type) {}
+
+ErrnoErrorValue::ErrnoErrorValue(int err,
+                                 ErrnoType errno_type,
+                                 const std::string& description,
+                                 ErrorsType error_type,
+                                 logging::LEVEL_LOG level)
+    : ErrorValue(description, error_type, level), errno_(err), errno_type_(errno_type) {}
 
 int ErrnoErrorValue::GetErrno() const {
   return errno_;
 }
 
-Error make_inval_error_value(Value::ErrorsType errorType, logging::LEVEL_LOG level) {
-  return make_error_value("Invalid input argument(s)", errorType, level);
+ErrnoType ErrnoErrorValue::GetErrnoType() const {
+  return errno_type_;
 }
 
-Error make_error_value(const std::string& in_value, Value::ErrorsType errorType, logging::LEVEL_LOG level) {
-  ErrorValue* err = Value::CreateErrorValue(in_value, errorType, level);
+Error make_inval_error_value(Value::ErrorsType error_type, logging::LEVEL_LOG level) {
+  return make_error_value("Invalid input argument(s)", error_type, level);
+}
+
+Error make_error_value(const std::string& description, Value::ErrorsType errorType, logging::LEVEL_LOG level) {
+  ErrorValue* err = Value::CreateErrorValue(description, errorType, level);
   return Error(err);
 }
 
-ErrnoError make_error_value_errno(int err, Value::ErrorsType errorType, logging::LEVEL_LOG level) {
-  const char* strer = common_strerror(err);
-  ErrnoErrorValue* error = new ErrnoErrorValue(strer, errorType, level, err);
-  return ErrnoError(error);
+ErrnoError make_error_value_errno(int err,
+                                  ErrnoType errno_type,
+                                  Value::ErrorsType error_type,
+                                  logging::LEVEL_LOG level) {
+  return std::make_shared<ErrnoErrorValue>(err, errno_type, error_type, level);
+}
+
+ErrnoError make_error_value_errno(int err,
+                                  ErrnoType errno_type,
+                                  const std::string& description,
+                                  Value::ErrorsType error_type,
+                                  logging::LEVEL_LOG level) {
+  return std::make_shared<ErrnoErrorValue>(err, errno_type, description, error_type, level);
 }
 
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
-                                   Value::ErrorsType errorType,
+                                   ErrnoType errno_type,
+                                   Value::ErrorsType error_type,
                                    logging::LEVEL_LOG level) {
-  std::string strer = common_strerror(err);
+  std::string strer = common_strerror_full(err, errno_type);
   std::string descr = function + " : " + strer;
-  ErrnoError error = make_error_value_errno(err, errorType, level);
-  error->SetDescription(descr);
-  return error;
+  return make_error_value_errno(err, errno_type, descr, error_type, level);
 }
 
 }  // namespace common
@@ -75,11 +104,12 @@ void DEBUG_MSG_ERROR(common::Error er) {
   RUNTIME_LOG(level) << er->GetDescription();
 }
 
-common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, bool notify) {
-  std::string strer = common::common_strerror(err);
+common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, common::ErrnoType errno_type, bool notify) {
+  std::string strer = common::common_strerror_full(err, errno_type);
   std::string descr = function + " : " + strer;
 
-  common::ErrnoError error = common::make_error_value_errno(err, common::Value::E_ERROR, common::logging::L_ERR);
+  common::ErrnoError error =
+      common::make_error_value_errno(err, errno_type, common::Value::E_ERROR, common::logging::L_ERR);
   error->SetDescription(descr);
   if (notify) {
     DEBUG_MSG_ERROR(error);
