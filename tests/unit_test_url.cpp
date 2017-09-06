@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <common/url.h>
+#include <common/uri/url.h>
 
 TEST(Upath, isValidPathAndQuery) {
   common::uri::Upath path;
@@ -37,25 +37,25 @@ TEST(Upath, isValidPathAndQuery) {
   ASSERT_FALSE(pathInvalid.IsValid());
 }
 
-TEST(Uri, IsValid) {
-  common::uri::Uri path;
+TEST(Url, IsValid) {
+  common::uri::Url path;
   ASSERT_FALSE(path.IsValid());
 
-  common::uri::Uri path2("http://www.permadi.com/index.html");
+  common::uri::Url path2("http://www.permadi.com/index.html");
   ASSERT_TRUE(path2.IsValid());
 
-  common::uri::Uri path3("http://www.permadi.com/tutorial/urlEncoding/index.html");
+  common::uri::Url path3("http://www.permadi.com/tutorial/urlEncoding/index.html");
   ASSERT_TRUE(path3.IsValid());
 
-  common::uri::Uri path4(
+  common::uri::Url path4(
       "http://www.permadi.com/tutorial/urlEncoding/"
       "example.html?var=This+is+a+simple+%26+short+test");
   ASSERT_TRUE(path4.IsValid());
 }
 
-TEST(Uri, Scheme) {
-  common::uri::Uri http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
-  ASSERT_EQ(http_uri.GetScheme(), common::uri::Uri::http);
+TEST(Url, Scheme) {
+  common::uri::Url http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
+  ASSERT_EQ(http_uri.GetScheme(), common::uri::Url::http);
   ASSERT_EQ(http_uri.GetHost(), "localhost:8080");
   common::uri::Upath http_path = http_uri.GetPath();
   ASSERT_EQ(http_path.GetHpath(), "hls/69_avformat_test_alex_2/");
@@ -64,8 +64,8 @@ TEST(Uri, Scheme) {
   ASSERT_EQ(http_path.GetUpath(), "hls/69_avformat_test_alex_2/play.m3u8");
   ASSERT_EQ(http_path.GetPath(), http_path.GetHpath() + http_path.GetFilename());
 
-  common::uri::Uri ftp_uri("ftp://localhost:8080");
-  ASSERT_EQ(ftp_uri.GetScheme(), common::uri::Uri::ftp);
+  common::uri::Url ftp_uri("ftp://localhost:8080");
+  ASSERT_EQ(ftp_uri.GetScheme(), common::uri::Url::ftp);
   ASSERT_EQ(ftp_uri.GetHost(), "localhost:8080");
   common::uri::Upath ftp_path = ftp_uri.GetPath();
   ASSERT_EQ(ftp_path.GetHpath(), std::string());
@@ -74,26 +74,26 @@ TEST(Uri, Scheme) {
   ASSERT_EQ(ftp_path.GetUpath(), std::string());
   ASSERT_EQ(ftp_path.GetPath(), ftp_path.GetHpath() + ftp_path.GetFilename());
 
-  common::uri::Uri file_uri("file:///home/sasha/2.txt");
-  ASSERT_EQ(file_uri.GetScheme(), common::uri::Uri::file);
+  common::uri::Url file_uri("file:///home/sasha/2.txt");
+  ASSERT_EQ(file_uri.GetScheme(), common::uri::Url::file);
   ASSERT_EQ(file_uri.GetPath(), common::uri::Upath("/home/sasha/2.txt"));
   ASSERT_EQ(file_uri.GetHost(), std::string());
 
-  common::uri::Uri ws_uri("ws://localhost:8080");
-  ASSERT_EQ(ws_uri.GetScheme(), common::uri::Uri::ws);
+  common::uri::Url ws_uri("ws://localhost:8080");
+  ASSERT_EQ(ws_uri.GetScheme(), common::uri::Url::ws);
   ASSERT_EQ(ws_uri.GetHost(), "localhost:8080");
 
-  common::uri::Uri udp_uri("udp://localhost:8080");
-  ASSERT_EQ(udp_uri.GetScheme(), common::uri::Uri::udp);
+  common::uri::Url udp_uri("udp://localhost:8080");
+  ASSERT_EQ(udp_uri.GetScheme(), common::uri::Url::udp);
   ASSERT_EQ(udp_uri.GetHost(), "localhost:8080");
 
-  common::uri::Uri rtmp_uri("rtmp://localhost:8080");
-  ASSERT_EQ(rtmp_uri.GetScheme(), common::uri::Uri::rtmp);
+  common::uri::Url rtmp_uri("rtmp://localhost:8080");
+  ASSERT_EQ(rtmp_uri.GetScheme(), common::uri::Url::rtmp);
   ASSERT_EQ(rtmp_uri.GetHost(), "localhost:8080");
 }
 
-TEST(Uri, level) {
-  common::uri::Uri http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
+TEST(Url, level) {
+  common::uri::Url http_uri("http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
   common::uri::Upath p = http_uri.GetPath();
   size_t lv = p.GetLevels();
   ASSERT_EQ(lv, 2);
@@ -103,7 +103,7 @@ TEST(Uri, level) {
   ASSERT_EQ(l2, "hls/69_avformat_test_alex_2/");
 }
 
-TEST(Uri, urlEncode) {
+TEST(Url, urlEncode) {
   const std::string url = "https://mywebsite/docs/english/site/mybook.do";
   char* enc = common::uri::detail::uri_encode(url.c_str(), url.length());
   ASSERT_STREQ(enc, "https%3A%2F%2Fmywebsite%2Fdocs%2Fenglish%2Fsite%2Fmybook.do");
