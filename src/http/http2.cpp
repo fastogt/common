@@ -1307,7 +1307,7 @@ uint32_t http2_nv::valuelen() const {
 
 http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(NULL), mask(0), first(0), len(0) {
   if (bufsize == 0) {
-    NOTREACHED();
+    DNOTREACHED();
     return;
   }
 

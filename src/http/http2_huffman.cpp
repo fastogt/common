@@ -4962,7 +4962,6 @@ void http2_bufs_fast_addb(buffer_t& bufs, uint8_t b) {
 }
 
 void http2_bufs_fast_addb_hold(buffer_t& bufs, uint8_t b) {
-  // NOTREACHED();
   bufs.push_back(b);
 }
 

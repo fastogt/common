@@ -350,6 +350,8 @@ ENDIF(OS_WINDOWS)
 SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
     ${CMAKE_SOURCE_DIR}/include/common/logger.h
+    ${CMAKE_SOURCE_DIR}/include/common/macros.h
+    ${CMAKE_SOURCE_DIR}/include/common/optional.h
     ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
     ${CMAKE_SOURCE_DIR}/include/common/event.h
     ${CMAKE_SOURCE_DIR}/include/common/safe_sprintf.h
@@ -364,7 +366,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
     ${CMAKE_SOURCE_DIR}/include/common/types.h
     ${CMAKE_SOURCE_DIR}/include/common/bounded_value.h
-    ${CMAKE_SOURCE_DIR}/include/common/macros.h
     ${CMAKE_SOURCE_DIR}/include/common/utils.h
     ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
     ${CMAKE_SOURCE_DIR}/include/common/file_system.h

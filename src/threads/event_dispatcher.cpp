@@ -39,7 +39,7 @@ void DynamicEventDispatcher::Subscribe(listener_t* listener, events_size_t id) {
 
   events_size_t pos = id;
   if (pos >= max_events_count_) {
-    NOTREACHED();
+    DNOTREACHED();
     return;
   }
 
@@ -54,7 +54,7 @@ void DynamicEventDispatcher::UnSubscribe(listener_t* listener, events_size_t id)
 
   events_size_t pos = id;
   if (pos >= max_events_count_) {
-    NOTREACHED();
+    DNOTREACHED();
     return;
   }
 
@@ -89,7 +89,7 @@ void DynamicEventDispatcher::ProcessEvent(event_t* event) {
 
   events_size_t pos = event->GetEventID();
   if (pos >= max_events_count_) {
-    NOTREACHED();
+    DNOTREACHED();
     return;
   }
 

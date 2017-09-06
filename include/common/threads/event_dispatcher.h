@@ -76,7 +76,7 @@ class EventDispatcher {
 
     events_size_t pos = id;
     if (pos >= max_events_count) {
-      NOTREACHED();
+      DNOTREACHED();
       return;
     }
 
@@ -91,7 +91,7 @@ class EventDispatcher {
 
     events_size_t pos = id;
     if (pos >= max_events_count) {
-      NOTREACHED();
+      DNOTREACHED();
       return;
     }
 

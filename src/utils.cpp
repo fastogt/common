@@ -29,9 +29,9 @@
 
 #include <common/utils.h>
 
+#include <string.h>
 #include <sys/stat.h>  // for umask
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...
-#include <string.h>
 
 #ifndef UINT64_C
 #define UINT64_C(val) val##ULL
@@ -340,10 +340,6 @@ void freeifnotnull(void* ptr) {
   }
 
   free(ptr);
-}
-
-const char* c_strornull(const std::string& val) {
-  return val.empty() ? NULL : val.c_str();
 }
 
 }  // namespace utils

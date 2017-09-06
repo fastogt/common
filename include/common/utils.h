@@ -116,7 +116,6 @@ std::string decode(const StringPiece& input);
 char* strdupornull(const std::string& src);
 char* strdupornull(const char* src);
 void freeifnotnull(void* ptr);
-const char* c_strornull(const std::string& val);
 }  // namespace utils
 
 #ifdef OS_POSIX

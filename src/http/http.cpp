@@ -41,10 +41,10 @@ std::string ConvertToString(http::http_protocols protocol) {
     return HTTP_1_1_PROTOCOL_NAME;
   } else if (protocol == http::HP_2_0) {
     return HTTP_2_0_PROTOCOL_NAME;
-  } else {
-    NOTREACHED();
-    return "UNKNOWN";
   }
+
+  NOTREACHED();
+  return "UNKNOWN";
 }
 
 bool ConvertFromString(const std::string& from, http::http_protocols* out) {
@@ -68,6 +68,7 @@ bool ConvertFromString(const std::string& from, http::http_protocols* out) {
 }
 
 namespace http {
+
 HttpHeader::HttpHeader() : key(), value() {}
 
 HttpHeader::HttpHeader(const std::string& key, const std::string& value) : key(key), value(value) {}

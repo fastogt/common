@@ -53,14 +53,14 @@ IEDcoder* CreateEDCoder(EDType type) {
     return new HtmlEscEDcoder;
   }
 
-  NOTREACHED();
+  DNOTREACHED();
   return nullptr;
 }
 
 IEDcoder* CreateEDCoder(const std::string& name) {
   EDType t;
   if (!ConvertFromString(name, &t)) {
-    NOTREACHED();
+    DNOTREACHED();
     return nullptr;
   }
 

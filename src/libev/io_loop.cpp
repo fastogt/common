@@ -194,7 +194,7 @@ void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
   CHECK(client && client->GetServer() == this);
 
   if (EV_ERROR & revents) {
-    NOTREACHED();
+    DNOTREACHED();
     return;
   }
 

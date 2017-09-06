@@ -57,7 +57,7 @@ class ErrnoErrorValue : public ErrorValue {
   const ErrnoType errno_type_;
 };
 
-typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => not error, if(err && err->IsError()) => error
+typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => no error, if(err && err->IsError()) => error
 typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //

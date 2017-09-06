@@ -39,7 +39,7 @@ int64_t AmountOfMemory(int pages_name) {
   int64_t pages = sysconf(pages_name);
   int64_t page_size = sysconf(_SC_PAGESIZE);
   if (pages == -1 || page_size == -1) {
-    NOTREACHED();
+    DNOTREACHED();
     return 0;
   }
 

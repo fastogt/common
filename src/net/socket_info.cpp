@@ -58,7 +58,7 @@ socket_info::socket_info(const socket_info& other) : fd_(other.fd_), addr_(NULL)
 
 socket_info& socket_info::operator=(const socket_info& other) {
   if (this == &other) {
-    NOTREACHED();
+    DNOTREACHED();
     return *this;
   }
 
@@ -79,7 +79,7 @@ socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_
 
 socket_info& socket_info::operator=(socket_info&& other) {
   if (this == &other) {
-    NOTREACHED();
+    DNOTREACHED();
     return *this;
   }
 

@@ -780,7 +780,7 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
 #endif
 
   if (!open_flags && !(flags & FLAG_OPEN)) {
-    NOTREACHED();
+    DNOTREACHED();
     errno = EOPNOTSUPP;
     return make_error_value_perror("write_to_descriptor", EOPNOTSUPP, SYSTEM_ERRNO, ErrorValue::E_ERROR);
   }
@@ -934,12 +934,8 @@ bool ANSIFile::IsEOF() const {
 }
 
 bool ANSIFile::Write(const buffer_t& data) {
-  if (!file_) {
-    return false;
-  }
-
-  if (!data.size()) {
-    NOTREACHED();
+  if (!file_ || data.empty()) {
+    DNOTREACHED();
     return false;
   }
 
@@ -948,12 +944,8 @@ bool ANSIFile::Write(const buffer_t& data) {
 }
 
 bool ANSIFile::Write(const std::string& data) {
-  if (!file_) {
-    return false;
-  }
-
-  if (!data.length()) {
-    NOTREACHED();
+  if (!file_ || data.empty()) {
+    DNOTREACHED();
     return false;
   }
 
@@ -962,12 +954,8 @@ bool ANSIFile::Write(const std::string& data) {
 }
 
 bool ANSIFile::Write(const string16& data) {
-  if (!file_) {
-    return false;
-  }
-
-  if (!data.length()) {
-    NOTREACHED();
+  if (!file_ || data.empty()) {
+    DNOTREACHED();
     return false;
   }
 
