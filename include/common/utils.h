@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <string.h>
-
 #include <common/string_piece.h>
 #include <common/types.h>  // for buffer_t, byte_t
 
@@ -58,54 +56,6 @@ struct size_trait_info<const char16[N]> {
 };
 
 }  // namespace traits
-
-namespace enums {
-
-template <typename type, size_t size>
-inline type FindTypeInArray(const char16* (&arr)[size], const char16* text) {
-  for (size_t i = 0; i < size; ++i) {
-    const size_t len = c16len(text);
-    if (c16memcmp(text, arr[i], len) == 0) {
-      return static_cast<type>(i);
-    }
-  }
-
-  return static_cast<type>(0);
-}
-
-template <size_t size>
-inline std::vector<string16> ConvertToVector(const char16* (&arr)[size]) {
-  std::vector<string16> res;
-  for (size_t i = 0; i < size; ++i) {
-    res.push_back(arr[i]);
-  }
-
-  return res;
-}
-
-template <typename type, size_t size>
-inline type FindTypeInArray(const char* (&arr)[size], const char* text) {
-  for (size_t i = 0; i < size; ++i) {
-    const size_t len = strlen(text);
-    if (memcmp(text, arr[i], len) == 0) {
-      return static_cast<type>(i);
-    }
-  }
-
-  return static_cast<type>(0);
-}
-
-template <size_t size>
-inline std::vector<std::string> ConvertToVector(const char* (&arr)[size]) {
-  std::vector<std::string> res;
-  for (size_t i = 0; i < size; ++i) {
-    res.push_back(arr[i]);
-  }
-
-  return res;
-}
-
-}  // namespace enums
 
 namespace delete_wrappers {
 

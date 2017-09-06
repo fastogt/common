@@ -21,6 +21,17 @@ SET(APPLIATION_SOURCES
   ${CMAKE_SOURCE_DIR}/src/application/application.cpp
 )
 
+SET(URI_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/uri/upath.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url.h
+)
+
+SET(URI_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/uri/upath.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url.cpp
+)
+
+
 SET(SYSTEM_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/system/system.h
 )
@@ -362,12 +373,12 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/error.h
     ${CMAKE_SOURCE_DIR}/include/common/value.h
     ${CMAKE_SOURCE_DIR}/include/common/intrusive_ptr.h
-    ${CMAKE_SOURCE_DIR}/include/common/url.h
     ${CMAKE_SOURCE_DIR}/include/common/time.h
 
     ${PATTERNS_HEADERS}
     ${SYSTEM_HEADERS}
     ${APPLIATION_HEADERS}
+    ${URI_HEADERS}
     ${THREADS_HEADERS}
     ${LIBEV_HEADERS}
     ${NET_HEADERS}
@@ -400,12 +411,12 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/file_system.cpp
   ${CMAKE_SOURCE_DIR}/src/value.cpp
   ${CMAKE_SOURCE_DIR}/src/error.cpp
-  ${CMAKE_SOURCE_DIR}/src/url.cpp
   ${CMAKE_SOURCE_DIR}/src/time.cpp
   ${CMAKE_SOURCE_DIR}/src/utils.cpp
 
   ${PATTERNS_SOURCES}
   ${APPLIATION_SOURCES}
+  ${URI_SOURCES}
   ${SYSTEM_SOURCES}
   ${THREADS_SOURCES}
   ${NET_SOURCES}

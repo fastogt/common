@@ -33,9 +33,9 @@
 #include <utility>  // for pair
 #include <vector>   // for vector
 
-#include <common/error.h>  // for Error
-#include <common/types.h>  // for buffer_t
-#include <common/url.h>    // for Upath
+#include <common/error.h>      // for Error
+#include <common/types.h>      // for buffer_t
+#include <common/uri/upath.h>  // for Upath
 
 #define HTTP_1_0_PROTOCOL_NAME "HTTP/1.0"
 #define HTTP_1_0_PROTOCOL_NAME_LEN (sizeof(HTTP_1_0_PROTOCOL_NAME) - 1)

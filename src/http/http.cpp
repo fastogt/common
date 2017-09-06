@@ -30,6 +30,7 @@
 #include <common/http/http.h>
 
 #include <common/convert2string.h>  // for ConvertFromString
+#include <common/uri/url.h>
 
 namespace common {
 

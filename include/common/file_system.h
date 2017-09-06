@@ -225,17 +225,22 @@ inline std::basic_string<CharT> get_file_extension(std::basic_string<CharT> path
 }
 
 template <typename CharT>
+inline std::basic_string<CharT> stable_dir_path_separator(std::basic_string<CharT> path) {
+  size_t lenght = path.length();
+  if (lenght > 1 && path[lenght - 1] != file_system::get_separator<CharT>()) {
+    path += get_separator<CharT>();
+  }
+  return path;
+}
+
+template <typename CharT>
 inline std::basic_string<CharT> stable_dir_path(std::basic_string<CharT> path) {
   if (!is_valid_path(path)) {
     return std::basic_string<CharT>();
   }
 
   path = prepare_path(path);
-  size_t lenght = path.length();
-  if (lenght > 1 && path[lenght - 1] != get_separator<CharT>()) {
-    path += get_separator<CharT>();
-  }
-  return path;
+  return stable_dir_path_separator(path);
 }
 
 template <typename CharT>
