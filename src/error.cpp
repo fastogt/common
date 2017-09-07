@@ -59,7 +59,7 @@ ErrorValue::ErrorValue(const std::string& description, ErrorType error_type)
     : description_(description), error_type_(error_type) {}
 
 bool ErrorValue::IsError() const {
-  return error_type_ == NO_ERROR_TYPE;
+  return error_type_ != NO_ERROR_TYPE;
 }
 
 ErrorType ErrorValue::GetErrorType() const {
