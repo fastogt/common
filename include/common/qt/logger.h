@@ -62,6 +62,6 @@ inline void LOG_MSG(T mess, common::logging::LOG_LEVEL level, bool notify) {
   return common::qt::Logger::GetInstance().print(mess, level, notify);
 }
 
-inline void LOG_ERROR(common::Error er, bool notify) {
-  return common::qt::Logger::GetInstance().print(er->GetDescription(), er->GetLevel(), notify);
+inline void LOG_ERROR(common::Error err, common::logging::LOG_LEVEL level, bool notify) {
+  return common::qt::Logger::GetInstance().print(err->GetDescription(), level, notify);
 }

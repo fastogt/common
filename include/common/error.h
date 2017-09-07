@@ -44,31 +44,25 @@ const char* common_strerror(int err, ErrnoType errno_type);
 
 class ErrorValue {
  public:
-  ErrorValue(const std::string& description, ErrorType error_type, logging::LOG_LEVEL level);
+  ErrorValue(const std::string& description, ErrorType error_type);
 
   bool IsError() const;
 
   ErrorType GetErrorType() const;
-  logging::LOG_LEVEL GetLevel() const;
-  std::string GetDescription() const;
+  const std::string& GetDescription() const;
 
   virtual ~ErrorValue();
 
  private:
   const std::string description_;
   const ErrorType error_type_;
-  const logging::LOG_LEVEL level_;
   DISALLOW_COPY_AND_ASSIGN(ErrorValue);
 };
 
 class ErrnoErrorValue : public ErrorValue {
  public:
-  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type, logging::LOG_LEVEL level);
-  ErrnoErrorValue(int err,
-                  ErrnoType errno_type,
-                  const std::string& description,
-                  ErrorType error_type,
-                  logging::LOG_LEVEL level);
+  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type);
+  ErrnoErrorValue(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type);
 
   int GetErrno() const;
   ErrnoType GetErrnoType() const;
@@ -82,39 +76,31 @@ typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => no error, if(err && e
 typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
-Error make_inval_error_value(ErrorType error_type, logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+Error make_inval_error_value(ErrorType error_type);
 
-Error make_error_value(const std::string& description,
-                       ErrorType error_type,
-                       logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+Error make_error_value(const std::string& description, ErrorType error_type);
 
-ErrnoError make_error_value_errno(int err,
-                                  ErrnoType errno_type,
-                                  ErrorType error_type,
-                                  logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+ErrnoError make_error_value_errno(int err, ErrnoType errno_type, ErrorType error_type);
 
-ErrnoError make_error_value_errno(int err,
-                                  ErrnoType errno_type,
-                                  const std::string& description,
-                                  ErrorType error_type,
-                                  logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+ErrnoError make_error_value_errno(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type);
 
-ErrnoError make_error_value_perror(const std::string& function,
-                                   int err,
-                                   ErrnoType errno_type,
-                                   ErrorType error_type,
-                                   logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+ErrnoError make_error_value_perror(const std::string& function, int err, ErrnoType errno_type, ErrorType error_type);
 
 }  // namespace common
 
-void DEBUG_MSG_ERROR(common::Error err);
+void DEBUG_MSG_ERROR(common::Error err, common::logging::LOG_LEVEL level);
 common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
                                     int err,
                                     common::ErrnoType errno_type,
+                                    common::logging::LOG_LEVEL level,
                                     bool notify = true);
 
 template <typename... Args>
-common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt, int err, common::ErrnoType errno_type, Args... args) {
+common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt,
+                                           int err,
+                                           common::ErrnoType errno_type,
+                                           common::logging::LOG_LEVEL level,
+                                           Args... args) {
   const std::string func_args = common::MemSPrintf(fmt, args...);
-  return DEBUG_MSG_PERROR(func_args, err, errno_type, true);
+  return DEBUG_MSG_PERROR(func_args, err, errno_type, level, true);
 }

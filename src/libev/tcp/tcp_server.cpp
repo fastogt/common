@@ -43,7 +43,7 @@ struct WinsockInit {
     WORD version = MAKEWORD(2, 2);
     int res = WSAStartup(version, &d);
     if (res != 0) {
-      DEBUG_MSG_PERROR("WSAStartup", res, common::SYSTEM_ERRNO);
+      DEBUG_MSG_PERROR("WSAStartup", res, common::SYSTEM_ERRNO, common::logging::LOG_LEVEL_ERR);
       exit(EXIT_FAILURE);
     }
   }
@@ -56,7 +56,7 @@ struct SigIgnInit {
 #elif defined(COMPILER_MSVC)
 #else
     if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-      DEBUG_MSG_PERROR("signal", errno, common::SYSTEM_ERRNO);
+      DEBUG_MSG_PERROR("signal", errno, common::SYSTEM_ERRNO, common::logging::LOG_LEVEL_ERR);
       exit(EXIT_FAILURE);
     }
 #endif

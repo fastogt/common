@@ -531,7 +531,7 @@ ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nr
   }
 
   if (lnread == 0) {
-    return make_error_value_errno(ECONNRESET, SYSTEM_ERRNO, ERROR_TYPE, logging::LOG_LEVEL_ERR);
+    return make_error_value_errno(ECONNRESET, SYSTEM_ERRNO, ERROR_TYPE);
   }
 
   *nread = lnread;
