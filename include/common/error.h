@@ -39,8 +39,8 @@ namespace common {
 
 enum ErrorType { EXCEPTION_TYPE, ERROR_TYPE, INTERRUPTED_TYPE };
 
-const char* common_strerror(int err);
-extern const char* common_gai_strerror(int err);
+std::string common_strerror(int err);
+extern std::string common_gai_strerror(int err);
 
 template <typename T>
 struct ErrorTrait {
@@ -97,11 +97,31 @@ Error make_error(const std::string& description, ErrorType error_type);
 struct ErrnoTraits {
   static std::string GetTextFromErrorCode(int error);
 };
-typedef ErrorBase<int, ErrnoTraits> ErrnoErrorValue;
+
+class ErrnoErrorValue : public ErrorBase<int, ErrnoTraits> {
+ public:
+  typedef ErrorBase<int, ErrnoTraits> base_class;
+  ErrnoErrorValue(int error_code, ErrorType error_type)
+      : base_class(error_code, error_type), text_error_description_() {}
+  ErrnoErrorValue(const std::string& description, int error_code, ErrorType error_type)
+      : base_class(error_code, error_type), text_error_description_(description) {}
+
+  std::string GetDescription() const {
+    if (!text_error_description_.empty()) {
+      return text_error_description_;
+    }
+    return base_class::trait_type::GetTextFromErrorCode(GetErrorCode());
+  }
+
+ private:
+  std::string text_error_description_;
+};
+
 typedef Optional<ErrnoErrorValue> ErrnoError;
 
 ErrnoError make_errno_error_inval(ErrorType error_type);
 ErrnoError make_errno_error(int err, ErrorType error_type);
+ErrnoError make_errno_error(const std::string& description, int err, ErrorType error_type);
 ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type);
 Error make_error_from_errno(ErrnoError err);
 

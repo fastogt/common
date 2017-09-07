@@ -650,7 +650,12 @@ ErrnoError send_file(const std::string& path, const HostAndPort& to) {
 }
 
 }  // namespace net
-const char* common_gai_strerror(int err) {
-  return gai_strerror(err);
+std::string common_gai_strerror(int err) {
+  const char* error_str = gai_strerror(err);
+  if (error_str) {
+    return error_str;
+  }
+
+  return common::MemSPrintf("Unknown gai error (%d)", err);
 }
 }  // namespace common

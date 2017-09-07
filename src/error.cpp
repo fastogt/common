@@ -34,16 +34,26 @@
 namespace common {
 
 #ifdef OS_WIN
-const char* common_strerror(int err) {
+std::string common_strerror(int err) {
   if (err == ECONNRESET) {
     return "Connection reset by peer";
   }
 
-  return strerror(err);
+  const char* error_str = strerror(err);
+  if (error_str) {
+    return error_str;
+  }
+
+  return common::MemSPrintf("Unknown error (%d)", err);
 }
 #else
-const char* common_strerror(int err) {
-  return strerror(err);
+std::string common_strerror(int err) {
+  const char* error_str = strerror(err);
+  if (error_str) {
+    return error_str;
+  }
+
+  return common::MemSPrintf("Unknown error (%d)", err);
 }
 #endif
 
@@ -74,10 +84,14 @@ ErrnoError make_errno_error(int err, ErrorType error_type) {
   return ErrnoErrorValue(err, error_type);
 }
 
+ErrnoError make_errno_error(const std::string& description, int err, ErrorType error_type) {
+  return ErrnoErrorValue(description, err, error_type);
+}
+
 ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type) {
   const std::string strer = common_strerror(err);
   const std::string descr = function + " : " + strer;
-  return make_errno_error(err, error_type);
+  return make_errno_error(descr, err, error_type);
 }
 
 Error make_error_from_errno(ErrnoError err) {
