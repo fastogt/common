@@ -82,14 +82,4 @@ TEST(Value, create_and_get_complex_type) {
   common::Value* val_hash = common::Value::CreateHashValue();
   ASSERT_TRUE(val_hash && val_hash->GetType() == common::Value::TYPE_HASH);
   delete val_hash;
-
-  const std::string err_descr = "err";
-  const common::Value::ErrorsType ert = common::Value::E_INTERRUPTED;
-  const common::logging::LOG_LEVEL lg = common::logging::LOG_LEVEL_INFO;
-  common::ErrorValue* val_error = common::Value::CreateErrorValue(err_descr, ert, lg);
-  ASSERT_TRUE(val_error && val_error->GetType() == common::Value::TYPE_ERROR && val_error->IsError());
-  ASSERT_EQ(val_error->GetDescription(), err_descr);
-  ASSERT_EQ(val_error->GetErrorType(), ert);
-  ASSERT_EQ(val_error->GetLevel(), lg);
-  delete val_error;
 }

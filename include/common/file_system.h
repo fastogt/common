@@ -31,6 +31,7 @@
 
 #include <common/error.h>     // for ErrnoError, Error
 #include <common/string16.h>  // for string16, char16
+#include <common/types.h>
 
 namespace common {
 namespace file_system {

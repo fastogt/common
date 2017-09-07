@@ -32,6 +32,7 @@
 #ifdef HAVE_SNAPPY
 #include <common/error.h>
 #include <common/string_piece.h>
+#include <common/types.h>
 
 namespace common {
 namespace compress {

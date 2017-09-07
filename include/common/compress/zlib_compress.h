@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <common/error.h>
-
 #ifdef HAVE_ZLIB
+#include <common/error.h>
+#include <common/types.h>
 
 #include <zlib.h>
 
