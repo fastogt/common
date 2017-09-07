@@ -35,7 +35,6 @@
 #include <QTextStream>
 
 #include <common/qt/convert2string.h>  // for ConvertToString
-#include <common/value.h>              // for Value::ErrorsType::E_ERROR, etc
 
 namespace common {
 namespace qt {
@@ -54,7 +53,7 @@ QString ApplicationDirPath() {
 
 Error LoadFromFileText(const QString& filePath, QString* outText) {
   if (!outText) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   QFile file(filePath);
@@ -66,12 +65,12 @@ Error LoadFromFileText(const QString& filePath, QString* outText) {
     return Error();
   }
 
-  return make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
+  return make_error_value(ConvertToString(file.errorString()), ERROR_TYPE);
 }
 
 Error SaveToFileText(QString filePath, const QString& text) {
   if (filePath.isEmpty()) {
-    return make_error_value("Invalid input argument(s)", ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
 #ifdef OS_LINUX
@@ -88,7 +87,7 @@ Error SaveToFileText(QString filePath, const QString& text) {
     return Error();
   }
 
-  return make_error_value(ConvertToString(file.errorString()), Value::E_ERROR);
+  return make_error_value(ConvertToString(file.errorString()), ERROR_TYPE);
 }
 
 }  // namespace qt

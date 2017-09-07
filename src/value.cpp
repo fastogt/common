@@ -49,8 +49,7 @@ const char* string_types[Value::NUM_TYPES] = {"TYPE_NULL",
                                               "TYPE_BYTE_ARRAY",
                                               "TYPE_SET",
                                               "TYPE_ZSET",
-                                              "TYPE_HASH",
-                                              "TYPE_ERROR"};
+                                              "TYPE_HASH"};
 
 class ValueEquals {
  public:
@@ -133,17 +132,6 @@ HashValue* Value::CreateHashValue() {
   return new HashValue;
 }
 
-ErrorValue* Value::CreateErrorValue(const std::string& in_value,
-                                    Value::ErrorsType errorType,
-                                    logging::LOG_LEVEL level) {
-  if (in_value.empty()) {
-    DNOTREACHED();
-    return new ErrorValue("Create error invalid input argument!", errorType, level);
-  }
-
-  return new ErrorValue(in_value, errorType, level);
-}
-
 // static
 Value* Value::CreateEmptyValueFromType(Type value_type) {
   switch (value_type) {
@@ -177,8 +165,6 @@ Value* Value::CreateEmptyValueFromType(Type value_type) {
       return CreateZSetValue();
     case TYPE_HASH:
       return CreateHashValue();
-    case TYPE_ERROR:
-      return CreateErrorValue(std::string(), E_NONE, logging::LOG_LEVEL_DEBUG);
   }
 
   return nullptr;
@@ -243,12 +229,6 @@ bool Value::GetAsDouble(double* out_value) const {
 }
 
 bool Value::GetAsString(std::string* out_value) const {
-  UNUSED(out_value);
-
-  return false;
-}
-
-bool Value::GetAsError(ErrorValue* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -1079,45 +1059,6 @@ bool HashValue::Equals(const Value* other) const {
   }
 
   return true;
-}
-
-ErrorValue::ErrorValue(const std::string& description, ErrorsType error_type, logging::LOG_LEVEL level)
-    : Value(TYPE_ERROR), description_(description), error_type_(error_type), level_(level) {}
-
-ErrorValue::~ErrorValue() {}
-
-bool ErrorValue::IsError() const {
-  return error_type_ != E_NONE;
-}
-
-ErrorValue::ErrorsType ErrorValue::GetErrorType() const {
-  return error_type_;
-}
-
-logging::LOG_LEVEL ErrorValue::GetLevel() const {
-  return level_;
-}
-
-std::string ErrorValue::GetDescription() const {
-  return description_;
-}
-
-void ErrorValue::SetDescription(const std::string& descr) {
-  description_ = descr;
-}
-
-bool ErrorValue::GetAsError(ErrorValue* out_value) const {
-  if (out_value) {
-    (*out_value).description_ = description_;
-    (*out_value).error_type_ = error_type_;
-    (*out_value).level_ = level_;
-  }
-
-  return true;
-}
-
-ErrorValue* ErrorValue::DeepCopy() const {
-  return CreateErrorValue(description_, error_type_, level_);
 }
 
 }  // namespace common

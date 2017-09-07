@@ -41,7 +41,7 @@ Error CompressSnappyEDcoder::EncodeImpl(const StringPiece& data, std::string* ou
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error_value("ED_SNAPPY encode not supported", ErrorValue::E_ERROR);
+  return make_error_value("ED_SNAPPY encode not supported", ERROR_TYPE);
 #endif
 }
 
@@ -51,7 +51,7 @@ Error CompressSnappyEDcoder::DecodeImpl(const StringPiece& data, std::string* ou
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error_value("ED_SNAPPY decode not supported", ErrorValue::E_ERROR);
+  return make_error_value("ED_SNAPPY decode not supported", ERROR_TYPE);
 #endif
 }
 

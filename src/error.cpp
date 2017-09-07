@@ -55,13 +55,34 @@ const char* common_strerror(int err, ErrnoType errno_type) {
   return common_gai_strerror(err);
 }
 
-ErrnoErrorValue::ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LOG_LEVEL level)
+ErrorValue::ErrorValue(const std::string& description, ErrorType error_type, logging::LOG_LEVEL level)
+    : description_(description), error_type_(error_type), level_(level) {}
+
+bool ErrorValue::IsError() const {
+  return error_type_ == NO_ERROR_TYPE;
+}
+
+ErrorType ErrorValue::GetErrorType() const {
+  return error_type_;
+}
+
+logging::LOG_LEVEL ErrorValue::GetLevel() const {
+  return level_;
+}
+
+std::string ErrorValue::GetDescription() const {
+  return description_;
+}
+
+ErrorValue::~ErrorValue() {}
+
+ErrnoErrorValue::ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type, logging::LOG_LEVEL level)
     : ErrorValue(common_strerror(err, errno_type), error_type, level), errno_(err), errno_type_(errno_type) {}
 
 ErrnoErrorValue::ErrnoErrorValue(int err,
                                  ErrnoType errno_type,
                                  const std::string& description,
-                                 ErrorsType error_type,
+                                 ErrorType error_type,
                                  logging::LOG_LEVEL level)
     : ErrorValue(description, error_type, level), errno_(err), errno_type_(errno_type) {}
 
@@ -73,26 +94,22 @@ ErrnoType ErrnoErrorValue::GetErrnoType() const {
   return errno_type_;
 }
 
-Error make_inval_error_value(Value::ErrorsType error_type, logging::LOG_LEVEL level) {
+Error make_inval_error_value(ErrorType error_type, logging::LOG_LEVEL level) {
   return make_error_value("Invalid input argument(s)", error_type, level);
 }
 
-Error make_error_value(const std::string& description, Value::ErrorsType error_type, logging::LOG_LEVEL level) {
-  ErrorValue* err = Value::CreateErrorValue(description, error_type, level);
-  return Error(err);
+Error make_error_value(const std::string& description, ErrorType error_type, logging::LOG_LEVEL level) {
+  return std::make_shared<ErrorValue>(description, error_type, level);
 }
 
-ErrnoError make_error_value_errno(int err,
-                                  ErrnoType errno_type,
-                                  Value::ErrorsType error_type,
-                                  logging::LOG_LEVEL level) {
+ErrnoError make_error_value_errno(int err, ErrnoType errno_type, ErrorType error_type, logging::LOG_LEVEL level) {
   return std::make_shared<ErrnoErrorValue>(err, errno_type, error_type, level);
 }
 
 ErrnoError make_error_value_errno(int err,
                                   ErrnoType errno_type,
                                   const std::string& description,
-                                  Value::ErrorsType error_type,
+                                  ErrorType error_type,
                                   logging::LOG_LEVEL level) {
   return std::make_shared<ErrnoErrorValue>(err, errno_type, description, error_type, level);
 }
@@ -100,7 +117,7 @@ ErrnoError make_error_value_errno(int err,
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
                                    ErrnoType errno_type,
-                                   Value::ErrorsType error_type,
+                                   ErrorType error_type,
                                    logging::LOG_LEVEL level) {
   const std::string strer = common_strerror(err, errno_type);
   const std::string descr = function + " : " + strer;
@@ -123,7 +140,7 @@ common::ErrnoError DEBUG_MSG_PERROR(const std::string& function, int err, common
   const std::string descr = function + " : " + strer;
 
   common::ErrnoError error =
-      common::make_error_value_errno(err, errno_type, descr, common::Value::E_ERROR, common::logging::LOG_LEVEL_ERR);
+      common::make_error_value_errno(err, errno_type, descr, common::ERROR_TYPE, common::logging::LOG_LEVEL_ERR);
   if (notify) {
     DEBUG_MSG_ERROR(error);
   }

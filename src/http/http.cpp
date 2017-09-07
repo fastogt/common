@@ -161,7 +161,7 @@ header_t http_request::findHeaderByValue(const std::string& value, bool caseSens
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, http_request* req_out) {
   if (request.empty() || !req_out) {
-    return std::make_pair(HS_FORBIDDEN, make_inval_error_value(ErrorValue::E_ERROR));
+    return std::make_pair(HS_FORBIDDEN, make_inval_error_value(ERROR_TYPE));
   }
 
   typedef std::string::size_type string_size_t;
@@ -197,21 +197,21 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
           if (spaceP != std::string::npos) {
             std::string path = protcolAndPath.substr(1, spaceP - 2);
             if (protcolAndPath[0] != '/') {  // must start with /
-              return std::make_pair(HS_BAD_REQUEST, make_error_value("Bad filename.", ErrorValue::E_ERROR));
+              return std::make_pair(HS_BAD_REQUEST, make_error_value("Bad filename.", ERROR_TYPE));
             }
 
             lprotocol = protcolAndPath.substr(spaceP);
             lpath = uri::Upath(path);
           } else {
-            return std::make_pair(HS_FORBIDDEN, make_error_value("Not allowed.", ErrorValue::E_ERROR));
+            return std::make_pair(HS_FORBIDDEN, make_error_value("Not allowed.", ERROR_TYPE));
           }
         } else {
           return std::make_pair(HS_NOT_IMPLEMENTED,
-                                make_error_value("That method is not implemented.", ErrorValue::E_ERROR));
+                                make_error_value("That method is not implemented.", ERROR_TYPE));
         }
       } else {
         return std::make_pair(HS_NOT_IMPLEMENTED,
-                              make_error_value("That method is not implemented.", ErrorValue::E_ERROR));
+                              make_error_value("That method is not implemented.", ERROR_TYPE));
       }
     } else {
       string_size_t delem = line.find_first_of(':');
@@ -237,7 +237,7 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
   }
 
   if (line_count == 0) {
-    return std::make_pair(HS_BAD_REQUEST, make_error_value("Not found CRLF", ErrorValue::E_ERROR));
+    return std::make_pair(HS_BAD_REQUEST, make_error_value("Not found CRLF", ERROR_TYPE));
   }
 
   *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody);

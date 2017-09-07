@@ -36,7 +36,7 @@ namespace compress {
 
 Error EncodeBase64(const buffer_t& data, buffer_t* out) {
   if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::base64::encode64(data);
@@ -45,7 +45,7 @@ Error EncodeBase64(const buffer_t& data, buffer_t* out) {
 
 Error DecodeBase64(const buffer_t& data, buffer_t* out) {
   if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::base64::decode64(data);
@@ -54,7 +54,7 @@ Error DecodeBase64(const buffer_t& data, buffer_t* out) {
 
 Error EncodeBase64(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::base64::encode64(data);
@@ -63,7 +63,7 @@ Error EncodeBase64(const StringPiece& data, std::string* out) {
 
 Error DecodeBase64(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::base64::decode64(data);

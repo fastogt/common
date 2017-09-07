@@ -2115,7 +2115,7 @@ frames_t find_frames_by_type(const frames_t& frames, frame_t type) {
 
 std::pair<http::http_status, Error> parse_http_request(const frame_headers& frame, http::http_request* req_out) {
   if (!frame.IsValid() || frame.type() != HTTP2_HEADERS || !req_out) {
-    return std::make_pair(http::HS_FORBIDDEN, make_inval_error_value(ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_FORBIDDEN, make_inval_error_value(ERROR_TYPE));
   }
 
   uint8_t validation_flags = 0;
@@ -2156,11 +2156,11 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
 
   if ((validation_flags & 1) == 0) {
     return std::make_pair(http::HS_NOT_IMPLEMENTED,
-                          make_error_value("That method not specified.", ErrorValue::E_ERROR));
+                          make_error_value("That method not specified.", ERROR_TYPE));
   } else if ((validation_flags & 2) == 0) {
-    return std::make_pair(http::HS_BAD_REQUEST, make_error_value("Bad filename.", ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_BAD_REQUEST, make_error_value("Bad filename.", ERROR_TYPE));
   } else if ((validation_flags & 4) == 0) {
-    return std::make_pair(http::HS_FORBIDDEN, make_error_value("Scheme not found.", ErrorValue::E_ERROR));
+    return std::make_pair(http::HS_FORBIDDEN, make_error_value("Scheme not found.", ERROR_TYPE));
   }
 
   lprotocol = HTTP_2_0_PROTOCOL_NAME;

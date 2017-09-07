@@ -48,7 +48,7 @@ descriptor_t TcpClient::GetFd() const {
 
 Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   if (!data || !size || !nwrite) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -70,7 +70,7 @@ Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
 
 Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   if (!out || !size || !nread) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   size_t total = 0;          // how many bytes we've readed

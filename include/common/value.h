@@ -41,7 +41,6 @@ namespace common {
 
 class ArrayValue;
 class ByteArrayValue;
-class ErrorValue;
 class FundamentalValue;
 class HashValue;
 class SetValue;
@@ -65,12 +64,9 @@ class Value {
     TYPE_BYTE_ARRAY,
     TYPE_SET,  // set
     TYPE_ZSET,
-    TYPE_HASH,
-    TYPE_ERROR  // should be last
+    TYPE_HASH  // should be last
   };
-  enum { NUM_TYPES = TYPE_ERROR + 1 };
-
-  enum ErrorsType { E_NONE, E_EXCEPTION, E_ERROR, E_INTERRUPTED };
+  enum { NUM_TYPES = TYPE_HASH + 1 };
 
   virtual ~Value();
 
@@ -91,7 +87,6 @@ class Value {
   static SetValue* CreateSetValue();
   static ZSetValue* CreateZSetValue();
   static HashValue* CreateHashValue();
-  static ErrorValue* CreateErrorValue(const std::string& in_value, ErrorsType errorType, logging::LOG_LEVEL level);
 
   static Value* CreateEmptyValueFromType(Type value_type);
 
@@ -116,7 +111,6 @@ class Value {
   virtual bool GetAsULongLongInteger(unsigned long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(std::string* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsError(ErrorValue* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsList(const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsByteArray(byte_array_t* out_value) const WARN_UNUSED_RESULT;
@@ -419,29 +413,6 @@ class HashValue : public Value {
  private:
   ValueHash hash_;
   DISALLOW_COPY_AND_ASSIGN(HashValue);
-};
-
-class ErrorValue : public Value {
- public:
-  ErrorValue(const std::string& description, ErrorsType error_type, logging::LOG_LEVEL level);
-
-  bool IsError() const;
-
-  ErrorsType GetErrorType() const;
-  logging::LOG_LEVEL GetLevel() const;
-
-  std::string GetDescription() const;
-  void SetDescription(const std::string& descr);
-
-  virtual bool GetAsError(ErrorValue* out_value) const override WARN_UNUSED_RESULT;
-  virtual ErrorValue* DeepCopy() const override;
-  virtual ~ErrorValue();
-
- private:
-  std::string description_;
-  ErrorsType error_type_;
-  logging::LOG_LEVEL level_;
-  DISALLOW_COPY_AND_ASSIGN(ErrorValue);
 };
 
 typedef std::shared_ptr<Value> ValueSPtr;

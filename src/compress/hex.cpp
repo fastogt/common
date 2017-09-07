@@ -36,7 +36,7 @@ namespace compress {
 
 Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) {
   if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::hex::encode(data, is_lower);
@@ -45,7 +45,7 @@ Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) {
 
 Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
   if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::hex::encode(data, is_lower);
@@ -54,7 +54,7 @@ Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
 
 Error DecodeHex(const buffer_t& data, buffer_t* out) {
   if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::hex::decode(data);
@@ -63,7 +63,7 @@ Error DecodeHex(const buffer_t& data, buffer_t* out) {
 
 Error DecodeHex(const StringPiece& data, std::string* out) {
   if (!out) {
-    return make_inval_error_value(ErrorValue::E_ERROR);
+    return make_inval_error_value(ERROR_TYPE);
   }
 
   *out = utils::hex::decode(data);

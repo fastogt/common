@@ -37,7 +37,7 @@ namespace common {
 namespace logging {
 
 namespace {
-const char* log_levels_names[LOG_NUM_LEVELS] = {"EMERG",   "ALLERT", "CRITICAL", "ERROR",
+const char* log_levels_names[LOG_NUM_LEVELS] = {"EMERG",   "ALLERT", "CRITICAL", "ERROR_TYPE",
                                                 "WARNING", "NOTICE", "INFO",     "DEBUG"};
 
 const char* log_levels_name(int level) {

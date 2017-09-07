@@ -29,24 +29,45 @@
 
 #pragma once
 
+#include <memory>
+
 #include <common/sprintf.h>
-#include <common/value.h>  // for Value::ErrorsType, Value, ErrorValue
 
 namespace common {
 
+enum ErrorType { NO_ERROR_TYPE, EXCEPTION_TYPE, ERROR_TYPE, INTERRUPTED_TYPE };
 enum ErrnoType { SYSTEM_ERRNO, NETWORK_ERRNO };
 
 const char* common_strerror(int err);
 extern const char* common_gai_strerror(int err);
 const char* common_strerror(int err, ErrnoType errno_type);
 
+class ErrorValue {
+ public:
+  ErrorValue(const std::string& description, ErrorType error_type, logging::LOG_LEVEL level);
+
+  bool IsError() const;
+
+  ErrorType GetErrorType() const;
+  logging::LOG_LEVEL GetLevel() const;
+  std::string GetDescription() const;
+
+  virtual ~ErrorValue();
+
+ private:
+  const std::string description_;
+  const ErrorType error_type_;
+  const logging::LOG_LEVEL level_;
+  DISALLOW_COPY_AND_ASSIGN(ErrorValue);
+};
+
 class ErrnoErrorValue : public ErrorValue {
  public:
-  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorsType error_type, logging::LOG_LEVEL level);
+  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type, logging::LOG_LEVEL level);
   ErrnoErrorValue(int err,
                   ErrnoType errno_type,
                   const std::string& description,
-                  ErrorsType error_type,
+                  ErrorType error_type,
                   logging::LOG_LEVEL level);
 
   int GetErrno() const;
@@ -61,27 +82,27 @@ typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => no error, if(err && e
 typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
 
 //
-Error make_inval_error_value(Value::ErrorsType error_type, logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
+Error make_inval_error_value(ErrorType error_type, logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 Error make_error_value(const std::string& description,
-                       Value::ErrorsType error_type,
+                       ErrorType error_type,
                        logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_errno(int err,
                                   ErrnoType errno_type,
-                                  Value::ErrorsType error_type,
+                                  ErrorType error_type,
                                   logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_errno(int err,
                                   ErrnoType errno_type,
                                   const std::string& description,
-                                  Value::ErrorsType error_type,
+                                  ErrorType error_type,
                                   logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 ErrnoError make_error_value_perror(const std::string& function,
                                    int err,
                                    ErrnoType errno_type,
-                                   Value::ErrorsType error_type,
+                                   ErrorType error_type,
                                    logging::LOG_LEVEL level = logging::LOG_LEVEL_ERR);
 
 }  // namespace common
