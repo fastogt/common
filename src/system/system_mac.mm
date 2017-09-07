@@ -21,12 +21,12 @@ std::string StatusToString(OSStatus status) {
 namespace common {
 namespace system {
 
-Error Shutdown(shutdown_t type) {
+ErrnoError Shutdown(shutdown_t type) {
   /*
-      *    kAERestart        will cause system to restart
-      *    kAEShutDown       will cause system to shutdown
-      *    kAEReallyLogout   will cause system to logout
-      *    kAESleep          will cause system to sleep
+   *    kAERestart        will cause system to restart
+   *    kAEShutDown       will cause system to shutdown
+   *    kAEReallyLogout   will cause system to logout
+   *    kAESleep          will cause system to sleep
    */
 
   AEEventID eventToSendID;
@@ -38,7 +38,7 @@ Error Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     eventToSendID = kAERestart;
   } else {
-    return make_error_value_perror("systemShutdown", EINVAL, SYSTEM_ERRNO, ErrorValue::E_ERROR);
+    return make_error_perror("systemShutdown", EINVAL, ERROR_TYPE);
   }
 
   AEAddressDesc targetDesc;
@@ -50,7 +50,7 @@ Error Shutdown(shutdown_t type) {
       AECreateDesc(typeProcessSerialNumber, &kPSNOfSystemProcess, sizeof(kPSNOfSystemProcess), &targetDesc);
 
   if (status != noErr) {
-    return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
+    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
   }
 
   status = AECreateAppleEvent(kCoreEventClass, eventToSendID, &targetDesc, kAutoGenerateReturnID, kAnyTransactionID,
@@ -59,18 +59,18 @@ Error Shutdown(shutdown_t type) {
   AEDisposeDesc(&targetDesc);
 
   if (status != noErr) {
-    return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
+    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
   }
 
   status = AESendMessage(&eventToSend, &eventReply, kAENormalPriority, kAEDefaultTimeout);
 
   AEDisposeDesc(&eventToSend);
   if (status != noErr) {
-    return make_error_value(StatusToString(status), ErrorValue::E_ERROR);
+    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
   }
 
   AEDisposeDesc(&eventReply);
-  return Error();
+  return ErrnoError();
 }
 }
 }
