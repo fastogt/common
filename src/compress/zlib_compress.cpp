@@ -43,14 +43,14 @@ template <typename STR, typename STR2>
 Error EncodeZlibT(const STR& data, STR2* out, int compressionlevel) {
   typedef typename STR2::value_type value_type2;
   if (data.empty() || !out) {
-    return make_inval_error_value(ERROR_TYPE);
+    return make_error_inval(ERROR_TYPE);
   }
 
   z_stream zs;  // z_stream is zlib's control structure
   memset(&zs, 0, sizeof(zs));
 
   if (deflateInit(&zs, compressionlevel) != Z_OK) {
-    return make_error_value("Zlib init error", ERROR_TYPE);
+    return make_error("Zlib init error", ERROR_TYPE);
   }
 #if defined(ZLIB_CONST) && !defined(z_const)
   zs.next_in = reinterpret_cast<const Bytef*>(data.data());
@@ -85,7 +85,7 @@ Error EncodeZlibT(const STR& data, STR2* out, int compressionlevel) {
   if (ret != Z_STREAM_END) {  // an error occurred that was not EOF
     char buffer[256];
     SNPrintf(buffer, sizeof(buffer), "Zlib encode error returned code: %d", ret);
-    return make_error_value(buffer, ERROR_TYPE);
+    return make_error(buffer, ERROR_TYPE);
   }
 
   *out = lout;
@@ -96,14 +96,14 @@ template <typename STR, typename STR2>
 Error DecodeZlibT(const STR& data, STR2* out) {
   typedef typename STR2::value_type value_type2;
   if (data.empty() || !out) {
-    return make_inval_error_value(ERROR_TYPE);
+    return make_error_inval(ERROR_TYPE);
   }
 
   z_stream zs;  // z_stream is zlib's control structure
   memset(&zs, 0, sizeof(zs));
 
   if (inflateInit(&zs) != Z_OK) {
-    return make_error_value("Zlib init error", ERROR_TYPE);
+    return make_error("Zlib init error", ERROR_TYPE);
   }
 
 #if defined(ZLIB_CONST) && !defined(z_const)
@@ -136,7 +136,7 @@ Error DecodeZlibT(const STR& data, STR2* out) {
   if (ret != Z_STREAM_END) {  // an error occurred that was not EOF
     char buffer[256];
     SNPrintf(buffer, sizeof(buffer), "Zlib decode error returned code: %d", ret);
-    return make_error_value(buffer, ERROR_TYPE);
+    return make_error(buffer, ERROR_TYPE);
   }
 
   *out = lout;

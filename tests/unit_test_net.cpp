@@ -6,8 +6,8 @@
 
 void exec_serv(common::net::ServerSocketTcp* serv) {
   common::net::socket_info inf;
-  common::Error err = serv->Accept(&inf);
-  ASSERT_FALSE(err && err->IsError());
+  common::ErrnoError err = serv->Accept(&inf);
+  ASSERT_FALSE(err);
 }
 
 TEST(HostAndPort, methods) {
@@ -91,9 +91,9 @@ TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   HostAndPort host("localhost", 4567);
   ServerSocketTcp serv(host);
   common::ErrnoError err = serv.Bind(true);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   err = serv.Listen(5);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   ClientSocketTcp tcp(host);
   socket_info inf = tcp.GetInfo();
@@ -103,14 +103,14 @@ TEST(ServerSocketTcpAndClientSocketTcp, workflow) {
   DCHECK(res);
   sleep(1);
   err = tcp.Connect();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   inf = tcp.GetInfo();
   ASSERT_FALSE(inf.addr_info() == NULL);
   ex_handler->Join();
   err = tcp.Close();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   err = serv.Close();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 }
 
 TEST(SocketTcp, bindRandomWorkflow) {
@@ -119,9 +119,9 @@ TEST(SocketTcp, bindRandomWorkflow) {
   ServerSocketTcp serv(host);
 
   common::ErrnoError err = serv.Bind(false);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   err = serv.Listen(5);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   HostAndPort chost = serv.GetHost();
   ASSERT_FALSE(chost == host);
@@ -134,12 +134,12 @@ TEST(SocketTcp, bindRandomWorkflow) {
   DCHECK(res);
   sleep(1);
   err = tcp.Connect();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   inf = tcp.GetInfo();
   ASSERT_FALSE(inf.addr_info() == NULL);
   ex_handler->Join();
   err = tcp.Close();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   err = serv.Close();
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 }

@@ -33,74 +33,99 @@
 
 #include <common/sprintf.h>
 
+#include <common/optional.h>
+
 namespace common {
 
-enum ErrorType { NO_ERROR_TYPE, EXCEPTION_TYPE, ERROR_TYPE, INTERRUPTED_TYPE };
-enum ErrnoType { SYSTEM_ERRNO, NETWORK_ERRNO };
+enum ErrorType { EXCEPTION_TYPE, ERROR_TYPE, INTERRUPTED_TYPE };
 
 const char* common_strerror(int err);
 extern const char* common_gai_strerror(int err);
-const char* common_strerror(int err, ErrnoType errno_type);
 
-class ErrorValue {
- public:
-  ErrorValue(const std::string& description, ErrorType error_type);
-
-  bool IsError() const;
-
-  ErrorType GetErrorType() const;
-  const std::string& GetDescription() const;
-
-  virtual ~ErrorValue();
-
- private:
-  const std::string description_;
-  const ErrorType error_type_;
-  DISALLOW_COPY_AND_ASSIGN(ErrorValue);
+template <typename T>
+struct ErrorTrait {
+  static std::string GetText(T t);
 };
 
-class ErrnoErrorValue : public ErrorValue {
+template <typename T, typename trait>
+class ErrorBase {
  public:
-  ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type);
-  ErrnoErrorValue(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type);
+  typedef T error_code_type;
+  typedef trait trait_type;
 
-  int GetErrno() const;
-  ErrnoType GetErrnoType() const;
+  ErrorBase(error_code_type error_code, ErrorType error_type) : error_code_(error_code), error_type_(error_type) {}
+  std::string GetDescription() const { return trait_type::GetTextFromErrorCode(error_code_); }
+  error_code_type GetErrorCode() const { return error_code_; }
+  ErrorType GetErrorType() const { return error_type_; }
 
  private:
-  const int errno_;
-  const ErrnoType errno_type_;
+  error_code_type error_code_;
+  ErrorType error_type_;
 };
 
-typedef std::shared_ptr<ErrorValue> Error;  // if(!err) => no error, if(err && err->IsError()) => error
-typedef std::shared_ptr<ErrnoErrorValue> ErrnoError;
+// common error
+enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2 };
+struct CommonErrorTraits {
+  static std::string GetTextFromErrorCode(CommonErrorCode error);
+};
+class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
+ public:
+  typedef ErrorBase<CommonErrorCode, CommonErrorTraits> base_class;
+  ErrorValue(CommonErrorCode error_code, ErrorType error_type)
+      : base_class(error_code, error_type), text_error_description_() {}
+  ErrorValue(const std::string& description, ErrorType error_type)
+      : base_class(COMMON_TEXT_ERROR, error_type), text_error_description_(description) {}
 
-//
-Error make_inval_error_value(ErrorType error_type);
+  bool IsTextError() const { return GetErrorCode() == COMMON_TEXT_ERROR; }
 
-Error make_error_value(const std::string& description, ErrorType error_type);
+  std::string GetDescription() const {
+    if (IsTextError()) {
+      return text_error_description_;
+    }
+    return base_class::trait_type::GetTextFromErrorCode(GetErrorCode());
+  }
 
-ErrnoError make_error_value_errno(int err, ErrnoType errno_type, ErrorType error_type);
+ private:
+  std::string text_error_description_;
+};
+typedef Optional<ErrorValue> Error;
 
-ErrnoError make_error_value_errno(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type);
+Error make_error_inval(ErrorType error_type);
+Error make_error(const std::string& description, ErrorType error_type);
 
-ErrnoError make_error_value_perror(const std::string& function, int err, ErrnoType errno_type, ErrorType error_type);
+// errno error
+struct ErrnoTraits {
+  static std::string GetTextFromErrorCode(int error);
+};
+typedef ErrorBase<int, ErrnoTraits> ErrnoErrorValue;
+typedef Optional<ErrnoErrorValue> ErrnoError;
+
+ErrnoError make_errno_error_inval(ErrorType error_type);
+ErrnoError make_errno_error(int err, ErrorType error_type);
+ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type);
+Error make_error_from_errno(ErrnoError err);
 
 }  // namespace common
 
-void DEBUG_MSG_ERROR(common::Error err, common::logging::LOG_LEVEL level);
+template <typename T>
+inline void DEBUG_MSG_ERROR(common::Optional<T> err, common::logging::LOG_LEVEL level) {
+  if (!err) {
+    return;
+  }
+
+  RUNTIME_LOG(level) << err->GetDescription();
+}
+
 common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
                                     int err,
-                                    common::ErrnoType errno_type,
                                     common::logging::LOG_LEVEL level,
                                     bool notify = true);
 
 template <typename... Args>
-common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt,
-                                           int err,
-                                           common::ErrnoType errno_type,
-                                           common::logging::LOG_LEVEL level,
-                                           Args... args) {
+inline common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt,
+                                                  int err,
+                                                  common::logging::LOG_LEVEL level,
+                                                  Args... args) {
   const std::string func_args = common::MemSPrintf(fmt, args...);
-  return DEBUG_MSG_PERROR(func_args, err, errno_type, level, true);
+  return DEBUG_MSG_PERROR(func_args, err, level, true);
 }

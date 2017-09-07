@@ -52,7 +52,7 @@ namespace common {
 namespace system {
 
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
-Error Shutdown(shutdown_t type) {
+ErrnoError Shutdown(shutdown_t type) {
   sync();
 #if POWEROFF_STRATEGY == REBOOT_CALL
   int howto = 0;
@@ -63,11 +63,11 @@ Error Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     howto = OS_REBOOT;
   } else {
-    return make_error_value_perror("Shutdown", EINVAL, ERROR_TYPE);
+    return make_error_perror("Shutdown", EINVAL, ERROR_TYPE);
   }
   int res = reboot(howto);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("reboot", errno, ERROR_TYPE);
+    return make_error_perror("reboot", errno, ERROR_TYPE);
   }
 #else
   int res = SUCCESS_RESULT_VALUE;
@@ -78,14 +78,14 @@ Error Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     res = ::system("reboot");
   } else {
-    return make_error_value_perror("Shutdown", EINVAL, SYSTEM_ERRNO, ERROR_TYPE);
+    return make_error_perror("Shutdown", EINVAL, ERROR_TYPE);
   }
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_value_perror("system", errno, SYSTEM_ERRNO, ERROR_TYPE);
+    return make_error_perror("system", errno, ERROR_TYPE);
   }
 #endif
-  return Error();
+  return ErrnoError();
 }
 #endif
 

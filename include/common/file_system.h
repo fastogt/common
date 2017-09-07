@@ -341,8 +341,8 @@ ErrnoError close_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) WARN_UNUSED_RESULT;
 ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;
 ErrnoError touch(const std::string& path) WARN_UNUSED_RESULT;
-typedef Error (*read_cb)(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed);
-Error read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data);
+typedef ErrnoError (*read_cb)(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed);
+ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data);
 
 ErrnoError copy_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;
 ErrnoError move_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;

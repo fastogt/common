@@ -225,7 +225,7 @@ const char* get_mime_type(const char* name) {
 
   return "text/plain; charset=UTF-8";
 }
-}
+}  // namespace detail
 
 }  // namespace uri
 }  // namespace common

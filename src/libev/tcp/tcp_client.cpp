@@ -48,7 +48,7 @@ descriptor_t TcpClient::GetFd() const {
 
 Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   if (!data || !size || !nwrite) {
-    return make_inval_error_value(ERROR_TYPE);
+    return make_error_inval(ERROR_TYPE);
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -56,9 +56,9 @@ Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
 
   while (total < size) {
     size_t n;
-    Error err = sock_.Write(data, size, &n);
-    if (err && err->IsError()) {
-      return err;
+    ErrnoError err = sock_.Write(data, size, &n);
+    if (err) {
+      return make_error(err->GetDescription(), ERROR_TYPE);
     }
     total += n;
     bytes_left -= n;
@@ -70,7 +70,7 @@ Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
 
 Error TcpClient::Read(char* out, size_t size, size_t* nread) {
   if (!out || !size || !nread) {
-    return make_inval_error_value(ERROR_TYPE);
+    return make_error_inval(ERROR_TYPE);
   }
 
   size_t total = 0;          // how many bytes we've readed
@@ -78,9 +78,9 @@ Error TcpClient::Read(char* out, size_t size, size_t* nread) {
 
   while (total < size) {
     size_t n;
-    Error err = sock_.Read(out + total, bytes_left, &n);
-    if (err && err->IsError()) {
-      return err;
+    ErrnoError err = sock_.Read(out + total, bytes_left, &n);
+    if (err) {
+      return make_error(err->GetDescription(), ERROR_TYPE);
     }
     total += n;
     bytes_left -= n;
@@ -91,7 +91,12 @@ Error TcpClient::Read(char* out, size_t size, size_t* nread) {
 }
 
 Error TcpClient::CloseImpl() {
-  return sock_.Close();
+  ErrnoError err = sock_.Close();
+  if (err) {
+    return make_error(err->GetDescription(), ERROR_TYPE);
+  }
+
+  return Error();
 }
 
 }  // namespace tcp

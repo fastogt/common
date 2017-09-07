@@ -30,6 +30,7 @@
 #pragma once
 
 #include <QEvent>
+#include <QFileDevice>
 #include <QModelIndex>
 
 #include <common/error.h>
@@ -93,8 +94,14 @@ class EventInfo {
 
 QString ApplicationDirPath();
 
-Error LoadFromFileText(const QString& filePath, QString* outText);
-Error SaveToFileText(QString filePath, const QString& text);
+struct QtFileErrorTraits {
+  static std::string GetTextFromErrorCode(QFileDevice::FileError error);
+};
+typedef ErrorBase<QFileDevice::FileError, QtFileErrorTraits> QtFileErrorValue;
+typedef Optional<QtFileErrorValue> QtFileError;
+
+QtFileError LoadFromFileText(const QString& filePath, QString* outText);
+QtFileError SaveToFileText(QString filePath, const QString& text);
 
 struct WaitCursorHolder {
   WaitCursorHolder();

@@ -43,7 +43,7 @@ struct WinsockInit {
     WORD version = MAKEWORD(2, 2);
     int res = WSAStartup(version, &d);
     if (res != 0) {
-      DEBUG_MSG_PERROR("WSAStartup", res, common::SYSTEM_ERRNO, common::logging::LOG_LEVEL_ERR);
+      DEBUG_MSG_PERROR("WSAStartup", res, common::logging::LOG_LEVEL_ERR);
       exit(EXIT_FAILURE);
     }
   }
@@ -56,7 +56,7 @@ struct SigIgnInit {
 #elif defined(COMPILER_MSVC)
 #else
     if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-      DEBUG_MSG_PERROR("signal", errno, common::SYSTEM_ERRNO, common::logging::LOG_LEVEL_ERR);
+      DEBUG_MSG_PERROR("signal", errno, common::logging::LOG_LEVEL_ERR);
       exit(EXIT_FAILURE);
     }
 #endif
@@ -115,18 +115,18 @@ void TcpServer::Stoped(LibEvLoop* loop) {
   loop->StopIO(accept_io_);
   IoLoop::Stoped(loop);
 
-  Error err = sock_.Close();
-  if (err && err->IsError()) {
+  ErrnoError err = sock_.Close();
+  if (err) {
     DNOTREACHED() << err->GetDescription();
     return;
   }
 }
 
-Error TcpServer::Bind(bool reuseaddr) {
+ErrnoError TcpServer::Bind(bool reuseaddr) {
   return sock_.Bind(reuseaddr);
 }
 
-Error TcpServer::Listen(int backlog) {
+ErrnoError TcpServer::Listen(int backlog) {
   return sock_.Listen(backlog);
 }
 
@@ -138,7 +138,7 @@ net::HostAndPort TcpServer::GetHost() const {
   return sock_.GetHost();
 }
 
-Error TcpServer::Accept(net::socket_info* info) {
+ErrnoError TcpServer::Accept(net::socket_info* info) {
   return sock_.Accept(info);
 }
 
@@ -152,8 +152,8 @@ void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
   }
 
   net::socket_info sinfo;
-  Error err = pserver->Accept(&sinfo);
-  if (err && err->IsError()) {
+  ErrnoError err = pserver->Accept(&sinfo);
+  if (err) {
     DNOTREACHED() << err->GetDescription();
     return;
   }

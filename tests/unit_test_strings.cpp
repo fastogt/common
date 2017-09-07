@@ -155,11 +155,11 @@ TEST(string, HexCompress) {
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_hex;
   common::Error err = common::compress::EncodeHex(json, false, &encoded_hex);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   common::buffer_t decoded;
   err = common::compress::DecodeHex(encoded_hex, &decoded);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
 
@@ -174,11 +174,11 @@ TEST(string, Base64Compress) {
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_base64;
   common::Error err = common::compress::EncodeBase64(json, &encoded_base64);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   common::buffer_t decoded;
   err = common::compress::DecodeBase64(encoded_base64, &decoded);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
 
@@ -194,11 +194,11 @@ TEST(string, ZlibCompress) {
       "type" : "1"},"type" : "relay"})");
   common::buffer_t encoded_zlib;
   common::Error err = common::compress::EncodeZlib(json, &encoded_zlib);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   common::buffer_t decoded;
   err = common::compress::DecodeZlib(encoded_zlib, &decoded);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
 #endif
@@ -215,11 +215,11 @@ TEST(string, SnappyCompress) {
       "type" : "1"},"type" : "relay"})";
   std::string encoded_snappy;
   common::Error err = common::compress::EncodeSnappy(json, &encoded_snappy);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string decoded;
   err = common::compress::DecodeSnappy(encoded_snappy, &decoded);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
 #endif

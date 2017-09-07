@@ -83,7 +83,7 @@ socket_descr_t SocketHolder::GetFd() const {
 ErrnoError SocketHolder::Close() {
   const socket_descr_t fd = info_.fd();
   ErrnoError err = close(fd);
-  if (err && err->IsError()) {
+  if (err) {
     DNOTREACHED();
     return err;
   }
@@ -111,7 +111,7 @@ ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   socket_info linfo;
   ErrnoError err = socket(IP_DOMAIN, ST_SOCK_STREAM, 0, &linfo);  // init fd
-  if (err && err->IsError()) {
+  if (err) {
     return err;
   }
 
@@ -135,7 +135,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   if (is_random_port) {  // random port
     err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
                &info_);  // init sockaddr
-    if (err && err->IsError()) {
+    if (err) {
       return err;
     }
 
@@ -143,7 +143,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
     memset(&addr2, 0, sizeof(sockaddr_t));
     err = getsockname(fd, reinterpret_cast<struct sockaddr*>(&addr2), sizeof(sockaddr_t),
                       &info_);  // init sockaddr
-    if (err && err->IsError()) {
+    if (err) {
       return err;
     }
 

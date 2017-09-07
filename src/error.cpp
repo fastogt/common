@@ -47,88 +47,55 @@ const char* common_strerror(int err) {
 }
 #endif
 
-const char* common_strerror(int err, ErrnoType errno_type) {
-  if (errno_type == SYSTEM_ERRNO) {
-    return common_strerror(err);
+std::string CommonErrorTraits::GetTextFromErrorCode(CommonErrorCode error) {
+  if (COMMON_INVALID_INPUT) {
+    return "Invalid input argument(s)";
   }
-
-  return common_gai_strerror(err);
+  return common::MemSPrintf("Unknown common error code: %d.", static_cast<int>(error));
 }
 
-ErrorValue::ErrorValue(const std::string& description, ErrorType error_type)
-    : description_(description), error_type_(error_type) {}
-
-bool ErrorValue::IsError() const {
-  return error_type_ != NO_ERROR_TYPE;
+std::string ErrnoTraits::GetTextFromErrorCode(int error) {
+  return common_strerror(error);
 }
 
-ErrorType ErrorValue::GetErrorType() const {
-  return error_type_;
+Error make_error_inval(ErrorType error_type) {
+  return ErrorValue(COMMON_INVALID_INPUT, error_type);
 }
 
-const std::string& ErrorValue::GetDescription() const {
-  return description_;
+Error make_error(const std::string& description, ErrorType error_type) {
+  return ErrorValue(description, error_type);
 }
 
-ErrorValue::~ErrorValue() {}
-
-ErrnoErrorValue::ErrnoErrorValue(int err, ErrnoType errno_type, ErrorType error_type)
-    : ErrorValue(common_strerror(err, errno_type), error_type), errno_(err), errno_type_(errno_type) {}
-
-ErrnoErrorValue::ErrnoErrorValue(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type)
-    : ErrorValue(description, error_type), errno_(err), errno_type_(errno_type) {}
-
-int ErrnoErrorValue::GetErrno() const {
-  return errno_;
+ErrnoError make_errno_error_inval(ErrorType error_type) {
+  return make_errno_error(EINVAL, error_type);
 }
 
-ErrnoType ErrnoErrorValue::GetErrnoType() const {
-  return errno_type_;
+ErrnoError make_errno_error(int err, ErrorType error_type) {
+  return ErrnoErrorValue(err, error_type);
 }
 
-Error make_inval_error_value(ErrorType error_type) {
-  return make_error_value("Invalid input argument(s)", error_type);
-}
-
-Error make_error_value(const std::string& description, ErrorType error_type) {
-  return std::make_shared<ErrorValue>(description, error_type);
-}
-
-ErrnoError make_error_value_errno(int err, ErrnoType errno_type, ErrorType error_type) {
-  return std::make_shared<ErrnoErrorValue>(err, errno_type, error_type);
-}
-
-ErrnoError make_error_value_errno(int err, ErrnoType errno_type, const std::string& description, ErrorType error_type) {
-  return std::make_shared<ErrnoErrorValue>(err, errno_type, description, error_type);
-}
-
-ErrnoError make_error_value_perror(const std::string& function, int err, ErrnoType errno_type, ErrorType error_type) {
-  const std::string strer = common_strerror(err, errno_type);
+ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type) {
+  const std::string strer = common_strerror(err);
   const std::string descr = function + " : " + strer;
-  return make_error_value_errno(err, errno_type, descr, error_type);
+  return make_errno_error(err, error_type);
+}
+
+Error make_error_from_errno(ErrnoError err) {
+  return make_error(err->GetDescription(), err->GetErrorType());
 }
 
 }  // namespace common
 
-void DEBUG_MSG_ERROR(common::Error err, common::logging::LOG_LEVEL level) {
-  if (!err) {
-    return;
-  }
-
-  RUNTIME_LOG(level) << err->GetDescription();
-}
-
 common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
                                     int err,
-                                    common::ErrnoType errno_type,
                                     common::logging::LOG_LEVEL level,
                                     bool notify) {
-  const std::string strer = common::common_strerror(err, errno_type);
+  const std::string strer = common::common_strerror(err);
   const std::string descr = function + " : " + strer;
 
-  common::ErrnoError error = common::make_error_value_errno(err, errno_type, descr, common::ERROR_TYPE);
+  common::ErrnoError error = common::make_errno_error(err, common::ERROR_TYPE);
   if (notify) {
-    DEBUG_MSG_ERROR(error, level);
+    RUNTIME_LOG(level) << descr;
   }
 
   return error;

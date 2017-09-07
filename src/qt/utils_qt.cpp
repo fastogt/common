@@ -34,8 +34,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-#include <common/qt/convert2string.h>  // for ConvertToString
-
 namespace common {
 namespace qt {
 
@@ -51,9 +49,13 @@ QString ApplicationDirPath() {
   return QApplication::applicationDirPath();
 }
 
-Error LoadFromFileText(const QString& filePath, QString* outText) {
+std::string QtFileErrorTraits::GetTextFromErrorCode(QFileDevice::FileError error) {
+  return common::MemSPrintf("QFileDevice error: %d.", static_cast<int>(error));
+}
+
+QtFileError LoadFromFileText(const QString& filePath, QString* outText) {
   if (!outText) {
-    return make_inval_error_value(ERROR_TYPE);
+    return QtFileErrorValue(QFileDevice::OpenError, ERROR_TYPE);
   }
 
   QFile file(filePath);
@@ -62,15 +64,15 @@ Error LoadFromFileText(const QString& filePath, QString* outText) {
     WaitCursorHolder h;
     UNUSED(h);
     *outText = in.readAll();
-    return Error();
+    return QtFileError();
   }
 
-  return make_error_value(ConvertToString(file.errorString()), ERROR_TYPE);
+  return QtFileErrorValue(file.error(), ERROR_TYPE);
 }
 
-Error SaveToFileText(QString filePath, const QString& text) {
+QtFileError SaveToFileText(QString filePath, const QString& text) {
   if (filePath.isEmpty()) {
-    return make_inval_error_value(ERROR_TYPE);
+    return QtFileErrorValue(QFileDevice::OpenError, ERROR_TYPE);
   }
 
 #ifdef OS_LINUX
@@ -84,10 +86,10 @@ Error SaveToFileText(QString filePath, const QString& text) {
     WaitCursorHolder h;
     UNUSED(h);
     out << text;
-    return Error();
+    return QtFileError();
   }
 
-  return make_error_value(ConvertToString(file.errorString()), ERROR_TYPE);
+  return QtFileErrorValue(file.error(), ERROR_TYPE);
 }
 
 }  // namespace qt

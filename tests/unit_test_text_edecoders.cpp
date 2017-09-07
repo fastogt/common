@@ -15,11 +15,11 @@ TEST(msg_pack, enc_dec) {
   common::MsgPackEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 #endif
@@ -29,11 +29,11 @@ TEST(html, enc_dec) {
   common::HtmlEscEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
@@ -42,11 +42,11 @@ TEST(hex, enc_dec) {
   common::HexEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
@@ -55,11 +55,11 @@ TEST(base64, enc_dec) {
   common::Base64EDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
@@ -69,11 +69,11 @@ TEST(zlib, enc_dec) {
   common::CompressZlibEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 #endif
@@ -84,11 +84,11 @@ TEST(snappy, enc_dec) {
   common::CompressSnappyEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 #endif

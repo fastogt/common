@@ -57,8 +57,8 @@ class TcpServer : public IoLoop {
   explicit TcpServer(const net::HostAndPort& host, IoLoopObserver* observer = nullptr);
   virtual ~TcpServer();
 
-  Error Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  Error Listen(int backlog) WARN_UNUSED_RESULT;
+  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
+  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
 
   const char* ClassName() const override;
   net::HostAndPort GetHost() const;
@@ -74,7 +74,7 @@ class TcpServer : public IoLoop {
 
   static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
 
-  Error Accept(net::socket_info* info) WARN_UNUSED_RESULT;
+  ErrnoError Accept(net::socket_info* info) WARN_UNUSED_RESULT;
 
   net::ServerSocketTcp sock_;
   LibevIO* accept_io_;

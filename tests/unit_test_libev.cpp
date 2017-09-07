@@ -24,7 +24,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
     common::net::socket_info sc;
     ASSERT_EQ(g_hs, sserver->GetHost());
     common::ErrnoError err = common::net::connect(g_hs, common::net::ST_SOCK_STREAM, &tv, &sc);
-    ASSERT_FALSE(err && err->IsError());
+    ASSERT_FALSE(err);
   }
 
   virtual void Accepted(common::libev::IoClient* client) override {
@@ -67,11 +67,11 @@ void ExitServer(common::libev::tcp::TcpServer* ser) {
 TEST(Libev, IoServer) {
   ServerHandler hand;
   common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(g_hs, &hand);
-  common::Error err = serv->Bind(true);
-  ASSERT_FALSE(err && err->IsError());
+  common::ErrnoError err = serv->Bind(true);
+  ASSERT_FALSE(err);
 
   err = serv->Listen(5);
-  ASSERT_FALSE(err && err->IsError());
+  ASSERT_FALSE(err);
 
   auto tp = THREAD_MANAGER()->CreateThread(&ExitServer, serv);
   GTEST_ASSERT_EQ(tp->GetHandle(), common::threads::invalid_thread_handle());
