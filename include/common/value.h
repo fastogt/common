@@ -34,7 +34,7 @@
 #include <set>
 #include <unordered_map>
 
-#include <common/string16.h>
+#include <common/macros.h>
 #include <common/types.h>  // for byte_array_t
 
 namespace common {
@@ -176,7 +176,6 @@ class FundamentalValue : public Value {
 class StringValue : public Value {
  public:
   explicit StringValue(const std::string& in_value);
-  explicit StringValue(const string16& in_value);
   virtual ~StringValue();
 
   virtual bool GetAsString(std::string* out_value) const override WARN_UNUSED_RESULT;

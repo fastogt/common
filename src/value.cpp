@@ -29,9 +29,9 @@
 
 #include <common/value.h>
 
-#include <string.h>  // for memcpy
+#include <string.h>
 
-#include <common/convert2string.h>
+#include <algorithm>
 
 namespace common {
 namespace {
@@ -471,8 +471,6 @@ bool FundamentalValue::Equals(const Value* other) const {
 ///////////////////// StringValue ////////////////////
 
 StringValue::StringValue(const std::string& in_value) : Value(TYPE_STRING), value_(in_value) {}
-
-StringValue::StringValue(const string16& in_value) : Value(TYPE_STRING), value_(ConvertToString(in_value)) {}
 
 StringValue::~StringValue() {}
 
