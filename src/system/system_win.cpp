@@ -5,12 +5,12 @@
 namespace common {
 namespace system {
 
-Error Shutdown(shutdown_t type) {
+ErrnoError Shutdown(shutdown_t type) {
   HANDLE hToken = NULL;
 
   bool is_ok = OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken);
   if (!is_ok) {
-    return make_error_value_perror("OpenProcessToken", errno, SYSTEM_ERRNO, ERROR_TYPE);
+    return make_error_perror("OpenProcessToken", errno);
   }
 
   TOKEN_PRIVILEGES tkp;
@@ -19,13 +19,13 @@ Error Shutdown(shutdown_t type) {
 
   is_ok = LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &tkp.Privileges[0].Luid);
   if (!is_ok) {
-    return make_error_value_perror("LookupPrivilegeValue", errno, SYSTEM_ERRNO, ERROR_TYPE);
+    return make_error_perror("LookupPrivilegeValue", errno);
   }
 
   // get the shutdown privilege for this process
   is_ok = AdjustTokenPrivileges(hToken, FALSE, &tkp, 0, (PTOKEN_PRIVILEGES)NULL, 0);
   if (!is_ok) {
-    return make_error_value_perror("AdjustTokenPrivileges", errno, SYSTEM_ERRNO, ERROR_TYPE);
+    return make_error_perror("AdjustTokenPrivileges", errno);
   }
 
   switch (type) {
@@ -39,10 +39,10 @@ Error Shutdown(shutdown_t type) {
       ::ExitWindowsEx(EWX_REBOOT | EWX_FORCE, 0);
       break;
     default:
-      return make_error_value_perror("systemShutdown", EINVAL, SYSTEM_ERRNO, ERROR_TYPE);
+      return make_error_perror("systemShutdown", EINVAL);
   }
 
-  return Error();
+  return ErrnoError();
 }
 }
 }

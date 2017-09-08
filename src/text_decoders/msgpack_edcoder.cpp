@@ -70,7 +70,7 @@ MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(ED_MSG_PACK) {}
 
 Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   cmp_ctx_t cmp;
@@ -78,7 +78,7 @@ Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   cmp_init(&cmp, &lout, NULL, stream_writer);
   bool res = cmp_write_str(&cmp, data.data(), data.size());
   if (!res) {
-    return make_error("MsgPackEDcoder internal error!", ERROR_TYPE);
+    return make_error("MsgPackEDcoder internal error!");
   }
   *out = lout;
   return Error();
@@ -86,12 +86,12 @@ Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
 
 Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
   cmp_ctx_t cmp;
   char* copy = reinterpret_cast<char*>(calloc(data.size() + 1, sizeof(char)));
   if (!copy) {
-    return make_error("Memory allocation failed!", ERROR_TYPE);
+    return make_error("Memory allocation failed!");
   }
 
   memcpy(copy, data.data(), data.size());
@@ -108,7 +108,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
         break;
       }
 
-      return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+      return make_error(cmp_strerror(&cmp));
     }
 
     char sbuf[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -132,7 +132,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
       case CMP_TYPE_STR32:
         if (!read_bytes(sbuf, obj.as.str_size, copy)) {
           free(copy);
-          return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+          return make_error(cmp_strerror(&cmp));
         }
         sbuf[obj.as.str_size] = 0;
         lout += sbuf;
@@ -143,7 +143,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
         memset(sbuf, 0, sizeof(sbuf));
         if (!read_bytes(sbuf, obj.as.bin_size, copy)) {
           free(copy);
-          return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+          return make_error(cmp_strerror(&cmp));
         }
         lout.append(sbuf, obj.as.bin_size);
         break;
@@ -171,17 +171,17 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
           uint8_t day = 0;
           if (!read_bytes(&year, sizeof(uint16_t), copy)) {
             free(copy);
-            return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+            return make_error(cmp_strerror(&cmp));
           }
 
           if (!read_bytes(&month, sizeof(uint8_t), copy)) {
             free(copy);
-            return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+            return make_error(cmp_strerror(&cmp));
           }
 
           if (!read_bytes(&day, sizeof(uint8_t), copy)) {
             free(copy);
-            return make_error(cmp_strerror(&cmp), ERROR_TYPE);
+            return make_error(cmp_strerror(&cmp));
           }
 
           char buff[32] = {0};
@@ -230,7 +230,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
         lout += buff;
         break;
       }
-      default: { return make_error(MemSPrintf("Unrecognized object type %u\n", obj.type), ERROR_TYPE); }
+      default: { return make_error(MemSPrintf("Unrecognized object type %u\n", obj.type)); }
     }
   }
 

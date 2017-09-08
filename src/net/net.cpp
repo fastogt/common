@@ -137,7 +137,7 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
   if (!tv) {
     int res = ::connect(sock, addr, len);
     if (res == ERROR_RESULT_VALUE) {
-      return make_error_perror("connect", errno, ERROR_TYPE);
+      return make_error_perror("connect", errno);
     }
 
     return ErrnoError();
@@ -160,10 +160,10 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
 #endif
         if (res == -1) {
           set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect poll", errno, ERROR_TYPE);
+          return make_error_perror("async_connect poll", errno);
         } else if (res == 0) {
           set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect timeout", ETIMEDOUT, ERROR_TYPE);
+          return make_error_perror("async_connect timeout", ETIMEDOUT);
         }
 
         // Socket selected for write
@@ -171,17 +171,17 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
         socklen_t errlen = sizeof(so_error);
         if (getsockopt(sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&so_error), &errlen) == ERROR_RESULT_VALUE) {
           set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect getsockopt", errno, ERROR_TYPE);
+          return make_error_perror("async_connect getsockopt", errno);
         }
 
         // Check the value returned...
         if (so_error) {
           set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect", so_error, ERROR_TYPE);
+          return make_error_perror("async_connect", so_error);
         }
       } else {
         set_blocking_socket(sock, 1);
-        return make_error_perror("async_connect", errno, ERROR_TYPE);
+        return make_error_perror("async_connect", errno);
       }
     }
 
@@ -194,13 +194,13 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
 
 ErrnoError socket(int domain, socket_t type, int protocol, socket_info* out_info) {
   if (!out_info) {
-    return make_error_perror("socket", EINVAL, ERROR_TYPE);
+    return make_error_perror("socket", EINVAL);
   }
 
   int ntype = socket_type_to_native(type);
   socket_descr_t sd = ::socket(domain, ntype, protocol);
   if (sd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("socket", errno, ERROR_TYPE);
+    return make_error_perror("socket", errno);
   }
 
   out_info->set_fd(sd);
@@ -223,20 +223,20 @@ ErrnoError bind(socket_descr_t fd,
                 bool reuseaddr,
                 socket_info* out_info) {
   if (!addr || fd == INVALID_SOCKET_VALUE || !out_info) {
-    return make_error_perror("bind", EINVAL, ERROR_TYPE);
+    return make_error_perror("bind", EINVAL);
   }
 
   if (reuseaddr) {
     const int optionval = 1;
     int res = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optionval, sizeof(optionval));
     if (res == ERROR_RESULT_VALUE) {
-      return make_error_perror("setsockopt", errno, ERROR_TYPE);
+      return make_error_perror("setsockopt", errno);
     }
   }
 
   int res = ::bind(fd, addr, addr_len);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("bind", errno, ERROR_TYPE);
+    return make_error_perror("bind", errno);
   }
 
   out_info->set_fd(fd);
@@ -247,12 +247,12 @@ ErrnoError bind(socket_descr_t fd,
 
 ErrnoError getsockname(socket_descr_t fd, struct sockaddr* addr, socklen_t addr_len, socket_info* out_info) {
   if (!addr || fd == INVALID_SOCKET_VALUE || !out_info) {
-    return make_error_perror("getsockname", EINVAL, ERROR_TYPE);
+    return make_error_perror("getsockname", EINVAL);
   }
 
   int res = ::getsockname(fd, addr, &addr_len);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("getsockname", errno, ERROR_TYPE);
+    return make_error_perror("getsockname", errno);
   }
 
   out_info->set_fd(fd);
@@ -274,12 +274,12 @@ uint16_t get_in_port(struct sockaddr* sa) {
 ErrnoError listen(const socket_info& info, int backlog) {
   socket_descr_t fd = info.fd();
   if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("listen", EINVAL, ERROR_TYPE);
+    return make_error_perror("listen", EINVAL);
   }
 
   int res = ::listen(fd, backlog);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("listen", errno, ERROR_TYPE);
+    return make_error_perror("listen", errno);
   }
 
   return ErrnoError();
@@ -288,7 +288,7 @@ ErrnoError listen(const socket_info& info, int backlog) {
 ErrnoError accept(const socket_info& info, socket_info* out_info) {
   socket_descr_t fd = info.fd();
   if (fd == INVALID_SOCKET_VALUE || !out_info) {
-    return make_error_perror("accept", EINVAL, ERROR_TYPE);
+    return make_error_perror("accept", EINVAL);
   }
 
   *out_info = info;
@@ -302,7 +302,7 @@ ErrnoError accept(const socket_info& info, socket_info* out_info) {
 #endif
   int res = ::accept(fd, addr, addr_len);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("accept", errno, ERROR_TYPE);
+    return make_error_perror("accept", errno);
   }
 
   out_info->set_fd(res);
@@ -313,7 +313,7 @@ namespace {
 
 ErrnoError connect(const char* host, uint16_t port, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
   if (!host || !out_info) {
-    return common::make_error_perror("connect", EINVAL, ERROR_TYPE);
+    return common::make_error_perror("connect", EINVAL);
   }
 
   socket_descr_t sfd = INVALID_SOCKET_VALUE;
@@ -339,7 +339,7 @@ ErrnoError connect(const char* host, uint16_t port, socket_t socktype, struct ti
     hints.ai_family = AF_INET6;
     int rv = getaddrinfo(host, _port, &hints, &result);
     if (rv != 0) {
-      return make_error_perror("getaddrinfo", rv, ERROR_TYPE);
+      return make_error_perror("getaddrinfo", rv);
     }
   }
 
@@ -368,7 +368,7 @@ ErrnoError connect(const char* host, uint16_t port, socket_t socktype, struct ti
   if (rp == NULL) { /* No address succeeded */
     int err = errno;
     CHECK(err) << "Errno(" << err << ") should be not zero!";
-    return make_error_perror("getaddrinfo", err, ERROR_TYPE);
+    return make_error_perror("getaddrinfo", err);
   }
 
   out_info->set_addrinfo(rp);
@@ -385,7 +385,7 @@ ErrnoError connect(const char* host, uint16_t port, socket_t socktype, struct ti
 
 ErrnoError connect(const HostAndPort& to, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
   if (!to.IsValid() || !out_info) {
-    return make_error_perror("connect", EINVAL, ERROR_TYPE);
+    return make_error_perror("connect", EINVAL);
   }
 
   const HostAndPort::host_t host = to.GetHost();
@@ -399,11 +399,11 @@ ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info
   int fd = info.fd();
 
   if (fd == INVALID_DESCRIPTOR || !out_info) {
-    return make_error_perror("connect", EINVAL, ERROR_TYPE);
+    return make_error_perror("connect", EINVAL);
   }
 
   if (!addr) {
-    return make_error_perror("connect", EINVAL, ERROR_TYPE);
+    return make_error_perror("connect", EINVAL);
   }
 
   ErrnoError err = socket(addr->ai_family, native_to_socket_type(addr->ai_socktype), addr->ai_protocol, out_info);
@@ -422,7 +422,7 @@ ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info
 
 ErrnoError close(socket_descr_t fd) {
   if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("close", EINVAL, ERROR_TYPE);
+    return make_error_perror("close", EINVAL);
   }
 
 #ifdef OS_WIN
@@ -431,7 +431,7 @@ ErrnoError close(socket_descr_t fd) {
   int res = ::close(fd);
 #endif
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("close", errno, ERROR_TYPE);
+    return make_error_perror("close", errno);
   }
 
   return ErrnoError();
@@ -441,7 +441,7 @@ ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) {
 #ifdef OS_POSIX
   int opts = fcntl(sock, F_GETFL);
   if (opts < 0) {
-    return make_error_perror("fcntl(F_GETFL)", errno, ERROR_TYPE);
+    return make_error_perror("fcntl(F_GETFL)", errno);
   }
 
   if (blocking) {
@@ -451,7 +451,7 @@ ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) {
   }
 
   if (fcntl(sock, F_SETFL, opts) < 0) {
-    return make_error_perror("fcntl(F_SETFL)", errno, ERROR_TYPE);
+    return make_error_perror("fcntl(F_SETFL)", errno);
   }
 
   return ErrnoError();
@@ -459,7 +459,7 @@ ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) {
   unsigned long flags = blocking;
   int res = ioctlsocket(sock, FIONBIO, &flags);
   if (res == SOCKET_ERROR) {
-    return make_error_perror("ioctlsocket", errno, ERROR_TYPE);
+    return make_error_perror("ioctlsocket", errno);
   }
 
   return ErrnoError();
@@ -469,12 +469,12 @@ ErrnoError set_blocking_socket(socket_descr_t sock, bool blocking) {
 #ifdef OS_POSIX
 ErrnoError write_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nwritten_out) {
   if (fd == INVALID_SOCKET_VALUE || !iovec || count <= 0 || !nwritten_out) {
-    return make_error_perror("write_ev_to_socket", EINVAL, ERROR_TYPE);
+    return make_error_perror("write_ev_to_socket", EINVAL);
   }
 
   ssize_t lnwritten = writev(fd, iovec, count);
   if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("writev", errno, ERROR_TYPE);
+    return make_error_perror("writev", errno);
   }
 
   *nwritten_out = lnwritten;
@@ -483,12 +483,12 @@ ErrnoError write_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int 
 
 ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nread_out) {
   if (fd == INVALID_SOCKET_VALUE || !iovec || count <= 0 || !nread_out) {
-    return make_error_perror("write_ev_to_socket", EINVAL, ERROR_TYPE);
+    return make_error_perror("write_ev_to_socket", EINVAL);
   }
 
   ssize_t lnread = readv(fd, iovec, count);
   if (lnread == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("writev", errno, ERROR_TYPE);
+    return make_error_perror("writev", errno);
   }
 
   *nread_out = lnread;
@@ -498,7 +498,7 @@ ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int c
 
 ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten) {
   if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
-    return make_error_perror("write_to_socket", EINVAL, ERROR_TYPE);
+    return make_error_perror("write_to_socket", EINVAL);
   }
 
 #ifdef OS_WIN
@@ -508,7 +508,7 @@ ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, siz
 #endif
 
   if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("write", errno, ERROR_TYPE);
+    return make_error_perror("write", errno);
   }
 
   *nwritten = lnwritten;
@@ -517,7 +517,7 @@ ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, siz
 
 ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nread) {
   if (fd == INVALID_SOCKET_VALUE || !out || len == 0 || !nread) {
-    return make_error_perror("read_from_socket", EINVAL, ERROR_TYPE);
+    return make_error_perror("read_from_socket", EINVAL);
   }
 
 #ifdef OS_WIN
@@ -527,11 +527,11 @@ ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nr
 #endif
 
   if (lnread == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("read", errno, ERROR_TYPE);
+    return make_error_perror("read", errno);
   }
 
   if (lnread == 0) {
-    return make_errno_error(ECONNRESET, ERROR_TYPE);
+    return make_errno_error(ECONNRESET);
   }
 
   *nread = lnread;
@@ -545,15 +545,15 @@ ErrnoError sendto(socket_descr_t fd,
                   socklen_t addr_len,
                   ssize_t* nwritten_out) {
   if (!data) {
-    return make_error_perror("sendto", EINVAL, ERROR_TYPE);
+    return make_error_perror("sendto", EINVAL);
   }
 
   if (!addr) {
-    return make_error_perror("sendto", EINVAL, ERROR_TYPE);
+    return make_error_perror("sendto", EINVAL);
   }
 
   if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("sendto", EINVAL, ERROR_TYPE);
+    return make_error_perror("sendto", EINVAL);
   }
 
 #ifdef OS_WIN
@@ -563,7 +563,7 @@ ErrnoError sendto(socket_descr_t fd,
 #endif
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendto", errno, ERROR_TYPE);
+    return make_error_perror("sendto", errno);
   }
   if (*nwritten_out) {
     *nwritten_out = res;
@@ -578,15 +578,15 @@ ErrnoError recvfrom(socket_descr_t fd,
                     socklen_t* addr_len,
                     ssize_t* nread_out) {
   if (!out_data) {
-    return make_error_perror("recvfrom", EINVAL, ERROR_TYPE);
+    return make_error_perror("recvfrom", EINVAL);
   }
 
   if (!addr) {
-    return make_error_perror("recvfrom", EINVAL, ERROR_TYPE);
+    return make_error_perror("recvfrom", EINVAL);
   }
 
   if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("recvfrom", EINVAL, ERROR_TYPE);
+    return make_error_perror("recvfrom", EINVAL);
   }
 
 #ifdef OS_WIN
@@ -596,7 +596,7 @@ ErrnoError recvfrom(socket_descr_t fd,
 #endif
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendfile", errno, ERROR_TYPE);
+    return make_error_perror("sendfile", errno);
   }
   if (*nread_out) {
     *nread_out = res;
@@ -606,12 +606,12 @@ ErrnoError recvfrom(socket_descr_t fd,
 
 ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size) {
   if (sock == INVALID_SOCKET_VALUE || fd == INVALID_DESCRIPTOR) {
-    return make_error_perror("send_file_to_fd", EINVAL, ERROR_TYPE);
+    return make_error_perror("send_file_to_fd", EINVAL);
   }
 
   ssize_t res = sendfile(sock, fd, &offset, size);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendfile", errno, ERROR_TYPE);
+    return make_error_perror("sendfile", errno);
   }
 
   return ErrnoError();
@@ -619,7 +619,7 @@ ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size
 
 ErrnoError send_file(const std::string& path, const HostAndPort& to) {
   if (path.empty()) {
-    return make_error_perror("send_file", EINVAL, ERROR_TYPE);
+    return make_error_perror("send_file", EINVAL);
   }
 
   socket_info info;
@@ -630,7 +630,7 @@ ErrnoError send_file(const std::string& path, const HostAndPort& to) {
 
   int fd = open(path.c_str(), O_RDONLY);
   if (fd == INVALID_DESCRIPTOR) {
-    return make_error_perror("open", errno, ERROR_TYPE);
+    return make_error_perror("open", errno);
   }
 
   struct stat stat_buf;

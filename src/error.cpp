@@ -58,8 +58,10 @@ std::string common_strerror(int err) {
 #endif
 
 std::string CommonErrorTraits::GetTextFromErrorCode(CommonErrorCode error) {
-  if (COMMON_INVALID_INPUT) {
+  if (error == COMMON_INVALID_INPUT) {
     return "Invalid input argument(s)";
+  } else if (error == COMMON_EINTR) {
+    return "Interrupted function call";
   }
   return common::MemSPrintf("Unknown common error code: %d.", static_cast<int>(error));
 }
@@ -68,34 +70,34 @@ std::string ErrnoTraits::GetTextFromErrorCode(int error) {
   return common_strerror(error);
 }
 
-Error make_error_inval(ErrorType error_type) {
-  return ErrorValue(COMMON_INVALID_INPUT, error_type);
+Error make_error_inval() {
+  return ErrorValue(COMMON_INVALID_INPUT);
 }
 
-Error make_error(const std::string& description, ErrorType error_type) {
-  return ErrorValue(description, error_type);
+Error make_error(const std::string& description) {
+  return ErrorValue(description);
 }
 
-ErrnoError make_errno_error_inval(ErrorType error_type) {
-  return make_errno_error(EINVAL, error_type);
+ErrnoError make_errno_error_inval() {
+  return make_errno_error(EINVAL);
 }
 
-ErrnoError make_errno_error(int err, ErrorType error_type) {
-  return ErrnoErrorValue(err, error_type);
+ErrnoError make_errno_error(int err) {
+  return ErrnoErrorValue(err);
 }
 
-ErrnoError make_errno_error(const std::string& description, int err, ErrorType error_type) {
-  return ErrnoErrorValue(description, err, error_type);
+ErrnoError make_errno_error(const std::string& description, int err) {
+  return ErrnoErrorValue(description, err);
 }
 
-ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type) {
+ErrnoError make_error_perror(const std::string& function, int err) {
   const std::string strer = common_strerror(err);
   const std::string descr = function + " : " + strer;
-  return make_errno_error(descr, err, error_type);
+  return make_errno_error(descr, err);
 }
 
 Error make_error_from_errno(ErrnoError err) {
-  return make_error(err->GetDescription(), err->GetErrorType());
+  return make_error(err->GetDescription());
 }
 
 }  // namespace common
@@ -107,7 +109,7 @@ common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
   const std::string strer = common::common_strerror(err);
   const std::string descr = function + " : " + strer;
 
-  common::ErrnoError error = common::make_errno_error(err, common::ERROR_TYPE);
+  common::ErrnoError error = common::make_errno_error(err);
   if (notify) {
     RUNTIME_LOG(level) << descr;
   }

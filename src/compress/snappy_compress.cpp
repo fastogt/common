@@ -37,13 +37,13 @@ namespace compress {
 
 Error EncodeSnappy(const buffer_t& data, buffer_t* out) {
   if (data.empty() || !out) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Compress(reinterpret_cast<const char*>(data.data()), data.size(), &lout);
   if (writed_bytes == 0) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   *out = buffer_t(lout.begin(), lout.end());
@@ -52,13 +52,13 @@ Error EncodeSnappy(const buffer_t& data, buffer_t* out) {
 
 Error DecodeSnappy(const buffer_t& data, buffer_t* out) {
   if (data.empty() || !out) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Uncompress(reinterpret_cast<const char*>(data.data()), data.size(), &lout);
   if (writed_bytes == 0) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   *out = buffer_t(lout.begin(), lout.end());
@@ -67,13 +67,13 @@ Error DecodeSnappy(const buffer_t& data, buffer_t* out) {
 
 Error EncodeSnappy(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Compress(data.data(), data.size(), &lout);
   if (writed_bytes == 0) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   *out = lout;
@@ -82,13 +82,13 @@ Error EncodeSnappy(const StringPiece& data, std::string* out) {
 
 Error DecodeSnappy(const StringPiece& data, std::string* out) {
   if (data.empty() || !out) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   std::string lout;
   size_t writed_bytes = snappy::Uncompress(data.data(), data.size(), &lout);
   if (writed_bytes == 0) {
-    return make_error_inval(ERROR_TYPE);
+    return make_error_inval();
   }
 
   *out = lout;

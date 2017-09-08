@@ -161,7 +161,7 @@ header_t http_request::findHeaderByValue(const std::string& value, bool caseSens
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, http_request* req_out) {
   if (request.empty() || !req_out) {
-    return std::make_pair(HS_FORBIDDEN, make_error_inval(ERROR_TYPE));
+    return std::make_pair(HS_FORBIDDEN, make_error_inval());
   }
 
   typedef std::string::size_type string_size_t;
@@ -197,19 +197,19 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
           if (spaceP != std::string::npos) {
             std::string path = protcolAndPath.substr(1, spaceP - 2);
             if (protcolAndPath[0] != '/') {  // must start with /
-              return std::make_pair(HS_BAD_REQUEST, make_error("Bad filename.", ERROR_TYPE));
+              return std::make_pair(HS_BAD_REQUEST, make_error("Bad filename."));
             }
 
             lprotocol = protcolAndPath.substr(spaceP);
             lpath = uri::Upath(path);
           } else {
-            return std::make_pair(HS_FORBIDDEN, make_error("Not allowed.", ERROR_TYPE));
+            return std::make_pair(HS_FORBIDDEN, make_error("Not allowed."));
           }
         } else {
-          return std::make_pair(HS_NOT_IMPLEMENTED, make_error("That method is not implemented.", ERROR_TYPE));
+          return std::make_pair(HS_NOT_IMPLEMENTED, make_error("That method is not implemented."));
         }
       } else {
-        return std::make_pair(HS_NOT_IMPLEMENTED, make_error("That method is not implemented.", ERROR_TYPE));
+        return std::make_pair(HS_NOT_IMPLEMENTED, make_error("That method is not implemented."));
       }
     } else {
       string_size_t delem = line.find_first_of(':');
@@ -235,7 +235,7 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
   }
 
   if (line_count == 0) {
-    return std::make_pair(HS_BAD_REQUEST, make_error("Not found CRLF", ERROR_TYPE));
+    return std::make_pair(HS_BAD_REQUEST, make_error("Not found CRLF"));
   }
 
   *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody);

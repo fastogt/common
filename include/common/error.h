@@ -37,15 +37,8 @@
 
 namespace common {
 
-enum ErrorType { EXCEPTION_TYPE, ERROR_TYPE, INTERRUPTED_TYPE };
-
 std::string common_strerror(int err);
 extern std::string common_gai_strerror(int err);
-
-template <typename T>
-struct ErrorTrait {
-  static std::string GetText(T t);
-};
 
 template <typename T, typename trait>
 class ErrorBase {
@@ -53,28 +46,24 @@ class ErrorBase {
   typedef T error_code_type;
   typedef trait trait_type;
 
-  ErrorBase(error_code_type error_code, ErrorType error_type) : error_code_(error_code), error_type_(error_type) {}
+  ErrorBase(error_code_type error_code) : error_code_(error_code) {}
   std::string GetDescription() const { return trait_type::GetTextFromErrorCode(error_code_); }
   error_code_type GetErrorCode() const { return error_code_; }
-  ErrorType GetErrorType() const { return error_type_; }
 
  private:
   error_code_type error_code_;
-  ErrorType error_type_;
 };
 
 // common error
-enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2 };
+enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2, COMMON_EINTR = -3 };
 struct CommonErrorTraits {
   static std::string GetTextFromErrorCode(CommonErrorCode error);
 };
 class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
  public:
   typedef ErrorBase<CommonErrorCode, CommonErrorTraits> base_class;
-  ErrorValue(CommonErrorCode error_code, ErrorType error_type)
-      : base_class(error_code, error_type), text_error_description_() {}
-  ErrorValue(const std::string& description, ErrorType error_type)
-      : base_class(COMMON_TEXT_ERROR, error_type), text_error_description_(description) {}
+  ErrorValue(CommonErrorCode error_code) : base_class(error_code), text_error_description_() {}
+  ErrorValue(const std::string& description) : base_class(COMMON_TEXT_ERROR), text_error_description_(description) {}
 
   bool IsTextError() const { return GetErrorCode() == COMMON_TEXT_ERROR; }
 
@@ -90,8 +79,8 @@ class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
 };
 typedef Optional<ErrorValue> Error;
 
-Error make_error_inval(ErrorType error_type);
-Error make_error(const std::string& description, ErrorType error_type);
+Error make_error_inval();
+Error make_error(const std::string& description);
 
 // errno error
 struct ErrnoTraits {
@@ -101,10 +90,9 @@ struct ErrnoTraits {
 class ErrnoErrorValue : public ErrorBase<int, ErrnoTraits> {
  public:
   typedef ErrorBase<int, ErrnoTraits> base_class;
-  ErrnoErrorValue(int error_code, ErrorType error_type)
-      : base_class(error_code, error_type), text_error_description_() {}
-  ErrnoErrorValue(const std::string& description, int error_code, ErrorType error_type)
-      : base_class(error_code, error_type), text_error_description_(description) {}
+  ErrnoErrorValue(int error_code) : base_class(error_code), text_error_description_() {}
+  ErrnoErrorValue(const std::string& description, int error_code)
+      : base_class(error_code), text_error_description_(description) {}
 
   std::string GetDescription() const {
     if (!text_error_description_.empty()) {
@@ -119,10 +107,10 @@ class ErrnoErrorValue : public ErrorBase<int, ErrnoTraits> {
 
 typedef Optional<ErrnoErrorValue> ErrnoError;
 
-ErrnoError make_errno_error_inval(ErrorType error_type);
-ErrnoError make_errno_error(int err, ErrorType error_type);
-ErrnoError make_errno_error(const std::string& description, int err, ErrorType error_type);
-ErrnoError make_error_perror(const std::string& function, int err, ErrorType error_type);
+ErrnoError make_errno_error_inval();
+ErrnoError make_errno_error(int err);
+ErrnoError make_errno_error(const std::string& description, int err);
+ErrnoError make_error_perror(const std::string& function, int err);
 Error make_error_from_errno(ErrnoError err);
 
 }  // namespace common

@@ -55,7 +55,7 @@ std::string QtFileErrorTraits::GetTextFromErrorCode(QFileDevice::FileError error
 
 QtFileError LoadFromFileText(const QString& filePath, QString* outText) {
   if (!outText) {
-    return QtFileErrorValue(QFileDevice::OpenError, ERROR_TYPE);
+    return QtFileErrorValue(QFileDevice::OpenError);
   }
 
   QFile file(filePath);
@@ -67,12 +67,12 @@ QtFileError LoadFromFileText(const QString& filePath, QString* outText) {
     return QtFileError();
   }
 
-  return QtFileErrorValue(file.error(), ERROR_TYPE);
+  return QtFileErrorValue(file.error());
 }
 
 QtFileError SaveToFileText(QString filePath, const QString& text) {
   if (filePath.isEmpty()) {
-    return QtFileErrorValue(QFileDevice::OpenError, ERROR_TYPE);
+    return QtFileErrorValue(QFileDevice::OpenError);
   }
 
 #ifdef OS_LINUX
@@ -89,7 +89,7 @@ QtFileError SaveToFileText(QString filePath, const QString& text) {
     return QtFileError();
   }
 
-  return QtFileErrorValue(file.error(), ERROR_TYPE);
+  return QtFileErrorValue(file.error());
 }
 
 }  // namespace qt
