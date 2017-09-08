@@ -38,7 +38,7 @@ ErrnoError Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     eventToSendID = kAERestart;
   } else {
-    return make_error_perror("systemShutdown", EINVAL, ERROR_TYPE);
+    return make_error_perror("systemShutdown", EINVAL);
   }
 
   AEAddressDesc targetDesc;
@@ -50,7 +50,7 @@ ErrnoError Shutdown(shutdown_t type) {
       AECreateDesc(typeProcessSerialNumber, &kPSNOfSystemProcess, sizeof(kPSNOfSystemProcess), &targetDesc);
 
   if (status != noErr) {
-    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
+    return make_errno_error(StatusToString(status), status);
   }
 
   status = AECreateAppleEvent(kCoreEventClass, eventToSendID, &targetDesc, kAutoGenerateReturnID, kAnyTransactionID,
@@ -59,14 +59,14 @@ ErrnoError Shutdown(shutdown_t type) {
   AEDisposeDesc(&targetDesc);
 
   if (status != noErr) {
-    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
+    return make_errno_error(StatusToString(status), status);
   }
 
   status = AESendMessage(&eventToSend, &eventReply, kAENormalPriority, kAEDefaultTimeout);
 
   AEDisposeDesc(&eventToSend);
   if (status != noErr) {
-    return make_errno_error(StatusToString(status), status, ERROR_TYPE);
+    return make_errno_error(StatusToString(status), status);
   }
 
   AEDisposeDesc(&eventReply);

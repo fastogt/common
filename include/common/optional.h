@@ -324,8 +324,7 @@ constexpr bool operator!=(common::nullopt_t, const Optional<T>& opt) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator<(const Optional<T>& opt, common::nullopt_t) {
-  UNUSED(opt);
+constexpr bool operator<(const Optional<T>&, common::nullopt_t) {
   return false;
 }
 template <class T>
@@ -337,8 +336,7 @@ constexpr bool operator<=(const Optional<T>& opt, common::nullopt_t) {
   return !opt;
 }
 template <class T>
-constexpr bool operator<=(common::nullopt_t, const Optional<T>& opt) {
-  UNUSED(opt);
+constexpr bool operator<=(common::nullopt_t, const Optional<T>&) {
   return true;
 }
 template <class T>
@@ -346,13 +344,11 @@ constexpr bool operator>(const Optional<T>& opt, common::nullopt_t) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator>(common::nullopt_t, const Optional<T>& opt) {
-  UNUSED(opt);
+constexpr bool operator>(common::nullopt_t, const Optional<T>&) {
   return false;
 }
 template <class T>
-constexpr bool operator>=(const Optional<T>& opt, common::nullopt_t) {
-  UNUSED(opt);
+constexpr bool operator>=(const Optional<T>&, common::nullopt_t) {
   return true;
 }
 template <class T>
