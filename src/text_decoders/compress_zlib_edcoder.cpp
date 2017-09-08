@@ -41,7 +41,7 @@ Error CompressZlibEDcoder::EncodeImpl(const StringPiece& data, std::string* out)
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error("ED_ZLIB encode not supported", ERROR_TYPE);
+  return make_error("ED_ZLIB encode not supported");
 #endif
 }
 
@@ -51,7 +51,7 @@ Error CompressZlibEDcoder::DecodeImpl(const StringPiece& data, std::string* out)
 #else
   UNUSED(data);
   UNUSED(out);
-  return make_error("ED_ZLIB decode not supported", ERROR_TYPE);
+  return make_error("ED_ZLIB decode not supported");
 #endif
 }
 

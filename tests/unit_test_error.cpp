@@ -8,11 +8,10 @@ TEST(Error, ErrorOnlyIFIsErrorSet) {
   common::Error err;
   ASSERT_TRUE(!err);  // not error
 
-  common::ErrnoError errn = common::make_errno_error(EINVAL, common::ERROR_TYPE);
+  common::ErrnoError errn = common::make_errno_error(EINVAL);
   ASSERT_TRUE(errn);  // error
   ASSERT_EQ(errn->GetErrorCode(), EINVAL);
   ASSERT_NE(errn->GetDescription(), std::string());
-  ASSERT_EQ(errn->GetErrorType(), common::ERROR_TYPE);
 }
 
 enum FError {
@@ -63,7 +62,7 @@ typedef common::ErrorBase<CError, CommonErrorTraits> CommonError;
 typedef common::Optional<CommonError> CommonErrors;
 
 FileErrors FileOpenFailed() {
-  return FileError(FILE_ERROR_FAILED, common::ERROR_TYPE);
+  return FileError(FILE_ERROR_FAILED);
 }
 
 TEST(ErrorNew, Instance) {
@@ -72,7 +71,6 @@ TEST(ErrorNew, Instance) {
   FileErrors file_open_failed = FileOpenFailed();
   ASSERT_TRUE(file_open_failed);
   ASSERT_EQ(file_open_failed->GetErrorCode(), FILE_ERROR_FAILED);
-  ASSERT_EQ(file_open_failed->GetErrorType(), common::ERROR_TYPE);
   ASSERT_EQ(file_open_failed->GetDescription(), "Failed");
 
   CommonErrors common_err;

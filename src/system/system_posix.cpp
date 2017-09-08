@@ -63,11 +63,11 @@ ErrnoError Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     howto = OS_REBOOT;
   } else {
-    return make_error_perror("Shutdown", EINVAL, ERROR_TYPE);
+    return make_error_perror("Shutdown", EINVAL);
   }
   int res = reboot(howto);
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("reboot", errno, ERROR_TYPE);
+    return make_error_perror("reboot", errno);
   }
 #else
   int res = SUCCESS_RESULT_VALUE;
@@ -78,11 +78,11 @@ ErrnoError Shutdown(shutdown_t type) {
   } else if (type == REBOOT) {
     res = ::system("reboot");
   } else {
-    return make_error_perror("Shutdown", EINVAL, ERROR_TYPE);
+    return make_error_perror("Shutdown", EINVAL);
   }
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("system", errno, ERROR_TYPE);
+    return make_error_perror("system", errno);
   }
 #endif
   return ErrnoError();
