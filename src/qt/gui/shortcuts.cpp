@@ -44,17 +44,17 @@ FastoQKeySequence::FastoQKeySequence(Qt::KeyboardModifiers mod, int key)
 FastoQKeySequence::operator QKeySequence() {
   if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
     return QKeySequence(skey_);
-  } else {
-    return QKeySequence(mod_ + key_);
   }
+
+  return QKeySequence(mod_ + key_);
 }
 
 FastoQKeySequence::operator QKeySequence() const {
   if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
     return QKeySequence(skey_);
-  } else {
-    return QKeySequence(mod_ + key_);
   }
+
+  return QKeySequence(mod_ + key_);
 }
 
 bool FastoQKeySequence::operator==(QKeyEvent* ev) const {
@@ -64,9 +64,9 @@ bool FastoQKeySequence::operator==(QKeyEvent* ev) const {
 
   if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
     return ev->matches(skey_);
-  } else {
-    return ev->modifiers() == mod_ && ev->key() == key_;
   }
+
+  return ev->modifiers() == mod_ && ev->key() == key_;
 }
 
 bool isAutoCompleteShortcut(QKeyEvent* keyEvent) {

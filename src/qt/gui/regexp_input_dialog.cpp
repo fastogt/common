@@ -87,7 +87,7 @@ QString RegExpInputDialog::text() {
 }
 
 void RegExpInputDialog::checkValid(const QString& text) {
-  QString _text = QString(text);
+  QString _text = text;
   int pos = 0;
   bool valid = validator_->validate(_text, pos) == QRegExpValidator::Acceptable;
   buttonBox_->button(QDialogButtonBox::Ok)->setEnabled(valid);

@@ -29,12 +29,12 @@
 
 #include <common/text_decoders/iedcoder_factory.h>
 
-#include <common/text_decoders/base64_edcoder.h>  // for Base64EDcoder
+#include <common/text_decoders/base64_edcoder.h>
 #include <common/text_decoders/compress_snappy_edcoder.h>
-#include <common/text_decoders/compress_zlib_edcoder.h>  // for CompressZlibEDcoder
-#include <common/text_decoders/hex_edcoder.h>            // for HexEDcoder
-#include <common/text_decoders/html_edcoder.h>           // for HtmlEscEDcoder
-#include <common/text_decoders/msgpack_edcoder.h>        // for MsgPackEDcoder
+#include <common/text_decoders/compress_zlib_edcoder.h>
+#include <common/text_decoders/hex_edcoder.h>
+#include <common/text_decoders/html_edcoder.h>
+#include <common/text_decoders/msgpack_edcoder.h>
 
 namespace common {
 
@@ -53,14 +53,14 @@ IEDcoder* CreateEDCoder(EDType type) {
     return new HtmlEscEDcoder;
   }
 
-  DNOTREACHED();
+  DNOTREACHED() << "Unknown EDCoder type:" << type;
   return nullptr;
 }
 
 IEDcoder* CreateEDCoder(const std::string& name) {
   EDType t;
   if (!ConvertFromString(name, &t)) {
-    DNOTREACHED();
+    DNOTREACHED() << "Unknown EDCoder name:" << name;
     return nullptr;
   }
 

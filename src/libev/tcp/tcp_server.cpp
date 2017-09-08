@@ -102,7 +102,13 @@ TcpClient* TcpServer::CreateClient(const net::socket_info& info) {
 
 void TcpServer::PreLooped(LibEvLoop* loop) {
   net::socket_descr_t fd = sock_.GetFd();
-  accept_io_->Init(loop, accept_cb, fd, EV_READ);
+  bool is_inited = accept_io_->Init(loop, accept_cb, fd, EV_READ);
+  if (!is_inited) {
+    DNOTREACHED();
+    IoLoop::PreLooped(loop);
+    return;
+  }
+
   accept_io_->Start();
   IoLoop::PreLooped(loop);
 }
@@ -143,7 +149,7 @@ ErrnoError TcpServer::Accept(net::socket_info* info) {
 }
 
 void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
-  TcpServer* pserver = reinterpret_cast<TcpServer*>(io->UserData());
+  TcpServer* pserver = reinterpret_cast<TcpServer*>(io->GetUserData());
   CHECK(pserver && pserver->loop_ == loop);
 
   if (EV_ERROR & revents) {

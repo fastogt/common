@@ -44,17 +44,18 @@ descriptor_t LibevIO::GetFd() const {
   return fd_;
 }
 
-flags_t LibevIO::Events() const {
+flags_t LibevIO::GetEvents() const {
   return events_;
 }
 
 void LibevIO::SetEvents(int events) {
-  ev_io_set(Handle(), fd_, events);
+  ev_io_set(GetHandle(), fd_, events);
+  events_ = events;
 }
 
-void LibevIO::Init(LibEvLoop* loop, io_loop_exec_function_t cb, descriptor_t fd, flags_t events) {
-  if (!loop || !cb) {
-    return;
+bool LibevIO::Init(LibEvLoop* loop, io_loop_exec_function_t cb, descriptor_t fd, flags_t events) {
+  if (!loop || !cb || fd == INVALID_DESCRIPTOR) {
+    return false;
   }
 
   loop->InitIO(this, io_callback, fd, events);
@@ -62,6 +63,7 @@ void LibevIO::Init(LibEvLoop* loop, io_loop_exec_function_t cb, descriptor_t fd,
   func_ = cb;
   fd_ = fd;
   events_ = events;
+  return true;
 }
 
 void LibevIO::Start() {

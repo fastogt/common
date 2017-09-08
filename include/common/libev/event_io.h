@@ -46,12 +46,12 @@ class LibevIO : public LibevBase<struct ev_io, io_id_t> {
   ~LibevIO();
 
   descriptor_t GetFd() const;
-  flags_t Events() const;
 
-  void Init(LibEvLoop* loop, io_loop_exec_function_t cb, descriptor_t fd, flags_t events);
+  bool Init(LibEvLoop* loop, io_loop_exec_function_t cb, descriptor_t fd, flags_t events) WARN_UNUSED_RESULT;
   void Start();
   void Stop();
 
+  flags_t GetEvents() const;
   void SetEvents(int events);
 
  private:

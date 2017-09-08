@@ -100,7 +100,11 @@ void IoLoop::RegisterClient(IoClient* client) {
 
   // Initialize and start watcher to read client requests
   LibevIO* client_ev = client->read_write_io_;
-  client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
+  bool is_inited = client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
+  if (!is_inited) {
+    DNOTREACHED();
+    return;
+  }
   client_ev->Start();
 
   if (observer_) {
@@ -137,7 +141,7 @@ void IoLoop::RemoveTimer(timer_id_t id) {
 }
 
 patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const {
-  return id_.id();
+  return id_.get_id();
 }
 
 void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
@@ -183,7 +187,7 @@ std::string IoLoop::FormatedName() const {
 }
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
-  IoClient* pclient = reinterpret_cast<IoClient*>(io->UserData());
+  IoClient* pclient = reinterpret_cast<IoClient*>(io->GetUserData());
   IoLoop* pserver = pclient->GetServer();
   pserver->ReadWrite(loop, pclient, revents);
 }

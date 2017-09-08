@@ -100,10 +100,10 @@ class LibevBase : public patterns::id_counter<LibevBase<handle_t, id_t>, id_t> {
     free(handle_);
     handle_ = NULL;
   }
-  handle_t* Handle() const { return handle_; }
+  handle_t* GetHandle() const { return handle_; }
   void SetUserData(user_data_t user_data) { user_data_ = user_data; }
 
-  user_data_t UserData() const { return user_data_; }
+  user_data_t GetUserData() const { return user_data_; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LibevBase);

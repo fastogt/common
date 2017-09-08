@@ -40,7 +40,7 @@ namespace patterns {
 template <typename T, typename count_t = std::atomic<uint32_t> >
 class object_counter {
  public:
-  static count_t count() { return object_counter<T, count_t>::count_; }
+  static count_t get_count() { return object_counter<T, count_t>::count_; }
 
  protected:
   object_counter() { ++object_counter<T, count_t>::count_; }
@@ -69,7 +69,7 @@ class id_counter : public object_counter<T, count_t> {
 
   id_counter() : id_(count_++) {}
 
-  type_t id() const { return id_; }
+  type_t get_id() const { return id_; }
 
  protected:
   const atomic_t id_;

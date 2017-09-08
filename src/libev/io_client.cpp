@@ -79,7 +79,7 @@ void IoClient::SetFlags(flags_t flags) {
 }
 
 patterns::id_counter<IoClient>::type_t IoClient::GetId() const {
-  return id_.id();
+  return id_.get_id();
 }
 
 const char* IoClient::ClassName() const {

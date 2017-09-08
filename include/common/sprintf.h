@@ -64,7 +64,7 @@ inline int SNPrintf(char* buff, size_t buff_size, const char* fmt, Args... args)
 }
 
 template <typename... Args>
-std::string MemSPrintf(const char* fmt, Args... args) {  // args should be not null terminated strings or simple types
+std::string MemSPrintf(const char* fmt, Args... args) {  // args should be null terminated strings or simple types
   char* ret = NULL;
   int res = vasprintf(&ret, fmt, normalize_for_printf(args)...);
   if (res == -1) {

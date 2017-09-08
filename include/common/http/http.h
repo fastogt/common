@@ -139,7 +139,7 @@ struct http_request {
   http::http_method method() const;
   std::string body() const;
 
-  bool findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t newValue);
+  bool findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value);
   void removeHeaderByKey(const std::string& key, bool caseSensitive);
 
   header_t findHeaderByKey(const std::string& key, bool caseSensitive) const;

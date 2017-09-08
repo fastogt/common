@@ -115,11 +115,11 @@ std::string http_request::body() const {
   return body_;
 }
 
-bool http_request::findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t newValue) {
+bool http_request::findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value) {
   for (size_t i = 0; i < headers_.size(); ++i) {
-    std::string curKey = headers_[i].key;
-    if (EqualsASCII(curKey, key, caseSensitive)) {
-      headers_[i] = newValue;
+    std::string cur_key = headers_[i].key;
+    if (EqualsASCII(cur_key, key, caseSensitive)) {
+      headers_[i] = new_value;
       return true;
     }
   }

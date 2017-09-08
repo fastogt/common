@@ -31,8 +31,6 @@
 
 #include <QMetaType>
 
-#include <common/convert2string.h>
-#include <common/logger.h>
 #include <common/qt/convert2string.h>
 
 namespace common {
@@ -45,8 +43,8 @@ Logger::Logger() {
 void Logger::print(const char* mess, logging::LOG_LEVEL level, bool notify) {
   RUNTIME_LOG(level) << mess;
   if (notify) {
-    QString qmess;
-    bool res = ConvertFromString(std::string(mess), &qmess);
+    QString qmess = mess;
+    bool res = ConvertFromString(mess, &qmess);  // UTF8
     UNUSED(res);
     emit printed(qmess, level);
   }
@@ -64,7 +62,7 @@ void Logger::print(const std::string& mess, logging::LOG_LEVEL level, bool notif
   RUNTIME_LOG(level) << mess;
   if (notify) {
     QString qmess;
-    bool res = ConvertFromString(mess, &qmess);
+    bool res = ConvertFromString(mess, &qmess);  // UTF8
     UNUSED(res);
     emit printed(qmess, level);
   }

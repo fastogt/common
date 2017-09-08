@@ -33,7 +33,6 @@
 #include <QString>
 
 #include <common/error.h>                       // for Error
-#include <common/log_levels.h>                  // for LOG_LEVEL
 #include <common/patterns/singleton_pattern.h>  // for LazySingleton
 
 namespace common {

@@ -61,8 +61,8 @@ class Event : public QEvent {
   typedef QObject* senders_type;
   enum { EventType = event_t };
 
-  Event(senders_type sender, const value_t& initValue)
-      : QEvent(static_cast<QEvent::Type>(EventType)), value_(initValue), sender_(sender) {}
+  Event(senders_type sender, const value_t& init_value)
+      : QEvent(static_cast<QEvent::Type>(EventType)), value_(init_value), sender_(sender) {}
 
   const value_t& value() const { return value_; }
 
@@ -79,11 +79,11 @@ class EventInfo {
   typedef error_t error_type;
   typedef void* initiator_type;
 
-  EventInfo(initiator_type initiator, error_type er) : error_info_(er), initiator_(initiator) {}
+  EventInfo(initiator_type initiator, error_type err) : error_info_(err), initiator_(initiator) {}
 
   error_type errorInfo() const { return error_info_; }
 
-  void setErrorInfo(error_type er) { error_info_ = er; }
+  void setErrorInfo(error_type err) { error_info_ = err; }
 
   initiator_type initiator() const { return initiator_; }
 
@@ -94,6 +94,7 @@ class EventInfo {
 
 QString ApplicationDirPath();
 
+// qt file error
 struct QtFileErrorTraits {
   static std::string GetTextFromErrorCode(QFileDevice::FileError error);
 };

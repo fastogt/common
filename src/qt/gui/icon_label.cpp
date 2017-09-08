@@ -36,6 +36,7 @@
 namespace common {
 namespace qt {
 namespace gui {
+
 IconLabel::IconLabel(const QIcon& icon, const QString& text, const QSize& size, QWidget* parent)
     : QWidget(parent), icon_(NULL), text_(NULL), el_mode_(Qt::ElideNone) {
   QHBoxLayout* mainL = new QHBoxLayout;
@@ -80,6 +81,7 @@ Qt::TextElideMode IconLabel::elideMode() const {
 void IconLabel::setElideMode(Qt::TextElideMode mod) {
   el_mode_ = mod;
 }
+
 }  // namespace gui
 }  // namespace qt
 }  // namespace common
