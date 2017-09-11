@@ -452,18 +452,11 @@ ErrnoError create_directory(const std::string& path, bool is_recursive) {
         *p = 0;
         const char* path = pr_path_ptr;
 
-        bool needCreate = false;
-        struct stat filestat;
-        if (::stat(path, &filestat) == ERROR_RESULT_VALUE) {
-          needCreate = true;
-        } else {
-          if (!S_ISDIR(filestat.st_mode)) {
-            needCreate = true;
+        if (!is_directory_exist(path)) {
+          ErrnoError err = create_directory_impl(path);
+          if (err) {
+            return err;
           }
-        }
-
-        if (needCreate) {
-          create_directory_impl(path);
         }
 
         *p = get_separator<char>();
