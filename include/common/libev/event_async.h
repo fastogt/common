@@ -37,8 +37,6 @@ struct ev_loop;
 namespace common {
 namespace libev {
 
-class LibEvLoop;
-
 class LibevAsync : public LibevBase<struct ev_async, async_id_t> {
  public:
   typedef LibevBase<struct ev_async, async_id_t> base_class;

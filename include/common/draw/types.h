@@ -34,6 +34,14 @@
 namespace common {
 namespace draw {
 
+struct Point {
+  Point() : x(0), y(0) {}
+  Point(int x, int y) : x(x), y(y) {}
+
+  int x;
+  int y;
+};
+
 struct Size {
   Size();  // invalid size
   Size(int width, int height);
@@ -56,6 +64,10 @@ inline bool operator!=(const Size& left, const Size& right) {
 bool IsValidSize(int width, int height);
 
 }  // namespace draw
+
+std::string ConvertToString(const draw::Point& value);
+bool ConvertFromString(const std::string& from, draw::Point* out);
+
 std::string ConvertToString(const draw::Size& value);
 bool ConvertFromString(const std::string& from, draw::Size* out);
 }  // namespace common

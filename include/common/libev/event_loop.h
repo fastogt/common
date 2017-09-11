@@ -51,10 +51,6 @@ class EvLoopObserver {
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) = 0;
 };
 
-class LibevAsync;
-class LibevIO;
-class LibevTimer;
-
 class LibEvLoop {
   typedef void io_callback_t(struct ev_loop* loop, struct ev_io* watcher, int revents);
   typedef void async_callback_t(struct ev_loop* loop, struct ev_async* watcher, int revents);

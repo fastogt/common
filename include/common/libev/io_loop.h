@@ -32,11 +32,6 @@
 #include <common/libev/event_loop.h>
 
 namespace common {
-namespace libev {
-class LibevIO;
-}
-}  // namespace common
-namespace common {
 namespace net {
 class socket_info;
 }
@@ -70,7 +65,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   std::string GetName() const;
 
   virtual const char* ClassName() const override = 0;
-  std::string FormatedName() const;
+  std::string GetFormatedName() const;
 
   void ExecInLoopThread(custom_loop_exec_function_t func);
 

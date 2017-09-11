@@ -86,7 +86,7 @@ const char* IoClient::ClassName() const {
   return "IoClient";
 }
 
-std::string IoClient::FormatedName() const {
+std::string IoClient::GetFormatedName() const {
   return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
 }
 

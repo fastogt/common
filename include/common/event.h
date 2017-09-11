@@ -29,8 +29,6 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t
-
 #include <common/error.h>  // for Error
 
 namespace common {

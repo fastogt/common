@@ -52,6 +52,36 @@ bool IsValidSize(int width, int height) {
 }
 
 }  // namespace draw
+
+std::string ConvertToString(const draw::Point& value) {
+  return MemSPrintf("%d,%d", value.x, value.y);
+}
+
+bool ConvertFromString(const std::string& from, draw::Point* out) {
+  if (!out) {
+    return false;
+  }
+
+  draw::Point res;
+  size_t del = from.find_first_of(',');
+  if (del != std::string::npos) {
+    int lx;
+    if (!ConvertFromString(from.substr(0, del), &lx)) {
+      return false;
+    }
+    res.x = lx;
+
+    int ly;
+    if (!ConvertFromString(from.substr(del + 1), &ly)) {
+      return false;
+    }
+    res.y = ly;
+  }
+
+  *out = res;
+  return true;
+}
+
 std::string ConvertToString(const draw::Size& value) {
   return MemSPrintf("%dx%d", value.width, value.height);
 }

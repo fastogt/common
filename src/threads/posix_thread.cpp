@@ -127,12 +127,12 @@ bool PlatformThreadHandle::EqualsHandle(const PlatformThreadHandle& other) const
   return pthread_equal(handle_, other.handle_) != 0;
 }
 
-void InitProcessPolicy(lcpu_count_t lCpuCount) {
-  UNUSED(lCpuCount);
+void InitProcessPolicy(lcpu_count_t logical_cpu_count) {
+  UNUSED(logical_cpu_count);
 }
 
-void FreeProcessPolicy(lcpu_count_t lCpuCount) {
-  UNUSED(lCpuCount);
+void FreeProcessPolicy(lcpu_count_t logical_cpu_count) {
+  UNUSED(logical_cpu_count);
 }
 
 platform_handle_t PlatformThread::GetCurrentHandle() {

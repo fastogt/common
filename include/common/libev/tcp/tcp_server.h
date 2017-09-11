@@ -34,22 +34,6 @@
 
 namespace common {
 namespace libev {
-class IoLoopObserver;
-}
-}  // namespace common
-namespace common {
-namespace libev {
-class LibEvLoop;
-}
-}  // namespace common
-namespace common {
-namespace libev {
-class LibevIO;
-}
-}  // namespace common
-
-namespace common {
-namespace libev {
 namespace tcp {
 
 class TcpServer : public IoLoop {

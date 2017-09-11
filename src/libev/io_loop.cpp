@@ -72,7 +72,7 @@ IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
 void IoLoop::UnRegisterClient(IoClient* client) {
   CHECK(IsLoopThread());
   CHECK(client && client->GetServer() == this);
-  const std::string formated_name = client->FormatedName();
+  const std::string formated_name = client->GetFormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
   client_ev->Stop();
@@ -83,14 +83,14 @@ void IoLoop::UnRegisterClient(IoClient* client) {
   }
 
   clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
-  INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << FormatedName() << "], "
+  INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
              << clients_.size() << " client(s) connected.";
 }
 
 void IoLoop::RegisterClient(IoClient* client) {
   CHECK(IsLoopThread());
   CHECK(client);
-  const std::string formated_name = client->FormatedName();
+  const std::string formated_name = client->GetFormatedName();
 
   if (client->GetServer()) {
     CHECK(client->GetServer() == this);
@@ -112,14 +112,14 @@ void IoLoop::RegisterClient(IoClient* client) {
   }
 
   clients_.push_back(client);
-  INFO_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << FormatedName() << "], "
-             << clients_.size() << " client(s) connected.";
+  INFO_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
+             << "], " << clients_.size() << " client(s) connected.";
 }
 
 void IoLoop::CloseClient(IoClient* client) {
   CHECK(IsLoopThread());
   CHECK(client && client->GetServer() == this);
-  const std::string formated_name = client->FormatedName();
+  const std::string formated_name = client->GetFormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
   client_ev->Stop();
@@ -128,7 +128,7 @@ void IoLoop::CloseClient(IoClient* client) {
     observer_->Closed(client);
   }
   clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
-  INFO_LOG() << "Successfully disconnected client[" << formated_name << "], from server[" << FormatedName() << "], "
+  INFO_LOG() << "Successfully disconnected client[" << formated_name << "], from server[" << GetFormatedName() << "], "
              << clients_.size() << " client(s) connected.";
 }
 
@@ -182,7 +182,7 @@ std::string IoLoop::GetName() const {
   return name_;
 }
 
-std::string IoLoop::FormatedName() const {
+std::string IoLoop::GetFormatedName() const {
   return MemSPrintf("[%s][%s(%llu)]", GetName(), ClassName(), GetId());
 }
 

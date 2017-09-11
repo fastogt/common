@@ -100,8 +100,8 @@ enum ThreadPriority {
   PRIORITY_HIGH = 2,
 };
 
-void InitProcessPolicy(lcpu_count_t lCpuCount);
-void FreeProcessPolicy(lcpu_count_t lCpuCount);
+void InitProcessPolicy(lcpu_count_t logical_cpu_count);
+void FreeProcessPolicy(lcpu_count_t logical_cpu_count);
 
 class PlatformThread {
  public:
