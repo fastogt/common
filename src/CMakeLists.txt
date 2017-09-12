@@ -79,6 +79,14 @@ SET(DRAW_SOURCES
   ${CMAKE_SOURCE_DIR}/src/draw/types.cpp
 )
 
+SET(MEDIA_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/media/types.h
+)
+
+SET(MEDIA_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/media/types.cpp
+)
+
 SET(COMPRESS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/compress/hex.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/base64.h
@@ -392,6 +400,7 @@ SET(COMMON_HEADERS
     ${LIBEV_HEADERS}
     ${NET_HEADERS}
     ${DRAW_HEADERS}
+    ${MEDIA_HEADERS}
     ${TEXT_DECODERS_HEADERS}
     ${HASH_HEADERS}
     ${SYSTEM_INFO_HEADERS}
@@ -431,6 +440,7 @@ SET(COMMON_SOURCES
   ${THREADS_SOURCES}
   ${NET_SOURCES}
   ${DRAW_SOURCES}
+  ${MEDIA_SOURCES}
   ${LIBEV_SOURCES}
   ${TEXT_DECODERS_SOURCES}
   ${HASH_SOURCES}
