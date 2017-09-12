@@ -29,6 +29,8 @@
 
 #include <common/error.h>
 
+#include <errno.h>
+
 #include <common/net/types.h>
 
 namespace common {

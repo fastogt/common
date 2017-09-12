@@ -33,6 +33,7 @@
 #include <fcntl.h>     // for open, SEEK_CUR, SEEK_SET, etc
 #include <sys/stat.h>  // for stat, S_IRWXG, S_IRWXO, etc
 #include <unistd.h>    // for close, lseek, read, ssize_t, etc
+#include <errno.h>
 
 #if defined(OS_WIN)
 #include <fileapi.h>

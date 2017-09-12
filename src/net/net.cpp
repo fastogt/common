@@ -30,14 +30,15 @@
 #include <common/net/net.h>
 
 #include <sys/stat.h>
-
+#include <errno.h>
 #include <fcntl.h>
 
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 #else
 #include <windows.h>
 #include <winsock2.h>

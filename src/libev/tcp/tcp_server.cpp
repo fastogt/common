@@ -29,6 +29,7 @@
 
 #include <common/libev/tcp/tcp_server.h>
 
+#include <errno.h>
 #include <signal.h>
 
 #include <common/libev/event_io.h>
