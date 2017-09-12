@@ -137,7 +137,7 @@ class EventBus : public patterns::TSSingleton<EventBus> {
       return;
     }
 
-    EventThread<typename ev_t::type_t>* thr = thread<typename ev_t::type_t>();
+    EventThread<typename ev_t::type_t>* thr = GetThread<typename ev_t::type_t>();
     if (!thr) {
       return;
     }
@@ -151,7 +151,7 @@ class EventBus : public patterns::TSSingleton<EventBus> {
       return;
     }
 
-    EventThread<typename ev_t::type_t>* thr = thread<typename ev_t::type_t>();
+    EventThread<typename ev_t::type_t>* thr = GetThread<typename ev_t::type_t>();
     if (!thr) {
       return;
     }
@@ -165,12 +165,32 @@ class EventBus : public patterns::TSSingleton<EventBus> {
       return;
     }
 
-    EventThread<type_t>* thr = thread<type_t>();
+    EventThread<type_t>* thr = GetThread<type_t>();
     if (!thr) {
       return;
     }
 
     thr->PostEvent(event);
+  }
+
+  void Stop() {
+    stop_ = true;
+    for (identifier_t i = 0; i < max_events_loop; ++i) {
+      if (registered_threads_[i]) {
+        registered_threads_[i] = nullptr;
+      }
+    }
+  }
+
+ private:
+  template <typename type_t>
+  EventThread<type_t>* GetThread() {
+    typedef event_traits<type_t> etraits_t;
+    if (etraits_t::id >= max_events_loop) {
+      return nullptr;
+    }
+
+    return static_cast<EventThread<type_t>*>(registered_threads_[etraits_t::id]);
   }
 
   template <typename type_t>
@@ -238,26 +258,6 @@ class EventBus : public patterns::TSSingleton<EventBus> {
     UnRegisterThread(thread);
   }
 
-  void Stop() {
-    stop_ = true;
-    for (identifier_t i = 0; i < max_events_loop; ++i) {
-      if (registeredThreads_[i]) {
-        registeredThreads_[i] = nullptr;
-      }
-    }
-  }
-
- private:
-  template <typename type_t>
-  EventThread<type_t>* thread() {
-    typedef event_traits<type_t> etraits_t;
-    if (etraits_t::id >= max_events_loop) {
-      return nullptr;
-    }
-
-    return static_cast<EventThread<type_t>*>(registeredThreads_[etraits_t::id]);
-  }
-
   template <typename type_t>
   void RegisterThread(EventThread<type_t>* thread) {
     typedef event_traits<type_t> etraits_t;
@@ -265,7 +265,7 @@ class EventBus : public patterns::TSSingleton<EventBus> {
       return;
     }
 
-    registeredThreads_[etraits_t::id] = thread;
+    registered_threads_[etraits_t::id] = thread;
   }
 
   template <typename type_t>
@@ -276,15 +276,15 @@ class EventBus : public patterns::TSSingleton<EventBus> {
       return;
     }
 
-    registeredThreads_[etraits_t::id] = nullptr;
+    registered_threads_[etraits_t::id] = nullptr;
   }
 
-  void* registeredThreads_[max_events_loop];
+  void* registered_threads_[max_events_loop];
   std::atomic_bool stop_;
 
   EventBus() : stop_(false) {
     for (identifier_t i = 0; i < max_events_loop; ++i) {
-      registeredThreads_[i] = nullptr;
+      registered_threads_[i] = nullptr;
     }
   }
 
