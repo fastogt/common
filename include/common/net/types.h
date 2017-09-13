@@ -59,12 +59,12 @@ class HostAndPort {
   port_t port_;
 };
 
-inline bool operator==(const HostAndPort& lhs, const HostAndPort& rhs) {
-  return lhs.Equals(rhs);
+inline bool operator==(const HostAndPort& left, const HostAndPort& right) {
+  return left.Equals(right);
 }
 
-inline bool operator!=(const HostAndPort& lhs, const HostAndPort& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const HostAndPort& left, const HostAndPort& right) {
+  return !(left == right);
 }
 
 class HostAndPortAndSlot : public HostAndPort {
@@ -83,12 +83,12 @@ class HostAndPortAndSlot : public HostAndPort {
   slot_t slot_;
 };
 
-inline bool operator==(const HostAndPortAndSlot& lhs, const HostAndPortAndSlot& rhs) {
-  return lhs.Equals(rhs);
+inline bool operator==(const HostAndPortAndSlot& left, const HostAndPortAndSlot& right) {
+  return left.Equals(right);
 }
 
-inline bool operator!=(const HostAndPortAndSlot& lhs, const HostAndPortAndSlot& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const HostAndPortAndSlot& left, const HostAndPortAndSlot& right) {
+  return !operator==(left, right);
 }
 
 std::string StableHost(std::string host);

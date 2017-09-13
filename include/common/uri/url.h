@@ -83,8 +83,8 @@ inline bool operator==(const Url& left, const Url& right) {
   return left.Equals(right);
 }
 
-inline bool operator!=(const Url& lhs, const Url& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const Url& left, const Url& right) {
+  return !(left == right);
 }
 
 namespace detail {

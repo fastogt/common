@@ -304,8 +304,9 @@ inline bool operator>=(const StringPiece& x, const StringPiece& y) {
 // StringPiece16 operators -----------------------------------------------------
 
 inline bool operator==(const StringPiece16& x, const StringPiece16& y) {
-  if (x.size() != y.size())
+  if (x.size() != y.size()) {
     return false;
+  }
 
   return StringPiece16::wordmemcmp(x.data(), y.data(), x.size()) == 0;
 }

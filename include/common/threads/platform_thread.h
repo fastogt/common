@@ -85,12 +85,12 @@ class PlatformThreadHandle {
 PlatformThreadHandle invalid_thread_handle();
 PlatformThreadHandle current_thread_handle();
 
-inline bool operator==(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
-  return lhs.Equals(rhs);
+inline bool operator==(const PlatformThreadHandle& left, const PlatformThreadHandle& right) {
+  return left.Equals(right);
 }
 
-inline bool operator!=(const PlatformThreadHandle& lhs, const PlatformThreadHandle& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const PlatformThreadHandle& left, const PlatformThreadHandle& right) {
+  return !(left == right);
 }
 
 enum ThreadPriority {

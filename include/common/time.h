@@ -49,6 +49,9 @@ struct timeval timespec2timeval(struct timespec* ts);
 time64_t timeval2mstime(struct timeval* tv);    // millisecond
 time64_t timespec2mstime(struct timespec* ts);  // millisecond
 
+utctime_t tm2utctime(struct tm* tm);
+struct tm utctime2tm(utctime_t time_sec);
+
 struct timeval mstime2timeval(time64_t mst);
 struct timespec mstime2timespec(time64_t mst);
 

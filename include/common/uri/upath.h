@@ -70,8 +70,8 @@ inline bool operator==(const Upath& left, const Upath& right) {
   return left.Equals(right);
 }
 
-inline bool operator!=(const Upath& lhs, const Upath& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const Upath& left, const Upath& right) {
+  return !(left == right);
 }
 
 namespace detail {

@@ -41,10 +41,11 @@ class CpuInfo {
  public:
   static CpuInfo MakeCpuInfo();
 
-  std::string BrandName() const;
-  core_count_t CoreCount() const;
-  lcpu_count_t LogicalCpusCount() const;
-  lcpu_count_t ThreadsOnCore() const;
+  std::string GetBrandName() const;
+  core_count_t GetCoreCount() const;
+  lcpu_count_t GetLogicalCpusCount() const;
+  lcpu_count_t GetThreadsOnCore() const;
+  std::string GetNativeCpuID() const;
 
   bool IsValid() const;
   bool Equals(const CpuInfo& other) const;
@@ -56,12 +57,12 @@ class CpuInfo {
   std::shared_ptr<CpuInfoImpl> impl_;
 };
 
-inline bool operator==(const CpuInfo& lhs, const CpuInfo& rhs) {
-  return lhs.Equals(rhs);
+inline bool operator==(const CpuInfo& left, const CpuInfo& right) {
+  return left.Equals(right);
 }
 
-inline bool operator!=(const CpuInfo& lhs, const CpuInfo& rhs) {
-  return !(lhs == rhs);
+inline bool operator!=(const CpuInfo& left, const CpuInfo& right) {
+  return !(left == right);
 }
 
 const CpuInfo& CurrentCpuInfo();

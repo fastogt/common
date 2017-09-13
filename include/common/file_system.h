@@ -231,45 +231,67 @@ inline std::basic_string<CharT, Traits> prepare_path(const CharT* path) {
   return prepare_path(std::basic_string<CharT, Traits>(path));
 }
 
-template <typename CharT>
-inline std::basic_string<CharT> get_file_name(std::basic_string<CharT> path) {  // filename + extension
+// is_file_name
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+bool is_file_name(const std::basic_string<CharT, Traits>& filename) {
+  if (filename.empty()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < filename.size(); ++i) {
+    CharT c = filename[i];
+    if (c == get_win_separator<CharT>() || c == get_separator<CharT>()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+bool is_file_name(const CharT* path) {
+  return is_file_name(std::basic_string<CharT, Traits>(path));
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+inline std::basic_string<CharT, Traits> get_file_name(std::basic_string<CharT, Traits> path) {  // filename + extension
   if (!is_valid_path(path)) {
-    return std::basic_string<CharT>();
+    return std::basic_string<CharT, Traits>();
   }
 
   size_t lenght = path.length();
   if (path[lenght - 1] == get_separator<CharT>()) {
     size_t pos = path.find_last_of(get_separator<CharT>(), lenght - 2);
-    if (pos != std::basic_string<CharT>::npos) {
+    if (pos != std::basic_string<CharT, Traits>::npos) {
       std::string res = path.substr(pos + 1, lenght - pos - 2);
       return res;
     }
     return get_separator_string<CharT>();
   } else {
     size_t pos = path.find_last_of(get_separator<CharT>());
-    if (pos != std::basic_string<CharT>::npos) {
+    if (pos != std::basic_string<CharT, Traits>::npos) {
       return path.substr(pos + 1);
     }
-    return std::basic_string<CharT>();
+    return std::basic_string<CharT, Traits>();
   }
 }
 
-template <typename CharT>
-inline std::basic_string<CharT> get_file_extension(std::basic_string<CharT> path) {  // extenstion
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+inline std::basic_string<CharT, Traits> get_file_extension(std::basic_string<CharT, Traits> path) {  // extenstion
   if (!is_valid_path(path)) {
-    return std::basic_string<CharT>();
+    return std::basic_string<CharT, Traits>();
   }
 
   size_t pos = path.find_first_of('.');
-  if (pos != std::basic_string<CharT>::npos) {
+  if (pos != std::basic_string<CharT, Traits>::npos) {
     return path.substr(pos + 1);
   }
 
-  return std::basic_string<CharT>();
+  return std::basic_string<CharT, Traits>();
 }
 
-template <typename CharT>
-inline std::basic_string<CharT> stable_dir_path_separator(std::basic_string<CharT> path) {
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+inline std::basic_string<CharT, Traits> stable_dir_path_separator(std::basic_string<CharT, Traits> path) {
   size_t lenght = path.length();
   if (lenght > 1 && path[lenght - 1] != file_system::get_separator<CharT>()) {
     path += get_separator<CharT>();
@@ -277,24 +299,24 @@ inline std::basic_string<CharT> stable_dir_path_separator(std::basic_string<Char
   return path;
 }
 
-template <typename CharT>
-inline std::basic_string<CharT> stable_dir_path(std::basic_string<CharT> path) {
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+inline std::basic_string<CharT, Traits> stable_dir_path(std::basic_string<CharT, Traits> path) {
   if (!is_valid_path(path)) {
-    return std::basic_string<CharT>();
+    return std::basic_string<CharT, Traits>();
   }
 
   path = prepare_path(path);
   return stable_dir_path_separator(path);
 }
 
-template <typename CharT>
-inline std::basic_string<CharT> make_path(const std::basic_string<CharT>& absolute_path,
-                                          const std::basic_string<CharT>& relative_path) {
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+inline std::basic_string<CharT, Traits> make_path(const std::basic_string<CharT, Traits>& absolute_path,
+                                                  const std::basic_string<CharT, Traits>& relative_path) {
   if (!is_valid_path(absolute_path)) {
-    return std::basic_string<CharT>();
+    return std::basic_string<CharT, Traits>();
   }
 
-  const std::basic_string<CharT> stabled_dir_path = stable_dir_path(absolute_path);
+  const std::basic_string<CharT, Traits> stabled_dir_path = stable_dir_path(absolute_path);
   return stabled_dir_path + relative_path;
 }
 
@@ -366,7 +388,7 @@ ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* ou
 ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;
 ErrnoError touch(const std::string& path) WARN_UNUSED_RESULT;
 typedef ErrnoError (*read_cb)(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed);
-ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data);
+ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) WARN_UNUSED_RESULT;
 
 ErrnoError copy_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;
 ErrnoError move_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;
@@ -385,6 +407,9 @@ ErrnoError write_to_descriptor(descriptor_t fd_desc, const void* buf, size_t len
     WARN_UNUSED_RESULT;
 ErrnoError read_from_descriptor(descriptor_t fd_desc, void* buf, size_t len, size_t* readlen) WARN_UNUSED_RESULT;
 
+ErrnoError get_file_time_last_modification(const std::string& file_path,
+                                           time64_t* mod_time_sec) WARN_UNUSED_RESULT;  // utc time millisecond
+
 bool find_file_in_path(const std::string& file_name, std::string* out_path) WARN_UNUSED_RESULT;
 
 //  ==============================Path=====================================  //
@@ -399,21 +424,13 @@ class StringPath {
 
   explicit StringPath(const value_type& path) : path_(prepare_path(path)) {}
 
-  StringPath(const StringPath& other) : path_(other.path_) {}
-
   bool IsValid() const { return is_valid_path(path_); }
-
-  bool GetEmpty() const { return path_.empty(); }
 
   value_type GetDirectory() const { return get_dir_path(path_); }
 
   value_type GetParentDirectory() const { return get_parent_dir_path(path_); }
 
   value_type GetPath() const { return path_; }
-
-  value_type GetFileName() const { return get_file_name(path_); }
-
-  value_type GetExtension() const { return get_file_extension(path_); }
 
   bool Equals(const StringPath<CharT, Traits>& path) const { return path_ == path.path_; }
 
@@ -430,18 +447,71 @@ class StringPath {
   value_type path_;
 };
 
+template <typename CharT, typename Traits>
+inline bool operator==(const StringPath<CharT, Traits>& left, const StringPath<CharT, Traits>& right) {
+  return left.Equals(right);
+}
+
+template <typename CharT, typename Traits>
+inline bool operator!=(const StringPath<CharT, Traits>& left, const StringPath<CharT, Traits>& right) {
+  return !(left == right);
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+class FileStringPath : public StringPath<CharT, Traits> {
+ public:
+  typedef StringPath<CharT, Traits> base_class;
+  typedef typename base_class::value_type value_type;
+  typedef typename base_class::char_type char_type;
+
+  FileStringPath() : base_class() {}
+
+  explicit FileStringPath(const value_type& path) : base_class(path) {}
+
+  value_type GetFileName() const {
+    const value_type path = base_class::GetPath();
+    return get_file_name(path);
+  }
+
+  value_type GetExtension() const {
+    const value_type path = base_class::GetPath();
+    return get_file_extension(path);
+  }
+};
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+class DirectoryStringPath : public StringPath<CharT, Traits> {
+ public:
+  typedef StringPath<CharT, Traits> base_class;
+  typedef typename base_class::value_type value_type;
+  typedef typename base_class::char_type char_type;
+
+  DirectoryStringPath() : base_class() {}
+
+  explicit DirectoryStringPath(const value_type& path) : base_class(stable_dir_path(path)) {}
+
+  Optional<FileStringPath<CharT, Traits>> MakeFileStringPath(const value_type& filename) const WARN_UNUSED_RESULT {
+    if (!base_class::IsValid()) {
+      return Optional<FileStringPath<CharT, Traits>>();
+    }
+
+    if (!is_file_name(filename)) {
+      return Optional<FileStringPath<CharT, Traits>>();
+    }
+
+    const value_type path = base_class::GetPath();  // stabled
+    return FileStringPath<CharT, Traits>(path + filename);
+  }
+};
+
 typedef StringPath<char> ascii_string_path;
 typedef StringPath<char16, string16_char_traits> utf_string_path;
 
-template <typename CharT, typename Traits>
-inline bool operator==(const StringPath<CharT, Traits>& lhs, const StringPath<CharT, Traits>& rhs) {
-  return lhs.Equals(rhs);
-}
+typedef FileStringPath<char> ascii_file_string_path;
+typedef FileStringPath<char16, string16_char_traits> utf_file_string_path;
 
-template <typename CharT, typename Traits>
-inline bool operator!=(const StringPath<CharT, Traits>& lhs, const StringPath<CharT, Traits>& rhs) {
-  return !(lhs == rhs);
-}
+typedef DirectoryStringPath<char> ascii_directory_string_path;
+typedef DirectoryStringPath<char16, string16_char_traits> utf_directory_string_path;
 
 //  ==============================File=====================================  //
 

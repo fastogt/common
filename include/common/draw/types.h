@@ -58,7 +58,7 @@ inline bool operator==(const Size& left, const Size& right) {
 }
 
 inline bool operator!=(const Size& left, const Size& right) {
-  return !left.Equals(right);
+  return !(left == right);
 }
 
 bool IsValidSize(int width, int height);

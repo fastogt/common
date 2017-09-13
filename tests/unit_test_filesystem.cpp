@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <common/file_system.h>
+#include <common/time.h>
+#include <common/utf_string_conversions.h>
 
 #define IMG_OFFLINE_CHANNEL_PATH_RELATIVE "share/resources/offline_channel.png"
 #define IMG_CONNECTION_ERROR_PATH_RELATIVE "share/resources/connection_error.png"
@@ -63,11 +65,20 @@ TEST(ascii_string_path, filename) {
 #else
   const std::string home = getenv("USERPROFILE");
 #endif
-  common::file_system::ascii_string_path com("~/1.txt");
+  common::file_system::ascii_file_string_path com("~/1.txt");
   ASSERT_TRUE(com.IsValid());
   ASSERT_EQ(com.GetDirectory(), common::file_system::stable_dir_path(home));
   ASSERT_EQ(com.GetFileName(), "1.txt");
   ASSERT_EQ(com.GetExtension(), "txt");
+}
+
+TEST(utf_directory_string_path, make_node) {
+  common::file_system::utf_directory_string_path com(common::UTF8ToUTF16("/home/саша"));
+  ASSERT_TRUE(com.IsValid());
+  auto invalid_utf_file = com.MakeFileStringPath(common::UTF8ToUTF16("паша/"));
+  ASSERT_FALSE(invalid_utf_file);
+  auto valid_utf_file = com.MakeFileStringPath(common::UTF8ToUTF16("паша"));
+  ASSERT_TRUE(valid_utf_file);
 }
 
 TEST(Path, CreateRemoveDirectoryRecursive) {
@@ -94,6 +105,12 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
   ASSERT_TRUE(!err);
   err = common::file_system::create_node(home_test_test_tt);
   ASSERT_TRUE(!err);
+  common::time64_t msec;
+  common::time64_t cur_utc = common::time::current_utc_mstime();
+  err = common::file_system::get_file_time_last_modification(home_test_test_tt, &msec);
+  ASSERT_TRUE(!err);
+  ASSERT_EQ(cur_utc / 1000, msec / 1000);
+
   isExist = common::file_system::is_file_exist(home_test_test_tt);
   ASSERT_TRUE(isExist);
 

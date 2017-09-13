@@ -102,6 +102,16 @@ time64_t timespec2mstime(struct timespec* ts) {
   return mst;
 }
 
+utctime_t tm2utctime(struct tm* tm) {
+  return mktime(tm);
+}
+
+struct tm utctime2tm(utctime_t time_sec) {
+  struct tm info;                 // representing a calendar time
+  localtime_r(&time_sec, &info);  // time to calendar_time
+  return info;
+}
+
 struct timeval mstime2timeval(time64_t mst) {
   if (mst < 0) {
     return timeval();

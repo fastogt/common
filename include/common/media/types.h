@@ -46,7 +46,7 @@ inline bool operator==(const Rational& left, const Rational& right) {
 }
 
 inline bool operator!=(const Rational& left, const Rational& right) {
-  return !operator==(left, right);
+  return !(left == right);
 }
 
 }  // namespace media

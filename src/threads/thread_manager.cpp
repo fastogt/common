@@ -100,11 +100,11 @@ void ThreadManager::ReleaseLCpuNumber(lcpu_count_t index, uintptr_t fc) {
 }
 
 lcpu_count_t ThreadManager::LogicalCpusCount() const {
-  return info_.LogicalCpusCount();
+  return info_.GetLogicalCpusCount();
 }
 
 lcpu_count_t ThreadManager::ThreadsOnCore() const {
-  return info_.ThreadsOnCore();
+  return info_.GetThreadsOnCore();
 }
 
 ThreadManager::ThreadManager() : info_(system_info::CurrentCpuInfo()), key_(0), main_thread_(new Thread<int>) {

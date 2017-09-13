@@ -29,11 +29,11 @@
 
 #include <common/file_system.h>
 
-#include <dirent.h>    // for closedir, readdir, DIR, DT_REG, dirent
+#include <dirent.h>  // for closedir, readdir, DIR, DT_REG, dirent
+#include <errno.h>
 #include <fcntl.h>     // for open, SEEK_CUR, SEEK_SET, etc
 #include <sys/stat.h>  // for stat, S_IRWXG, S_IRWXO, etc
 #include <unistd.h>    // for close, lseek, read, ssize_t, etc
-#include <errno.h>
 
 #if defined(OS_WIN)
 #include <fileapi.h>
@@ -58,6 +58,7 @@ int ftruncate(descriptor_t fd, int64_t length) {
 #endif
 
 #include <common/convert2string.h>  // for ConvertToString16
+#include <common/time.h>
 
 #define FS_BUF_SIZE 1024 * 4
 
@@ -605,6 +606,21 @@ off_t get_file_size_by_descriptor(descriptor_t fd_desc) {
   return stat_buf.st_size;
 }
 
+ErrnoError get_file_time_last_modification(const std::string& file_path, time64_t* mod_time_sec) {
+  if (file_path.empty() || !mod_time_sec) {
+    return make_error_perror("get_file_time_last_modification", EINVAL);
+  }
+
+  struct stat attrib;
+  if (::stat(file_path.c_str(), &attrib) == ERROR_RESULT_VALUE) {
+    return make_errno_error(errno);
+  }
+
+  struct timespec mod_time = attrib.st_mtim;
+  *mod_time_sec = time::timespec2mstime(&mod_time);
+  return ErrnoError();
+}
+
 bool find_file_in_path(const std::string& file_name, std::string* out_path) {
   if (file_name.empty() || !out_path) {
     return false;
@@ -621,7 +637,7 @@ bool find_file_in_path(const std::string& file_name, std::string* out_path) {
 #endif
     test = stable_dir_path(test);
     test.append(file_name);
-    if (stat(test.c_str(), &info) == 0) {
+    if (::stat(test.c_str(), &info) == 0) {
       *out_path = test;
       return true;
     }
