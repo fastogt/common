@@ -408,7 +408,7 @@ ErrnoError write_to_descriptor(descriptor_t fd_desc, const void* buf, size_t len
 ErrnoError read_from_descriptor(descriptor_t fd_desc, void* buf, size_t len, size_t* readlen) WARN_UNUSED_RESULT;
 
 ErrnoError get_file_time_last_modification(const std::string& file_path,
-                                           time64_t* mod_time_sec) WARN_UNUSED_RESULT;  // utc time millisecond
+                                           utctime_t* mod_time_sec) WARN_UNUSED_RESULT;  // utc time
 
 bool find_file_in_path(const std::string& file_name, std::string* out_path) WARN_UNUSED_RESULT;
 

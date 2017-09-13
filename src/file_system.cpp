@@ -672,7 +672,7 @@ off_t get_file_size_by_descriptor(descriptor_t fd_desc) {
   return stat_buf.st_size;
 }
 
-ErrnoError get_file_time_last_modification(const std::string& file_path, time64_t* mod_time_sec) {
+ErrnoError get_file_time_last_modification(const std::string& file_path, utctime_t* mod_time_sec) {
   if (file_path.empty() || !mod_time_sec) {
     return make_error_perror("get_file_time_last_modification", EINVAL);
   }
@@ -682,8 +682,7 @@ ErrnoError get_file_time_last_modification(const std::string& file_path, time64_
     return make_errno_error(errno);
   }
 
-  struct timespec mod_time = attrib.st_mtim;
-  *mod_time_sec = time::timespec2mstime(&mod_time);
+  *mod_time_sec = attrib.st_mtime;
   return ErrnoError();
 }
 

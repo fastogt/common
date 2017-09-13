@@ -106,11 +106,11 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
   err = common::file_system::create_node(home_test_test_tt);
   ASSERT_TRUE(!err);
 
-  common::time64_t msec;
+  common::utctime_t sec;
   common::time64_t cur_utc = common::time::current_utc_mstime();
-  err = common::file_system::get_file_time_last_modification(home_test_test_tt, &msec);
+  err = common::file_system::get_file_time_last_modification(home_test_test_tt, &sec);
   ASSERT_TRUE(!err);
-  ASSERT_EQ(cur_utc / 1000, msec / 1000);
+  ASSERT_EQ(cur_utc / 1000, sec);
 
   isExist = common::file_system::is_file_exist(home_test_test_tt);
   ASSERT_TRUE(isExist);
