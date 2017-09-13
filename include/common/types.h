@@ -30,6 +30,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <time.h>
 
 #include <iosfwd>
 #include <vector>  // for vector
@@ -42,8 +43,8 @@ typedef uint8_t byte_t;
 typedef std::vector<byte_t> byte_array_t;
 typedef byte_array_t buffer_t;
 
-typedef int64_t time64_t;   // millisecond
-typedef int64_t utctime_t;  // seconds
+typedef int64_t time64_t;  // millisecond
+typedef time_t utctime_t;  // seconds
 
 class IMetaClassInfo {
  public:
