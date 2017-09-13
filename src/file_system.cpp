@@ -327,7 +327,7 @@ tribool is_directory(const string16& path) {
   return is_directory(ConvertToString(path));
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT>>
+template <typename CharT, typename Traits>
 std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
                                                       const std::basic_string<CharT, Traits>& pattern,
                                                       bool recursive) {
