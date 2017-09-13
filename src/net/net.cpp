@@ -29,9 +29,9 @@
 
 #include <common/net/net.h>
 
-#include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 
 #if defined(OS_POSIX)
 #include <netdb.h>

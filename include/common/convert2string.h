@@ -36,6 +36,7 @@ namespace common {
 
 std::string EscapedText(const std::string& str);  // add \n at the end if needed
 
+string16 ConvertToString16(const char* from);
 string16 ConvertToString16(const std::string& from);
 string16 ConvertToString16(const buffer_t& from);
 string16 ConvertToString16(const string16& from);
@@ -57,6 +58,7 @@ string16 ConvertToString16(double value);
 
 // std::string
 
+std::string ConvertToString(const char* from);
 std::string ConvertToString(const buffer_t& from);
 std::string ConvertToString(const string16& from);
 std::string ConvertToString(const std::string& from);

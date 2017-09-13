@@ -502,6 +502,20 @@ class DirectoryStringPath : public StringPath<CharT, Traits> {
     const value_type path = base_class::GetPath();  // stabled
     return FileStringPath<CharT, Traits>(path + filename);
   }
+
+  Optional<DirectoryStringPath<CharT, Traits>> MakeDirectoryStringPath(const value_type& directory) const
+      WARN_UNUSED_RESULT {
+    if (!base_class::IsValid()) {
+      return Optional<DirectoryStringPath<CharT, Traits>>();
+    }
+
+    if (!is_relative_path(directory)) {
+      return Optional<DirectoryStringPath<CharT, Traits>>();
+    }
+
+    const value_type path = base_class::GetPath();  // stabled
+    return DirectoryStringPath<CharT, Traits>(path + directory);
+  }
 };
 
 typedef StringPath<char> ascii_string_path;
@@ -512,6 +526,11 @@ typedef FileStringPath<char16, string16_char_traits> utf_file_string_path;
 
 typedef DirectoryStringPath<char> ascii_directory_string_path;
 typedef DirectoryStringPath<char16, string16_char_traits> utf_directory_string_path;
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                                                      const std::basic_string<CharT, Traits>& pattern,
+                                                      bool recursive);
 
 //  ==============================File=====================================  //
 

@@ -404,16 +404,16 @@ std::string EscapedText(const std::string& str) {
   return str;
 }
 
+string16 ConvertToString16(const char* from) {
+  return ConvertToString16(std::string(from));
+}
+
 string16 ConvertToString16(const std::string& from) {
 #if defined(WCHAR_T_IS_UTF16)
   return UTF8ToWide(from);
 #elif defined(WCHAR_T_IS_UTF32)
   return UTF8ToUTF16(from);
 #endif
-}
-
-string16 ConvertToString16(const char* from) {
-  return ConvertToString16(std::string(from));
 }
 
 string16 ConvertToString16(const buffer_t& from) {
@@ -717,6 +717,10 @@ bool ConvertFromString16(const string16& from, StringPiece16* out) {
 }
 
 // std string
+
+std::string ConvertToString(const char* from) {
+  return from;
+}
 
 std::string ConvertToString(const buffer_t& from) {
   return std::string(reinterpret_cast<const char*>(from.data()), from.size());

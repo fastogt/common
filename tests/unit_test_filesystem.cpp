@@ -86,7 +86,7 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
   bool isExist = common::file_system::is_directory_exist(home);
   ASSERT_TRUE(isExist);
 
-  static const std::string test = "/test";
+  static const std::string test = "/паша";
   const std::string home_test = home + test;
   common::ErrnoError err = common::file_system::create_directory(home_test, true);
   ASSERT_TRUE(!err);
@@ -100,11 +100,12 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
   isExist = common::file_system::is_directory_exist(home_test_test_test);
   ASSERT_TRUE(isExist);
 
-  const std::string home_test_test_tt = home_test + test + "/tt";
+  const std::string home_test_test_tt = home_test + test + "/саша.txt";
   err = common::file_system::remove_file(home_test_test_tt);
   ASSERT_TRUE(!err);
   err = common::file_system::create_node(home_test_test_tt);
   ASSERT_TRUE(!err);
+
   common::time64_t msec;
   common::time64_t cur_utc = common::time::current_utc_mstime();
   err = common::file_system::get_file_time_last_modification(home_test_test_tt, &msec);
@@ -113,6 +114,15 @@ TEST(Path, CreateRemoveDirectoryRecursive) {
 
   isExist = common::file_system::is_file_exist(home_test_test_tt);
   ASSERT_TRUE(isExist);
+
+  auto result_ascii = common::file_system::ScanFolder(common::file_system::ascii_directory_string_path(home_test),
+                                                      std::string(".txt"), true);
+  ASSERT_EQ(result_ascii.size(), 1);
+
+  auto result_utf =
+      common::file_system::ScanFolder(common::file_system::utf_directory_string_path(common::UTF8ToUTF16(home_test)),
+                                      common::UTF8ToUTF16(".txt"), true);
+  ASSERT_EQ(result_utf.size(), 1);
 
   err = common::file_system::remove_directory(home_test_test_test, false);
   ASSERT_TRUE(!err);

@@ -136,6 +136,63 @@ ErrnoError rmdir_directory_impl(const char* path) {
 namespace file_system {
 
 namespace {
+
+template <typename String>
+String ConvertFromCharArray(const char* str);
+
+template <>
+std::string ConvertFromCharArray(const char* str) {
+  return str;
+}
+
+template <>
+string16 ConvertFromCharArray(const char* str) {
+  return ConvertToString16(str);
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
+                    const std::basic_string<CharT, Traits>& pattern,
+                    bool recursive,
+                    std::vector<FileStringPath<CharT, Traits>>* result) {
+  typedef typename DirectoryStringPath<CharT, Traits>::value_type value_type;
+  if (!folder.IsValid() || pattern.empty() || !result) {
+    return;
+  }
+
+  std::string folder_str = ConvertToString(folder.GetPath());
+  DIR* dirp = opendir(folder_str.c_str());
+  if (!dirp) {
+    return;
+  }
+
+  struct dirent* dent;
+  while ((dent = readdir(dirp)) != NULL) {
+    /* Skip the names "." and ".." as we don't want to recurse on them. */
+    if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) {
+      continue;
+    }
+
+    if (dent->d_type == DT_REG) {
+      if (EndsWith(ConvertFromCharArray<value_type>(dent->d_name), pattern, true)) {
+        const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
+        auto file = folder.MakeFileStringPath(vt);
+        if (file) {
+          result->push_back(file.value());
+        }
+      }
+    } else if (recursive && dent->d_type == DT_DIR) {
+      const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
+      auto dir = folder.MakeDirectoryStringPath(vt);
+      if (dir) {
+        ScanFolderImpl(dir.value(), pattern, recursive, result);
+      }
+    }
+  }
+
+  closedir(dirp);
+}
+
 ErrnoError call_fcntl_flock(descriptor_t fd_desc, bool do_lock) {
   if (fd_desc == INVALID_DESCRIPTOR) {
     return make_error_perror("call_fcntl_flock", EINVAL);
@@ -268,6 +325,15 @@ tribool is_directory(const std::string& path) {
 template <>
 tribool is_directory(const string16& path) {
   return is_directory(ConvertToString(path));
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                                                      const std::basic_string<CharT, Traits>& pattern,
+                                                      bool recursive) {
+  std::vector<FileStringPath<CharT, Traits>> result;
+  ScanFolderImpl(folder, pattern, recursive, &result);
+  return result;
 }
 
 ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
@@ -1000,6 +1066,14 @@ void ANSIFile::Close() {
     file_ = NULL;
   }
 }
+
+template std::vector<ascii_file_string_path> ScanFolder<char>(const ascii_directory_string_path& folder,
+                                                              const std::string& pattern,
+                                                              bool recursive);
+template std::vector<utf_file_string_path> ScanFolder<char16, string16_char_traits>(
+    const utf_directory_string_path& folder,
+    const std::basic_string<char16, string16_char_traits>& pattern,
+    bool recursive);
 
 }  // namespace file_system
 
