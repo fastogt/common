@@ -341,7 +341,7 @@ std::ostream& operator<<(std::ostream& o, const StringPiece& piece);
 // We provide appropriate hash functions so StringPiece and StringPiece16 can
 // be used as keys in hash sets and maps.
 
-// This hash function is copied from base/containers/hash_tables.h. We don't
+// This hash function is copied from common/hash_tables.h. We don't
 // use the ones already defined for string and string16 directly because it
 // would require the string constructors to be called, which we don't want.
 #define HASH_STRING_PIECE(StringPieceType, string_piece)                                       \

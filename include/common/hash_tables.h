@@ -237,6 +237,3 @@ struct hash<std::pair<Type1, Type2> > {
 #error define hash<std::pair<Type1, Type2> > for your compiler
 #endif  // COMPILER
 }
-
-#undef DEFINE_PAIR_HASH_FUNCTION_START
-#undef DEFINE_PAIR_HASH_FUNCTION_END

@@ -44,20 +44,23 @@ TEST(file_system_path, directory) {
 
   const std::string st_dir = common::file_system::stable_dir_path(std::string("/home/sasha"));
   ASSERT_EQ(st_dir, "/home/sasha/");
-  common::file_system::ascii_string_path com_dir(st_dir);  // directory
+  common::file_system::ascii_directory_string_path com_dir(st_dir);  // directory
   ASSERT_TRUE(com_dir.IsValid());
   ASSERT_EQ(com_dir.GetDirectory(), "/home/sasha/");
   ASSERT_EQ(com_dir.GetParentDirectory(), "/home/");
+  ASSERT_EQ(com_dir.GetFolderName(), "sasha");
 
-  common::file_system::ascii_string_path com_dir_1l("/home/");
+  common::file_system::ascii_directory_string_path com_dir_1l("/home/");
   ASSERT_TRUE(com_dir_1l.IsValid());
   ASSERT_EQ(com_dir_1l.GetDirectory(), "/home/");
   ASSERT_EQ(com_dir_1l.GetParentDirectory(), "/");
+  ASSERT_EQ(com_dir_1l.GetFolderName(), "home");
 
-  common::file_system::ascii_string_path root("/");
+  common::file_system::ascii_directory_string_path root("/");
   ASSERT_TRUE(root.IsValid());
   ASSERT_EQ(root.GetDirectory(), "/");
   ASSERT_EQ(root.GetParentDirectory(), "/");
+  ASSERT_EQ(root.GetFolderName(), "");
 }
 
 TEST(file_system_path, filename) {
@@ -72,6 +75,12 @@ TEST(file_system_path, filename) {
   ASSERT_EQ(com.GetFileName(), "1.txt");
   ASSERT_EQ(com.GetExtension(), "txt");
   ASSERT_EQ(com.GetBaseFileName(), "1");
+
+  const std::string dir_str = com.GetDirectory();
+  common::file_system::ascii_directory_string_path home_dir(dir_str);
+  ASSERT_TRUE(home_dir.IsValid());
+  ASSERT_EQ(home_dir.GetPath(), common::file_system::stable_dir_path(home));
+  ASSERT_EQ(home_dir.GetFolderName(), common::file_system::get_file_or_dir_name(home));
 }
 
 TEST(file_system_path, make_node) {

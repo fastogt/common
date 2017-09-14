@@ -68,6 +68,8 @@ class StringPath {
     DCHECK(is_valid_path(path_));
   }
 
+  value_type GetName() const { return get_file_or_dir_name(path_); }
+
  private:
   value_type path_;
 };
@@ -93,12 +95,9 @@ class FileStringPath : public StringPath<CharT, Traits> {
 
   explicit FileStringPath(const value_type& path) : base_class(path) {}
 
-  value_type GetFileName() const {
-    const value_type path = base_class::GetPath();
-    return get_file_name(path);
-  }
+  value_type GetFileName() const { return base_class::GetName(); }
 
-  value_type GetBaseFileName() const {
+  value_type GetBaseFileName() const {  // without extension
     const value_type file_name = GetFileName();
     size_t pos = file_name.find_first_of('.');
     if (pos != std::basic_string<CharT, Traits>::npos) {
@@ -124,6 +123,8 @@ class DirectoryStringPath : public StringPath<CharT, Traits> {
   DirectoryStringPath() : base_class() {}
 
   explicit DirectoryStringPath(const value_type& path) : base_class(stable_dir_path(path)) {}
+
+  value_type GetFolderName() const { return base_class::GetName(); }
 
   Optional<FileStringPath<CharT, Traits>> MakeFileStringPath(const value_type& filename) const WARN_UNUSED_RESULT {
     if (!base_class::IsValid()) {

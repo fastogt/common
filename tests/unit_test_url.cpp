@@ -110,4 +110,5 @@ TEST(Url, urlEncode) {
   char* dec = common::uri::detail::uri_decode(enc, strlen(enc));
   ASSERT_STREQ(dec, url.c_str());
   free(enc);
+  free(dec);
 }

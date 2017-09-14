@@ -191,26 +191,26 @@ bool is_file_name(const CharT* path) {
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-inline std::basic_string<CharT, Traits> get_file_name(std::basic_string<CharT, Traits> path) {  // filename + extension
+inline std::basic_string<CharT, Traits> get_file_or_dir_name(std::basic_string<CharT, Traits> path) {
   if (!is_valid_path(path)) {
     return std::basic_string<CharT, Traits>();
   }
 
   size_t lenght = path.length();
-  if (path[lenght - 1] == get_separator<CharT>()) {
+  if (path[lenght - 1] == get_separator<CharT>()) {  // folder
     size_t pos = path.find_last_of(get_separator<CharT>(), lenght - 2);
     if (pos != std::basic_string<CharT, Traits>::npos) {
       std::string res = path.substr(pos + 1, lenght - pos - 2);
       return res;
     }
     return get_separator_string<CharT>();
-  } else {
-    size_t pos = path.find_last_of(get_separator<CharT>());
-    if (pos != std::basic_string<CharT, Traits>::npos) {
-      return path.substr(pos + 1);
-    }
-    return std::basic_string<CharT, Traits>();
   }
+
+  size_t pos = path.find_last_of(get_separator<CharT>());
+  if (pos != std::basic_string<CharT, Traits>::npos) {
+    return path.substr(pos + 1);
+  }
+  return std::basic_string<CharT, Traits>();
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT>>
