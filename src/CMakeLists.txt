@@ -252,7 +252,7 @@ ELSEIF(OS_POSIX)
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_mac.cpp
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_mac.mm
       ${CMAKE_SOURCE_DIR}/src/system/system_mac.mm
-      ${CMAKE_SOURCE_DIR}/src/file_system/file_system_mac.mm
+      ${CMAKE_SOURCE_DIR}/src/file_system/string_path_utils.mm
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${COCOA_LIBRARY})
   ELSEIF(OS_LINUX)
