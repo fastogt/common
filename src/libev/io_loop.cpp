@@ -31,6 +31,8 @@
 
 #include <mutex>
 
+#include <common/sprintf.h>
+
 #include <common/libev/event_io.h>
 #include <common/libev/io_client.h>
 #include <common/libev/io_loop_observer.h>

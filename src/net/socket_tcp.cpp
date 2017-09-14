@@ -33,6 +33,8 @@
 #include <netinet/in.h>
 #endif
 
+#include <string.h>
+
 #undef SetPort
 
 #include <common/net/socket_tcp.h>

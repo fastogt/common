@@ -30,8 +30,9 @@
 #include <common/error.h>
 
 #include <errno.h>
+#include <string.h>
 
-#include <common/net/types.h>
+#include <common/sprintf.h>
 
 namespace common {
 

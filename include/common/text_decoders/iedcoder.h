@@ -32,6 +32,7 @@
 #include <array>
 
 #include <common/error.h>  // for Error
+#include <common/string_piece.h>
 
 namespace common {
 

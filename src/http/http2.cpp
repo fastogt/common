@@ -29,6 +29,8 @@
 
 #include <common/http/http2.h>
 
+#include <string.h>
+
 #include <common/convert2string.h>  // for ConvertToString, etc
 #include <common/portable_endian.h>
 

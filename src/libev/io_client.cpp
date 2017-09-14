@@ -31,6 +31,8 @@
 
 #include <inttypes.h>
 
+#include <common/sprintf.h>
+
 #include <common/libev/event_io.h>
 #include <common/libev/io_loop.h>
 

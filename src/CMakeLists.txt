@@ -394,7 +394,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/optional.h
     ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
     ${CMAKE_SOURCE_DIR}/include/common/event.h
-    ${CMAKE_SOURCE_DIR}/include/common/safe_sprintf.h
     ${CMAKE_SOURCE_DIR}/include/common/sprintf.h
     ${CMAKE_SOURCE_DIR}/include/common/byte_writer.h
     ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversions.h
@@ -437,7 +436,6 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/log_levels.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/event.cpp
-  ${CMAKE_SOURCE_DIR}/src/safe_sprintf.cpp
   ${CMAKE_SOURCE_DIR}/src/sprintf.cpp
   ${CMAKE_SOURCE_DIR}/src/byte_writer.cpp
   ${CMAKE_SOURCE_DIR}/src/utf_string_conversions.cpp
@@ -560,6 +558,7 @@ IF(DEVELOPER_ENABLE_TESTS)
 
     ${CMAKE_SOURCE_DIR}/tests/unit_test_url.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_path.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit_test_filesystem_path.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_filesystem.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_http.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_net.cpp

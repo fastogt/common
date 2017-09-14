@@ -2,6 +2,7 @@
 
 #include <common/net/net.h>
 #include <common/net/socket_tcp.h>
+#include <common/sprintf.h>
 #include <common/threads/thread_manager.h>
 
 void exec_serv(common::net::ServerSocketTcp* serv) {

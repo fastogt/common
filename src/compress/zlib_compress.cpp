@@ -33,6 +33,10 @@
 
 #include <zconf.h>  // for Byte, Bytef
 
+#include <string.h>
+
+#include <common/sprintf.h>
+
 #define BUFFER_SIZE 1024 * 32
 
 namespace common {

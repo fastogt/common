@@ -29,10 +29,6 @@
 
 #pragma once
 
-#include <memory>
-
-#include <common/sprintf.h>
-
 #include <common/optional.h>
 
 namespace common {
@@ -128,12 +124,3 @@ common::ErrnoError DEBUG_MSG_PERROR(const std::string& function,
                                     int err,
                                     common::logging::LOG_LEVEL level,
                                     bool notify = true);
-
-template <typename... Args>
-inline common::ErrnoError DEBUG_MSG_PERROR_FORMAT(const char* fmt,
-                                                  int err,
-                                                  common::logging::LOG_LEVEL level,
-                                                  Args... args) {
-  const std::string func_args = common::MemSPrintf(fmt, args...);
-  return DEBUG_MSG_PERROR(func_args, err, level, true);
-}

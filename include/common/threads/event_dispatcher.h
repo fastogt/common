@@ -29,7 +29,9 @@
 
 #pragma once
 
+#include <algorithm>
 #include <mutex>
+#include <vector>
 
 #include <common/event.h>  // for event_traits, events_size_t, etc
 

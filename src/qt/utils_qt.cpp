@@ -34,6 +34,8 @@
 #include <QFileInfo>
 #include <QTextStream>
 
+#include <common/sprintf.h>
+
 namespace common {
 namespace qt {
 

@@ -31,6 +31,7 @@
 
 #include <common/error.h>  // for ErrnoError, Error
 #include <common/file_system/path.h>
+#include <common/sprintf.h>
 
 namespace common {
 namespace file_system {

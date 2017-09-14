@@ -58,6 +58,8 @@ int ftruncate(int fd, int64_t length) {
 #endif
 #endif
 
+#include <common/sprintf.h>
+
 #include <common/file_system/string_path_utils.h>
 
 #define FS_BUF_SIZE 1024 * 4

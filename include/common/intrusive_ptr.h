@@ -29,12 +29,9 @@
 
 #pragma once
 
-#include <algorithm>
 #include <atomic>
-#include <functional>
 
 #include <common/macros.h>
-#include <common/types.h>
 
 namespace common {
 

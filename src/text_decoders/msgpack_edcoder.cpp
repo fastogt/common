@@ -30,10 +30,12 @@
 #include <common/text_decoders/msgpack_edcoder.h>
 
 #include <inttypes.h>  // for PRId64, PRIu64
+#include <string.h>
 
 #include <cmp/cmp.h>  // for cmp_object_t, etc
 
 #include <common/convert2string.h>  // for ConvertToString
+#include <common/sprintf.h>
 
 namespace {
 

@@ -5,6 +5,8 @@
 #include <string.h>
 #include <wchar.h>
 
+#include <common/string16.h>
+
 namespace common {
 
 // Chromium code style is to not use malloc'd strings; this is only for use
