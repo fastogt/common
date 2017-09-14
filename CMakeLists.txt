@@ -11,7 +11,7 @@ SET(PROJECT_MAINTAINER_MAIL "atopilski@fastogt.com" CACHE STRING "Internet mail 
 SET(PROJECT_MAINTAINER_NAME "Alexandr Topilski" CACHE STRING "Name of ${PROJECT_NAME} mainteiner")
 SET(PROJECT_GITHUB_FORK "www.github.com/fastogt/common" CACHE STRING "Git fork of ${PROJECT_NAME}")
 SET(PROJECT_GITHUB_ISSUES "www.github.com/fastogt/common/issues" CACHE STRING "Git issue link for ${PROJECT_NAME}")
-SET(PROJECT_BUILD_TYPE_VERSION "rc") #alfa, beta, rc, release
+SET(PROJECT_BUILD_TYPE_VERSION "release") #alfa, beta, rc, release
 
 STRING(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)
 STRING(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERRCASE)

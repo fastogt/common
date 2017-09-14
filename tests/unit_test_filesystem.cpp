@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <common/file_system.h>
+#include <common/file_system/path.h>
+#include <common/file_system/string_path_utils.h>
+
+#include <common/file_system/file_system.h>
+#include <common/file_system/file_system_utils.h>
+
 #include <common/time.h>
 #include <common/utf_string_conversions.h>
 
@@ -70,6 +75,7 @@ TEST(ascii_string_path, filename) {
   ASSERT_EQ(com.GetDirectory(), common::file_system::stable_dir_path(home));
   ASSERT_EQ(com.GetFileName(), "1.txt");
   ASSERT_EQ(com.GetExtension(), "txt");
+  ASSERT_EQ(com.GetBaseFileName(), "1");
 }
 
 TEST(utf_directory_string_path, make_node) {

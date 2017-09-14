@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <common/file_system.h>
+#include <common/file_system/types.h>
 
 TEST(Path, is_valid_path) {
   std::string invalid_path0;

@@ -29,7 +29,8 @@
 
 #include <common/uri/upath.h>
 
-#include <common/file_system.h>
+#include <common/file_system/types.h>
+#include <common/string_util.h>
 
 namespace common {
 namespace uri {

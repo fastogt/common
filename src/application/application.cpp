@@ -20,7 +20,7 @@
 
 #include <stdlib.h>  // for EXIT_FAILURE
 
-#include <common/file_system.h>
+#include <common/file_system/string_path_utils.h>
 
 namespace common {
 namespace application {

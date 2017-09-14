@@ -40,6 +40,30 @@ SET(SYSTEM_SOURCES
   ${CMAKE_SOURCE_DIR}/src/system/system.cpp
 )
 
+SET(FILE_SYSTEM_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/types.h
+
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/string_path_utils.h
+
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/file_system.h
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/file_system_utils.h
+
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/path.h
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/descriptor_holder.h
+  ${CMAKE_SOURCE_DIR}/include/common/file_system/file.h
+)
+
+SET(FILE_SYSTEM_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/file_system/file_system.cpp
+  ${CMAKE_SOURCE_DIR}/src/file_system/file_system_utils.cpp
+
+  ${CMAKE_SOURCE_DIR}/src/file_system/path.cpp
+  ${CMAKE_SOURCE_DIR}/src/file_system/descriptor_holder.cpp
+  ${CMAKE_SOURCE_DIR}/src/file_system/file.cpp
+  ${CMAKE_SOURCE_DIR}/src/file_system/string_path_utils.cpp
+  ${CMAKE_SOURCE_DIR}/src/file_system/types.cpp
+)
+
 SET(THREADS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/threads/thread.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/thread_manager.h
@@ -228,7 +252,7 @@ ELSEIF(OS_POSIX)
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_mac.cpp
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_mac.mm
       ${CMAKE_SOURCE_DIR}/src/system/system_mac.mm
-      ${CMAKE_SOURCE_DIR}/src/file_system_mac.mm
+      ${CMAKE_SOURCE_DIR}/src/file_system/file_system_mac.mm
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${COCOA_LIBRARY})
   ELSEIF(OS_LINUX)
@@ -384,7 +408,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/bounded_value.h
     ${CMAKE_SOURCE_DIR}/include/common/utils.h
     ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
-    ${CMAKE_SOURCE_DIR}/include/common/file_system.h
     ${CMAKE_SOURCE_DIR}/include/common/portable_endian.h
     ${CMAKE_SOURCE_DIR}/include/common/sys_byteorder.h
     ${CMAKE_SOURCE_DIR}/include/common/error.h
@@ -394,6 +417,7 @@ SET(COMMON_HEADERS
 
     ${PATTERNS_HEADERS}
     ${SYSTEM_HEADERS}
+    ${FILE_SYSTEM_HEADERS}
     ${APPLIATION_HEADERS}
     ${URI_HEADERS}
     ${THREADS_HEADERS}
@@ -427,7 +451,6 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/types.cpp
   ${CMAKE_SOURCE_DIR}/src/bounded_value.cpp
   ${CMAKE_SOURCE_DIR}/src/macros.cpp
-  ${CMAKE_SOURCE_DIR}/src/file_system.cpp
   ${CMAKE_SOURCE_DIR}/src/value.cpp
   ${CMAKE_SOURCE_DIR}/src/error.cpp
   ${CMAKE_SOURCE_DIR}/src/time.cpp
@@ -437,6 +460,7 @@ SET(COMMON_SOURCES
   ${APPLIATION_SOURCES}
   ${URI_SOURCES}
   ${SYSTEM_SOURCES}
+  ${FILE_SYSTEM_SOURCES}
   ${THREADS_SOURCES}
   ${NET_SOURCES}
   ${DRAW_SOURCES}

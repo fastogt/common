@@ -1,0 +1,117 @@
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of FastoGT. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#include <common/file_system/file_system_utils.h>
+
+#include <dirent.h>  // for closedir, readdir, DIR, DT_REG, dirent
+
+#include <common/convert2string.h>
+#include <common/string_util.h>
+
+namespace common {
+namespace file_system {
+
+namespace {
+template <typename String>
+String ConvertFromCharArray(const char* str);
+
+template <>
+std::string ConvertFromCharArray(const char* str) {
+  return str;
+}
+
+template <>
+string16 ConvertFromCharArray(const char* str) {
+  return ConvertToString16(str);
+}
+
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
+                    const std::basic_string<CharT, Traits>& pattern,
+                    bool recursive,
+                    std::vector<FileStringPath<CharT, Traits>>* result) {
+  typedef typename DirectoryStringPath<CharT, Traits>::value_type value_type;
+  if (!folder.IsValid() || pattern.empty() || !result) {
+    return;
+  }
+
+  std::string folder_str = ConvertToString(folder.GetPath());
+  DIR* dirp = opendir(folder_str.c_str());
+  if (!dirp) {
+    return;
+  }
+
+  struct dirent* dent;
+  while ((dent = readdir(dirp)) != NULL) {
+    /* Skip the names "." and ".." as we don't want to recurse on them. */
+    if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) {
+      continue;
+    }
+
+    if (dent->d_type == DT_REG) {
+      if (EndsWith(ConvertFromCharArray<value_type>(dent->d_name), pattern, true)) {
+        const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
+        auto file = folder.MakeFileStringPath(vt);
+        if (file) {
+          result->push_back(file.value());
+        }
+      }
+    } else if (recursive && dent->d_type == DT_DIR) {
+      const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
+      auto dir = folder.MakeDirectoryStringPath(vt);
+      if (dir) {
+        ScanFolderImpl(dir.value(), pattern, recursive, result);
+      }
+    }
+  }
+
+  closedir(dirp);
+}
+
+}  // namespace
+
+template <typename CharT, typename Traits>
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                                                      const std::basic_string<CharT, Traits>& pattern,
+                                                      bool recursive) {
+  std::vector<FileStringPath<CharT, Traits>> result;
+  ScanFolderImpl(folder, pattern, recursive, &result);
+  return result;
+}
+
+template std::vector<ascii_file_string_path> ScanFolder<char>(const ascii_directory_string_path& folder,
+                                                              const std::string& pattern,
+                                                              bool recursive);
+template std::vector<utf_file_string_path> ScanFolder<char16, string16_char_traits>(
+    const utf_directory_string_path& folder,
+    const std::basic_string<char16, string16_char_traits>& pattern,
+    bool recursive);
+
+}  // namespace file_system
+}  // namespace common
