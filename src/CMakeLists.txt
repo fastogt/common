@@ -65,6 +65,7 @@ SET(FILE_SYSTEM_SOURCES
 )
 
 SET(THREADS_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/threads/ts_queue.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/thread.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/thread_manager.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/platform_thread.h

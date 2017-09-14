@@ -29,79 +29,66 @@
 
 #pragma once
 
-#include <common/macros.h>
-
-#include <common/uri/upath.h>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
 
 namespace common {
-namespace uri {
+namespace threads {
 
-class Url {
+template <typename T>
+class ts_queue {
  public:
-  enum scheme {
-    unknown = 0,  // defualt value
-    http = 1,
-    https = 2,
-    ftp = 3,
-    file = 4,
-    ws = 5,
-    udp = 6,
-    rtmp = 7,
-    dev = 8,
-    num_schemes
-  };
-  enum {
-    host_size = 64,
-  };
+  typedef std::queue<T> queue_t;
+  ts_queue() : stop_(false) {}
+  ~ts_queue() {}
 
-  Url();
-  explicit Url(const std::string& url_s);
+  void Stop() {
+    {
+      std::unique_lock<std::mutex> lock(queue_mutex_);
+      stop_ = true;
+    }
+    condition_.notify_all();
+  }
 
-  bool IsValid() const;
+  void Push(T task) {
+    {
+      std::unique_lock<std::mutex> lock(queue_mutex_);
+      queue_.push(task);
+    }
+    condition_.notify_one();
+  }
 
-  scheme GetScheme() const;
-  std::string GetProtocol() const;
+  bool IsEmpty() {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    return queue_.empty();
+  }
 
-  const std::string& GetHost() const;
-  void SetHost(const std::string& host);
+  void Clear() {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    queue_t q;
+    queue_.swap(q);
+  }
 
-  Upath GetPath() const;
-  void SetPath(const Upath& path);
-
-  std::string GetUrl() const;    // IsValid == true
-  std::string GetHroot() const;  // IsValid == true
-  std::string GetHpath() const;  // IsValid == true
-  bool Equals(const Url& uri) const;
+  bool Pop(T* t) {
+    std::unique_lock<std::mutex> lock(queue_mutex_);
+    while (!stop_ && queue_.empty()) {
+      condition_.wait(lock);
+    }
+    if (stop_) {
+      return false;
+    }
+    *t = queue_.front();
+    queue_.pop();
+    return true;
+  }
 
  private:
-  void Parse(const std::string& url_s);
-
-  scheme scheme_;
-  std::string host_;
-  Upath path_;
+  std::condition_variable condition_;
+  std::mutex queue_mutex_;
+  queue_t queue_;
+  bool stop_;
 };
 
-inline bool operator==(const Url& left, const Url& right) {
-  return left.Equals(right);
-}
-
-inline bool operator!=(const Url& left, const Url& right) {
-  return !(left == right);
-}
-
-namespace detail {
-bool get_schemes(const char* url_s, size_t len, Url::scheme* prot);
-/* Returns a url-encoded version of str */
-/* IMPORTANT: be sure to free() the returned string after use */
-char* uri_encode(const char* str, size_t len);
-
-/* Returns a url-decoded version of str */
-/* IMPORTANT: be sure to free() the returned string after use */
-char* uri_decode(const char* str, size_t len);
-}  // namespace detail
-
-}  // namespace uri
-
-std::string ConvertToString(const uri::Url& from);
-bool ConvertFromString(const std::string& from, uri::Url* out) WARN_UNUSED_RESULT;
+}  // namespace threads
 }  // namespace common

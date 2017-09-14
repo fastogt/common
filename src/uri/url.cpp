@@ -271,4 +271,18 @@ bool Url::Equals(const Url& uri) const {
 }
 
 }  // namespace uri
+
+std::string ConvertToString(const uri::Url& from) {
+  return from.IsValid() ? from.GetUrl() : from.GetHost();
+}
+
+bool ConvertFromString(const std::string& from, uri::Url* out) {
+  if (!out) {
+    return false;
+  }
+
+  *out = uri::Url(from);
+  return true;
+}
+
 }  // namespace common
