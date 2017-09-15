@@ -60,6 +60,8 @@ class LibEvLoop {
   LibEvLoop();
   ~LibEvLoop();
 
+  struct ev_loop* GetLoop() const;
+
   void SetObserver(EvLoopObserver* observer);
 
   timer_id_t CreateTimer(double sec, bool repeat);

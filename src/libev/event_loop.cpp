@@ -98,6 +98,10 @@ LibEvLoop::~LibEvLoop() {
   ev_loop_destroy(loop_);
 }
 
+struct ev_loop* LibEvLoop::GetLoop() const {
+  return loop_;
+}
+
 void LibEvLoop::SetObserver(EvLoopObserver* observer) {
   observer_ = observer;
 }
