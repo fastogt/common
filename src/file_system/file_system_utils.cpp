@@ -34,6 +34,10 @@
 #include <common/convert2string.h>
 #include <common/string_util.h>
 
+#ifdef OS_WIN
+#include <common/file_system/string_path_utils.h>
+#endif
+
 namespace common {
 namespace file_system {
 
@@ -74,7 +78,17 @@ void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
       continue;
     }
 
-    if (dent->d_type == DT_REG) {
+#ifdef OS_WIN
+    const std::string dir_str = make_path(folder_str, dent->d_name);
+    tribool is_dir_tr = is_directory(dir_str);
+    if (is_dir_tr == INDETERMINATE) {
+      continue;
+    }
+    bool is_dir = is_dir_tr == SUCCESS;
+#else
+    bool is_dir = dent->d_type == DT_DIR;
+#endif
+    if (!is_dir) {
       if (EndsWith(ConvertFromCharArray<value_type>(dent->d_name), pattern, true)) {
         const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
         auto file = folder.MakeFileStringPath(vt);
@@ -82,7 +96,7 @@ void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
           result->push_back(file.value());
         }
       }
-    } else if (recursive && dent->d_type == DT_DIR) {
+    } else if (recursive && is_dir) {
       const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
       auto dir = folder.MakeDirectoryStringPath(vt);
       if (dir) {

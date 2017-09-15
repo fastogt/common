@@ -107,8 +107,12 @@ utctime_t tm2utctime(struct tm* tm) {
 }
 
 struct tm utctime2tm(utctime_t time_sec) {
-  struct tm info;                 // representing a calendar time
+  struct tm info;  // representing a calendar time
+#ifdef OS_WIN
+  localtime_s(&info, &time_sec);  // time to calendar_time
+#else
   localtime_r(&time_sec, &info);  // time to calendar_time
+#endif
   return info;
 }
 

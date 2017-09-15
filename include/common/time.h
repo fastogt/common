@@ -31,7 +31,6 @@
 
 #ifndef COMPILER_MSVC
 #include <sys/time.h>  // for timeval
-#include <time.h>      // for timespec
 
 #include <common/types.h>  // for time64_t
 
