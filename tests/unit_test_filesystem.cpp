@@ -41,8 +41,8 @@ TEST(file_system, CreateRemoveDirectoryRecursive) {
   is_exist = common::file_system::is_file_exist(home_test_test_tt);
   ASSERT_TRUE(is_exist);
 
-  auto result_ascii = common::file_system::ScanFolder(common::file_system::ascii_directory_string_path(home_test),
-                                                      std::string(".txt"), true);
+  auto result_ascii =
+      common::file_system::ScanFolder(common::file_system::ascii_directory_string_path(home_test), ".txt", true);
   ASSERT_EQ(result_ascii.size(), 1);
 
   auto result_utf =

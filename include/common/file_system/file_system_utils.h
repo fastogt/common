@@ -39,5 +39,12 @@ std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<
                                                       const std::basic_string<CharT, Traits>& pattern,
                                                       bool recursive);
 
+template <typename CharT, typename Traits>
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                                                      const CharT* pattern,
+                                                      bool recursive) {
+  return ScanFolder(folder, std::basic_string<CharT, Traits>(pattern), recursive);
+}
+
 }  // namespace file_system
 }  // namespace common
