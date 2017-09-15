@@ -104,8 +104,26 @@ SocketTcp::~SocketTcp() {}
 
 ClientSocketTcp::ClientSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
-ErrnoError ClientSocketTcp::Connect() {
-  return net::connect(host_, ST_SOCK_STREAM, NULL, &info_);
+ErrnoError ClientSocketTcp::Connect(struct timeval* tv) {
+  return net::connect(host_, ST_SOCK_STREAM, tv, &info_);
+}
+
+ErrnoError ClientSocketTcp::Disconnect() {
+  return Close();
+}
+
+bool ClientSocketTcp::IsConnected() const {
+  const socket_descr_t fd = info_.fd();
+  return fd != INVALID_DESCRIPTOR;
+}
+
+ErrnoError ClientSocketTcp::SendFile(int file_fd, size_t file_size) {
+  const socket_descr_t fd = info_.fd();
+  if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_DESCRIPTOR) {
+    return make_error_perror("SendFile", EINVAL);
+  }
+
+  return net::send_file_to_fd(fd, file_fd, 0, file_size);
 }
 
 ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
