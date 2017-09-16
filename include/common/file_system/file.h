@@ -61,6 +61,8 @@ class File {
   path_type GetPath() const;
   bool IsValid() const;
 
+  descriptor_t GetFd() const;
+
   ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
@@ -72,6 +74,8 @@ class File {
 
   ErrnoError Lock() WARN_UNUSED_RESULT;
   ErrnoError Unlock() WARN_UNUSED_RESULT;
+
+  ErrnoError Seek(off_t offset, int whence) WARN_UNUSED_RESULT;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(File);

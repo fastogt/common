@@ -60,9 +60,9 @@ TEST(Url, Scheme) {
   common::uri::Upath http_path = http_uri.GetPath();
   ASSERT_EQ(http_path.GetHpath(), "hls/69_avformat_test_alex_2/");
   ASSERT_EQ(http_path.GetPath(), "hls/69_avformat_test_alex_2/play.m3u8");
-  ASSERT_EQ(http_path.GetFilename(), "play.m3u8");
+  ASSERT_EQ(http_path.GetFileName(), "play.m3u8");
   ASSERT_EQ(http_path.GetUpath(), "hls/69_avformat_test_alex_2/play.m3u8");
-  ASSERT_EQ(http_path.GetPath(), http_path.GetHpath() + http_path.GetFilename());
+  ASSERT_EQ(http_path.GetPath(), http_path.GetHpath() + http_path.GetFileName());
 
   common::uri::Url ftp_uri("ftp://localhost:8080");
   ASSERT_EQ(ftp_uri.GetScheme(), common::uri::Url::ftp);
@@ -70,9 +70,9 @@ TEST(Url, Scheme) {
   common::uri::Upath ftp_path = ftp_uri.GetPath();
   ASSERT_EQ(ftp_path.GetHpath(), std::string());
   ASSERT_EQ(ftp_path.GetPath(), std::string());
-  ASSERT_EQ(ftp_path.GetFilename(), std::string());
+  ASSERT_EQ(ftp_path.GetFileName(), std::string());
   ASSERT_EQ(ftp_path.GetUpath(), std::string());
-  ASSERT_EQ(ftp_path.GetPath(), ftp_path.GetHpath() + ftp_path.GetFilename());
+  ASSERT_EQ(ftp_path.GetPath(), ftp_path.GetHpath() + ftp_path.GetFileName());
 
   common::uri::Url file_uri("file:///home/sasha/2.txt");
   ASSERT_EQ(file_uri.GetScheme(), common::uri::Url::file);

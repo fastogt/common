@@ -40,21 +40,20 @@ namespace file_system {
 
 File::File() : holder_(nullptr), file_path_() {}
 
-File::~File() {
-  delete holder_;
-}
+File::~File() { delete holder_; }
 
-File::path_type File::GetPath() const {
-  return file_path_;
-}
+File::path_type File::GetPath() const { return file_path_; }
 
-bool File::IsValid() const {
-  return holder_ && holder_->IsValid();
-}
+bool File::IsValid() const { return holder_ && holder_->IsValid(); }
 
 ErrnoError File::Write(const buffer_t& data, size_t* nwrite_out) {
   DCHECK(IsValid());
   return holder_->Write(data, nwrite_out);
+}
+
+descriptor_t File::GetFd() const {
+  DCHECK(IsValid());
+  return holder_->GetFd();
 }
 
 ErrnoError File::Write(const std::string& data, size_t* nwrite_out) {
@@ -93,6 +92,11 @@ ErrnoError File::Lock() {
 ErrnoError File::Unlock() {
   DCHECK(IsValid());
   return holder_->Unlock();
+}
+
+ErrnoError File::Seek(off_t offset, int whence) {
+  DCHECK(IsValid());
+  return holder_->Seek(offset, whence);
 }
 
 ErrnoError File::Open(const path_type::value_type& file_path, uint32_t flags) {
@@ -319,9 +323,7 @@ void ANSIFile::Flush() {
   fflush(file_);
 }
 
-bool ANSIFile::IsOpened() const {
-  return file_ != NULL;
-}
+bool ANSIFile::IsOpened() const { return file_ != NULL; }
 
 void ANSIFile::Close() {
   if (file_) {

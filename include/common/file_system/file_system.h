@@ -35,13 +35,16 @@
 namespace common {
 namespace file_system {
 
-off_t get_file_size_by_descriptor(descriptor_t fd_desc);
+ErrnoError get_file_size_by_descriptor(descriptor_t fd_desc, off_t* size);
+ErrnoError get_file_size_by_path(const std::string& path, off_t* size) WARN_UNUSED_RESULT;
+
 ErrnoError ftruncate(descriptor_t fd_desc, off_t lenght) WARN_UNUSED_RESULT;
 ErrnoError unlink(const std::string& path) WARN_UNUSED_RESULT;
 ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError close_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError lock_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError unlock_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
+ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence)WARN_UNUSED_RESULT;
 
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) WARN_UNUSED_RESULT;
 extern ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;

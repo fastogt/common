@@ -38,9 +38,7 @@ DescriptorHolder::DescriptorHolder(descriptor_t fd) : fd_(fd) {}
 
 DescriptorHolder::~DescriptorHolder() {}
 
-bool DescriptorHolder::IsValid() const {
-  return fd_ != INVALID_DESCRIPTOR;
-}
+bool DescriptorHolder::IsValid() const { return fd_ != INVALID_DESCRIPTOR; }
 
 descriptor_t DescriptorHolder::GetFd() const {
   DCHECK(IsValid());
@@ -94,6 +92,11 @@ ErrnoError DescriptorHolder::Lock() {
 ErrnoError DescriptorHolder::Unlock() {
   DCHECK(IsValid());
   return unlock_descriptor(fd_);
+}
+
+ErrnoError DescriptorHolder::Seek(off_t offset, int whence) {
+  DCHECK(IsValid());
+  return seek_descriptor(fd_, offset, whence);
 }
 
 }  // namespace file_system

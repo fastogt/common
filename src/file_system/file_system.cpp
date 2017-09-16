@@ -54,7 +54,7 @@ int ftruncate(int fd, int64_t length) {
   return SetEndOfFile(fh) ? 0 : -1;
 }
 #if !defined(S_ISDIR)
-#define S_ISDIR(mode) ((mode & S_IFMT) == S_IFDIR)
+#define S_ISDIR(mode) ((mode& S_IFMT) == S_IFDIR)
 #endif
 #endif
 
@@ -177,15 +177,38 @@ ErrnoError create_directory_impl(const char* path) {
 
 }  // namespace
 
-off_t get_file_size_by_descriptor(descriptor_t fd_desc) {
-  if (fd_desc == INVALID_DESCRIPTOR) {
-    return 0;
+ErrnoError get_file_size_by_descriptor(descriptor_t fd_desc, off_t* size) {
+  if (fd_desc == INVALID_DESCRIPTOR || !size) {
+    return make_error_perror("get_file_size_by_path", EINVAL);
   }
 
-  struct stat stat_buf;
-  fstat(fd_desc, &stat_buf);
+  struct stat sb;
+  if (::fstat(fd_desc, &sb) == ERROR_RESULT_VALUE) {
+    return make_error_perror("get_file_size_by_descriptor", errno);
+  }
 
-  return stat_buf.st_size;
+  *size = sb.st_size;
+  return ErrnoError();
+}
+
+ErrnoError get_file_size_by_path(const std::string& path, off_t* size) {
+  if (path.empty() || !size) {
+    return make_error_perror("get_file_size_by_path", EINVAL);
+  }
+
+  const char* file_path_cstr = path.c_str();
+  struct stat sb;
+  if (::stat(file_path_cstr, &sb) == ERROR_RESULT_VALUE) {
+    return make_error_perror("get_file_size_by_path", errno);
+  }
+
+  if (!S_ISREG(sb.st_mode)) {
+    DNOTREACHED();
+    return make_error_perror("get_file_size_by_path", EINVAL);
+  }
+
+  *size = sb.st_size;
+  return ErrnoError();
 }
 
 ErrnoError ftruncate(descriptor_t fd_desc, off_t lenght) {
@@ -220,9 +243,7 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
   return ftruncate(fd_desc, 0);
 }
 
-ErrnoError touch(const std::string& path) {
-  return create_node(path);
-}
+ErrnoError touch(const std::string& path) { return create_node(path); }
 
 ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
@@ -471,12 +492,21 @@ ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* ou
   return ErrnoError();
 }
 
-ErrnoError lock_descriptor(descriptor_t fd_desc) {
-  return call_fcntl_flock(fd_desc, true);
-}
+ErrnoError lock_descriptor(descriptor_t fd_desc) { return call_fcntl_flock(fd_desc, true); }
 
-ErrnoError unlock_descriptor(descriptor_t fd_desc) {
-  return call_fcntl_flock(fd_desc, false);
+ErrnoError unlock_descriptor(descriptor_t fd_desc) { return call_fcntl_flock(fd_desc, false); }
+
+ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence) {
+  if (fd_desc == INVALID_DESCRIPTOR) {
+    return make_error_perror("open_descriptor", EINVAL);
+  }
+
+  int res = ::lseek(fd_desc, offset, whence);
+  if (res == ERROR_RESULT_VALUE) {
+    return make_error_perror("lseek", errno);
+  }
+
+  return ErrnoError();
 }
 
 ErrnoError close_descriptor(descriptor_t fd_desc) {

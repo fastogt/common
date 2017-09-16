@@ -55,6 +55,8 @@ class DescriptorHolder {
   ErrnoError Lock() WARN_UNUSED_RESULT;
   ErrnoError Unlock() WARN_UNUSED_RESULT;
 
+  ErrnoError Seek(off_t offset, int whence) WARN_UNUSED_RESULT;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(DescriptorHolder);
   descriptor_t fd_;

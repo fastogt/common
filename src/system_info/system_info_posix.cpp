@@ -33,8 +33,29 @@
 
 #include <common/macros.h>
 
+#include <common/utils.h>
+
 namespace common {
 namespace system_info {
+
+long GetProcessRss(pid_t pid) {
+  char buff[64] = {0};
+  sprintf(buff, "ps --no-headers -p %ld -o rss", static_cast<long>(pid));
+
+  FILE* fp = popen(buff, "r");
+  if (!fp) {
+    return 0;
+  }
+
+  char path[16] = {0};
+  char* res = fgets(path, sizeof(path) - 1, fp);
+  pclose(fp);
+
+  if (!res) {
+    return 0;
+  }
+  return std::stol(res);
+}
 
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
 std::string OperatingSystemName() {

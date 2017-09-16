@@ -54,7 +54,7 @@ class Upath {
   size_t GetLevels() const;
   std::string GetHpathLevel(size_t lv) const;  // directories
   std::string GetHpath() const;                // directories
-  std::string GetFilename() const;             // filename
+  std::string GetFileName() const;             // filename
   std::string GetUpath() const;                // path + query
   bool Equals(const Upath& path) const;
 

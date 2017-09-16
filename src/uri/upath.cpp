@@ -73,7 +73,7 @@ std::string Upath::GetHpath() const {
   return file_system::stable_dir_path_separator(path_);
 }
 
-std::string Upath::GetFilename() const {
+std::string Upath::GetFileName() const {
   size_t slash = path_.find_last_of(uri_separator_string);
   if (slash != std::string::npos) {
     return path_.substr(slash + 1);
