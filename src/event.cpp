@@ -31,14 +31,17 @@
 
 namespace common {
 
-IEvent::~IEvent() {}
+IEvent::~IEvent() {
+}
 
 IEvent::event_id_t IEvent::GetEventID() const {
   return event_id_;
 }
 
-IEvent::IEvent(event_id_t id) : event_id_(id) {}
+IEvent::IEvent(event_id_t id) : event_id_(id) {
+}
 
-IListener::~IListener() {}
+IListener::~IListener() {
+}
 
 }  // namespace common

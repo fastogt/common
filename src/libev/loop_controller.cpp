@@ -37,7 +37,8 @@
 namespace common {
 namespace libev {
 
-ILoopController::ILoopController() : loop_(nullptr), handler_(nullptr) {}
+ILoopController::ILoopController() : loop_(nullptr), handler_(nullptr) {
+}
 
 int ILoopController::Exec() {
   CHECK(!handler_);

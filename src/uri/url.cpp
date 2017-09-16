@@ -32,8 +32,8 @@
 #include <common/sprintf.h>
 
 namespace {
-const char* scheme_names[common::uri::Url::num_schemes] = {"unknown", "http", "https", "ftp", "file",
-                                                           "ws",      "udp",  "rtmp",  "dev"};
+const char* scheme_names[common::uri::Url::num_schemes] =
+    {"unknown", "http", "https", "ftp", "file", "ws", "udp", "tcp", "rtmp", "dev"};
 
 const char* scheme_name(int level) {
   if (level >= 0 && level < common::uri::Url::num_schemes) {
@@ -134,17 +134,24 @@ bool get_schemes(const char* url_s, size_t len, Url::scheme* prot) {
           return true;
         }
       } else if (url_s[0] == 'h' || url_s[0] == 'H') {
-        if (url_s[5] == ':') {
-          *prot = Url::https;
-        } else {
-          *prot = Url::http;
+        if ((url_s[1] == 't' || url_s[1] == 'T') && (url_s[2] == 't' || url_s[2] == 'T') &&
+            (url_s[3] == 'p' || url_s[3] == 'P')) {
+          if (url_s[5] == ':') {
+            *prot = Url::https;
+          } else {
+            *prot = Url::http;
+          }
+          return true;
         }
-        return true;
+        return false;
       } else if (url_s[0] == 'w' || url_s[0] == 'W') {
         *prot = Url::ws;
         return true;
       } else if (url_s[0] == 'u' || url_s[0] == 'U') {
         *prot = Url::udp;
+        return true;
+      } else if (url_s[0] == 't' || url_s[0] == 'T') {
+        *prot = Url::tcp;
         return true;
       } else if (url_s[0] == 'r' || url_s[0] == 'R') {
         *prot = Url::rtmp;
@@ -171,7 +178,7 @@ Url::Url(const std::string& url_s) : scheme_(unknown), host_() {
 }
 
 void Url::Parse(const std::string& url_s) {
-  // ftp, http, file, ws, udp, rtmp
+  // ftp, http, file, ws, udp, tcp, rtmp
   size_t len = url_s.length();
   const char* data = url_s.c_str();
   size_t start = 0;
@@ -185,6 +192,8 @@ void Url::Parse(const std::string& url_s) {
     } else if (scheme_ == ws) {
       start = 5;
     } else if (scheme_ == udp) {
+      start = 6;
+    } else if (scheme_ == tcp) {
       start = 6;
     } else if (scheme_ == rtmp) {
       start = 7;

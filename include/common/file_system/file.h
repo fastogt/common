@@ -77,6 +77,8 @@ class File {
 
   ErrnoError Seek(off_t offset, int whence) WARN_UNUSED_RESULT;
 
+  ErrnoError Truncate(off_t pos) WARN_UNUSED_RESULT;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(File);
   DescriptorHolder* holder_;

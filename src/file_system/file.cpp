@@ -38,13 +38,20 @@
 namespace common {
 namespace file_system {
 
-File::File() : holder_(nullptr), file_path_() {}
+File::File() : holder_(nullptr), file_path_() {
+}
 
-File::~File() { delete holder_; }
+File::~File() {
+  delete holder_;
+}
 
-File::path_type File::GetPath() const { return file_path_; }
+File::path_type File::GetPath() const {
+  return file_path_;
+}
 
-bool File::IsValid() const { return holder_ && holder_->IsValid(); }
+bool File::IsValid() const {
+  return holder_ && holder_->IsValid();
+}
 
 ErrnoError File::Write(const buffer_t& data, size_t* nwrite_out) {
   DCHECK(IsValid());
@@ -97,6 +104,11 @@ ErrnoError File::Unlock() {
 ErrnoError File::Seek(off_t offset, int whence) {
   DCHECK(IsValid());
   return holder_->Seek(offset, whence);
+}
+
+ErrnoError File::Truncate(off_t pos) {
+  DCHECK(IsValid());
+  return holder_->Truncate(pos);
 }
 
 ErrnoError File::Open(const path_type::value_type& file_path, uint32_t flags) {
@@ -159,9 +171,11 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   return ErrnoError();
 }
 
-ANSIFile::ANSIFile(const path_type& file_path) : path_(file_path), file_(NULL) {}
+ANSIFile::ANSIFile(const path_type& file_path) : path_(file_path), file_(NULL) {
+}
 
-ANSIFile::~ANSIFile() {}
+ANSIFile::~ANSIFile() {
+}
 
 ErrnoError ANSIFile::Open(const char* mode) {
   if (!file_) {
@@ -323,7 +337,9 @@ void ANSIFile::Flush() {
   fflush(file_);
 }
 
-bool ANSIFile::IsOpened() const { return file_ != NULL; }
+bool ANSIFile::IsOpened() const {
+  return file_ != NULL;
+}
 
 void ANSIFile::Close() {
   if (file_) {

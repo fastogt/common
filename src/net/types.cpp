@@ -41,7 +41,8 @@ const char localhost_digits[] = "127.0.0.1";
 namespace common {
 namespace net {
 
-HostAndPort::HostAndPort() : host_(), port_(0) {}
+HostAndPort::HostAndPort() : host_(), port_(0) {
+}
 
 HostAndPort::HostAndPort(host_t host, port_t port) : host_(), port_(port) {
   SetHost(host);
@@ -98,10 +99,12 @@ void HostAndPort::SetPort(port_t port) {
   port_ = port;
 }
 
-HostAndPortAndSlot::HostAndPortAndSlot() : HostAndPort(), slot_(0) {}
+HostAndPortAndSlot::HostAndPortAndSlot() : HostAndPort(), slot_(0) {
+}
 
 HostAndPortAndSlot::HostAndPortAndSlot(const std::string& host, uint16_t port, uint16_t slot)
-    : HostAndPort(host, port), slot_(slot) {}
+    : HostAndPort(host, port), slot_(slot) {
+}
 
 bool HostAndPortAndSlot::Equals(const HostAndPortAndSlot& other) const {
   return HostAndPort::Equals(other) && slot_ == other.slot_;

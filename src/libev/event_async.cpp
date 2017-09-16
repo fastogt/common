@@ -36,9 +36,11 @@
 namespace common {
 namespace libev {
 
-LibevAsync::LibevAsync() : base_class(), loop_(nullptr), func_() {}
+LibevAsync::LibevAsync() : base_class(), loop_(nullptr), func_() {
+}
 
-LibevAsync::~LibevAsync() {}
+LibevAsync::~LibevAsync() {
+}
 
 void LibevAsync::Init(LibEvLoop* loop, async_loop_exec_function_t cb) {
   if (!loop || !cb) {

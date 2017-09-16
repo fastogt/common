@@ -44,7 +44,7 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError close_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError lock_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
 ErrnoError unlock_descriptor(descriptor_t fd_desc) WARN_UNUSED_RESULT;
-ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence)WARN_UNUSED_RESULT;
+ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence) WARN_UNUSED_RESULT;
 
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) WARN_UNUSED_RESULT;
 extern ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;

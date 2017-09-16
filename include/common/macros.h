@@ -146,7 +146,7 @@ void immediate_exit();
 
 #define LINE_TEXT __FILE__ ":" STRINGIZE(__LINE__)
 
-#define UNUSED(x) (void)x
+#define UNUSED(x) (void) x
 
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
 #define DCHECK_IS_ON 0

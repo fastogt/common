@@ -41,9 +41,11 @@
 namespace common {
 namespace net {
 
-socket_info::socket_info() : fd_(INVALID_SOCKET_VALUE), addr_(NULL), host_(NULL), port_(0) {}
+socket_info::socket_info() : fd_(INVALID_SOCKET_VALUE), addr_(NULL), host_(NULL), port_(0) {
+}
 
-socket_info::socket_info(socket_descr_t fd) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {}
+socket_info::socket_info(socket_descr_t fd) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {
+}
 
 socket_info::socket_info(socket_descr_t fd, struct addrinfo* info) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {
   addr_ = copy_addrinfo(info);

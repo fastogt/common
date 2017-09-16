@@ -55,11 +55,11 @@ string16 ConvertFromCharArray(const char* str) {
   return ConvertToString16(str);
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT>>
+template <typename CharT, typename Traits = std::char_traits<CharT> >
 void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
                     const std::basic_string<CharT, Traits>& pattern,
                     bool recursive,
-                    std::vector<FileStringPath<CharT, Traits>>* result) {
+                    std::vector<FileStringPath<CharT, Traits> >* result) {
   typedef typename DirectoryStringPath<CharT, Traits>::value_type value_type;
   if (!folder.IsValid() || pattern.empty() || !result) {
     return;
@@ -111,10 +111,10 @@ void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
 }  // namespace
 
 template <typename CharT, typename Traits>
-std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
-                                                      const std::basic_string<CharT, Traits>& pattern,
-                                                      bool recursive) {
-  std::vector<FileStringPath<CharT, Traits>> result;
+std::vector<FileStringPath<CharT, Traits> > ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                                                       const std::basic_string<CharT, Traits>& pattern,
+                                                       bool recursive) {
+  std::vector<FileStringPath<CharT, Traits> > result;
   ScanFolderImpl(folder, pattern, recursive, &result);
   return result;
 }

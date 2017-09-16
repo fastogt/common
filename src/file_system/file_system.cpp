@@ -54,7 +54,7 @@ int ftruncate(int fd, int64_t length) {
   return SetEndOfFile(fh) ? 0 : -1;
 }
 #if !defined(S_ISDIR)
-#define S_ISDIR(mode) ((mode& S_IFMT) == S_IFDIR)
+#define S_ISDIR(mode) ((mode & S_IFMT) == S_IFDIR)
 #endif
 #endif
 
@@ -243,7 +243,9 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
   return ftruncate(fd_desc, 0);
 }
 
-ErrnoError touch(const std::string& path) { return create_node(path); }
+ErrnoError touch(const std::string& path) {
+  return create_node(path);
+}
 
 ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
@@ -492,9 +494,13 @@ ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* ou
   return ErrnoError();
 }
 
-ErrnoError lock_descriptor(descriptor_t fd_desc) { return call_fcntl_flock(fd_desc, true); }
+ErrnoError lock_descriptor(descriptor_t fd_desc) {
+  return call_fcntl_flock(fd_desc, true);
+}
 
-ErrnoError unlock_descriptor(descriptor_t fd_desc) { return call_fcntl_flock(fd_desc, false); }
+ErrnoError unlock_descriptor(descriptor_t fd_desc) {
+  return call_fcntl_flock(fd_desc, false);
+}
 
 ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence) {
   if (fd_desc == INVALID_DESCRIPTOR) {

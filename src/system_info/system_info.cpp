@@ -18,7 +18,8 @@ struct CurrentSystemInfo {
 }  // namespace
 
 SystemInfo::SystemInfo(const std::string& name, const std::string& version, const std::string& arch)
-    : name_(name), version_(version), arch_(arch) {}
+    : name_(name), version_(version), arch_(arch) {
+}
 
 const std::string& SystemInfo::GetName() const {
   return name_;

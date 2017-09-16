@@ -45,6 +45,7 @@ std::string OperatingSystemName();
 std::string OperatingSystemVersion();
 std::string OperatingSystemArchitecture();
 long GetProcessRss(pid_t pid);
+double GetCpuLoad(pid_t pid);
 
 class SystemInfo {
  public:

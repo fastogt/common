@@ -442,7 +442,9 @@ bool EndsWithT(const STR& str, const STR& search, bool case_sensitive) {
   if (case_sensitive) {
     return str.compare(str_length - search_length, search_length, search) == 0;
   }
-  return std::equal(search.begin(), search.end(), str.begin() + (str_length - search_length),
+  return std::equal(search.begin(),
+                    search.end(),
+                    str.begin() + (str_length - search_length),
                     CaseInsensitiveCompare<typename STR::value_type>());
 }
 
@@ -627,11 +629,11 @@ string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separ
   return JoinStringT(parts, separator);
 }
 
-std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator) {
+std::vector<char> JoinString(const std::vector<std::vector<char> >& parts, std::vector<char> separator) {
   return JoinStringTEX(parts, separator);
 }
 
-std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
+std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char> >& parts,
                                       std::vector<unsigned char> separator) {
   return JoinStringTEX(parts, separator);
 }
@@ -875,13 +877,13 @@ struct NextCharUTF16 {
 };
 
 bool MatchPattern(const StringPiece& eval, const StringPiece& pattern) {
-  return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(), pattern.data() + pattern.size(), 0,
-                       NextCharUTF8());
+  return MatchPatternT(
+      eval.data(), eval.data() + eval.size(), pattern.data(), pattern.data() + pattern.size(), 0, NextCharUTF8());
 }
 
 bool MatchPattern(const string16& eval, const string16& pattern) {
-  return MatchPatternT(eval.c_str(), eval.c_str() + eval.size(), pattern.c_str(), pattern.c_str() + pattern.size(), 0,
-                       NextCharUTF16());
+  return MatchPatternT(
+      eval.c_str(), eval.c_str() + eval.size(), pattern.c_str(), pattern.c_str() + pattern.size(), 0, NextCharUTF16());
 }
 
 // The following code is compatible with the OpenBSD lcpy interface.  See:

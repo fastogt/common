@@ -52,7 +52,8 @@ class intrusive_ptr {
   }
 
   template <typename U>
-  intrusive_ptr(const intrusive_ptr<U>& rhs) : px(rhs.get()) {
+  intrusive_ptr(const intrusive_ptr<U>& rhs)
+      : px(rhs.get()) {
     if (px != 0) {
       intrusive_ptr_add_ref(px);
     }

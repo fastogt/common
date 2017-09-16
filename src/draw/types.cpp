@@ -35,9 +35,11 @@
 namespace common {
 namespace draw {
 
-Size::Size() : width(0), height(0) {}
+Size::Size() : width(0), height(0) {
+}
 
-Size::Size(int width, int height) : width(width), height(height) {}
+Size::Size(int width, int height) : width(width), height(height) {
+}
 
 bool Size::IsValid() const {
   return IsValidSize(width, height);

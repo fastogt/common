@@ -38,7 +38,8 @@ namespace uri {
 const char uri_separator = '/';
 const char uri_separator_string[] = "/";
 
-Upath::Upath() : path_(), query_() {}
+Upath::Upath() : path_(), query_() {
+}
 
 Upath::Upath(const std::string& url_sp) : path_(), query_() {
   Parse(url_sp);

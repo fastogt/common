@@ -33,7 +33,8 @@
 
 namespace common {
 
-CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(ED_ZLIB) {}
+CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(ED_ZLIB) {
+}
 
 Error CompressZlibEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
 #ifdef HAVE_ZLIB

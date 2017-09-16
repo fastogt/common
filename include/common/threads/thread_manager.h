@@ -60,8 +60,8 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
     typedef Thread<typename std::result_of<Callable(T, Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
-    thread_type* rthr = new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...),
-                                        func_addr, invalid_cpu_number);
+    thread_type* rthr = new thread_type(
+        std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...), func_addr, invalid_cpu_number);
     return ThreadSPtr(rthr);
   }
 
@@ -73,7 +73,8 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
     thread_type* rthr =
         new thread_type(common::utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...),
-                        func_addr, invalid_cpu_number);
+                        func_addr,
+                        invalid_cpu_number);
     return ThreadSPtr(rthr);
   }
 

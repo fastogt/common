@@ -32,6 +32,7 @@
 #include <sys/utsname.h>
 
 #include <common/macros.h>
+#include <common/convert2string.h>
 
 #include <common/utils.h>
 
@@ -55,6 +56,32 @@ long GetProcessRss(pid_t pid) {
     return 0;
   }
   return std::stol(res);
+}
+
+double GetCpuLoad(pid_t pid) {
+  char buff[32] = {0};
+  sprintf(buff, "ps -o pcpu= %ld", static_cast<long>(pid));
+
+  FILE* fp = popen(buff, "r");
+  if (!fp) {
+    return 0.0;
+  }
+
+  char path[16] = {0};
+  char* res = fgets(path, sizeof(path) - 1, fp);
+  pclose(fp);
+
+  if (!res) {
+    return 0.0;
+  }
+
+  double ret = 0.0;
+  bool is_converted = ConvertFromString(res, &ret);
+  if (!is_converted) {
+    return 0.0;
+  }
+
+  return ret;
 }
 
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)

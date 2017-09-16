@@ -36,9 +36,11 @@
 namespace common {
 namespace libev {
 
-LibevIO::LibevIO() : base_class(), loop_(nullptr), func_(), fd_(INVALID_DESCRIPTOR), events_(0) {}
+LibevIO::LibevIO() : base_class(), loop_(nullptr), func_(), fd_(INVALID_DESCRIPTOR), events_(0) {
+}
 
-LibevIO::~LibevIO() {}
+LibevIO::~LibevIO() {
+}
 
 descriptor_t LibevIO::GetFd() const {
   return fd_;

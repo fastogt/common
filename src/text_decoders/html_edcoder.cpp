@@ -33,7 +33,8 @@
 
 namespace common {
 
-HtmlEscEDcoder::HtmlEscEDcoder() : IEDcoder(ED_HEX) {}
+HtmlEscEDcoder::HtmlEscEDcoder() : IEDcoder(ED_HEX) {
+}
 
 Error HtmlEscEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   *out = utils::html::encode(data);

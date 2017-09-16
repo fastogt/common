@@ -46,8 +46,9 @@ class Url {
     file = 4,
     ws = 5,
     udp = 6,
-    rtmp = 7,
-    dev = 8,
+    tcp = 7,
+    rtmp = 8,
+    dev = 9,
     num_schemes
   };
   enum {

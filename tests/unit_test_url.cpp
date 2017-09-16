@@ -79,6 +79,9 @@ TEST(Url, Scheme) {
   ASSERT_EQ(file_uri.GetPath(), common::uri::Upath("/home/sasha/2.txt"));
   ASSERT_EQ(file_uri.GetHost(), std::string());
 
+  common::uri::Url invalid_uri("home://user/logo.png");
+  ASSERT_FALSE(invalid_uri.IsValid());
+
   common::uri::Url ws_uri("ws://localhost:8080");
   ASSERT_EQ(ws_uri.GetScheme(), common::uri::Url::ws);
   ASSERT_EQ(ws_uri.GetHost(), "localhost:8080");
