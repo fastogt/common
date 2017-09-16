@@ -34,11 +34,9 @@
 namespace common {
 namespace file_system {
 
-DescriptorHolder::DescriptorHolder(descriptor_t fd) : fd_(fd) {
-}
+DescriptorHolder::DescriptorHolder(descriptor_t fd) : fd_(fd) {}
 
-DescriptorHolder::~DescriptorHolder() {
-}
+DescriptorHolder::~DescriptorHolder() {}
 
 bool DescriptorHolder::IsValid() const {
   return fd_ != INVALID_DESCRIPTOR;
