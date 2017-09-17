@@ -34,6 +34,8 @@
 namespace common {
 namespace media {
 
+typedef size_t bandwidth_t;  // bytes/sec
+
 struct Rational {
   int num;  ///< Numerator
   int den;  ///< Denominator

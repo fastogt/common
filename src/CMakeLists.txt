@@ -108,10 +108,12 @@ SET(DRAW_SOURCES
 
 SET(MEDIA_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/media/types.h
+  ${CMAKE_SOURCE_DIR}/include/common/media/bandwidth_estimation.h
 )
 
 SET(MEDIA_SOURCES
   ${CMAKE_SOURCE_DIR}/src/media/types.cpp
+  ${CMAKE_SOURCE_DIR}/src/media/bandwidth_estimation.cpp
 )
 
 SET(COMPRESS_HEADERS
