@@ -566,6 +566,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_filesystem.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_http.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_net.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit_test_media.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_strings.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_text_edecoders.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_value.cpp
