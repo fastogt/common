@@ -57,8 +57,7 @@ struct CpuInfo::CpuInfoImpl {
   bool is_valid_;
 };
 
-CpuInfo::CpuInfo() : impl_(new CpuInfoImpl) {
-}
+CpuInfo::CpuInfo() : impl_(new CpuInfoImpl) {}
 
 std::string CpuInfo::GetBrandName() const {
   return impl_->cpuid_.brand_str;
@@ -85,10 +84,8 @@ lcpu_count_t CpuInfo::GetThreadsOnCore() const {
 }
 
 std::string CpuInfo::GetNativeCpuID() const {
-  return common::MemSPrintf("%08X %08X %08X %08X",
-                            impl_->raw_cpuid_.basic_cpuid[0][0],
-                            impl_->raw_cpuid_.basic_cpuid[0][1],
-                            impl_->raw_cpuid_.basic_cpuid[0][2],
+  return common::MemSPrintf("%08X %08X %08X %08X", impl_->raw_cpuid_.basic_cpuid[0][0],
+                            impl_->raw_cpuid_.basic_cpuid[0][1], impl_->raw_cpuid_.basic_cpuid[0][2],
                             impl_->raw_cpuid_.basic_cpuid[0][3]);
 }
 

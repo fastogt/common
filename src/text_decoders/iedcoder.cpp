@@ -58,11 +58,9 @@ bool ConvertFromString(const std::string& from, EDType* out) {
   return false;
 }
 
-IEDcoder::~IEDcoder() {
-}
+IEDcoder::~IEDcoder() {}
 
-IEDcoder::IEDcoder(EDType type) : type_(type) {
-}
+IEDcoder::IEDcoder(EDType type) : type_(type) {}
 
 Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
   if (data.empty()) {

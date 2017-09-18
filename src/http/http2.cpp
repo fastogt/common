@@ -34,11 +34,8 @@
 #include <common/convert2string.h>  // for ConvertToString, etc
 #include <common/portable_endian.h>
 
-#define MAKE_STATIC_ENT(N, V, T, H)       \
-  {                                       \
-    { MAKE_BUFFER(N), MAKE_BUFFER(V), 0 } \
-    , NULL, 0, (H), (T)                   \
-  }
+#define MAKE_STATIC_ENT(N, V, T, H) \
+  { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, NULL, 0, (H), (T) }
 
 #define lstreq(A, B, N) ((sizeof((A)) - 1) == (N) && memcmp((A), (B), (N)) == 0)
 
@@ -1342,11 +1339,9 @@ http2_context::http2_context()
       hd_table(hd_table_bufsize_max / HTTP2_ENTRY_OVERHEAD),
       hd_table_bufsize(0),
       next_seq(0),
-      bad(0) {
-}
+      bad(0) {}
 
-http2_context::~http2_context() {
-}
+http2_context::~http2_context() {}
 
 http2_inflater::http2_inflater()
     : ctx(),
@@ -1767,8 +1762,7 @@ uint32_t http2_priority_spec::stream_id() const {
   return stream_id_.id();
 }
 
-http2_headers_spec::http2_headers_spec() {
-}
+http2_headers_spec::http2_headers_spec() {}
 
 uint8_t http2_headers_spec::padlen() const {
   return padlen_;
@@ -1796,8 +1790,7 @@ uint8_t* http2_goaway_spec::opaque_data() const {
 
 // frames
 
-frame_base::frame_base() : header_(), payload_() {
-}
+frame_base::frame_base() : header_(), payload_() {}
 
 frame_base::frame_base(const frame_hdr& head, const void* data) : header_(head), payload_() {
   uint32_t payload_size = header_.length();
@@ -1808,8 +1801,7 @@ frame_base::frame_base(const frame_hdr& head, const void* data) : header_(head),
   }
 }
 
-frame_base::frame_base(const frame_hdr& head, const buffer_t& data) : header_(head), payload_(data) {
-}
+frame_base::frame_base(const frame_hdr& head, const buffer_t& data) : header_(head), payload_(data) {}
 
 frame_base frame_base::create_frame(const frame_hdr& head, const char* data) {
   frame_t type = head.type();
@@ -1920,8 +1912,7 @@ http2_error_code frame_rst::error_code() const {
 // frame_rst //
 
 // frame_data //
-frame_data::frame_data(const frame_hdr& head, const void* data) : frame_base(head, data) {
-}
+frame_data::frame_data(const frame_hdr& head, const void* data) : frame_base(head, data) {}
 
 frame_data::frame_data(const frame_hdr& head, const buffer_t& data) : frame_base(head, data) {
   CHECK(head.type() == HTTP2_DATA);

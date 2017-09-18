@@ -73,29 +73,29 @@ typedef sockaddr_in sockaddr_t;
 
 #ifdef COMPILER_MINGW
 enum socket_t {
-  ST_SOCK_STREAM = 1,   /* Sequenced, reliable, connection-based
-                           byte streams.  */
-  ST_SOCK_DGRAM = 2,    /* Connectionless, unreliable datagrams
-                           of fixed maximum length.  */
-  ST_SOCK_RAW = 3,      /* Raw protocol interface.  */
-  ST_SOCK_RDM = 4,      /* Reliably-delivered messages.  */
+  ST_SOCK_STREAM = 1, /* Sequenced, reliable, connection-based
+                         byte streams.  */
+  ST_SOCK_DGRAM = 2,  /* Connectionless, unreliable datagrams
+                         of fixed maximum length.  */
+  ST_SOCK_RAW = 3,    /* Raw protocol interface.  */
+  ST_SOCK_RDM = 4,    /* Reliably-delivered messages.  */
   ST_SOCK_SEQPACKET = 5 /* Sequenced, reliable, connection-based,
                            datagrams of fixed maximum length.  */
 };
 #else
 enum socket_t {
-  ST_SOCK_STREAM = 1,    /* Sequenced, reliable, connection-based
-                            byte streams.  */
-  ST_SOCK_DGRAM = 2,     /* Connectionless, unreliable datagrams
-                            of fixed maximum length.  */
-  ST_SOCK_RAW = 3,       /* Raw protocol interface.  */
-  ST_SOCK_RDM = 4,       /* Reliably-delivered messages.  */
+  ST_SOCK_STREAM = 1, /* Sequenced, reliable, connection-based
+                         byte streams.  */
+  ST_SOCK_DGRAM = 2,  /* Connectionless, unreliable datagrams
+                         of fixed maximum length.  */
+  ST_SOCK_RAW = 3,    /* Raw protocol interface.  */
+  ST_SOCK_RDM = 4,    /* Reliably-delivered messages.  */
   ST_SOCK_SEQPACKET = 5, /* Sequenced, reliable, connection-based,
                             datagrams of fixed maximum length.  */
-  ST_SOCK_DCCP = 6,      /* Datagram Congestion Control Protocol.  */
-  ST_SOCK_PACKET = 10,   /* Linux specific way of getting packets
-                            at the dev level. For writing rarp and
-                            other similar things on the user level. */
+  ST_SOCK_DCCP = 6,    /* Datagram Congestion Control Protocol.  */
+  ST_SOCK_PACKET = 10, /* Linux specific way of getting packets
+                          at the dev level. For writing rarp and
+                          other similar things on the user level. */
 };
 #endif
 

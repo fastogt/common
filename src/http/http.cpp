@@ -70,26 +70,22 @@ bool ConvertFromString(const std::string& from, http::http_protocols* out) {
 
 namespace http {
 
-HttpHeader::HttpHeader() : key(), value() {
-}
+HttpHeader::HttpHeader() : key(), value() {}
 
-HttpHeader::HttpHeader(const std::string& key, const std::string& value) : key(key), value(value) {
-}
+HttpHeader::HttpHeader(const std::string& key, const std::string& value) : key(key), value(value) {}
 
 bool HttpHeader::IsValid() const {
   return !key.empty();
 }
 
-http_request::http_request() : method_(), path_(), protocol_(), headers_(), body_() {
-}
+http_request::http_request() : method_(), path_(), protocol_(), headers_(), body_() {}
 
 http_request::http_request(http_method method,
                            const uri::Upath& path,
                            const std::string& protocol,
                            const headers_t& headers,
                            const std::string& body)
-    : method_(method), path_(path), protocol_(protocol), headers_(headers), body_(body) {
-}
+    : method_(method), path_(path), protocol_(protocol), headers_(headers), body_(body) {}
 
 http::http_protocols http_request::protocol() const {
   http::http_protocols p;
@@ -392,9 +388,7 @@ std::string ConvertToString(http::http_request request) {
   uri::Upath upath = request.path();
   http::http_method method = request.method();
 
-  std::string headerout = MemSPrintf("%s /%s %s\r\n",
-                                     ConvertToString(method),
-                                     upath.GetPath(),
+  std::string headerout = MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.GetPath(),
                                      ConvertToString(request.protocol()));  // "GET /hello.htm HTTP/1.1\r\n"
   http::http_request::headers_t headers = request.headers();
   for (size_t i = 0; i < headers.size(); ++i) {

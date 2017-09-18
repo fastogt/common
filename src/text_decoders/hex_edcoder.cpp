@@ -33,8 +33,7 @@
 
 namespace common {
 
-HexEDcoder::HexEDcoder() : IEDcoder(ED_HEX) {
-}
+HexEDcoder::HexEDcoder() : IEDcoder(ED_HEX) {}
 
 Error HexEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   return compress::EncodeHex(data, false, out);

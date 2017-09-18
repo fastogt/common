@@ -80,8 +80,7 @@ class LibEvLoop::AsyncCustom : public LibevAsync {
   std::vector<custom_loop_exec_function_t> custom_callbacks_;
 };
 
-EvLoopObserver::~EvLoopObserver() {
-}
+EvLoopObserver::~EvLoopObserver() {}
 
 LibEvLoop::LibEvLoop()
     : loop_(ev_loop_new(0)),

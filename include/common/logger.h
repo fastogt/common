@@ -44,7 +44,7 @@ class LogMessageVoidify {
   LogMessageVoidify() {}
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
-  void operator&(std::ostream&) const {}
+  void operator&(std::ostream&)const {}
 };
 
 bool LOG_IS_ON(LOG_LEVEL level);

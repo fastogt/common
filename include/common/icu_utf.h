@@ -141,13 +141,14 @@ extern const uint8_t utf8_countTrailBytes[256];
  * @return 1..4, or 0 if c is a surrogate or not a Unicode code point
  * @stable ICU 2.4
  */
-#define CBU8_LENGTH(c)                                                                                                 \
-  ((uint32_t)(c) <= 0x7f                                                                                               \
-       ? 1                                                                                                             \
-       : ((uint32_t)(c) <= 0x7ff ? 2                                                                                   \
-                                 : ((uint32_t)(c) <= 0xd7ff ? 3 : ((uint32_t)(c) <= 0xdfff || (uint32_t)(c) > 0x10ffff \
-                                                                       ? 0                                             \
-                                                                       : ((uint32_t)(c) <= 0xffff ? 3 : 4)))))
+#define CBU8_LENGTH(c)                                                                                             \
+  ((uint32_t)(c) <= 0x7f                                                                                           \
+       ? 1                                                                                                         \
+       : ((uint32_t)(c) <= 0x7ff ? 2                                                                               \
+                                 : ((uint32_t)(c) <= 0xd7ff ? 3                                                    \
+                                                            : ((uint32_t)(c) <= 0xdfff || (uint32_t)(c) > 0x10ffff \
+                                                                   ? 0                                             \
+                                                                   : ((uint32_t)(c) <= 0xffff ? 3 : 4)))))
 
 /**
  * The maximum number of UTF-8 code units (bytes) per Unicode code point (U+0000..U+10ffff).
@@ -287,7 +288,7 @@ UChar32 utf8_nextCharSafeBody(const uint8_t* s, int32_t* pi, int32_t length, UCh
  * @stable ICU 2.4
  */
 #define CBU16_GET_SUPPLEMENTARY(lead, trail) \
-  (((base_icu::UChar32)(lead) << 10UL) + (base_icu::UChar32)(trail) - CBU16_SURROGATE_OFFSET)
+  (((base_icu::UChar32)(lead) << 10UL) + (base_icu::UChar32)(trail)-CBU16_SURROGATE_OFFSET)
 
 /**
  * Get the lead surrogate (0xd800..0xdbff) for a

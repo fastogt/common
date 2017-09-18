@@ -32,8 +32,7 @@
 namespace common {
 namespace libev {
 
-IoLoopObserver::~IoLoopObserver() {
-}
+IoLoopObserver::~IoLoopObserver() {}
 
 }  // namespace libev
 }  // namespace common

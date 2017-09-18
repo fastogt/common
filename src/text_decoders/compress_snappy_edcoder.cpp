@@ -33,8 +33,7 @@
 
 namespace common {
 
-CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(ED_SNAPPY) {
-}
+CompressSnappyEDcoder::CompressSnappyEDcoder() : IEDcoder(ED_SNAPPY) {}
 
 Error CompressSnappyEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
 #ifdef HAVE_SNAPPY

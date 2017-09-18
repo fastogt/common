@@ -32,8 +32,8 @@
 #include <common/sprintf.h>
 
 namespace {
-const char* scheme_names[common::uri::Url::num_schemes] =
-    {"unknown", "http", "https", "ftp", "file", "ws", "udp", "tcp", "rtmp", "dev"};
+const char* scheme_names[common::uri::Url::num_schemes] = {"unknown", "http", "https", "ftp",  "file",
+                                                           "ws",      "udp",  "tcp",   "rtmp", "dev"};
 
 const char* scheme_name(int level) {
   if (level >= 0 && level < common::uri::Url::num_schemes) {

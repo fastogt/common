@@ -34,11 +34,9 @@ namespace libev {
 namespace tcp {
 
 TcpClient::TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags)
-    : IoClient(server, flags), sock_(info) {
-}
+    : IoClient(server, flags), sock_(info) {}
 
-TcpClient::~TcpClient() {
-}
+TcpClient::~TcpClient() {}
 
 net::socket_info TcpClient::GetInfo() const {
   return sock_.GetInfo();

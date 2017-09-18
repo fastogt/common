@@ -17,8 +17,7 @@
 namespace common {
 namespace threads {
 
-barrier::barrier(unsigned int count) : threshold_(count), count_(count), generation_(0) {
-}
+barrier::barrier(unsigned int count) : threshold_(count), count_(count), generation_(0) {}
 
 bool barrier::Wait() {
   std::unique_lock<std::mutex> lock(mutex_);

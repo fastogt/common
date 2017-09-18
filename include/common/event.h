@@ -124,9 +124,7 @@ class IExceptionEvent : public IEventEx<type> {
   typedef IEventEx<type_t> event_t;
 
   explicit IExceptionEvent(event_t* event, Error err)  // take ownerships event
-      : IEventEx<type>(static_cast<type_t>(event_traits<type_t>::max_count)),
-        event_(event),
-        err_(err) {}
+      : IEventEx<type>(static_cast<type_t>(event_traits<type_t>::max_count)), event_(event), err_(err) {}
 
   virtual ~IExceptionEvent() { delete event_; }
 

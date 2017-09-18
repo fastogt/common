@@ -50,14 +50,11 @@ struct addrinfo;
 namespace common {
 namespace net {
 
-SocketHolder::SocketHolder(const socket_info& info) : info_(info) {
-}
+SocketHolder::SocketHolder(const socket_info& info) : info_(info) {}
 
-SocketHolder::~SocketHolder() {
-}
+SocketHolder::~SocketHolder() {}
 
-SocketHolder::SocketHolder(socket_descr_t fd) : info_(fd) {
-}
+SocketHolder::SocketHolder(socket_descr_t fd) : info_(fd) {}
 
 #ifdef OS_POSIX
 ErrnoError SocketHolder::WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
@@ -97,18 +94,15 @@ ErrnoError SocketHolder::Close() {
   return ErrnoError();
 }
 
-SocketTcp::SocketTcp(const HostAndPort& host) : SocketHolder(INVALID_DESCRIPTOR), host_(host) {
-}
+SocketTcp::SocketTcp(const HostAndPort& host) : SocketHolder(INVALID_DESCRIPTOR), host_(host) {}
 
 HostAndPort SocketTcp::GetHost() const {
   return host_;
 }
 
-SocketTcp::~SocketTcp() {
-}
+SocketTcp::~SocketTcp() {}
 
-ClientSocketTcp::ClientSocketTcp(const HostAndPort& host) : SocketTcp(host) {
-}
+ClientSocketTcp::ClientSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
 ErrnoError ClientSocketTcp::Connect(struct timeval* tv) {
   return net::connect(host_, ST_SOCK_STREAM, tv, &info_);
@@ -132,8 +126,7 @@ ErrnoError ClientSocketTcp::SendFile(int file_fd, size_t file_size) {
   return net::send_file_to_fd(fd, file_fd, 0, file_size);
 }
 
-ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {
-}
+ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
 ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   socket_info linfo;
@@ -160,11 +153,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   addrinfo* ainf = linfo.addr_info();
 
   if (is_random_port) {  // random port
-    err = bind(fd,
-               reinterpret_cast<struct sockaddr*>(&addr),
-               sizeof(sockaddr_t),
-               ainf,
-               reuseaddr,
+    err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
                &info_);  // init sockaddr
     if (err) {
       return err;
@@ -182,11 +171,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
     return ErrnoError();
   }
 
-  return bind(fd,
-              reinterpret_cast<struct sockaddr*>(&addr),
-              sizeof(sockaddr_t),
-              ainf,
-              reuseaddr,
+  return bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
               &info_);  // init sockaddr
 }
 

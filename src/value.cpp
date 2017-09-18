@@ -62,8 +62,7 @@ class ValueEquals {
 };
 }  // namespace
 
-Value::~Value() {
-}
+Value::~Value() {}
 
 // static
 Value* Value::CreateNullValue() {
@@ -314,11 +313,9 @@ bool Value::Equals(const Value* a, const Value* b) {
   return a->Equals(b);
 }
 
-Value::Value(Type type) : type_(type) {
-}
+Value::Value(Type type) : type_(type) {}
 
-Value::Value(const Value& that) : type_(that.type_) {
-}
+Value::Value(const Value& that) : type_(that.type_) {}
 
 Value& Value::operator=(const Value& that) {
   type_ = that.type_;
@@ -327,34 +324,25 @@ Value& Value::operator=(const Value& that) {
 
 ///////////////////// FundamentalValue ////////////////////
 
-FundamentalValue::FundamentalValue(bool in_value) : Value(TYPE_BOOLEAN), boolean_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(bool in_value) : Value(TYPE_BOOLEAN), boolean_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(int in_value) : Value(TYPE_INTEGER), integer_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(int in_value) : Value(TYPE_INTEGER), integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned int in_value) : Value(TYPE_UINTEGER), integer_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(unsigned int in_value) : Value(TYPE_UINTEGER), integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(long in_value) : Value(TYPE_LONG_INTEGER), long_integer_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(long in_value) : Value(TYPE_LONG_INTEGER), long_integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned long in_value) : Value(TYPE_ULONG_INTEGER), long_integer_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(unsigned long in_value) : Value(TYPE_ULONG_INTEGER), long_integer_value_(in_value) {}
 
 FundamentalValue::FundamentalValue(long long in_value)
-    : Value(TYPE_LONG_LONG_INTEGER), long_long_integer_value_(in_value) {
-}
+    : Value(TYPE_LONG_LONG_INTEGER), long_long_integer_value_(in_value) {}
 
 FundamentalValue::FundamentalValue(unsigned long long in_value)
-    : Value(TYPE_ULONG_LONG_INTEGER), long_long_integer_value_(in_value) {
-}
+    : Value(TYPE_ULONG_LONG_INTEGER), long_long_integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(double in_value) : Value(TYPE_DOUBLE), double_value_(in_value) {
-}
+FundamentalValue::FundamentalValue(double in_value) : Value(TYPE_DOUBLE), double_value_(in_value) {}
 
-FundamentalValue::~FundamentalValue() {
-}
+FundamentalValue::~FundamentalValue() {}
 
 bool FundamentalValue::GetAsBoolean(bool* out_value) const {
   if (out_value && IsType(TYPE_BOOLEAN)) {
@@ -482,11 +470,9 @@ bool FundamentalValue::Equals(const Value* other) const {
 
 ///////////////////// StringValue ////////////////////
 
-StringValue::StringValue(const std::string& in_value) : Value(TYPE_STRING), value_(in_value) {
-}
+StringValue::StringValue(const std::string& in_value) : Value(TYPE_STRING), value_(in_value) {}
 
-StringValue::~StringValue() {
-}
+StringValue::~StringValue() {}
 
 bool StringValue::GetAsString(std::string* out_value) const {
   if (out_value) {
@@ -509,8 +495,7 @@ bool StringValue::Equals(const Value* other) const {
   return GetAsString(&lhs) && other->GetAsString(&rhs) && lhs == rhs;
 }
 
-ArrayValue::ArrayValue() : Value(TYPE_ARRAY) {
-}
+ArrayValue::ArrayValue() : Value(TYPE_ARRAY) {}
 
 ArrayValue::~ArrayValue() {
   clear();
@@ -762,8 +747,7 @@ bool ArrayValue::Equals(const Value* other) const {
   return true;
 }
 
-ByteArrayValue::ByteArrayValue(const byte_array_t& array) : Value(TYPE_BYTE_ARRAY), array_(array) {
-}
+ByteArrayValue::ByteArrayValue(const byte_array_t& array) : Value(TYPE_BYTE_ARRAY), array_(array) {}
 
 ByteArrayValue::~ByteArrayValue() {
   Clear();
@@ -833,8 +817,7 @@ bool ByteArrayValue::Equals(const Value* other) const {
   return GetAsByteArray(&lhs) && other->GetAsByteArray(&rhs) && lhs == rhs;
 }
 
-SetValue::SetValue() : Value(TYPE_SET) {
-}
+SetValue::SetValue() : Value(TYPE_SET) {}
 
 SetValue::~SetValue() {
   Clear();
@@ -911,8 +894,7 @@ bool SetValue::Equals(const Value* other) const {
   return true;
 }
 
-ZSetValue::ZSetValue() : Value(TYPE_ZSET) {
-}
+ZSetValue::ZSetValue() : Value(TYPE_ZSET) {}
 
 ZSetValue::~ZSetValue() {
   Clear();
@@ -995,8 +977,7 @@ bool ZSetValue::Equals(const Value* other) const {
   return true;
 }
 
-HashValue::HashValue() : Value(TYPE_HASH) {
-}
+HashValue::HashValue() : Value(TYPE_HASH) {}
 
 HashValue::~HashValue() {
   Clear();

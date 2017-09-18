@@ -38,8 +38,7 @@
 namespace common {
 namespace file_system {
 
-File::File() : holder_(nullptr), file_path_() {
-}
+File::File() : holder_(nullptr), file_path_() {}
 
 File::~File() {
   delete holder_;
@@ -171,11 +170,9 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   return ErrnoError();
 }
 
-ANSIFile::ANSIFile(const path_type& file_path) : path_(file_path), file_(NULL) {
-}
+ANSIFile::ANSIFile(const path_type& file_path) : path_(file_path), file_(NULL) {}
 
-ANSIFile::~ANSIFile() {
-}
+ANSIFile::~ANSIFile() {}
 
 ErrnoError ANSIFile::Open(const char* mode) {
   if (!file_) {

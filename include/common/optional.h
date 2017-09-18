@@ -63,8 +63,7 @@ struct OptionalStorage {
   explicit OptionalStorage(T&& value) : is_null_(false), value_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit OptionalStorage(common::in_place_t, Args&&... args)
-      : is_null_(false), value_(std::forward<Args>(args)...) {}
+  explicit OptionalStorage(common::in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
   // When T is not trivially destructible we must call its
   // destructor before deallocating its memory.
   ~OptionalStorage() {
@@ -90,8 +89,7 @@ struct OptionalStorage<T, true> {
   explicit OptionalStorage(T&& value) : is_null_(false), value_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit OptionalStorage(common::in_place_t, Args&&... args)
-      : is_null_(false), value_(std::forward<Args>(args)...) {}
+  explicit OptionalStorage(common::in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
   // When T is trivially destructible (i.e. its destructor does nothing) there
   // is no need to call it. Explicitly defaulting the destructor means it's not
   // user-provided. Those two together make this destructor trivial.
@@ -138,8 +136,7 @@ class Optional {
   Optional(T&& value) : storage_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit Optional(common::in_place_t, Args&&... args)
-      : storage_(common::in_place, std::forward<Args>(args)...) {}
+  explicit Optional(common::in_place_t, Args&&... args) : storage_(common::in_place, std::forward<Args>(args)...) {}
   ~Optional() = default;
   Optional& operator=(common::nullopt_t) {
     FreeIfNeeded();

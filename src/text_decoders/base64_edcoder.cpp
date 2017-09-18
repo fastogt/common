@@ -33,8 +33,7 @@
 
 namespace common {
 
-Base64EDcoder::Base64EDcoder() : IEDcoder(ED_BASE64) {
-}
+Base64EDcoder::Base64EDcoder() : IEDcoder(ED_BASE64) {}
 
 Error Base64EDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   return compress::EncodeBase64(data, out);
