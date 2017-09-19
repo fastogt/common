@@ -32,9 +32,6 @@
 #include <sys/utsname.h>
 
 #include <common/convert2string.h>
-#include <common/macros.h>
-
-#include <common/utils.h>
 
 namespace common {
 namespace system_info {

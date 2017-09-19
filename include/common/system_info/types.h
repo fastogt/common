@@ -34,10 +34,10 @@
 namespace common {
 
 typedef size_t core_count_t;
-static const core_count_t invalid_core_count = static_cast<core_count_t>(-1);
+extern const core_count_t invalid_core_count;
 
 typedef size_t lcpu_count_t;
-static const lcpu_count_t invalid_cpu_number = static_cast<lcpu_count_t>(-1);
+extern const lcpu_count_t invalid_cpu_number;
 
 namespace system_info {}  // namespace system_info
 }  // namespace common

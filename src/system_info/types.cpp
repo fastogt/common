@@ -28,3 +28,9 @@
 */
 
 #include <common/system_info/types.h>
+
+namespace common {
+const core_count_t invalid_core_count = static_cast<core_count_t>(-1);
+const lcpu_count_t invalid_cpu_number = static_cast<lcpu_count_t>(-1);
+namespace system_info {}  // namespace system_info
+}  // namespace common
