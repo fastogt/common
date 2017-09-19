@@ -32,6 +32,7 @@
 // https://chromium.googlesource.com/chromium/src/base/+/master/sys_info.h
 
 #include <stdint.h>  // for int64_t
+#include <unistd.h>
 
 #include <string>  // for string
 
