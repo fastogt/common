@@ -182,15 +182,17 @@ class EventBus : public patterns::TSSingleton<EventBus> {
     }
   }
 
- private:
   template <typename type_t>
-  EventThread<type_t>* GetThread() {
-    typedef event_traits<type_t> etraits_t;
-    if (etraits_t::id >= max_events_loop) {
-      return nullptr;
+  void StopEventThread(EventThread<type_t>* thread) {
+    if (stop_.load()) {
+      return;
     }
 
-    return static_cast<EventThread<type_t>*>(registered_threads_[etraits_t::id]);
+    if (!thread) {
+      return;
+    }
+
+    thread->Stop();
   }
 
   template <typename type_t>
@@ -217,6 +219,17 @@ class EventBus : public patterns::TSSingleton<EventBus> {
     thread->join();
   }
 
+ private:
+  template <typename type_t>
+  EventThread<type_t>* GetThread() {
+    typedef event_traits<type_t> etraits_t;
+    if (etraits_t::id >= max_events_loop) {
+      return nullptr;
+    }
+
+    return static_cast<EventThread<type_t>*>(registered_threads_[etraits_t::id]);
+  }
+
   template <typename type_t>
   void StartEventThread(EventThread<type_t>* thread) {
     if (stop_.load()) {
@@ -228,19 +241,6 @@ class EventBus : public patterns::TSSingleton<EventBus> {
     }
 
     thread->Start();
-  }
-
-  template <typename type_t>
-  void StopEventThread(EventThread<type_t>* thread) {
-    if (stop_.load()) {
-      return;
-    }
-
-    if (!thread) {
-      return;
-    }
-
-    thread->Stop();
   }
 
   template <typename type_t>
