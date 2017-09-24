@@ -5,7 +5,7 @@
 TEST(ConvertToString, media) {
   const common::media::Rational rat = {1, 25};
   std::string rat_str = common::ConvertToString(rat);
-  ASSERT_EQ(rat_str, "1/25");
+  ASSERT_EQ(rat_str, "1:25");
 
   common::media::Rational rat2;
   ASSERT_TRUE(common::ConvertFromString(rat_str, &rat2));

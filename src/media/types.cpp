@@ -35,36 +35,35 @@
 namespace common {
 namespace media {
 
-bool Rational::Equals(const Rational& rat) const {
-  return num == rat.num && den == rat.den;
-}
+bool Rational::Equals(const Rational& rat) const { return num == rat.num && den == rat.den; }
 
 }  // namespace media
 
-std::string ConvertToString(const media::Rational& value) {
-  return MemSPrintf("%d/%d", value.num, value.den);
-}
+std::string ConvertToString(const media::Rational& value) { return MemSPrintf("%d:%d", value.num, value.den); }
 
 bool ConvertFromString(const std::string& from, media::Rational* out) {
   if (!out) {
     return false;
   }
 
-  media::Rational res;
-  size_t del = from.find_first_of('/');
-  if (del != std::string::npos) {
-    int ln;
-    if (!ConvertFromString(from.substr(0, del), &ln)) {
-      return false;
-    }
-    res.num = ln;
-
-    int ld;
-    if (!ConvertFromString(from.substr(del + 1), &ld)) {
-      return false;
-    }
-    res.den = ld;
+  size_t del = from.find_first_of(':');
+  if (del == std::string::npos) {
+    return false;
   }
+
+  media::Rational res;
+
+  int ln;
+  if (!ConvertFromString(from.substr(0, del), &ln)) {
+    return false;
+  }
+  res.num = ln;
+
+  int ld;
+  if (!ConvertFromString(from.substr(del + 1), &ld)) {
+    return false;
+  }
+  res.den = ld;
 
   *out = res;
   return true;
