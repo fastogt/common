@@ -214,11 +214,13 @@ SET(TEXT_DECODERS_SOURCES
 SET(HASH_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/hash/md5.h
   ${CMAKE_SOURCE_DIR}/include/common/hash/sha1.h
+  ${CMAKE_SOURCE_DIR}/include/common/hash/sha256.h
 )
 
 SET(HASH_SOURCES
   ${CMAKE_SOURCE_DIR}/src/hash/md5.cpp
   ${CMAKE_SOURCE_DIR}/src/hash/sha1.cpp
+  ${CMAKE_SOURCE_DIR}/src/hash/sha256.cpp
 )
 
 SET(CMP_SOURCES third-party/cmp/cmp.c)

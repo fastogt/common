@@ -32,9 +32,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#ifdef ARCH_CPU_BIG_ENDIAN
-#define SHA_BIG_ENDIAN
-#endif
+#include <common/portable_endian.h>
 
 /* code */
 #define SHA1_K0 0x5a827999
@@ -44,22 +42,12 @@
 
 namespace common {
 namespace hash {
-
-void sha1_init(sha1nfo* s) {
-  s->state[0] = 0x67452301;
-  s->state[1] = 0xefcdab89;
-  s->state[2] = 0x98badcfe;
-  s->state[3] = 0x10325476;
-  s->state[4] = 0xc3d2e1f0;
-  s->byteCount = 0;
-  s->bufferOffset = 0;
-}
-
+namespace {
 uint32_t sha1_rol32(uint32_t number, uint8_t bits) {
   return ((number << bits) | (number >> (32 - bits)));
 }
 
-void sha1_hashBlock(sha1nfo* s) {
+void sha1_hashBlock(SHA1_CTX* s) {
   uint8_t i;
   uint32_t a, b, c, d, e, t;
 
@@ -96,56 +84,68 @@ void sha1_hashBlock(sha1nfo* s) {
   s->state[4] += e;
 }
 
-void sha1_addUncounted(sha1nfo* s, uint8_t data) {
+void sha1_addUncounted(SHA1_CTX* s, uint8_t data) {
   uint8_t* const b = reinterpret_cast<uint8_t*>(s->buffer);
-#ifdef SHA_BIG_ENDIAN
-  b[s->bufferOffset] = data;
+#ifdef ARCH_CPU_BIG_ENDIAN
+  b[s->buffer_offset] = data;
 #else
-  b[s->bufferOffset ^ 3] = data;
+  b[s->buffer_offset ^ 3] = data;
 #endif
-  s->bufferOffset++;
-  if (s->bufferOffset == BLOCK_LENGTH) {
+  s->buffer_offset++;
+  if (s->buffer_offset == BLOCK_LENGTH) {
     sha1_hashBlock(s);
-    s->bufferOffset = 0;
+    s->buffer_offset = 0;
   }
 }
 
-void sha1_writebyte(sha1nfo* s, uint8_t data) {
-  ++s->byteCount;
+void sha1_updatebyte(SHA1_CTX* s, uint8_t data) {
+  ++s->byte_count;
   sha1_addUncounted(s, data);
 }
 
-void sha1_write(sha1nfo* s, const char* data, size_t len) {
-  for (; len--;) {
-    sha1_writebyte(s, static_cast<uint8_t>(*data++));
-  }
-}
-
-void sha1_pad(sha1nfo* s) {
+void sha1_pad(SHA1_CTX* s) {
   // Implement SHA-1 padding (fips180-2 Â§5.1.1)
 
   // Pad with 0x80 followed by 0x00 until the end of the block
   sha1_addUncounted(s, 0x80);
-  while (s->bufferOffset != 56) {
+  while (s->buffer_offset != 56) {
     sha1_addUncounted(s, 0x00);
   }
 
   // Append length in the last 8 bytes
-  sha1_addUncounted(s, 0);                   // We're only using 32 bit lengths
-  sha1_addUncounted(s, 0);                   // But SHA-1 supports 64 bit lengths
-  sha1_addUncounted(s, 0);                   // So zero pad the top bits
-  sha1_addUncounted(s, s->byteCount >> 29);  // Shifting to multiply by 8
-  sha1_addUncounted(s, s->byteCount >> 21);  // as SHA-1 supports bitstreams as well as
-  sha1_addUncounted(s, s->byteCount >> 13);  // byte.
-  sha1_addUncounted(s, s->byteCount >> 5);
-  sha1_addUncounted(s, s->byteCount << 3);
+  sha1_addUncounted(s, 0);                    // We're only using 32 bit lengths
+  sha1_addUncounted(s, 0);                    // But SHA-1 supports 64 bit lengths
+  sha1_addUncounted(s, 0);                    // So zero pad the top bits
+  sha1_addUncounted(s, s->byte_count >> 29);  // Shifting to multiply by 8
+  sha1_addUncounted(s, s->byte_count >> 21);  // as SHA-1 supports bitstreams as well as
+  sha1_addUncounted(s, s->byte_count >> 13);  // byte.
+  sha1_addUncounted(s, s->byte_count >> 5);
+  sha1_addUncounted(s, s->byte_count << 3);
 }
 
-uint8_t* sha1_result(sha1nfo* s) {
+}  // namespace
+
+void SHA1_Init(SHA1_CTX* s) {
+  s->state[0] = 0x67452301;
+  s->state[1] = 0xefcdab89;
+  s->state[2] = 0x98badcfe;
+  s->state[3] = 0x10325476;
+  s->state[4] = 0xc3d2e1f0;
+  s->byte_count = 0;
+  s->buffer_offset = 0;
+}
+
+void SHA1_Update(SHA1_CTX* s, const unsigned char* data, size_t len) {
+  for (; len--;) {
+    sha1_updatebyte(s, *data++);
+  }
+}
+
+void SHA1_Final(SHA1_CTX* s, uint8_t* result) {
   // Pad to complete the last block
   sha1_pad(s);
 
-#ifndef SHA_BIG_ENDIAN
+#ifndef ARCH_CPU_BIG_ENDIAN
   // Swap byte order back
   int i;
   for (i = 0; i < 5; i++) {
@@ -155,46 +155,7 @@ uint8_t* sha1_result(sha1nfo* s) {
 #endif
 
   // Return pointer to hash (20 characters)
-  return reinterpret_cast<uint8_t*>(s->state);
-}
-
-#define HMAC_IPAD 0x36
-#define HMAC_OPAD 0x5c
-
-void sha1_initHmac(sha1nfo* s, const uint8_t* key, int keyLength) {
-  uint8_t i;
-  memset(s->keyBuffer, 0, BLOCK_LENGTH);
-  if (keyLength > BLOCK_LENGTH) {
-    // Hash long keys
-    sha1_init(s);
-    for (; keyLength--;) {
-      sha1_writebyte(s, *key++);
-    }
-    memcpy(s->keyBuffer, sha1_result(s), SHA1_HASH_LENGTH);
-  } else {
-    // Block length keys are used as is
-    memcpy(s->keyBuffer, key, keyLength);
-  }
-  // Start inner hash
-  sha1_init(s);
-  for (i = 0; i < BLOCK_LENGTH; i++) {
-    sha1_writebyte(s, s->keyBuffer[i] ^ HMAC_IPAD);
-  }
-}
-
-uint8_t* sha1_resultHmac(sha1nfo* s) {
-  uint8_t i;
-  // Complete inner hash
-  memcpy(s->innerHash, sha1_result(s), SHA1_HASH_LENGTH);
-  // Calculate outer hash
-  sha1_init(s);
-  for (i = 0; i < BLOCK_LENGTH; i++) {
-    sha1_writebyte(s, s->keyBuffer[i] ^ HMAC_OPAD);
-  }
-  for (i = 0; i < SHA1_HASH_LENGTH; i++) {
-    sha1_writebyte(s, s->innerHash[i]);
-  }
-  return sha1_result(s);
+  memcpy(result, reinterpret_cast<uint8_t*>(s->state), SHA1_HASH_LENGTH);
 }
 
 }  // namespace hash

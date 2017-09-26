@@ -29,26 +29,23 @@
 
 #pragma once
 
-#include <stddef.h>
+#include <stddef.h>  // for size_t
 
-#define MD5_HASH_LENGHT 16
+#define SHA256_HASH_LENGHT 32
 
 namespace common {
 namespace hash {
 
-/* Any 32-bit or wider unsigned integer data type will do */
-typedef unsigned int MD5_u32plus;
-
 typedef struct {
-  MD5_u32plus lo, hi;
-  MD5_u32plus a, b, c, d;
-  unsigned char buffer[64];
-  MD5_u32plus block[16];
-} MD5_CTX;
+  unsigned char data[64];
+  unsigned int datalen;
+  unsigned long long bitlen;
+  unsigned int state[8];
+} SHA256_CTX;
 
-void MD5_Init(MD5_CTX* ctx);
-void MD5_Update(MD5_CTX* ctx, const unsigned char* data, size_t size);
-void MD5_Final(MD5_CTX* ctx, unsigned char* result);
+void SHA256_Init(SHA256_CTX* ctx);
+void SHA256_Update(SHA256_CTX* ctx, const unsigned char* data, size_t len);
+void SHA256_Final(SHA256_CTX* ctx, unsigned char* hash);
 
 }  // namespace hash
 }  // namespace common

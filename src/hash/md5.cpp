@@ -78,7 +78,7 @@ namespace {
  * This processes one or more 64-byte data blocks, but does NOT update
  * the bit counters.  There are no alignment requirements.
  */
-const void* body(MD5_CTX* ctx, const void* data, unsigned long size) {
+const unsigned char* body(MD5_CTX* ctx, const void* data, unsigned long size) {
   const unsigned char* ptr;
   MD5_u32plus a, b, c, d;
   MD5_u32plus saved_a, saved_b, saved_c, saved_d;
@@ -196,7 +196,7 @@ void MD5_Init(MD5_CTX* ctx) {
   ctx->hi = 0;
 }
 
-void MD5_Update(MD5_CTX* ctx, const void* data, unsigned long size) {
+void MD5_Update(MD5_CTX* ctx, const unsigned char* data, size_t size) {
   MD5_u32plus saved_lo;
   unsigned long used, available;
 
@@ -223,14 +223,14 @@ void MD5_Update(MD5_CTX* ctx, const void* data, unsigned long size) {
   }
 
   if (size >= 64) {
-    data = body(ctx, data, size & ~static_cast<unsigned long>(0x3f));
+    data = body(ctx, data, size & ~static_cast<size_t>(0x3f));
     size &= 0x3f;
   }
 
   memcpy(ctx->buffer, data, size);
 }
 
-void MD5_Final(unsigned char* result, MD5_CTX* ctx) {
+void MD5_Final(MD5_CTX* ctx, unsigned char* result) {
   unsigned long used, available;
 
   used = ctx->lo & 0x3f;
