@@ -33,6 +33,11 @@
 
 #if defined(OS_MACOSX)
 #include <libkern/OSByteOrder.h>
+#elif defined(OS_FREEBSD)
+#include <sys/types.h>
+#define bswap_16 bswap16
+#define bswap_32 bswap32
+#define bswap_64 bswap64
 #elif defined(OS_WIN)
 #include <stdlib.h>
 #else
