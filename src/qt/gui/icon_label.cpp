@@ -72,6 +72,7 @@ void IconLabel::setText(const QString& text) {
 void IconLabel::setIcon(const QIcon& icon, const QSize& size) {
   const QPixmap pm = icon.pixmap(size);
   icon_->setPixmap(pm);
+  icon_->setFixedSize(size);
 }
 
 Qt::TextElideMode IconLabel::elideMode() const {
