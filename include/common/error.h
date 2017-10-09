@@ -76,6 +76,7 @@ class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
 typedef Optional<ErrorValue> Error;
 
 Error make_error_inval();
+Error make_error(CommonErrorCode err);
 Error make_error(const std::string& description);
 
 // errno error

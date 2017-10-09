@@ -74,7 +74,11 @@ std::string ErrnoTraits::GetTextFromErrorCode(int error) {
 }
 
 Error make_error_inval() {
-  return ErrorValue(COMMON_INVALID_INPUT);
+  return make_error(COMMON_INVALID_INPUT);
+}
+
+Error make_error(CommonErrorCode err) {
+  return ErrorValue(err);
 }
 
 Error make_error(const std::string& description) {
