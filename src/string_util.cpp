@@ -29,6 +29,8 @@
 
 #include <common/string_util.h>
 
+#include <algorithm>
+
 #include <common/icu_utf.h>                      // for UChar32, CBU8_NEXT, etc
 #include <common/patterns/singleton_pattern.h>   // for LazySingleton
 #include <common/utf_string_conversion_utils.h>  // for IsValidCharacter, etc

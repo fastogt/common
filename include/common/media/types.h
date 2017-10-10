@@ -37,8 +37,8 @@ namespace media {
 typedef size_t bandwidth_t;  // bytes/sec
 
 struct Rational {  // num:den
-  int num;  ///< Numerator
-  int den;  ///< Denominator
+  int num;         ///< Numerator
+  int den;         ///< Denominator
 
   bool Equals(const Rational& rat) const;
 };

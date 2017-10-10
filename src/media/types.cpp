@@ -35,11 +35,15 @@
 namespace common {
 namespace media {
 
-bool Rational::Equals(const Rational& rat) const { return num == rat.num && den == rat.den; }
+bool Rational::Equals(const Rational& rat) const {
+  return num == rat.num && den == rat.den;
+}
 
 }  // namespace media
 
-std::string ConvertToString(const media::Rational& value) { return MemSPrintf("%d:%d", value.num, value.den); }
+std::string ConvertToString(const media::Rational& value) {
+  return MemSPrintf("%d:%d", value.num, value.den);
+}
 
 bool ConvertFromString(const std::string& from, media::Rational* out) {
   if (!out) {

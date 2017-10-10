@@ -41,7 +41,7 @@
 
 #include <stddef.h>  // for size_t, NULL, ptrdiff_t
 
-#include <common/hash_tables.h>  // for BASE_HASH_NAMESPACE
+#include <common/string16.h>
 
 namespace common {
 
@@ -335,42 +335,3 @@ inline bool operator>=(const StringPiece16& x, const StringPiece16& y) {
 std::ostream& operator<<(std::ostream& o, const StringPiece& piece);
 
 }  // namespace common
-
-// Hashing ---------------------------------------------------------------------
-
-// We provide appropriate hash functions so StringPiece and StringPiece16 can
-// be used as keys in hash sets and maps.
-
-// This hash function is copied from common/hash_tables.h. We don't
-// use the ones already defined for string and string16 directly because it
-// would require the string constructors to be called, which we don't want.
-#define HASH_STRING_PIECE(StringPieceType, string_piece)                                       \
-  std::size_t result = 0;                                                                      \
-  for (StringPieceType::const_iterator i = string_piece.begin(); i != string_piece.end(); ++i) \
-    result = (result * 131) + *i;                                                              \
-  return result;
-
-namespace BASE_HASH_NAMESPACE {
-#if defined(COMPILER_GCC)
-
-template <>
-struct hash<common::StringPiece> {
-  std::size_t operator()(const common::StringPiece& sp) const { HASH_STRING_PIECE(common::StringPiece, sp); }
-};
-template <>
-struct hash<common::StringPiece16> {
-  std::size_t operator()(const common::StringPiece16& sp16) const { HASH_STRING_PIECE(common::StringPiece16, sp16); }
-};
-
-#elif defined(COMPILER_MSVC)
-
-inline size_t hash_value(const common::StringPiece& sp) {
-  HASH_STRING_PIECE(common::StringPiece, sp);
-}
-inline size_t hash_value(const common::StringPiece16& sp16) {
-  HASH_STRING_PIECE(common::StringPiece16, sp16);
-}
-
-#endif  // COMPILER
-
-}  // namespace BASE_HASH_NAMESPACE

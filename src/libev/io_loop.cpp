@@ -29,6 +29,7 @@
 
 #include <common/libev/io_loop.h>
 
+#include <algorithm>
 #include <mutex>
 
 #include <common/sprintf.h>

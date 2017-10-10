@@ -29,6 +29,9 @@
 
 #include <common/convert2string.h>
 
+#include <algorithm>
+#include <limits>
+
 #include <common/sprintf.h>
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
 

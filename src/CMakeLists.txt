@@ -397,6 +397,7 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
     ${CMAKE_SOURCE_DIR}/include/common/logger.h
     ${CMAKE_SOURCE_DIR}/include/common/macros.h
+    ${CMAKE_SOURCE_DIR}/include/common/eintr_wrapper.h
     ${CMAKE_SOURCE_DIR}/include/common/optional.h
     ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
     ${CMAKE_SOURCE_DIR}/include/common/event.h
@@ -406,7 +407,6 @@ SET(COMMON_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/icu_utf.h
     ${CMAKE_SOURCE_DIR}/include/common/string_piece.h
     ${CMAKE_SOURCE_DIR}/include/common/string16.h
-    ${CMAKE_SOURCE_DIR}/include/common/hash_tables.h
     ${CMAKE_SOURCE_DIR}/include/common/string_util.h
     ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
     ${CMAKE_SOURCE_DIR}/include/common/types.h
