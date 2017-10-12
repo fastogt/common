@@ -32,6 +32,7 @@
 #include <common/convert2string.h>  // for ConvertFromString
 #include <common/sprintf.h>
 #include <common/uri/url.h>
+#include <common/utils.h>
 
 namespace common {
 
@@ -172,7 +173,6 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
   http_method lmethod = HM_GET;
   uri::Upath lpath;
   std::string lprotocol;
-  std::string lbody;
   http_request::headers_t lheaders;
 
   string_size_t pos = 0;
@@ -230,16 +230,19 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
     start = pos + 2;
   }
 
+  char* lbody = NULL;
   if (len != start && line_count != 0) {
     const char* request_str = request.c_str() + start;
     lbody = uri::detail::uri_decode(request_str, strlen(request_str));
   }
 
   if (line_count == 0) {
+    utils::freeifnotnull(lbody);
     return std::make_pair(HS_BAD_REQUEST, make_error("Not found CRLF"));
   }
 
-  *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody);
+  *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody ? lbody : std::string());
+  utils::freeifnotnull(lbody);
   return std::make_pair(HS_OK, Error());
 }
 
