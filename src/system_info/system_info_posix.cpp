@@ -52,7 +52,9 @@ long GetProcessRss(pid_t pid) {
   if (!res) {
     return 0;
   }
-  return std::stol(res);
+  long lres = 0;
+  ConvertFromString(res, &lres);
+  return lres;
 }
 
 double GetCpuLoad(pid_t pid) {

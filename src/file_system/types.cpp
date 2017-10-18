@@ -29,6 +29,8 @@
 
 #include <common/file_system/types.h>
 
+#include <stdlib.h>
+
 #include <common/convert2string.h>
 
 namespace common {

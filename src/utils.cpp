@@ -29,6 +29,7 @@
 
 #include <common/utils.h>
 
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>  // for umask
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...

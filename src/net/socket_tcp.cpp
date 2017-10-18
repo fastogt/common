@@ -33,6 +33,7 @@
 #include <netinet/in.h>
 #endif
 
+#include <errno.h>
 #include <string.h>
 
 #undef SetPort

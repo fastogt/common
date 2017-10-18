@@ -29,6 +29,7 @@
 
 #include <common/file_system/file.h>
 
+#include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 
