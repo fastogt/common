@@ -211,6 +211,11 @@ class ArrayValue : public Value {
 
   bool GetBoolean(size_t index, bool* out_value) const WARN_UNUSED_RESULT;
   bool GetInteger(size_t index, int* out_value) const WARN_UNUSED_RESULT;
+  bool GetUInteger(size_t index, unsigned int* out_value) const WARN_UNUSED_RESULT;
+  bool GetLongInteger(size_t index, long* out_value) const WARN_UNUSED_RESULT;
+  bool GetULongInteger(size_t index, unsigned long* out_value) const WARN_UNUSED_RESULT;
+  bool GetLongLongInteger(size_t index, long long* out_value) const WARN_UNUSED_RESULT;
+  bool GetULongLongInteger(size_t index, unsigned long long* out_value) const WARN_UNUSED_RESULT;
   bool GetDouble(size_t index, double* out_value) const WARN_UNUSED_RESULT;
   bool GetString(size_t index, std::string* out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, const ArrayValue** out_value) const WARN_UNUSED_RESULT;

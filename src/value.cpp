@@ -561,6 +561,51 @@ bool ArrayValue::GetInteger(size_t index, int* out_value) const {
   return value->GetAsInteger(out_value);
 }
 
+bool ArrayValue::GetUInteger(size_t index, unsigned int* out_value) const {
+  const Value* value;
+  if (!Get(index, &value)) {
+    return false;
+  }
+
+  return value->GetAsUInteger(out_value);
+}
+
+bool ArrayValue::GetLongInteger(size_t index, long* out_value) const {
+  const Value* value;
+  if (!Get(index, &value)) {
+    return false;
+  }
+
+  return value->GetAsLongInteger(out_value);
+}
+
+bool ArrayValue::GetULongInteger(size_t index, unsigned long* out_value) const {
+  const Value* value;
+  if (!Get(index, &value)) {
+    return false;
+  }
+
+  return value->GetAsULongInteger(out_value);
+}
+
+bool ArrayValue::GetLongLongInteger(size_t index, long long* out_value) const {
+  const Value* value;
+  if (!Get(index, &value)) {
+    return false;
+  }
+
+  return value->GetAsLongLongInteger(out_value);
+}
+
+bool ArrayValue::GetULongLongInteger(size_t index, unsigned long long* out_value) const {
+  const Value* value;
+  if (!Get(index, &value)) {
+    return false;
+  }
+
+  return value->GetAsULongLongInteger(out_value);
+}
+
 bool ArrayValue::GetDouble(size_t index, double* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
