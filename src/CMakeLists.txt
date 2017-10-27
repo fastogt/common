@@ -317,6 +317,7 @@ IF(QT_ENABLED)
     ${CMAKE_SOURCE_DIR}/include/common/qt/logger.h
     ${CMAKE_SOURCE_DIR}/include/common/qt/gui/glass_widget.h
     ${CMAKE_SOURCE_DIR}/include/common/qt/gui/icon_label.h
+    ${CMAKE_SOURCE_DIR}/include/common/qt/gui/icon_combobox.h
     ${CMAKE_SOURCE_DIR}/include/common/qt/gui/regexp_input_dialog.h
     ${CMAKE_SOURCE_DIR}/include/common/qt/gui/app_style.h
     ${CMAKE_SOURCE_DIR}/include/common/qt/gui/base/tree_model.h
@@ -335,6 +336,7 @@ IF(QT_ENABLED)
     ${CMAKE_SOURCE_DIR}/src/qt/gui/base/graph_widget.cpp
     ${CMAKE_SOURCE_DIR}/src/qt/gui/glass_widget.cpp
     ${CMAKE_SOURCE_DIR}/src/qt/gui/icon_label.cpp
+    ${CMAKE_SOURCE_DIR}/src/qt/gui/icon_combobox.cpp
     ${CMAKE_SOURCE_DIR}/src/qt/gui/regexp_input_dialog.cpp
     ${CMAKE_SOURCE_DIR}/src/qt/gui/app_style.cpp
     ${CMAKE_SOURCE_DIR}/src/qt/translations/translations.cpp

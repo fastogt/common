@@ -27,39 +27,74 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/qt/gui/icon_combobox.h>
 
-#include <QWidget>
-
-class QLabel;
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLabel>
+#include <QComboBox>
 
 namespace common {
 namespace qt {
 namespace gui {
 
-class IconLabel : public QWidget {
-  Q_OBJECT
- public:
-  IconLabel(QWidget* parent = 0);
-  IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent = 0);
+IconComboBox::IconComboBox(QWidget* parent) : QWidget(parent), icon_(NULL), combo_(NULL) {
+  init(QIcon(), QSize());
+}
 
-  void setWordWrap(bool on);
+IconComboBox::IconComboBox(const QIcon& icon, const QSize& icon_size, QWidget* parent)
+    : QWidget(parent), icon_(NULL), combo_(NULL) {
+  init(icon, icon_size);
+}
 
-  QString text() const;
-  void setText(const QString& text);
+void IconComboBox::init(const QIcon& icon, const QSize& icon_size) {
+  QHBoxLayout* mainL = new QHBoxLayout;
+  icon_ = new QLabel;
+  combo_ = new QComboBox;
+  mainL->addWidget(icon_);
+  mainL->addWidget(combo_);
 
-  void setIcon(const QIcon& icon, const QSize& size);
+  setIcon(icon, icon_size);
+  setLayout(mainL);
+}
 
-  Qt::TextElideMode elideMode() const;
-  void setElideMode(Qt::TextElideMode);
+void IconComboBox::setIcon(const QIcon& icon, const QSize& size) {
+  const QPixmap pm = icon.pixmap(size);
+  icon_->setPixmap(pm);
+  icon_->setFixedSize(size);
+}
 
- private:
-  void init(const QIcon& icon, const QSize& icon_size, const QString& text);
+QIcon IconComboBox::comboItemIcon(int index) const {
+  return combo_->itemIcon(index);
+}
 
-  QLabel* icon_;
-  QLabel* text_;
-  Qt::TextElideMode el_mode_;
-};
+QString IconComboBox::comboItemText(int index) const {
+  return combo_->itemText(index);
+}
+
+int IconComboBox::comboCurrentIndex() const {
+  return combo_->currentIndex();
+}
+
+QString IconComboBox::comboCurrentText() const {
+  return combo_->currentText();
+}
+
+void IconComboBox::addComboItem(const QString& text, const QVariant& userData) {
+  combo_->addItem(text, userData);
+}
+
+void IconComboBox::addComboItem(const QIcon& icon, const QString& text, const QVariant& userData) {
+  combo_->addItem(icon, text, userData);
+}
+
+void IconComboBox::addComboItems(const QStringList& texts) {
+  combo_->addItems(texts);
+}
+
+void IconComboBox::clearCombo() {
+  combo_->clear();
+}
 
 }  // namespace gui
 }  // namespace qt

@@ -30,35 +30,38 @@
 #pragma once
 
 #include <QWidget>
+#include <QVariant>
 
 class QLabel;
+class QComboBox;
 
 namespace common {
 namespace qt {
 namespace gui {
 
-class IconLabel : public QWidget {
+class IconComboBox : public QWidget {
   Q_OBJECT
  public:
-  IconLabel(QWidget* parent = 0);
-  IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent = 0);
-
-  void setWordWrap(bool on);
-
-  QString text() const;
-  void setText(const QString& text);
+  IconComboBox(QWidget* parent = 0);
+  IconComboBox(const QIcon& icon, const QSize& icon_size, QWidget* parent = 0);
 
   void setIcon(const QIcon& icon, const QSize& size);
 
-  Qt::TextElideMode elideMode() const;
-  void setElideMode(Qt::TextElideMode);
+  QIcon comboItemIcon(int index) const;
+  QString comboItemText(int index) const;
+  int comboCurrentIndex() const;
+  QString comboCurrentText() const;
+  void addComboItem(const QString& text, const QVariant& userData = QVariant());
+  void addComboItem(const QIcon& icon, const QString& text, const QVariant& userData = QVariant());
+  void addComboItems(const QStringList& texts);
+
+  void clearCombo();
 
  private:
-  void init(const QIcon& icon, const QSize& icon_size, const QString& text);
+  void init(const QIcon& icon, const QSize& icon_size);
 
   QLabel* icon_;
-  QLabel* text_;
-  Qt::TextElideMode el_mode_;
+  QComboBox* combo_;
 };
 
 }  // namespace gui

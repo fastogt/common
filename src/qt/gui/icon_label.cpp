@@ -37,8 +37,16 @@ namespace common {
 namespace qt {
 namespace gui {
 
-IconLabel::IconLabel(const QIcon& icon, const QString& text, const QSize& size, QWidget* parent)
+IconLabel::IconLabel(QWidget* parent) : QWidget(parent), icon_(NULL), text_(NULL), el_mode_(Qt::ElideNone) {
+  init(QIcon(), QSize(), QString());
+}
+
+IconLabel::IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent)
     : QWidget(parent), icon_(NULL), text_(NULL), el_mode_(Qt::ElideNone) {
+  init(icon, icon_size, text);
+}
+
+void IconLabel::init(const QIcon& icon, const QSize& icon_size, const QString& text) {
   QHBoxLayout* mainL = new QHBoxLayout;
   icon_ = new QLabel;
   text_ = new QLabel;
@@ -46,7 +54,7 @@ IconLabel::IconLabel(const QIcon& icon, const QString& text, const QSize& size, 
   mainL->addWidget(text_);
 
   setText(text);
-  setIcon(icon, size);
+  setIcon(icon, icon_size);
   setLayout(mainL);
 }
 
