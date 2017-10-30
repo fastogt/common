@@ -29,8 +29,6 @@
 
 #include <common/types.h>
 
-#include <string.h>
-
 #include <sstream>
 
 namespace common {

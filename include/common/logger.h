@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <iosfwd>
+#include <sstream>
 #include <string>
 
 #include <common/log_levels.h>
@@ -67,6 +67,7 @@ class LogMessage {
   const int line_;
   const LOG_LEVEL level_;
   const bool new_line_;
+  std::ostringstream stream_;
 };
 
 void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level);                                // to console

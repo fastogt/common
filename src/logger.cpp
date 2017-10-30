@@ -44,7 +44,6 @@
 namespace {
 std::string g_project_name = "Unknown";
 std::unique_ptr<std::ofstream> g_logger_file_helper = std::unique_ptr<std::ofstream>(new std::ofstream);
-std::mutex g_mutex;
 std::ostream* g_logger = &std::cout;
 }  // namespace
 
@@ -123,22 +122,20 @@ void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level) {
 }
 
 LogMessage::LogMessage(LOG_LEVEL level, bool new_line) : file_(), line_(), level_(level), new_line_(new_line) {
-  g_mutex.lock();
-  Stream() << PrepareHeader(NULL, 0, level);
+  stream_ << PrepareHeader(NULL, 0, level);
 }
 
 LogMessage::LogMessage(const char* file, int line, LOG_LEVEL level, bool new_line)
-    : file_(file), line_(line), level_(level), new_line_(new_line) {
-  g_mutex.lock();
-  Stream() << PrepareHeader(file, line, level);
+    : file_(file), line_(line), level_(level), new_line_(new_line), stream_() {
+  stream_ << PrepareHeader(file, line, level);
 }
 
 LogMessage::~LogMessage() {
   if (new_line_) {
-    Stream() << "\n";
+    stream_ << "\n";
   }
-  g_mutex.unlock();
 
+  *g_logger << stream_.str();
   if (level_ <= common::logging::LOG_LEVEL_CRIT) {
 #ifdef NDEBUG
     immediate_exit();
@@ -149,7 +146,7 @@ LogMessage::~LogMessage() {
 }
 
 std::ostream& LogMessage::Stream() {
-  return *g_logger;
+  return stream_;
 }
 
 }  // namespace logging

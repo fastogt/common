@@ -39,8 +39,6 @@
 #include <fileapi.h>
 #endif
 
-#include <sstream>  // for stringstream
-
 #if defined(COMPILER_MSVC)
 #include <direct.h>
 #include <io.h>

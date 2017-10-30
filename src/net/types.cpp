@@ -30,7 +30,6 @@
 #include <common/net/types.h>
 
 #include <algorithm>
-#include <sstream>
 
 #include <common/convert2string.h>  // for ConvertFromString
 
