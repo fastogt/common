@@ -47,6 +47,7 @@ const char* string_types[Value::NUM_TYPES] = {"TYPE_NULL",
                                               "TYPE_STRING",
                                               "TYPE_ARRAY",
                                               "TYPE_BYTE_ARRAY",
+                                              "TYPE_JSON",
                                               "TYPE_SET",
                                               "TYPE_ZSET",
                                               "TYPE_HASH"};
@@ -120,6 +121,11 @@ ByteArrayValue* Value::CreateByteArrayValue(const byte_array_t& array) {
 }
 
 // static
+JsonValue* Value::CreateJsonValue(const std::string& in_value) {
+  return new JsonValue(in_value);
+}
+
+// static
 SetValue* Value::CreateSetValue() {
   return new SetValue;
 }
@@ -155,6 +161,8 @@ Value* Value::CreateEmptyValueFromType(Type value_type) {
       return CreateDoubleValue(0);
     case TYPE_STRING:
       return CreateStringValue(std::string());
+    case TYPE_JSON:
+      return CreateJsonValue(std::string());
     case TYPE_ARRAY:
       return CreateArrayValue();
     case TYPE_BYTE_ARRAY:
@@ -247,6 +255,18 @@ bool Value::GetAsList(const ArrayValue** out_value) const {
 }
 
 bool Value::GetAsByteArray(byte_array_t* out_value) const {
+  UNUSED(out_value);
+
+  return false;
+}
+
+bool Value::GetAsJson(JsonValue** out_value) {
+  UNUSED(out_value);
+
+  return false;
+}
+
+bool Value::GetAsJson(const JsonValue** out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -860,6 +880,47 @@ bool ByteArrayValue::Equals(const Value* other) const {
 
   byte_array_t lhs, rhs;
   return GetAsByteArray(&lhs) && other->GetAsByteArray(&rhs) && lhs == rhs;
+}
+
+JsonValue::JsonValue(const std::string& json_value) : Value(TYPE_JSON), value_(json_value) {}
+
+JsonValue::~JsonValue() {}
+
+bool JsonValue::GetAsString(std::string* out_value) const {
+  if (out_value) {
+    *out_value = value_;
+  }
+
+  return true;
+}
+
+bool JsonValue::GetAsJson(JsonValue** out_value) {
+  if (out_value && IsType(TYPE_JSON)) {
+    *out_value = this;
+  }
+
+  return IsType(TYPE_JSON);
+}
+
+bool JsonValue::GetAsJson(const JsonValue** out_value) const {
+  if (out_value && IsType(TYPE_JSON)) {
+    *out_value = this;
+  }
+
+  return IsType(TYPE_JSON);
+}
+
+JsonValue* JsonValue::DeepCopy() const {
+  return CreateJsonValue(value_);
+}
+
+bool JsonValue::Equals(const Value* other) const {
+  if (other->GetType() != GetType()) {
+    return false;
+  }
+
+  const JsonValue *lhs, *rhs;
+  return GetAsJson(&lhs) && other->GetAsJson(&rhs) && lhs->value_ == rhs->value_;
 }
 
 SetValue::SetValue() : Value(TYPE_SET) {}

@@ -42,6 +42,7 @@ namespace common {
 class ArrayValue;
 class ByteArrayValue;
 class FundamentalValue;
+class JsonValue;
 class HashValue;
 class SetValue;
 class StringValue;
@@ -62,6 +63,7 @@ class Value {
     TYPE_STRING,
     TYPE_ARRAY,  // list
     TYPE_BYTE_ARRAY,
+    TYPE_JSON,
     TYPE_SET,  // set
     TYPE_ZSET,
     TYPE_HASH  // should be last
@@ -84,6 +86,7 @@ class Value {
   static StringValue* CreateStringValue(const std::string& in_value);
   static ArrayValue* CreateArrayValue();
   static ByteArrayValue* CreateByteArrayValue(const byte_array_t& array);
+  static JsonValue* CreateJsonValue(const std::string& in_value);
   static SetValue* CreateSetValue();
   static ZSetValue* CreateZSetValue();
   static HashValue* CreateHashValue();
@@ -114,6 +117,8 @@ class Value {
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsList(const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsByteArray(byte_array_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsJson(JsonValue** out_value) WARN_UNUSED_RESULT;
+  virtual bool GetAsJson(const JsonValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsSet(SetValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsSet(const SetValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsZSet(ZSetValue** out_value) WARN_UNUSED_RESULT;
@@ -299,6 +304,22 @@ class ByteArrayValue : public Value {
  private:
   byte_array_t array_;
   DISALLOW_COPY_AND_ASSIGN(ByteArrayValue);
+};
+
+class JsonValue : public Value {  // simple json class value, only save string without validation
+ public:
+  explicit JsonValue(const std::string& json_value);
+  virtual ~JsonValue();
+
+  virtual bool GetAsString(std::string* out_value) const WARN_UNUSED_RESULT;  // FIXME
+  virtual bool GetAsJson(JsonValue** out_value) override WARN_UNUSED_RESULT;
+  virtual bool GetAsJson(const JsonValue** out_value) const override WARN_UNUSED_RESULT;
+  virtual JsonValue* DeepCopy() const override;
+  virtual bool Equals(const Value* other) const override;
+
+ private:
+  std::string value_;
+  DISALLOW_COPY_AND_ASSIGN(JsonValue);
 };
 
 class SetValue : public Value {
