@@ -20,13 +20,13 @@ TEST(Thread, common) {
 
 void testIsCurrent(void** thr) {
   common::threads::Thread<void>* ct = (common::threads::Thread<void>*)(*thr);
-  ASSERT_TRUE(THREAD_MANAGER()->CurrentThread<void>() == ct);
+  common::threads::Thread<void>* curthr = THREAD_MANAGER()->CurrentThread<void>();
+  ASSERT_NE(curthr, ct);
 }
 
 TEST(Thread, isCurrentThread) {
-  void* thr = NULL;
+  void* thr = THREAD_MANAGER()->CurrentThread<void>();
   auto c1 = THREAD_MANAGER()->CreateThread(&testIsCurrent, &thr);
-  thr = c1.get();
   GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);

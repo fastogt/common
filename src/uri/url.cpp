@@ -181,8 +181,8 @@ void Url::Parse(const std::string& url_s) {
   // ftp, http, file, ws, udp, tcp, rtmp
   size_t len = url_s.length();
   const char* data = url_s.c_str();
-  size_t start = 0;
   if (detail::get_schemes(data, len, &scheme_)) {
+    size_t start = 0;
     if (scheme_ == ftp) {
       start = 6;
     } else if (scheme_ == http) {

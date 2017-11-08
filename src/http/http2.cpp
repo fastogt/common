@@ -1813,15 +1813,15 @@ frame_base frame_base::create_frame(const frame_hdr& head, const char* data) {
       return frame_headers(head, data);
     }
     case HTTP2_PRIORITY: {
-      http2_priority_spec* spec = (http2_priority_spec*)(data);
+      const http2_priority_spec* spec = reinterpret_cast<const http2_priority_spec*>(data);
       return frame_priority(head, spec);
     }
     case HTTP2_RST_STREAM: {
-      uint32_t* erc = (uint32_t*)(data);
+      const uint32_t* erc = reinterpret_cast<const uint32_t*>(data);
       return frame_rst(head, erc);
     }
     case HTTP2_SETTINGS: {
-      http2_settings_entry* settings = (http2_settings_entry*)(data);
+      const http2_settings_entry* settings = reinterpret_cast<const http2_settings_entry*>(data);
       return frame_settings(head, settings);
     }
     case HTTP2_PUSH_PROMISE: {
@@ -1833,7 +1833,7 @@ frame_base frame_base::create_frame(const frame_hdr& head, const char* data) {
       return frame_base();
     }
     case HTTP2_GOAWAY: {
-      http2_goaway_spec* sinf = (http2_goaway_spec*)(data);
+      const http2_goaway_spec* sinf = reinterpret_cast<const http2_goaway_spec*>(data);
       return frame_goaway(head, sinf);
     }
     case HTTP2_WINDOW_UPDATE: {
@@ -1896,7 +1896,7 @@ buffer_t frame_base::raw_data() const {
 }
 
 // frame_rst //
-frame_rst::frame_rst(const frame_hdr& head, uint32_t* er_code) : frame_base(head, er_code) {
+frame_rst::frame_rst(const frame_hdr& head, const uint32_t* er_code) : frame_base(head, er_code) {
   CHECK(head.type() == HTTP2_RST_STREAM);
 }
 
@@ -1906,7 +1906,7 @@ frame_hdr frame_rst::create_frame_header(uint8_t flags, uint32_t stream_id) {
 }
 
 http2_error_code frame_rst::error_code() const {
-  http2_error_code* ec = (http2_error_code*)(payload_.data());
+  const http2_error_code* ec = reinterpret_cast<const http2_error_code*>(payload_.data());
   return static_cast<http2_error_code>(be32toh(*ec));
 }
 // frame_rst //
@@ -1923,13 +1923,13 @@ frame_hdr frame_data::create_frame_header(uint8_t flags, uint32_t stream_id, uin
 }
 
 uint8_t frame_data::padlen() const {
-  uint32_t* plen = (uint32_t*)(payload_.data());
+  const uint32_t* plen = reinterpret_cast<const uint32_t*>(payload_.data());
   return be32toh(*plen);
 }
 // frame_data //
 
 // frame_goaway //
-frame_goaway::frame_goaway(const frame_hdr& head, http2_goaway_spec* info) : frame_base(head, info) {
+frame_goaway::frame_goaway(const frame_hdr& head, const http2_goaway_spec* info) : frame_base(head, info) {
   CHECK(head.type() == HTTP2_GOAWAY);
 }
 
@@ -1938,12 +1938,12 @@ frame_hdr frame_goaway::create_frame_header(uint8_t flags, uint32_t stream_id, u
 }
 
 uint32_t frame_goaway::last_stream_id() const {
-  http2_goaway_spec* pay = (http2_goaway_spec*)(payload_.data());
+  const http2_goaway_spec* pay = reinterpret_cast<const http2_goaway_spec*>(payload_.data());
   return pay->last_stream_id();
 }
 
 http2_error_code frame_goaway::error_code() const {
-  http2_goaway_spec* pay = (http2_goaway_spec*)(payload_.data());
+  const http2_goaway_spec* pay = reinterpret_cast<const http2_goaway_spec*>(payload_.data());
   return pay->error_code();
 }
 
@@ -1959,7 +1959,8 @@ uint32_t frame_goaway::opaque_data_len() const {
 
 // frame_settings //
 
-frame_settings::frame_settings(const frame_hdr& head, http2_settings_entry* settings) : frame_base(head, settings) {
+frame_settings::frame_settings(const frame_hdr& head, const http2_settings_entry* settings)
+    : frame_base(head, settings) {
   CHECK(head.type() == HTTP2_SETTINGS);
 }
 
@@ -1971,15 +1972,16 @@ uint32_t frame_settings::niv() const {
   return payload_size() / sizeof(http2_settings_entry);
 }
 
-http2_settings_entry* frame_settings::iv() const {
-  http2_settings_entry* payl = (http2_settings_entry*)(payload_.data());
+const http2_settings_entry* frame_settings::iv() const {
+  const http2_settings_entry* payl = reinterpret_cast<const http2_settings_entry*>(payload_.data());
   return payl;
 }
 
 // frame_settings //
 
 // frame_priority //
-frame_priority::frame_priority(const frame_hdr& head, http2_priority_spec* priority) : frame_base(head, priority) {
+frame_priority::frame_priority(const frame_hdr& head, const http2_priority_spec* priority)
+    : frame_base(head, priority) {
   CHECK(head.type() == HTTP2_PRIORITY);
 }
 
@@ -1988,8 +1990,8 @@ frame_hdr frame_priority::create_frame_header(uint8_t flags, uint32_t stream_id)
   return frame_hdr(HTTP2_PRIORITY, flags, stream_id, size);
 }
 
-http2_priority_spec* frame_priority::priority() const {
-  http2_priority_spec* payl = (http2_priority_spec*)(payload_.data());
+const http2_priority_spec* frame_priority::priority() const {
+  const http2_priority_spec* payl = reinterpret_cast<const http2_priority_spec*>(payload_.data());
   return payl;
 }
 // frame_priority //
@@ -2015,13 +2017,13 @@ uint8_t frame_headers::padlen() const {
   }
 }
 
-http2_priority_spec* frame_headers::priority() const {
+const http2_priority_spec* frame_headers::priority() const {
   if (header_.flags() & HTTP2_FLAG_PRIORITY) {
     if (header_.flags() & HTTP2_FLAG_PADDED) {
-      return (http2_priority_spec*)(payload_.data() + 1);
-    } else {
-      return (http2_priority_spec*)(payload_.data());
+      return reinterpret_cast<const http2_priority_spec*>(payload_.data() + 1);
     }
+
+    return reinterpret_cast<const http2_priority_spec*>(payload_.data());
   }
 
   return NULL;

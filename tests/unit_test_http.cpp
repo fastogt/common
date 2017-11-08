@@ -242,10 +242,10 @@ TEST(Http2, frame_settings) {
   ASSERT_TRUE(set->payload_size() == 0x0C);
 
   ASSERT_TRUE(set->niv() == 2);
-  http2::http2_settings_entry* setev = set->iv();
+  const http2::http2_settings_entry* setev = set->iv();
   ASSERT_TRUE(setev->settings_id() == 0x03);
   ASSERT_TRUE(setev->value() == 0x64);
-  http2::http2_settings_entry* setev2 = set->iv() + 1;
+  const http2::http2_settings_entry* setev2 = set->iv() + 1;
   ASSERT_TRUE(setev2->settings_id() == 0x04);
   ASSERT_TRUE(setev2->value() == 0xFFFF);
 }
@@ -288,7 +288,7 @@ TEST(Http2, frame_priority) {
   ASSERT_TRUE(pri1->stream_id() == 0x03);
   ASSERT_TRUE(pri1->payload_size() == 0x05);
 
-  http2::http2_priority_spec* prior1 = pri1->priority();
+  const http2::http2_priority_spec* prior1 = pri1->priority();
   ASSERT_TRUE(prior1->stream_id() == 0x00);
   ASSERT_TRUE(prior1->weight() == 0xC8 + 1);
 
@@ -298,17 +298,17 @@ TEST(Http2, frame_priority) {
   ASSERT_TRUE(pri2->stream_id() == 0x05);
   ASSERT_TRUE(pri2->payload_size() == 0x05);
 
-  http2::http2_priority_spec* prior2 = pri2->priority();
+  const http2::http2_priority_spec* prior2 = pri2->priority();
   ASSERT_TRUE(prior2->stream_id() == 0x00);
   ASSERT_TRUE(prior2->weight() == 0x64 + 1);
 
-  http2::frame_priority* pri3 = (http2::frame_priority*)(&frames[2]);
+  const http2::frame_priority* pri3 = (http2::frame_priority*)(&frames[2]);
   ASSERT_TRUE(pri3->type() == 0x02);
   ASSERT_TRUE(pri3->flags() == 0x00);
   ASSERT_TRUE(pri3->stream_id() == 0x07);
   ASSERT_TRUE(pri3->payload_size() == 0x05);
 
-  http2::http2_priority_spec* prior3 = pri3->priority();
+  const http2::http2_priority_spec* prior3 = pri3->priority();
   ASSERT_TRUE(prior3->stream_id() == 0x00);
   ASSERT_TRUE(prior3->weight() == 0x0 + 1);
 
@@ -318,17 +318,17 @@ TEST(Http2, frame_priority) {
   ASSERT_TRUE(pri4->stream_id() == 0x09);
   ASSERT_TRUE(pri4->payload_size() == 0x05);
 
-  http2::http2_priority_spec* prior4 = pri4->priority();
+  const http2::http2_priority_spec* prior4 = pri4->priority();
   ASSERT_TRUE(prior4->stream_id() == 0x07);
   ASSERT_TRUE(prior4->weight() == 0x00 + 1);
 
-  http2::frame_priority* pri5 = (http2::frame_priority*)(&frames[4]);
+  const http2::frame_priority* pri5 = (http2::frame_priority*)(&frames[4]);
   ASSERT_TRUE(pri5->type() == 0x02);
   ASSERT_TRUE(pri5->flags() == 0x00);
   ASSERT_TRUE(pri5->stream_id() == 0x0B);
   ASSERT_TRUE(pri5->payload_size() == 0x05);
 
-  http2::http2_priority_spec* prior5 = pri5->priority();
+  const http2::http2_priority_spec* prior5 = pri5->priority();
   ASSERT_TRUE(prior5->stream_id() == 0x03);
   ASSERT_TRUE(prior5->weight() == 0x00 + 1);
   // priority frame //
@@ -355,7 +355,7 @@ TEST(Http2, frame_headers) {
 
   uint8_t padlen0 = head0->padlen();
   ASSERT_TRUE(padlen0 == 0);
-  http2::http2_priority_spec* priorh0 = head0->priority();
+  const http2::http2_priority_spec* priorh0 = head0->priority();
   ASSERT_TRUE(priorh0->stream_id() == 0x0B);
   ASSERT_TRUE(priorh0->weight() == 0x0F + 1);
 
@@ -388,7 +388,7 @@ TEST(Http2, frame_headers) {
 
   uint8_t padlen = head1->padlen();
   ASSERT_TRUE(padlen == 0);
-  http2::http2_priority_spec* priorh1 = head1->priority();
+  const http2::http2_priority_spec* priorh1 = head1->priority();
   ASSERT_TRUE(priorh1->stream_id() == 0x0B);
   ASSERT_TRUE(priorh1->weight() == 0x0F + 1);
 

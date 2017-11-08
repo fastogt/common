@@ -382,7 +382,7 @@ struct frame_base {
 
 struct frame_rst  // +
     : public frame_base {
-  explicit frame_rst(const frame_hdr& head, uint32_t* er_code);  // betoh
+  explicit frame_rst(const frame_hdr& head, const uint32_t* er_code);  // betoh
 
   static frame_hdr create_frame_header(uint8_t flags, uint32_t stream_id);
   http2_error_code error_code() const;
@@ -399,7 +399,7 @@ struct frame_data  // +
 
 struct frame_goaway  // +
     : public frame_base {
-  explicit frame_goaway(const frame_hdr& head, http2_goaway_spec* info);
+  explicit frame_goaway(const frame_hdr& head, const http2_goaway_spec* info);
 
   static frame_hdr create_frame_header(uint8_t flags, uint32_t stream_id, uint32_t lenght);
 
@@ -410,22 +410,22 @@ struct frame_goaway  // +
   uint32_t opaque_data_len() const;
 };
 
-struct frame_settings                                                              // +
-    : public frame_base {                                                          // payload % 6 = 0
-  explicit frame_settings(const frame_hdr& head, http2_settings_entry* settings);  // info can be NULL
+struct frame_settings                                                                    // +
+    : public frame_base {                                                                // payload % 6 = 0
+  explicit frame_settings(const frame_hdr& head, const http2_settings_entry* settings);  // info can be NULL
 
   static frame_hdr create_frame_header(uint8_t flags, uint32_t stream_id, uint32_t lenght);
 
   uint32_t niv() const;
-  http2_settings_entry* iv() const;
+  const http2_settings_entry* iv() const;
 };
 
 struct frame_priority  // +
     : public frame_base {
-  explicit frame_priority(const frame_hdr& head, http2_priority_spec* priority);
+  explicit frame_priority(const frame_hdr& head, const http2_priority_spec* priority);
 
   static frame_hdr create_frame_header(uint8_t flags, uint32_t stream_id);
-  http2_priority_spec* priority() const;
+  const http2_priority_spec* priority() const;
 };
 
 struct frame_headers  // +
@@ -436,7 +436,7 @@ struct frame_headers  // +
   static frame_hdr create_frame_header(uint8_t flags, uint32_t stream_id, uint32_t size);
 
   uint8_t padlen() const;
-  http2_priority_spec* priority() const;
+  const http2_priority_spec* priority() const;
   http2_nvs_t nva() const;
 };
 

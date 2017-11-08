@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include <QWidget>
 #include <QVariant>
+#include <QWidget>
 
 class QLabel;
 class QComboBox;

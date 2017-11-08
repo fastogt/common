@@ -29,10 +29,10 @@
 
 #include <common/qt/gui/icon_combobox.h>
 
+#include <QComboBox>
 #include <QHBoxLayout>
 #include <QIcon>
 #include <QLabel>
-#include <QComboBox>
 
 namespace common {
 namespace qt {
