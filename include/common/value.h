@@ -42,7 +42,6 @@ namespace common {
 class ArrayValue;
 class ByteArrayValue;
 class FundamentalValue;
-class JsonValue;
 class HashValue;
 class SetValue;
 class StringValue;
@@ -50,7 +49,7 @@ class ZSetValue;
 
 class Value {
  public:
-  enum Type : int {
+  enum Type : uint8_t {
     TYPE_NULL = 0,
     TYPE_BOOLEAN,
     TYPE_INTEGER,
@@ -63,12 +62,13 @@ class Value {
     TYPE_STRING,
     TYPE_ARRAY,  // list
     TYPE_BYTE_ARRAY,
-    TYPE_JSON,
     TYPE_SET,  // set
     TYPE_ZSET,
-    TYPE_HASH  // should be last
+    TYPE_HASH,
+
+    USER_TYPES = 128,
+    NUM_TYPES = 255
   };
-  enum { NUM_TYPES = TYPE_HASH + 1 };
 
   virtual ~Value();
 
@@ -86,20 +86,15 @@ class Value {
   static StringValue* CreateStringValue(const std::string& in_value);
   static ArrayValue* CreateArrayValue();
   static ByteArrayValue* CreateByteArrayValue(const byte_array_t& array);
-  static JsonValue* CreateJsonValue(const std::string& in_value);
   static SetValue* CreateSetValue();
   static ZSetValue* CreateZSetValue();
   static HashValue* CreateHashValue();
-
-  static Value* CreateEmptyValueFromType(Type value_type);
 
   static bool IsIntegral(Type type) {
     return type == TYPE_BOOLEAN || type == TYPE_INTEGER || type == TYPE_UINTEGER || type == TYPE_LONG_INTEGER ||
            type == TYPE_ULONG_INTEGER || type == TYPE_LONG_LONG_INTEGER || type == TYPE_ULONG_LONG_INTEGER ||
            type == TYPE_DOUBLE;
   }
-
-  static const char* GetTypeName(int value_type);
 
   Type GetType() const { return type_; }
 
@@ -117,8 +112,6 @@ class Value {
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsList(const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsByteArray(byte_array_t* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsJson(JsonValue** out_value) WARN_UNUSED_RESULT;
-  virtual bool GetAsJson(const JsonValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsSet(SetValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsSet(const SetValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsZSet(ZSetValue** out_value) WARN_UNUSED_RESULT;
@@ -304,22 +297,6 @@ class ByteArrayValue : public Value {
  private:
   byte_array_t array_;
   DISALLOW_COPY_AND_ASSIGN(ByteArrayValue);
-};
-
-class JsonValue : public Value {  // simple json class value, only save string without validation
- public:
-  explicit JsonValue(const std::string& json_value);
-  virtual ~JsonValue();
-
-  virtual bool GetAsString(std::string* out_value) const WARN_UNUSED_RESULT;  // FIXME
-  virtual bool GetAsJson(JsonValue** out_value) override WARN_UNUSED_RESULT;
-  virtual bool GetAsJson(const JsonValue** out_value) const override WARN_UNUSED_RESULT;
-  virtual JsonValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
-
- private:
-  std::string value_;
-  DISALLOW_COPY_AND_ASSIGN(JsonValue);
 };
 
 class SetValue : public Value {
