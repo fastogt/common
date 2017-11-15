@@ -40,8 +40,8 @@ namespace gui {
 class IconLabel : public QWidget {
   Q_OBJECT
  public:
-  IconLabel(QWidget* parent = 0);
-  IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent = 0);
+  IconLabel(QWidget* parent = Q_NULLPTR);
+  IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent = Q_NULLPTR);
 
   void setWordWrap(bool on);
 

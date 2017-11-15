@@ -21,6 +21,14 @@ SET(APPLIATION_SOURCES
   ${CMAKE_SOURCE_DIR}/src/application/application.cpp
 )
 
+SET(PROTOCOLS_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/protocols/three_way_handshake/commands.h
+)
+
+SET(PROTOCOLS_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/protocols/three_way_handshake/commands.cpp
+)
+
 SET(URI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/uri/upath.h
   ${CMAKE_SOURCE_DIR}/include/common/uri/url.h
@@ -464,6 +472,8 @@ SET(COMMON_SOURCES
 
   ${PATTERNS_SOURCES}
   ${APPLIATION_SOURCES}
+  ${PROTOCOLS_SOURCES}
+  ${PROTOCOLS_HEADERS}
   ${URI_SOURCES}
   ${SYSTEM_SOURCES}
   ${FILE_SYSTEM_SOURCES}

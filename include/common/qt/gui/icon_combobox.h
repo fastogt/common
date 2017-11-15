@@ -42,8 +42,8 @@ namespace gui {
 class IconComboBox : public QWidget {
   Q_OBJECT
  public:
-  IconComboBox(QWidget* parent = 0);
-  IconComboBox(const QIcon& icon, const QSize& icon_size, QWidget* parent = 0);
+  explicit IconComboBox(QWidget* parent = Q_NULLPTR);
+  IconComboBox(const QIcon& icon, const QSize& icon_size, QWidget* parent = Q_NULLPTR);
 
   void setIcon(const QIcon& icon, const QSize& size);
 

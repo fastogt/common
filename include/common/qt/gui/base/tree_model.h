@@ -40,7 +40,7 @@ class TreeItem;
 class TreeModel : public QAbstractItemModel {
   Q_OBJECT
  public:
-  explicit TreeModel(QObject* parent = 0);
+  explicit TreeModel(QObject* parent = Q_NULLPTR);
   virtual ~TreeModel();
 
   virtual int rowCount(const QModelIndex& parent) const override;

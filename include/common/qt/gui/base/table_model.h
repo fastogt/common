@@ -40,7 +40,7 @@ class TableItem;
 class TableModel : public QAbstractTableModel {
   Q_OBJECT
  public:
-  explicit TableModel(QObject* parent = 0);
+  explicit TableModel(QObject* parent = Q_NULLPTR);
   virtual ~TableModel();
 
   virtual int rowCount(const QModelIndex& parent) const override;
