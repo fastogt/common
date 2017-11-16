@@ -7,6 +7,3 @@
 [submodule "src/third-party/cpuid/libcpuid"]
 	path = src/third-party/cpuid/libcpuid
 	url = https://github.com/fastogt/libcpuid.git
-[submodule "src/third-party/libev/src"]
-	path = src/third-party/libev/src
-	url = https://github.com/fastogt/libev.git
