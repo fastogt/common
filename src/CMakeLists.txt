@@ -138,52 +138,59 @@ SET(COMPRESS_SOURCES
 IF(ZLIB_FOUND)
   SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h)
   SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp)
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${ZLIB_LIBRARIES})
 ENDIF(ZLIB_FOUND)
 
 IF(SNAPPY_FOUND)
   SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/snappy_compress.h)
   SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/snappy_compress.cpp)
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${SNAPPY_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${SNAPPY_LIBRARIES})
 ENDIF(SNAPPY_FOUND)
 
-SET(LIBEV_TCP_HEADERS
-  ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_client.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_server.h
-)
+FIND_PACKAGE(LibEv REQUIRED)
+IF(LIBEV_FOUND)
+  SET(LIBEV_TCP_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_server.h
+  )
 
-SET(LIBEV_TCP_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
-)
+  SET(LIBEV_TCP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
+  )
 
-SET(LIBEV_HEADERS
-  ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
-  ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
+  SET(LIBEV_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
 
-  ${LIBEV_TCP_HEADERS}
-)
+    ${LIBEV_TCP_HEADERS}
+  )
 
-SET(LIBEV_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/io_loop_observer.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/loop_controller.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/types.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/event_async.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
-  ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
+  SET(LIBEV_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_loop_observer.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/loop_controller.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/types.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_async.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
 
-  ${LIBEV_TCP_SOURCES}
-)
+    ${LIBEV_TCP_SOURCES}
+  )
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${LIBEV_INCLUDE_DIRS})
+  SET(COMMON_LIBS ${COMMON_LIBS} ${LIBEV_LIBRARIES})
+ENDIF(LIBEV_FOUND)
 
 SET(HTTP_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/http/http.h
@@ -275,7 +282,7 @@ ELSEIF(OS_POSIX)
     SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_linux.cpp
     )
-    SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} rt)
+    SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES})
   ELSEIF(OS_ANDROID)
     SET(COMMON_PLATFORM_HEADERS ${COMMON_PLATFORM_HEADERS})
     SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
@@ -436,7 +443,6 @@ SET(COMMON_HEADERS
     ${APPLIATION_HEADERS}
     ${URI_HEADERS}
     ${THREADS_HEADERS}
-    ${LIBEV_HEADERS}
     ${NET_HEADERS}
     ${DRAW_HEADERS}
     ${MEDIA_HEADERS}
@@ -446,6 +452,7 @@ SET(COMMON_HEADERS
     ${HTTP_HEADERS}
     ${COMMON_PLATFORM_HEADERS}
     ${COMPRESS_HEADERS}
+    ${LIBEV_HEADERS}
 )
 
 SET(COMMON_SOURCES
@@ -481,7 +488,6 @@ SET(COMMON_SOURCES
   ${NET_SOURCES}
   ${DRAW_SOURCES}
   ${MEDIA_SOURCES}
-  ${LIBEV_SOURCES}
   ${TEXT_DECODERS_SOURCES}
   ${HASH_SOURCES}
   ${SETTINGS_SOURCES}
@@ -489,17 +495,17 @@ SET(COMMON_SOURCES
   ${HTTP_SOURCES}
   ${COMMON_PLATFORM_SOURCES}
   ${COMPRESS_SOURCES}
+  ${LIBEV_SOURCES}
 )
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H) # need to refactor
 ADD_SUBDIRECTORY(third-party/cpuid)
-ADD_SUBDIRECTORY(third-party/libev)
 SET(COMMON_LIBS ${COMMON_LIBS} ${COMMON_PLATFORM_LIBRARIES})
 
 SET(COMMON_PROJECT_NAME ${PROJECT_NAME_LOWERCASE})
-SET(PRIVATE_INCLUDE_DIRECTORIES ${PRIVATE_INCLUDE_DIRECTORIES} third-party)
+SET(PRIVATE_INCLUDE_DIRECTORIES ${PRIVATE_INCLUDE_DIRECTORIES} ${COMMON_INCLUDE_DIRS} third-party)
 ADD_LIBRARY(${COMMON_PROJECT_NAME} ${COMMON_HEADERS} ${COMMON_SOURCES} ${CMP_SOURCES}
-  $<TARGET_OBJECTS:libev> $<TARGET_OBJECTS:cpuid>)
+  $<TARGET_OBJECTS:cpuid>)
 TARGET_INCLUDE_DIRECTORIES(${COMMON_PROJECT_NAME}
   PRIVATE ${PRIVATE_INCLUDE_DIRECTORIES}
   PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
@@ -569,11 +575,8 @@ IF(DEVELOPER_ENABLE_TESTS)
   ADD_DEFINITIONS(-DPROJECT_TEST_SOURCES_DIR="${CMAKE_SOURCE_DIR}/tests")
 
   SET(UNIT_TESTS_PROJECT_NAME ${COMMON_PROJECT_NAME}_unit_tests)
-  ADD_EXECUTABLE(${UNIT_TESTS_PROJECT_NAME}
+  SET(UNIT_TESTS_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unit_test_error.cpp
-
-    ${CMAKE_SOURCE_DIR}/tests/unit_test_libev.cpp
-
     ${CMAKE_SOURCE_DIR}/tests/unit_test_url.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_path.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_filesystem_path.cpp
@@ -589,8 +592,12 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_hash.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_bounded_value.cpp
   )
+  IF(LIBEV_FOUND)
+    SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_libev.cpp)
+  ENDIF(LIBEV_FOUND)
+  ADD_EXECUTABLE(${UNIT_TESTS_PROJECT_NAME} ${UNIT_TESTS_SOURCES})
 
-  TARGET_LINK_LIBRARIES(${UNIT_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} ${COMMON_INSTALL_LIBS} ${COMMON_LIBS})
+  TARGET_LINK_LIBRARIES(${UNIT_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} ${COMMON_INSTALL_LIBS})
 
   ADD_TEST_TARGET(${UNIT_TESTS_PROJECT_NAME})
   SET_PROPERTY(TARGET ${UNIT_TESTS_PROJECT_NAME} PROPERTY FOLDER "Unit tests")
@@ -611,7 +618,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/test_thread_many_empty.cpp
   )
 
-  TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} ${COMMON_INSTALL_LIBS} ${COMMON_LIBS})
+  TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} ${COMMON_INSTALL_LIBS})
 
   #ADD_TEST_TARGET(${OTHER_TESTS_PROJECT_NAME})
   #SET_PROPERTY(TARGET ${OTHER_TESTS_PROJECT_NAME} PROPERTY FOLDER "Other tests")

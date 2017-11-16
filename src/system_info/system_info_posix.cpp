@@ -53,8 +53,12 @@ long GetProcessRss(pid_t pid) {
     return 0;
   }
   long lres = 0;
-  ConvertFromString(res, &lres);
-  return lres;
+  bool ok = ConvertFromString(res, &lres);
+  if (ok) {
+    return lres;
+  }
+
+  return 0;
 }
 
 double GetCpuLoad(pid_t pid) {

@@ -33,7 +33,7 @@
 
 #include <mutex>
 
-#include "libev/src/ev.h"
+#include <ev.h>
 
 #include <common/libev/event_async.h>
 #include <common/libev/event_io.h>
