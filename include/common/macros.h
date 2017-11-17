@@ -238,3 +238,12 @@ struct stable_value {
     return stable_value_in_range(a, amin, amax);
   }
 };
+
+template <typename init_func, typename destroy_func>
+struct RAII {
+  typedef init_func init_closure;
+  typedef destroy_func destroy_closure;
+
+  RAII() { init_closure(); }
+  ~RAII() { destroy_closure(); }
+};

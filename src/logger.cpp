@@ -32,7 +32,6 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
-#include <mutex>
 
 #include <common/sprintf.h>
 

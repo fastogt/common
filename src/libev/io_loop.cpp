@@ -238,7 +238,8 @@ void IoLoop::Stoped(LibEvLoop* loop) {
 
   for (size_t i = 0; i < cl.size(); ++i) {
     IoClient* client = cl[i];
-    client->Close();
+    common::Error err = client->Close();
+    DCHECK(!err) << err->GetDescription();
     delete client;
   }
 }

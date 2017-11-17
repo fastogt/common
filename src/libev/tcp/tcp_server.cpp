@@ -124,10 +124,7 @@ void TcpServer::Stoped(LibEvLoop* loop) {
   IoLoop::Stoped(loop);
 
   ErrnoError err = sock_.Close();
-  if (err) {
-    DNOTREACHED() << err->GetDescription();
-    return;
-  }
+  DCHECK(!err) << err->GetDescription();
 }
 
 ErrnoError TcpServer::Bind(bool reuseaddr) {

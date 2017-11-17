@@ -125,6 +125,20 @@ namespace net {
 
 namespace {
 
+struct UnBlockAndBlockSocket {
+  UnBlockAndBlockSocket(socket_descr_t sock) : sock_(sock) {
+    common::ErrnoError err = set_blocking_socket(sock, false);
+    DCHECK(!err) << err->GetDescription();
+  }
+  ~UnBlockAndBlockSocket() {
+    common::ErrnoError err = set_blocking_socket(sock_, true);
+    DCHECK(!err) << err->GetDescription();
+  }
+
+ private:
+  socket_descr_t sock_;
+};
+
 int socket_type_to_native(socket_t socktype) {
   return static_cast<int>(socktype);
 }
@@ -144,53 +158,47 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
     }
 
     return ErrnoError();
-  } else {
-    set_blocking_socket(sock, 0);
-    int res = ::connect(sock, addr, len);
-    if (res < 0) {
-      if (errno == EINPROGRESS) {
+  }
+
+  // async connect
+  UnBlockAndBlockSocket blocker(sock);
+  int res = ::connect(sock, addr, len);
+  if (res < 0) {
+    if (errno == EINPROGRESS) {
 #ifdef OS_POSIX
-        struct pollfd fds[1];
-        fds[0].fd = sock;
-        fds[0].events = POLLOUT;
-        int msec = (tv->tv_sec * 1000) + ((tv->tv_usec + 999) / 1000);
-        res = poll(fds, 1, msec);
+      struct pollfd fds[1];
+      fds[0].fd = sock;
+      fds[0].events = POLLOUT;
+      int msec = (tv->tv_sec * 1000) + ((tv->tv_usec + 999) / 1000);
+      res = poll(fds, 1, msec);
 #else
-        fd_set master_set;
-        FD_ZERO(&master_set);
-        FD_SET(sock, &master_set);
-        res = select(sock + 1, &master_set, NULL, NULL, tv);
+      fd_set master_set;
+      FD_ZERO(&master_set);
+      FD_SET(sock, &master_set);
+      res = select(sock + 1, &master_set, NULL, NULL, tv);
 #endif
-        if (res == -1) {
-          set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect poll", errno);
-        } else if (res == 0) {
-          set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect timeout", ETIMEDOUT);
-        }
+      if (res == -1) {
+        return make_error_perror("async_connect poll", errno);
+      } else if (res == 0) {
+        return make_error_perror("async_connect timeout", ETIMEDOUT);
+      }
 
-        // Socket selected for write
-        int so_error = 0;
-        socklen_t errlen = sizeof(so_error);
-        if (getsockopt(sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&so_error), &errlen) == ERROR_RESULT_VALUE) {
-          set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect getsockopt", errno);
-        }
+      // Socket selected for write
+      int so_error = 0;
+      socklen_t errlen = sizeof(so_error);
+      if (getsockopt(sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&so_error), &errlen) == ERROR_RESULT_VALUE) {
+        return make_error_perror("async_connect getsockopt", errno);
+      }
 
-        // Check the value returned...
-        if (so_error) {
-          set_blocking_socket(sock, 1);
-          return make_error_perror("async_connect", so_error);
-        }
-      } else {
-        set_blocking_socket(sock, 1);
-        return make_error_perror("async_connect", errno);
+      // Check the value returned...
+      if (so_error) {
+        return make_error_perror("async_connect", so_error);
       }
     }
-
-    set_blocking_socket(sock, 1);
-    return ErrnoError();
+    return make_error_perror("async_connect", errno);
   }
+
+  return ErrnoError();
 }
 
 }  // namespace

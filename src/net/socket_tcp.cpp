@@ -115,12 +115,12 @@ ErrnoError ClientSocketTcp::Disconnect() {
 
 bool ClientSocketTcp::IsConnected() const {
   const socket_descr_t fd = info_.fd();
-  return fd != INVALID_DESCRIPTOR;
+  return fd != INVALID_SOCKET_VALUE;
 }
 
-ErrnoError ClientSocketTcp::SendFile(int file_fd, size_t file_size) {
+ErrnoError ClientSocketTcp::SendFile(descriptor_t file_fd, size_t file_size) {
   const socket_descr_t fd = info_.fd();
-  if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_DESCRIPTOR) {
+  if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_SOCKET_VALUE) {
     return make_error_perror("SendFile", EINVAL);
   }
 

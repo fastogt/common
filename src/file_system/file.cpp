@@ -163,7 +163,8 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   }
 
   if (flags & FLAG_DELETE_ON_CLOSE) {
-    unlink(path_str);
+    err = unlink(path_str);
+    DCHECK(!err) << err->GetDescription();
   }
 
   holder_ = new DescriptorHolder(fd);

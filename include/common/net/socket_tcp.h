@@ -82,7 +82,7 @@ class ClientSocketTcp : public SocketTcp {
   ErrnoError Connect(struct timeval* tv = NULL) WARN_UNUSED_RESULT;
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
   bool IsConnected() const;
-  ErrnoError SendFile(int file_fd, size_t file_size) WARN_UNUSED_RESULT;
+  ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
