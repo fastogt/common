@@ -29,6 +29,8 @@
 
 #include <common/protocols/three_way_handshake/commands.h>
 
+#include <stdlib.h>
+
 namespace common {
 namespace protocols {
 namespace three_way_handshake {

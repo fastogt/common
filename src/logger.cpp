@@ -29,6 +29,8 @@
 
 #include <common/logger.h>
 
+#include <errno.h>
+
 #include <fstream>
 #include <iostream>
 #include <memory>
