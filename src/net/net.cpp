@@ -125,6 +125,118 @@ namespace net {
 
 namespace {
 
+template <typename CHAR>
+ErrnoError read_from_socket_impl(socket_descr_t fd, CHAR* out, size_t size, size_t* nread) {
+  if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
+    return make_error_perror("read_from_socket", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t lnread = recv(fd, out, size, 0);
+#else
+  ssize_t lnread = ::read(fd, out, size);
+#endif
+
+  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_perror("read", errno);
+  }
+
+  if (lnread == 0) {
+    return make_errno_error(ECONNRESET);
+  }
+
+  *nread = lnread;
+  return ErrnoError();
+}
+
+template <typename CHAR>
+ErrnoError write_to_socket_impl(socket_descr_t fd, const CHAR* data, size_t size, size_t* nwritten) {
+  if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
+    return make_error_perror("write_to_socket", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t lnwritten = send(fd, data, size, 0);
+#else
+  ssize_t lnwritten = write(fd, data, size);
+#endif
+
+  if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_perror("write", errno);
+  }
+
+  *nwritten = lnwritten;
+  return ErrnoError();
+}
+
+template <typename CHAR>
+ErrnoError sendto_impl(socket_descr_t fd,
+                       const CHAR* data,
+                       uint16_t len,
+                       struct sockaddr* addr,
+                       socklen_t addr_len,
+                       ssize_t* nwritten_out) {
+  if (!data) {
+    return make_error_perror("sendto", EINVAL);
+  }
+
+  if (!addr) {
+    return make_error_perror("sendto", EINVAL);
+  }
+
+  if (fd == INVALID_SOCKET_VALUE) {
+    return make_error_perror("sendto", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
+#else
+  ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
+#endif
+
+  if (res == ERROR_RESULT_VALUE) {
+    return make_error_perror("sendto", errno);
+  }
+  if (*nwritten_out) {
+    *nwritten_out = res;
+  }
+  return ErrnoError();
+}
+
+template <typename CHAR>
+ErrnoError recvfrom_impl(socket_descr_t fd,
+                         CHAR* out_data,
+                         uint16_t max_size,
+                         sockaddr* addr,
+                         socklen_t* addr_len,
+                         ssize_t* nread_out) {
+  if (!out_data) {
+    return make_error_perror("recvfrom", EINVAL);
+  }
+
+  if (!addr) {
+    return make_error_perror("recvfrom", EINVAL);
+  }
+
+  if (fd == INVALID_SOCKET_VALUE) {
+    return make_error_perror("recvfrom", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
+#else
+  ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
+#endif
+
+  if (res == ERROR_RESULT_VALUE) {
+    return make_error_perror("sendfile", errno);
+  }
+  if (*nread_out) {
+    *nread_out = res;
+  }
+  return ErrnoError();
+}
+
 struct UnBlockAndBlockSocket {
   UnBlockAndBlockSocket(socket_descr_t sock) : sock_(sock) {
     common::ErrnoError err = set_blocking_socket(sock, false);
@@ -197,6 +309,80 @@ ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, sockle
     }
     return make_error_perror("async_connect", errno);
   }
+
+  return ErrnoError();
+}
+
+ErrnoError connect_raw(const char* host,
+                       uint16_t port,
+                       socket_t socktype,
+                       struct timeval* timeout,
+                       socket_info* out_info) {
+  if (!host || !out_info) {
+    return common::make_error_perror("connect", EINVAL);
+  }
+
+  socket_descr_t sfd = INVALID_SOCKET_VALUE;
+
+  struct addrinfo hints, *rp = NULL;
+  struct addrinfo* result = NULL;
+  char _port[6];
+  snprintf(_port, sizeof(_port), "%u", port);
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = socket_type_to_native(socktype);
+  hints.ai_flags = AI_PASSIVE; /* For wildcard IP address */
+  hints.ai_protocol = 0;       /* Any protocol */
+  hints.ai_canonname = NULL;
+  hints.ai_addr = NULL;
+  hints.ai_next = NULL;
+  /* Try with IPv6 if no IPv4 address was found. We do it in this order since
+   * in a client you can't afford to test if you have IPv6 connectivity
+   * as this would add latency to every connect. Otherwise a more sensible
+   * route could be: Use IPv6 if both addresses are available and there is IPv6
+   * connectivity. */
+  if (getaddrinfo(host, _port, &hints, &result) != 0) {
+    hints.ai_family = AF_INET6;
+    int rv = getaddrinfo(host, _port, &hints, &result);
+    if (rv != 0) {
+      return make_error_perror("getaddrinfo", rv);
+    }
+  }
+
+  for (rp = result; rp != NULL; rp = rp->ai_next) {
+    if (rp->ai_socktype != socktype) {
+      continue;
+    }
+
+    sfd = ::socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+    if (sfd == INVALID_SOCKET_VALUE) {
+      continue;
+    }
+
+    if (socktype == ST_SOCK_DGRAM) {
+      break; /* Success */
+    }
+
+    ErrnoError err = connect_impl(sfd, rp->ai_addr, rp->ai_addrlen, timeout);
+    if (!err) {
+      break;
+    }
+
+    ::close(sfd);
+  }
+
+  if (rp == NULL) { /* No address succeeded */
+    int err = errno;
+    CHECK(err) << "Errno(" << err << ") should be not zero!";
+    return make_error_perror("getaddrinfo", err);
+  }
+
+  out_info->set_addrinfo(rp);
+  out_info->set_fd(sfd);
+  out_info->set_host(host);
+  out_info->set_port(port);
+
+  freeaddrinfo(result); /* No longer needed */
 
   return ErrnoError();
 }
@@ -320,80 +506,6 @@ ErrnoError accept(const socket_info& info, socket_info* out_info) {
   return ErrnoError();
 }
 
-namespace {
-
-ErrnoError connect(const char* host, uint16_t port, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
-  if (!host || !out_info) {
-    return common::make_error_perror("connect", EINVAL);
-  }
-
-  socket_descr_t sfd = INVALID_SOCKET_VALUE;
-
-  struct addrinfo hints, *rp = NULL;
-  struct addrinfo* result = NULL;
-  char _port[6];
-  snprintf(_port, sizeof(_port), "%u", port);
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = socket_type_to_native(socktype);
-  hints.ai_flags = AI_PASSIVE; /* For wildcard IP address */
-  hints.ai_protocol = 0;       /* Any protocol */
-  hints.ai_canonname = NULL;
-  hints.ai_addr = NULL;
-  hints.ai_next = NULL;
-  /* Try with IPv6 if no IPv4 address was found. We do it in this order since
-   * in a client you can't afford to test if you have IPv6 connectivity
-   * as this would add latency to every connect. Otherwise a more sensible
-   * route could be: Use IPv6 if both addresses are available and there is IPv6
-   * connectivity. */
-  if (getaddrinfo(host, _port, &hints, &result) != 0) {
-    hints.ai_family = AF_INET6;
-    int rv = getaddrinfo(host, _port, &hints, &result);
-    if (rv != 0) {
-      return make_error_perror("getaddrinfo", rv);
-    }
-  }
-
-  for (rp = result; rp != NULL; rp = rp->ai_next) {
-    if (rp->ai_socktype != socktype) {
-      continue;
-    }
-
-    sfd = ::socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-    if (sfd == INVALID_SOCKET_VALUE) {
-      continue;
-    }
-
-    if (socktype == ST_SOCK_DGRAM) {
-      break; /* Success */
-    }
-
-    ErrnoError err = connect_impl(sfd, rp->ai_addr, rp->ai_addrlen, timeout);
-    if (!err) {
-      break;
-    }
-
-    ::close(sfd);
-  }
-
-  if (rp == NULL) { /* No address succeeded */
-    int err = errno;
-    CHECK(err) << "Errno(" << err << ") should be not zero!";
-    return make_error_perror("getaddrinfo", err);
-  }
-
-  out_info->set_addrinfo(rp);
-  out_info->set_fd(sfd);
-  out_info->set_host(host);
-  out_info->set_port(port);
-
-  freeaddrinfo(result); /* No longer needed */
-
-  return ErrnoError();
-}
-
-}  // namespace
-
 ErrnoError connect(const HostAndPort& to, socket_t socktype, struct timeval* timeout, socket_info* out_info) {
   if (!to.IsValid() || !out_info) {
     return make_error_perror("connect", EINVAL);
@@ -402,7 +514,7 @@ ErrnoError connect(const HostAndPort& to, socket_t socktype, struct timeval* tim
   const HostAndPort::host_t host = to.GetHost();
   const HostAndPort::port_t port = to.GetPort();
 
-  return connect(host.c_str(), port, socktype, timeout, out_info);
+  return connect_raw(host.c_str(), port, socktype, timeout, out_info);
 }
 
 ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info* out_info) {
@@ -508,87 +620,19 @@ ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int c
 #endif
 
 ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten) {
-  if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
-    return make_error_perror("write_to_socket", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t lnwritten = send(fd, data, size, 0);
-#else
-  ssize_t lnwritten = write(fd, data, size);
-#endif
-
-  if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("write", errno);
-  }
-
-  *nwritten = lnwritten;
-  return ErrnoError();
+  return write_to_socket_impl(fd, data, size, nwritten);
 }
 
 ErrnoError write_to_socket(socket_descr_t fd, const unsigned char* data, size_t size, size_t* nwritten) {
-  if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
-    return make_error_perror("write_to_socket", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t lnwritten = send(fd, data, size, 0);
-#else
-  ssize_t lnwritten = write(fd, data, size);
-#endif
-
-  if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("write", errno);
-  }
-
-  *nwritten = lnwritten;
-  return ErrnoError();
+  return write_to_socket_impl(fd, data, size, nwritten);
 }
 
 ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t size, size_t* nread) {
-  if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
-    return make_error_perror("read_from_socket", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t lnread = recv(fd, out, size, 0);
-#else
-  ssize_t lnread = ::read(fd, out, size);
-#endif
-
-  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("read", errno);
-  }
-
-  if (lnread == 0) {
-    return make_errno_error(ECONNRESET);
-  }
-
-  *nread = lnread;
-  return ErrnoError();
+  return read_from_socket_impl(fd, out, size, nread);
 }
 
 ErrnoError read_from_socket(socket_descr_t fd, unsigned char* out, size_t size, size_t* nread) {
-  if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
-    return make_error_perror("read_from_socket", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t lnread = recv(fd, out, size, 0);
-#else
-  ssize_t lnread = ::read(fd, out, size);
-#endif
-
-  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
-    return make_error_perror("read", errno);
-  }
-
-  if (lnread == 0) {
-    return make_errno_error(ECONNRESET);
-  }
-
-  *nread = lnread;
-  return ErrnoError();
+  return read_from_socket_impl(fd, out, size, nread);
 }
 
 ErrnoError sendto(socket_descr_t fd,
@@ -597,31 +641,16 @@ ErrnoError sendto(socket_descr_t fd,
                   struct sockaddr* addr,
                   socklen_t addr_len,
                   ssize_t* nwritten_out) {
-  if (!data) {
-    return make_error_perror("sendto", EINVAL);
-  }
+  return sendto_impl(fd, data, len, addr, addr_len, nwritten_out);
+}
 
-  if (!addr) {
-    return make_error_perror("sendto", EINVAL);
-  }
-
-  if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("sendto", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
-#else
-  ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
-#endif
-
-  if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendto", errno);
-  }
-  if (*nwritten_out) {
-    *nwritten_out = res;
-  }
-  return ErrnoError();
+ErrnoError sendto(socket_descr_t fd,
+                  const unsigned char* data,
+                  uint16_t len,
+                  struct sockaddr* addr,
+                  socklen_t addr_len,
+                  ssize_t* nwritten_out) {
+  return sendto_impl(fd, data, len, addr, addr_len, nwritten_out);
 }
 
 ErrnoError recvfrom(socket_descr_t fd,
@@ -630,31 +659,16 @@ ErrnoError recvfrom(socket_descr_t fd,
                     sockaddr* addr,
                     socklen_t* addr_len,
                     ssize_t* nread_out) {
-  if (!out_data) {
-    return make_error_perror("recvfrom", EINVAL);
-  }
+  return recvfrom_impl(fd, out_data, max_size, addr, addr_len, nread_out);
+}
 
-  if (!addr) {
-    return make_error_perror("recvfrom", EINVAL);
-  }
-
-  if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("recvfrom", EINVAL);
-  }
-
-#ifdef OS_WIN
-  ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
-#else
-  ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
-#endif
-
-  if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendfile", errno);
-  }
-  if (*nread_out) {
-    *nread_out = res;
-  }
-  return ErrnoError();
+ErrnoError recvfrom(socket_descr_t fd,
+                    unsigned char* out_data,
+                    uint16_t max_size,
+                    sockaddr* addr,
+                    socklen_t* addr_len,
+                    ssize_t* nread_out) {
+  return recvfrom_impl(fd, out_data, max_size, addr, addr_len, nread_out);
 }
 
 ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size) {
