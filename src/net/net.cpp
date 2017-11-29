@@ -132,7 +132,7 @@ ErrnoError read_from_socket_impl(socket_descr_t fd, CHAR* out, size_t size, size
   }
 
 #ifdef OS_WIN
-  ssize_t lnread = recv(fd, out, size, 0);
+  ssize_t lnread = recv(fd, reinterpret_cast<char*>(out), size, 0);
 #else
   ssize_t lnread = ::read(fd, out, size);
 #endif
@@ -156,7 +156,7 @@ ErrnoError write_to_socket_impl(socket_descr_t fd, const CHAR* data, size_t size
   }
 
 #ifdef OS_WIN
-  ssize_t lnwritten = send(fd, data, size, 0);
+  ssize_t lnwritten = send(fd, reinterpret_cast<const char*>(data), size, 0);
 #else
   ssize_t lnwritten = write(fd, data, size);
 #endif
@@ -189,7 +189,7 @@ ErrnoError sendto_impl(socket_descr_t fd,
   }
 
 #ifdef OS_WIN
-  ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
+  ssize_t res = ::sendto(fd, reinterpret_cast<const char*>(data), len, 0, addr, addr_len);
 #else
   ssize_t res = ::sendto(fd, data, len, 0, addr, addr_len);
 #endif
@@ -223,7 +223,7 @@ ErrnoError recvfrom_impl(socket_descr_t fd,
   }
 
 #ifdef OS_WIN
-  ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
+  ssize_t res = ::recvfrom(fd, reinterpret_cast<char*>(out_data), max_size, 0, addr, addr_len);
 #else
   ssize_t res = ::recvfrom(fd, out_data, max_size, 0, addr, addr_len);
 #endif
