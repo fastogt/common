@@ -60,7 +60,9 @@ class IoClient : IMetaClassInfo {
   std::string GetFormatedName() const;
 
   virtual Error Write(const char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;
+  virtual Error Write(const unsigned char* data, size_t size, size_t* nwrite) WARN_UNUSED_RESULT = 0;
   virtual Error Read(char* out, size_t max_size, size_t* nread) WARN_UNUSED_RESULT = 0;
+  virtual Error Read(unsigned char* out, size_t max_size, size_t* nread) WARN_UNUSED_RESULT = 0;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;

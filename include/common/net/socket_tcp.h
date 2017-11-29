@@ -52,7 +52,9 @@ class SocketHolder {
 #endif
 
   ErrnoError Write(const char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError Write(const unsigned char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Read(char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError Read(unsigned char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Close() WARN_UNUSED_RESULT;
 
  protected:

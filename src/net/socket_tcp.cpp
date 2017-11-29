@@ -71,7 +71,15 @@ ErrnoError SocketHolder::Write(const char* data, size_t size, size_t* nwrite_out
   return net::write_to_socket(info_.fd(), data, size, nwrite_out);
 }
 
+ErrnoError SocketHolder::Write(const unsigned char* data, size_t size, size_t* nwrite_out) {
+  return net::write_to_socket(info_.fd(), data, size, nwrite_out);
+}
+
 ErrnoError SocketHolder::Read(char* out, size_t len, size_t* nread_out) {
+  return net::read_from_socket(info_.fd(), out, len, nread_out);
+}
+
+ErrnoError SocketHolder::Read(unsigned char* out, size_t len, size_t* nread_out) {
   return net::read_from_socket(info_.fd(), out, len, nread_out);
 }
 

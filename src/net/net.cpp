@@ -526,15 +526,57 @@ ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, siz
   return ErrnoError();
 }
 
-ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t len, size_t* nread) {
-  if (fd == INVALID_SOCKET_VALUE || !out || len == 0 || !nread) {
+ErrnoError write_to_socket(socket_descr_t fd, const unsigned char* data, size_t size, size_t* nwritten) {
+  if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
+    return make_error_perror("write_to_socket", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t lnwritten = send(fd, data, size, 0);
+#else
+  ssize_t lnwritten = write(fd, data, size);
+#endif
+
+  if (lnwritten == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_perror("write", errno);
+  }
+
+  *nwritten = lnwritten;
+  return ErrnoError();
+}
+
+ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t size, size_t* nread) {
+  if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
     return make_error_perror("read_from_socket", EINVAL);
   }
 
 #ifdef OS_WIN
-  ssize_t lnread = recv(fd, out, len, 0);
+  ssize_t lnread = recv(fd, out, size, 0);
 #else
-  ssize_t lnread = ::read(fd, out, len);
+  ssize_t lnread = ::read(fd, out, size);
+#endif
+
+  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
+    return make_error_perror("read", errno);
+  }
+
+  if (lnread == 0) {
+    return make_errno_error(ECONNRESET);
+  }
+
+  *nread = lnread;
+  return ErrnoError();
+}
+
+ErrnoError read_from_socket(socket_descr_t fd, unsigned char* out, size_t size, size_t* nread) {
+  if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
+    return make_error_perror("read_from_socket", EINVAL);
+  }
+
+#ifdef OS_WIN
+  ssize_t lnread = recv(fd, out, size, 0);
+#else
+  ssize_t lnread = ::read(fd, out, size);
 #endif
 
   if (lnread == ERROR_RESULT_VALUE && errno != 0) {

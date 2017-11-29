@@ -68,7 +68,51 @@ Error TcpClient::Write(const char* data, size_t size, size_t* nwrite) {
   return Error();
 }
 
+Error TcpClient::Write(const unsigned char* data, size_t size, size_t* nwrite) {
+  if (!data || !size || !nwrite) {
+    return make_error_inval();
+  }
+
+  size_t total = 0;          // how many bytes we've sent
+  size_t bytes_left = size;  // how many we have left to send
+
+  while (total < size) {
+    size_t n;
+    ErrnoError err = sock_.Write(data, size, &n);
+    if (err) {
+      return make_error(err->GetDescription());
+    }
+    total += n;
+    bytes_left -= n;
+  }
+
+  *nwrite = total;  // return number actually sent here
+  return Error();
+}
+
 Error TcpClient::Read(char* out, size_t size, size_t* nread) {
+  if (!out || !size || !nread) {
+    return make_error_inval();
+  }
+
+  size_t total = 0;          // how many bytes we've readed
+  size_t bytes_left = size;  // how many we have left to read
+
+  while (total < size) {
+    size_t n;
+    ErrnoError err = sock_.Read(out + total, bytes_left, &n);
+    if (err) {
+      return make_error(err->GetDescription());
+    }
+    total += n;
+    bytes_left -= n;
+  }
+
+  *nread = total;  // return number actually readed here
+  return Error();
+}
+
+Error TcpClient::Read(unsigned char* out, size_t size, size_t* nread) {
   if (!out || !size || !nread) {
     return make_error_inval();
   }
