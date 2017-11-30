@@ -23,10 +23,9 @@
 namespace common {
 namespace serializer {
 
-template <typename T, typename S = std::string>
+template <typename S = std::string>
 class ISerializer {
  public:
-  typedef T value_type;
   typedef S serialize_type;
 
   virtual ~ISerializer() {}
