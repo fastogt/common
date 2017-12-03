@@ -183,6 +183,8 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/pipe_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
@@ -194,6 +196,8 @@ IF(LIBEV_FOUND)
   SET(LIBEV_SOURCES
     ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_loop_observer.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/loop_controller.cpp
