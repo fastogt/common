@@ -31,6 +31,11 @@
 
 #include <unistd.h>
 
+#ifdef OS_WIN
+#include <fcntl.h>
+#define pipe(fds) _pipe(fds, 4096, O_BINARY)
+#endif
+
 namespace common {
 namespace libev {
 
