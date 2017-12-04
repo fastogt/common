@@ -48,6 +48,7 @@ ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence) WARN_
 
 ErrnoError open_descriptor(const std::string& path, int oflags, descriptor_t* out_desc) WARN_UNUSED_RESULT;
 extern ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;
+ErrnoError set_blocking_descriptor(descriptor_t descr, bool blocking);
 ErrnoError touch(const std::string& path) WARN_UNUSED_RESULT;
 typedef ErrnoError (*read_cb)(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed);
 ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) WARN_UNUSED_RESULT;

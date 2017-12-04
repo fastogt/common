@@ -245,6 +245,35 @@ ErrnoError touch(const std::string& path) {
   return create_node(path);
 }
 
+ErrnoError set_blocking_descriptor(descriptor_t descr, bool blocking) {
+#ifdef OS_POSIX
+  int opts = fcntl(descr, F_GETFL);
+  if (opts < 0) {
+    return make_error_perror("fcntl(F_GETFL)", errno);
+  }
+
+  if (blocking) {
+    opts &= ~O_NONBLOCK;
+  } else {
+    opts |= O_NONBLOCK;
+  }
+
+  if (fcntl(descr, F_SETFL, opts) < 0) {
+    return make_error_perror("fcntl(F_SETFL)", errno);
+  }
+
+  return ErrnoError();
+#else
+  unsigned long flags = blocking;
+  int res = ioctlsocket(descr, FIONBIO, &flags);
+  if (res == SOCKET_ERROR) {
+    return make_error_perror("ioctlsocket", errno);
+  }
+
+  return ErrnoError();
+#endif
+}
+
 ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
     return make_error_perror("read_file_cb", EINVAL);
