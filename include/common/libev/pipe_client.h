@@ -39,6 +39,8 @@ class PipeReadClient : public DescriptorClient {
   PipeReadClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
   virtual ~PipeReadClient();
 
+  virtual const char* ClassName() const override;
+
  private:
   using DescriptorClient::Write;
 };
@@ -47,6 +49,8 @@ class PipeWriteClient : public DescriptorClient {
  public:
   PipeWriteClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_WRITE);
   virtual ~PipeWriteClient();
+
+  virtual const char* ClassName() const override;
 
  private:
   using DescriptorClient::Read;

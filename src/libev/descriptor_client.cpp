@@ -37,7 +37,13 @@ DescriptorClient::DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flag
 
 DescriptorClient::~DescriptorClient() {}
 
-descriptor_t DescriptorClient::GetFd() const { return desc_.GetFd(); }
+const char* DescriptorClient::ClassName() const {
+  return "DescriptorClient";
+}
+
+descriptor_t DescriptorClient::GetFd() const {
+  return desc_.GetFd();
+}
 
 Error DescriptorClient::Write(const char* data, size_t size, size_t* nwrite) {
   if (!data || !size || !nwrite) {

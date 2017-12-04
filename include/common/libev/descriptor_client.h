@@ -29,8 +29,8 @@
 
 #pragma once
 
-#include <common/libev/io_client.h>
 #include <common/file_system/descriptor_holder.h>
+#include <common/libev/io_client.h>
 
 namespace common {
 namespace libev {
@@ -39,6 +39,8 @@ class DescriptorClient : public IoClient {
  public:
   DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
   virtual ~DescriptorClient();
+
+  virtual const char* ClassName() const override;
 
   virtual Error Write(const char* data, size_t size, size_t* nwrite) override;
   virtual Error Write(const unsigned char* data, size_t size, size_t* nwrite) override;

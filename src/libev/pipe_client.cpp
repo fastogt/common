@@ -43,10 +43,18 @@ PipeReadClient::PipeReadClient(IoLoop* server, descriptor_t fd, flags_t flags) :
 
 PipeReadClient::~PipeReadClient() {}
 
+const char* PipeReadClient::ClassName() const {
+  return "PipeReadClient";
+}
+
 PipeWriteClient::PipeWriteClient(IoLoop* server, descriptor_t fd, flags_t flags)
     : DescriptorClient(server, fd, flags) {}
 
 PipeWriteClient::~PipeWriteClient() {}
+
+const char* PipeWriteClient::ClassName() const {
+  return "PipeWriteClient";
+}
 
 common::ErrnoError CreatePipe(PipeReadClient** read_client, PipeWriteClient** write_client, IoLoop* server) {
   if (!read_client || !write_client) {
