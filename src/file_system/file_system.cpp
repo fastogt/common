@@ -36,6 +36,7 @@
 #include <unistd.h>    // for close, lseek, read, ssize_t, etc
 
 #if defined(OS_WIN)
+#include <winsock2.h>
 #include <fileapi.h>
 #endif
 
