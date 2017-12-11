@@ -575,13 +575,16 @@ ErrnoError read_from_descriptor(descriptor_t fd_desc, void* buf, size_t len, siz
     return make_error_perror("read_from_descriptor", EINVAL);
   }
 
-  ssize_t res = read(fd_desc, buf, len);
-  bool result = res != ERROR_RESULT_VALUE;
-  if (!result) {
+  ssize_t lnread = read(fd_desc, buf, len);
+  if (lnread == ERROR_RESULT_VALUE && errno != 0) {
     return make_error_perror("read", errno);
   }
 
-  *readlen = res;
+  if (lnread == 0) {
+    return make_errno_error(ECONNRESET);
+  }
+
+  *readlen = lnread;
   return ErrnoError();
 }
 
