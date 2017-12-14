@@ -35,16 +35,16 @@ namespace common {
 namespace file_system {
 
 // is_directory
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 tribool is_directory(const std::basic_string<CharT, Traits>& path);
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 tribool is_directory(const CharT* path) {
   return is_directory(std::basic_string<CharT, Traits>(path));
 }
 
 // is_file
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 tribool is_file(const std::basic_string<CharT, Traits>& path) {
   tribool result = is_directory(path);
   if (result != INDETERMINATE) {
@@ -53,45 +53,45 @@ tribool is_file(const std::basic_string<CharT, Traits>& path) {
   return result;
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 bool is_file(const CharT* path) {
   return is_file(std::basic_string<CharT, Traits>(path));
 }
 
 // is_file_exist
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 bool is_file_exist(const std::basic_string<CharT, Traits>& path) {
   return is_file(path) == SUCCESS;
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 bool is_file_exist(const CharT* path) {
   return is_file_exist(std::basic_string<CharT, Traits>(path));
 }
 
 // is_directory_exist
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 bool is_directory_exist(const std::basic_string<CharT, Traits>& path) {
   return is_directory(path) == SUCCESS;
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 bool is_directory_exist(const CharT* path) {
   return is_directory_exist(std::basic_string<CharT, Traits>(path));
 }
 
 // Find the real name of path, by removing all ".", ".."
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 std::basic_string<CharT, Traits> absolute_path_from_relative(const std::basic_string<CharT, Traits>& relative_path);
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 inline std::basic_string<CharT, Traits> absolute_path_from_relative(const CharT* path) {
   return absolute_path_from_relative(std::basic_string<CharT, Traits>(path));
 }
 
 // pwd + filename
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 std::basic_string<CharT, Traits> absolute_path_from_filename(const std::basic_string<CharT, Traits>& filename);
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 inline std::basic_string<CharT, Traits> absolute_path_from_filename(const CharT* path) {
   return absolute_path_from_filename(std::basic_string<CharT, Traits>(path));
 }

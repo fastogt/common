@@ -629,11 +629,11 @@ string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separ
   return JoinStringT(parts, separator);
 }
 
-std::vector<char> JoinString(const std::vector<std::vector<char> >& parts, std::vector<char> separator) {
+std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator) {
   return JoinStringTEX(parts, separator);
 }
 
-std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char> >& parts,
+std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
                                       std::vector<unsigned char> separator) {
   return JoinStringTEX(parts, separator);
 }

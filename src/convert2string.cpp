@@ -325,7 +325,7 @@ class StringPieceToNumberTraits : public BaseIteratorRangeToNumberTraits<StringP
 
 template <typename VALUE>
 bool StringToIntImpl(const StringPiece& input, VALUE* output) {
-  return IteratorRangeToNumber<StringPieceToNumberTraits<VALUE, 10> >::Invoke(input.begin(), input.end(), output);
+  return IteratorRangeToNumber<StringPieceToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
 template <typename VALUE, int BASE>
@@ -334,7 +334,7 @@ class StringPiece16ToNumberTraits : public BaseIteratorRangeToNumberTraits<Strin
 
 template <typename VALUE>
 bool String16ToIntImpl(const StringPiece16& input, VALUE* output) {
-  return IteratorRangeToNumber<StringPiece16ToNumberTraits<VALUE, 10> >::Invoke(input.begin(), input.end(), output);
+  return IteratorRangeToNumber<StringPiece16ToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
 template <typename VALUE, int BASE>
@@ -342,7 +342,7 @@ class BytesToNumberTraits : public BaseIteratorRangeToNumberTraits<buffer_t::con
 
 template <typename VALUE>
 bool BytesToIntImpl(const buffer_t& input, VALUE* output) {
-  return IteratorRangeToNumber<BytesToNumberTraits<VALUE, 10> >::Invoke(input.begin(), input.end(), output);
+  return IteratorRangeToNumber<BytesToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
 template <typename STR>

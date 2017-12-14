@@ -415,7 +415,7 @@ void swap(Optional<T>& lhs, Optional<T>& rhs) {
 
 namespace std {
 template <class T>
-struct hash<common::Optional<T> > {
+struct hash<common::Optional<T>> {
   size_t operator()(const common::Optional<T>& opt) const { return opt == common::nullopt ? 0 : std::hash<T>()(*opt); }
 };
 }  // namespace std

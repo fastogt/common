@@ -88,7 +88,7 @@ struct RuntimeCmp<T*> : public std::binary_function<const T*, const T*, bool> {
 };
 
 template <typename T, typename U>
-struct RuntimeCmp<std::pair<T, U> > : public std::binary_function<const std::pair<T, U>, const std::pair<T, U>, bool> {
+struct RuntimeCmp<std::pair<T, U>> : public std::binary_function<const std::pair<T, U>, const std::pair<T, U>, bool> {
   inline bool operator()(const std::pair<T, U>& t1, const std::pair<T, U>& t2) const {
     if (t1.first == t2.first) {
       return t1.second < t2.second;

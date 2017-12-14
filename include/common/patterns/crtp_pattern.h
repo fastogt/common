@@ -37,7 +37,7 @@
 namespace common {
 namespace patterns {
 
-template <typename T, typename count_t = std::atomic<uint32_t> >
+template <typename T, typename count_t = std::atomic<uint32_t>>
 class object_counter {
  public:
   static count_t get_count() { return object_counter<T, count_t>::count_; }

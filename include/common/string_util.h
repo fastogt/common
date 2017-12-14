@@ -438,7 +438,7 @@ size_t Tokenize(const StringPiece& str, const StringPiece& delimiters, std::vect
 template <typename CharT>
 inline size_t Tokenize(const std::vector<CharT>& str,
                        const std::vector<CharT>& delimiters,
-                       std::vector<std::vector<CharT> >* tokens) {
+                       std::vector<std::vector<CharT>>* tokens) {
   if (!tokens) {
     return 0;
   }
@@ -483,8 +483,8 @@ string16 JoinString(const std::vector<string16>& parts, StringPiece16 separator)
 std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separator);
 string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator);
 
-std::vector<char> JoinString(const std::vector<std::vector<char> >& parts, std::vector<char> separator);
-std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char> >& parts,
+std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator);
+std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
                                       std::vector<unsigned char> separator);
 
 // Explicit initializer_list overloads are required to break ambiguity when used

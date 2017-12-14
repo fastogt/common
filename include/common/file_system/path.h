@@ -39,7 +39,7 @@
 namespace common {
 namespace file_system {
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 class StringPath {
  public:
   typedef std::basic_string<CharT, Traits> value_type;
@@ -84,7 +84,7 @@ inline bool operator!=(const StringPath<CharT, Traits>& left, const StringPath<C
   return !(left == right);
 }
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 class FileStringPath : public StringPath<CharT, Traits> {
  public:
   typedef StringPath<CharT, Traits> base_class;
@@ -113,7 +113,7 @@ class FileStringPath : public StringPath<CharT, Traits> {
   }
 };
 
-template <typename CharT, typename Traits = std::char_traits<CharT> >
+template <typename CharT, typename Traits = std::char_traits<CharT>>
 class DirectoryStringPath : public StringPath<CharT, Traits> {
  public:
   typedef StringPath<CharT, Traits> base_class;
@@ -126,27 +126,27 @@ class DirectoryStringPath : public StringPath<CharT, Traits> {
 
   value_type GetFolderName() const { return base_class::GetName(); }
 
-  Optional<FileStringPath<CharT, Traits> > MakeFileStringPath(const value_type& filename) const WARN_UNUSED_RESULT {
+  Optional<FileStringPath<CharT, Traits>> MakeFileStringPath(const value_type& filename) const WARN_UNUSED_RESULT {
     if (!base_class::IsValid()) {
-      return Optional<FileStringPath<CharT, Traits> >();
+      return Optional<FileStringPath<CharT, Traits>>();
     }
 
     if (!is_file_name(filename)) {
-      return Optional<FileStringPath<CharT, Traits> >();
+      return Optional<FileStringPath<CharT, Traits>>();
     }
 
     const value_type path = base_class::GetPath();  // stabled
     return FileStringPath<CharT, Traits>(path + filename);
   }
 
-  Optional<DirectoryStringPath<CharT, Traits> > MakeDirectoryStringPath(const value_type& directory) const
+  Optional<DirectoryStringPath<CharT, Traits>> MakeDirectoryStringPath(const value_type& directory) const
       WARN_UNUSED_RESULT {
     if (!base_class::IsValid()) {
-      return Optional<DirectoryStringPath<CharT, Traits> >();
+      return Optional<DirectoryStringPath<CharT, Traits>>();
     }
 
     if (!is_relative_path(directory)) {
-      return Optional<DirectoryStringPath<CharT, Traits> >();
+      return Optional<DirectoryStringPath<CharT, Traits>>();
     }
 
     const value_type path = base_class::GetPath();  // stabled

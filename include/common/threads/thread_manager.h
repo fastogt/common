@@ -54,9 +54,9 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   friend class patterns::TSSingleton<ThreadManager>;
 
   template <typename Callable, typename T, typename... Args>
-  inline std::shared_ptr<Thread<typename std::result_of<Callable(T, Args...)>::type> > CreateThread(Callable&& func,
-                                                                                                    T&& t,
-                                                                                                    Args&&... args) {
+  inline std::shared_ptr<Thread<typename std::result_of<Callable(T, Args...)>::type>> CreateThread(Callable&& func,
+                                                                                                   T&& t,
+                                                                                                   Args&&... args) {
     typedef Thread<typename std::result_of<Callable(T, Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
@@ -66,8 +66,8 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   }
 
   template <typename Callable, typename... Args>
-  inline std::shared_ptr<Thread<typename std::result_of<Callable(Args...)>::type> > CreateThread(Callable&& func,
-                                                                                                 Args&&... args) {
+  inline std::shared_ptr<Thread<typename std::result_of<Callable(Args...)>::type>> CreateThread(Callable&& func,
+                                                                                                Args&&... args) {
     typedef Thread<typename std::result_of<Callable(Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
     uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
