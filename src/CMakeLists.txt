@@ -181,20 +181,25 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_default_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/pipe_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/default_event_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_child.h
 
     ${LIBEV_TCP_HEADERS}
   )
 
   SET(LIBEV_SOURCES
     ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_default_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
@@ -205,6 +210,7 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/event_async.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_child.cpp
 
     ${LIBEV_TCP_SOURCES}
   )

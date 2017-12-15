@@ -29,30 +29,23 @@
 
 #pragma once
 
-#include <common/libev/types.h>
+#include <common/libev/io_loop.h>
 
 namespace common {
 namespace libev {
 
-class IoLoop;
-class IoClient;
-
-class IoLoopObserver {
+class IoDefaultLoop : public IoLoop {
  public:
-  virtual void PreLooped(IoLoop* server) = 0;
+  IoDefaultLoop(IoLoopObserver* observer = nullptr);
+  virtual ~IoDefaultLoop();
 
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(IoLoop* server, child_id_t id) = 0;
+  static IoDefaultLoop* GetInstance();
 
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
+  void RegisterChild(child_id_t child);
+  void UnRegisterChild(child_id_t child);
 
-  virtual void PostLooped(IoLoop* server) = 0;
-
-  virtual ~IoLoopObserver();
+ private:
+  static IoDefaultLoop* self_;
 };
 
 }  // namespace libev

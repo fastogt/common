@@ -76,12 +76,15 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
  protected:
+  IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
+
   virtual IoClient* CreateClient(const net::socket_info& info) = 0;
 
   virtual void PreLooped(LibEvLoop* loop) override;
   virtual void Stoped(LibEvLoop* loop) override;
   virtual void PostLooped(LibEvLoop* loop) override;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
+  virtual void ChildStatusChanged(LibEvLoop* loop, child_id_t id) override;
 
   LibEvLoop* const loop_;
 

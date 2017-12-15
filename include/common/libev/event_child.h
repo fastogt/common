@@ -31,28 +31,28 @@
 
 #include <common/libev/types.h>
 
+struct ev_child;
+struct ev_loop;
+
 namespace common {
 namespace libev {
 
-class IoLoop;
-class IoClient;
-
-class IoLoopObserver {
+class LibevChild : public LibevBase<struct ev_child, child_id_t> {
  public:
-  virtual void PreLooped(IoLoop* server) = 0;
+  typedef LibevBase<struct ev_child, child_id_t> base_class;
+  LibevChild();
+  ~LibevChild();
 
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(IoLoop* server, child_id_t id) = 0;
+  void Init(LibEvLoop* loop, child_loop_exec_function_t cb, child_id_t pid);
+  void Start();
+  void Stop();
 
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
+ private:
+  DISALLOW_COPY_AND_ASSIGN(LibevChild);
+  static void child_callback(struct ev_loop* loop, struct ev_child* child, int revents);
 
-  virtual void PostLooped(IoLoop* server) = 0;
-
-  virtual ~IoLoopObserver();
+  LibEvLoop* loop_;
+  child_loop_exec_function_t func_;
 };
 
 }  // namespace libev

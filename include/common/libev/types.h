@@ -38,22 +38,11 @@
 namespace common {
 namespace libev {
 class LibEvLoop;
-}
-}  // namespace common
-namespace common {
-namespace libev {
 class LibevAsync;
-}
-}  // namespace common
-namespace common {
-namespace libev {
 class LibevIO;
-}
-}  // namespace common
-namespace common {
-namespace libev {
 class LibevTimer;
-}
+class LibevChild;
+}  // namespace libev
 }  // namespace common
 
 #define INVALID_TIMER_ID -1
@@ -90,6 +79,7 @@ typedef int flags_t;
 typedef intmax_t timer_id_t;
 typedef uintmax_t io_id_t;
 typedef uintmax_t async_id_t;
+typedef pid_t child_id_t;
 
 template <typename handle_t, typename id_t>
 class LibevBase : public patterns::id_counter<LibevBase<handle_t, id_t>, id_t> {
@@ -116,6 +106,7 @@ typedef std::function<void()> custom_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevAsync* async, flags_t revents)> async_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevIO* io, flags_t revents)> io_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevTimer* timer, flags_t revents)> timer_loop_exec_function_t;
+typedef std::function<void(LibEvLoop* loop, LibevChild* child, flags_t revents)> child_loop_exec_function_t;
 
 }  // namespace libev
 }  // namespace common

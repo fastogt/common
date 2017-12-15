@@ -27,33 +27,53 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/libev/event_child.h>
 
-#include <common/libev/types.h>
+#include <ev.h>
+
+#include <common/libev/event_loop.h>
 
 namespace common {
 namespace libev {
 
-class IoLoop;
-class IoClient;
+LibevChild::LibevChild() : base_class(), loop_(nullptr), func_() {}
 
-class IoLoopObserver {
- public:
-  virtual void PreLooped(IoLoop* server) = 0;
+LibevChild::~LibevChild() {}
 
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(IoLoop* server, child_id_t id) = 0;
+void LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid) {
+  if (!loop || !pid) {
+    return;
+  }
 
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
+  loop->InitChild(this, child_callback, pid);
+  loop_ = loop;
+  func_ = cb;
+}
 
-  virtual void PostLooped(IoLoop* server) = 0;
+void LibevChild::Start() {
+  if (!loop_) {
+    return;
+  }
 
-  virtual ~IoLoopObserver();
-};
+  loop_->StartChild(this);
+}
+
+void LibevChild::Stop() {
+  if (!loop_) {
+    return;
+  }
+
+  loop_->StopChild(this);
+}
+
+void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, int revents) {
+  UNUSED(loop);
+  UNUSED(revents);
+
+  LibevChild* child = reinterpret_cast<LibevChild*>(watcher->data);
+  CHECK(child);
+  child->func_(child->loop_, child, revents);
+}
 
 }  // namespace libev
 }  // namespace common

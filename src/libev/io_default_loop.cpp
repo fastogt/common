@@ -27,33 +27,32 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/libev/io_default_loop.h>
 
-#include <common/libev/types.h>
+#include <common/libev/default_event_loop.h>
 
 namespace common {
 namespace libev {
 
-class IoLoop;
-class IoClient;
+IoDefaultLoop* IoDefaultLoop::self_ = nullptr;
 
-class IoLoopObserver {
- public:
-  virtual void PreLooped(IoLoop* server) = 0;
+IoDefaultLoop::IoDefaultLoop(IoLoopObserver* observer) : IoLoop(new LibEvDefaultLoop, observer) {
+  self_ = this;
+}
 
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(IoLoop* server, child_id_t id) = 0;
+IoDefaultLoop::~IoDefaultLoop() {}
 
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
+IoDefaultLoop* IoDefaultLoop::GetInstance() {
+  return self_;
+}
 
-  virtual void PostLooped(IoLoop* server) = 0;
+void IoDefaultLoop::RegisterChild(child_id_t child) {
+  loop_->RegisterChild(child);
+}
 
-  virtual ~IoLoopObserver();
-};
+void IoDefaultLoop::UnRegisterChild(child_id_t child) {
+  loop_->RemoveChild(child);
+}
 
 }  // namespace libev
 }  // namespace common

@@ -49,7 +49,9 @@ std::vector<common::libev::IoLoop*> g_exists_loops;
 namespace common {
 namespace libev {
 
-IoLoop::IoLoop(IoLoopObserver* observer) : loop_(new LibEvLoop), observer_(observer), clients_(), id_() {
+IoLoop::IoLoop(IoLoopObserver* observer) : IoLoop(new LibEvLoop, observer) {}
+
+IoLoop::IoLoop(LibEvLoop* loop, IoLoopObserver* observer) : loop_(loop), observer_(observer), clients_(), id_() {
   loop_->SetObserver(this);
 }
 
@@ -260,6 +262,13 @@ void IoLoop::TimerEmited(LibEvLoop* loop, timer_id_t id) {
   UNUSED(loop);
   if (observer_) {
     observer_->TimerEmited(this, id);
+  }
+}
+
+void IoLoop::ChildStatusChanged(LibEvLoop* loop, child_id_t id) {
+  UNUSED(loop);
+  if (observer_) {
+    observer_->ChildStatusChanged(this, id);
   }
 }
 

@@ -27,33 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/libev/default_event_loop.h>
 
-#include <common/libev/types.h>
+#include <ev.h>
 
 namespace common {
 namespace libev {
 
-class IoLoop;
-class IoClient;
+LibEvDefaultLoop::LibEvDefaultLoop() : base_class(ev_default_loop()) {}
 
-class IoLoopObserver {
- public:
-  virtual void PreLooped(IoLoop* server) = 0;
-
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(IoLoop* server, child_id_t id) = 0;
-
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
-
-  virtual void PostLooped(IoLoop* server) = 0;
-
-  virtual ~IoLoopObserver();
-};
+LibEvDefaultLoop::~LibEvDefaultLoop() {}
 
 }  // namespace libev
 }  // namespace common

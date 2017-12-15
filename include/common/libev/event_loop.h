@@ -37,6 +37,7 @@ struct ev_loop;
 struct ev_io;
 struct ev_timer;
 struct ev_async;
+struct ev_child;
 
 namespace common {
 namespace libev {
@@ -49,21 +50,26 @@ class EvLoopObserver {
   virtual void Stoped(LibEvLoop* loop) = 0;
   virtual void PostLooped(LibEvLoop* loop) = 0;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) = 0;
+  virtual void ChildStatusChanged(LibEvLoop* loop, child_id_t id) = 0;
 };
 
 class LibEvLoop {
   typedef void io_callback_t(struct ev_loop* loop, struct ev_io* watcher, int revents);
   typedef void async_callback_t(struct ev_loop* loop, struct ev_async* watcher, int revents);
   typedef void timer_callback_t(struct ev_loop* loop, struct ev_timer* watcher, int revents);
+  typedef void child_callback_t(struct ev_loop* loop, struct ev_child* watcher, int revents);
 
  public:
   LibEvLoop();
-  ~LibEvLoop();
+  virtual ~LibEvLoop();
 
   void SetObserver(EvLoopObserver* observer);
 
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
+
+  child_id_t RegisterChild(child_id_t child);
+  void RemoveChild(child_id_t child);
 
   // async
   void InitAsync(LibevAsync* as, async_callback_t cb);
@@ -81,6 +87,11 @@ class LibEvLoop {
   void StartTimer(LibevTimer* timer);
   void StopTimer(LibevTimer* timer);
 
+  // child
+  void InitChild(LibevChild* child, child_callback_t cb, child_id_t pid);
+  void StartChild(LibevChild* child);
+  void StopChild(LibevChild* child);
+
   void ExecInLoopThread(custom_loop_exec_function_t func);
 
   int Exec() WARN_UNUSED_RESULT;
@@ -88,14 +99,19 @@ class LibEvLoop {
 
   bool IsLoopThread() const;
 
+ protected:
+  LibEvLoop(struct ev_loop* loop);
+
  private:
   class AsyncCustom;
 
   static void stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents);
-  static void timer_cb(LibEvLoop* loop, LibevTimer* user_data, flags_t revents);
+  static void timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents);
+  static void child_cb(LibEvLoop* loop, LibevChild* child, flags_t revents);
 
   void HandleStop();
   void HandleTimer(timer_id_t id);
+  void HandleChild(child_id_t id);
 
   struct ev_loop* loop_;
   EvLoopObserver* observer_;
@@ -105,6 +121,7 @@ class LibEvLoop {
   AsyncCustom* async_custom_;
 
   std::vector<LibevTimer*> timers_;
+  std::vector<LibevChild*> childs_;
 };
 
 }  // namespace libev
