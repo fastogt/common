@@ -31,6 +31,7 @@
 
 #include <common/libev/types.h>
 
+#if LIBEV_CHILD_ENABLE
 struct ev_child;
 struct ev_loop;
 
@@ -60,3 +61,4 @@ class LibevChild : public LibevBase<struct ev_child, child_id_t> {
 
 }  // namespace libev
 }  // namespace common
+#endif

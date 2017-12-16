@@ -45,7 +45,9 @@ class IoLoopObserver {
   virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
   virtual void Closed(IoClient* client) = 0;
   virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
+#if LIBEV_CHILD_ENABLE
   virtual void ChildStatusChanged(IoLoop* server, pid_t id, int status) = 0;
+#endif
 
   virtual void DataReceived(IoClient* client) = 0;
   virtual void DataReadyToWrite(IoClient* client) = 0;

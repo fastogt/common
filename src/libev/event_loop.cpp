@@ -91,10 +91,14 @@ LibEvLoop::LibEvLoop(struct ev_loop* loop)
       exec_id_(),
       async_stop_(new LibevAsync),
       async_custom_(new AsyncCustom),
-      timers_(),
-      childs_() {
+      timers_()
+#if LIBEV_CHILD_ENABLE
+      ,
+      childs_()
+#endif
+{
   ev_set_userdata(loop_, this);
-}
+}  // namespace libev
 
 LibEvLoop::~LibEvLoop() {
   destroy(&async_custom_);
@@ -102,7 +106,9 @@ LibEvLoop::~LibEvLoop() {
   ev_loop_destroy(loop_);
 }
 
-void LibEvLoop::SetObserver(EvLoopObserver* observer) { observer_ = observer; }
+void LibEvLoop::SetObserver(EvLoopObserver* observer) {
+  observer_ = observer;
+}
 
 timer_id_t LibEvLoop::CreateTimer(double sec, bool repeat) {
   CHECK(IsLoopThread());
@@ -127,6 +133,7 @@ void LibEvLoop::RemoveTimer(timer_id_t id) {
   }
 }
 
+#if LIBEV_CHILD_ENABLE
 void LibEvLoop::RegisterChild(pid_t pid) {
   CHECK(IsLoopThread());
 
@@ -148,6 +155,7 @@ void LibEvLoop::RemoveChild(pid_t pid) {
     }
   }
 }
+#endif
 
 void LibEvLoop::InitAsync(LibevAsync* as, async_callback_t cb) {
   ev_async* eas = as->GetHandle();
@@ -205,6 +213,7 @@ void LibEvLoop::StopTimer(LibevTimer* timer) {
   ev_timer_stop(loop_, eit);
 }
 
+#if LIBEV_CHILD_ENABLE
 void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, pid_t pid) {
   CHECK(IsLoopThread());
   ev_child* eic = child->GetHandle();
@@ -222,6 +231,7 @@ void LibEvLoop::StopChild(LibevChild* child) {
   ev_child* eic = child->GetHandle();
   ev_child_stop(loop_, eic);
 }
+#endif
 
 void LibEvLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
   if (IsLoopThread()) {
@@ -249,9 +259,13 @@ int LibEvLoop::Exec() {
   return EXIT_SUCCESS;
 }
 
-bool LibEvLoop::IsLoopThread() const { return exec_id_ == threads::PlatformThread::GetCurrentId(); }
+bool LibEvLoop::IsLoopThread() const {
+  return exec_id_ == threads::PlatformThread::GetCurrentId();
+}
 
-void LibEvLoop::Stop() { async_stop_->Notify(); }
+void LibEvLoop::Stop() {
+  async_stop_->Notify();
+}
 
 void LibEvLoop::stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents) {
   UNUSED(async);
@@ -270,6 +284,7 @@ void LibEvLoop::timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents) {
   loop->HandleTimer(timer->get_id());
 }
 
+#if LIBEV_CHILD_ENABLE
 void LibEvLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents) {
   if (EV_ERROR & revents) {
     DNOTREACHED();
@@ -279,6 +294,7 @@ void LibEvLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t
   DCHECK(revents & EV_CHILD);
   loop->HandleChild(child->GetPid(), status);
 }
+#endif
 
 void LibEvLoop::HandleTimer(timer_id_t id) {
   if (observer_) {
@@ -286,11 +302,13 @@ void LibEvLoop::HandleTimer(timer_id_t id) {
   }
 }
 
+#if LIBEV_CHILD_ENABLE
 void LibEvLoop::HandleChild(pid_t id, int status) {
   if (observer_) {
     observer_->ChildStatusChanged(this, id, status);
   }
 }
+#endif
 
 void LibEvLoop::HandleStop() {
   async_stop_->Stop();
@@ -299,11 +317,13 @@ void LibEvLoop::HandleStop() {
     LibevTimer* timer = timers[i];
     RemoveTimer(timer->get_id());
   }
+#if LIBEV_CHILD_ENABLE
   const std::vector<LibevChild*> childs = childs_;
   for (size_t i = 0; i < childs.size(); ++i) {
     LibevChild* child = childs[i];
-    RemoveChild(child->get_id());
+    RemoveChild(child->GetPid());
   }
+#endif
 
   if (observer_) {
     observer_->Stoped(this);

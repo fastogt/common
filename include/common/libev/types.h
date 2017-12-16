@@ -35,20 +35,23 @@
 
 #include <common/patterns/crtp_pattern.h>  // for id_counter
 
-namespace common {
-namespace libev {
-class LibEvLoop;
-class LibevAsync;
-class LibevIO;
-class LibevTimer;
-class LibevChild;
-}  // namespace libev
-}  // namespace common
-
+#ifdef OS_POSIX
+#define LIBEV_CHILD_ENABLE 1
+#else
+#define LIBEV_CHILD_ENABLE 0
+#endif
 #define INVALID_TIMER_ID -1
 
 namespace common {
 namespace libev {
+
+class LibEvLoop;
+class LibevAsync;
+class LibevIO;
+class LibevTimer;
+#if LIBEV_CHILD_ENABLE
+class LibevChild;
+#endif
 
 /* eventmask, revents, events... */
 enum {
@@ -79,7 +82,9 @@ typedef int flags_t;
 typedef intmax_t timer_id_t;
 typedef uintmax_t io_id_t;
 typedef uintmax_t async_id_t;
+#if LIBEV_CHILD_ENABLE
 typedef uintmax_t child_id_t;
+#endif
 
 template <typename handle_t, typename id_t>
 class LibevBase : public patterns::id_counter<LibevBase<handle_t, id_t>, id_t> {
@@ -106,7 +111,9 @@ typedef std::function<void()> custom_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevAsync* async, flags_t revents)> async_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevIO* io, flags_t revents)> io_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevTimer* timer, flags_t revents)> timer_loop_exec_function_t;
+#if LIBEV_CHILD_ENABLE
 typedef std::function<void(LibEvLoop* loop, LibevChild* child, int status, flags_t revents)> child_loop_exec_function_t;
+#endif
 
 }  // namespace libev
 }  // namespace common

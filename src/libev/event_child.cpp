@@ -29,6 +29,7 @@
 
 #include <common/libev/event_child.h>
 
+#ifdef OS_POSIX
 #include <ev.h>
 
 #include <common/libev/event_loop.h>
@@ -67,7 +68,9 @@ void LibevChild::Stop() {
   loop_->StopChild(this);
 }
 
-pid_t LibevChild::GetPid() const { return pid_; }
+pid_t LibevChild::GetPid() const {
+  return pid_;
+}
 
 void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, int revents) {
   UNUSED(loop);
@@ -80,3 +83,4 @@ void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, 
 
 }  // namespace libev
 }  // namespace common
+#endif

@@ -59,8 +59,10 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
+#if LIBEV_CHILD_ENABLE
   void RegisterChild(pid_t pid);
   void UnRegisterChild(pid_t pid);
+#endif
 
   patterns::id_counter<IoLoop>::type_t GetId() const;
 
@@ -85,7 +87,9 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   virtual void Stoped(LibEvLoop* loop) override;
   virtual void PostLooped(LibEvLoop* loop) override;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
+#if LIBEV_CHILD_ENABLE
   virtual void ChildStatusChanged(LibEvLoop* loop, pid_t id, int status) override;
+#endif
 
   LibEvLoop* const loop_;
 
