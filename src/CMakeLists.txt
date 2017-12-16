@@ -181,7 +181,6 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_default_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
@@ -198,7 +197,6 @@ IF(LIBEV_FOUND)
 
   SET(LIBEV_SOURCES
     ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_default_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp

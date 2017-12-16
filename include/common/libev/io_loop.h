@@ -45,7 +45,7 @@ class IoClient;
 
 class IoLoop : public EvLoopObserver, IMetaClassInfo {
  public:
-  explicit IoLoop(IoLoopObserver* observer = nullptr);
+  explicit IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
   virtual ~IoLoop();
 
   int Exec() WARN_UNUSED_RESULT;
@@ -58,6 +58,9 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
 
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
+
+  void RegisterChild(pid_t pid);
+  void UnRegisterChild(pid_t pid);
 
   patterns::id_counter<IoLoop>::type_t GetId() const;
 
@@ -76,15 +79,13 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
  protected:
-  IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
-
   virtual IoClient* CreateClient(const net::socket_info& info) = 0;
 
   virtual void PreLooped(LibEvLoop* loop) override;
   virtual void Stoped(LibEvLoop* loop) override;
   virtual void PostLooped(LibEvLoop* loop) override;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
-  virtual void ChildStatusChanged(LibEvLoop* loop, child_id_t id) override;
+  virtual void ChildStatusChanged(LibEvLoop* loop, pid_t id, int status) override;
 
   LibEvLoop* const loop_;
 

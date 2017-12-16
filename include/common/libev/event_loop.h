@@ -50,7 +50,7 @@ class EvLoopObserver {
   virtual void Stoped(LibEvLoop* loop) = 0;
   virtual void PostLooped(LibEvLoop* loop) = 0;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) = 0;
-  virtual void ChildStatusChanged(LibEvLoop* loop, child_id_t id) = 0;
+  virtual void ChildStatusChanged(LibEvLoop* loop, pid_t id, int status) = 0;
 };
 
 class LibEvLoop {
@@ -68,8 +68,8 @@ class LibEvLoop {
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
-  child_id_t RegisterChild(child_id_t child);
-  void RemoveChild(child_id_t child);
+  void RegisterChild(pid_t pid);
+  void RemoveChild(pid_t pid);
 
   // async
   void InitAsync(LibevAsync* as, async_callback_t cb);
@@ -88,7 +88,7 @@ class LibEvLoop {
   void StopTimer(LibevTimer* timer);
 
   // child
-  void InitChild(LibevChild* child, child_callback_t cb, child_id_t pid);
+  void InitChild(LibevChild* child, child_callback_t cb, pid_t pid);
   void StartChild(LibevChild* child);
   void StopChild(LibevChild* child);
 
@@ -107,11 +107,11 @@ class LibEvLoop {
 
   static void stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents);
   static void timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents);
-  static void child_cb(LibEvLoop* loop, LibevChild* child, flags_t revents);
+  static void child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents);
 
   void HandleStop();
   void HandleTimer(timer_id_t id);
-  void HandleChild(child_id_t id);
+  void HandleChild(pid_t id, int status);
 
   struct ev_loop* loop_;
   EvLoopObserver* observer_;

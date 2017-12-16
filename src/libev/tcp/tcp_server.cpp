@@ -35,6 +35,7 @@
 
 #include <common/libev/event_io.h>
 #include <common/libev/io_loop.h>
+#include <common/libev/default_event_loop.h>
 
 namespace {
 
@@ -72,21 +73,19 @@ namespace libev {
 namespace tcp {
 
 // server
-TcpServer::TcpServer(const net::HostAndPort& host, IoLoopObserver* observer)
-    : IoLoop(observer), sock_(host), accept_io_(new LibevIO) {
+TcpServer::TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer)
+    : IoLoop(is_default ? new LibEvDefaultLoop : new LibEvLoop, observer), sock_(host), accept_io_(new LibevIO) {
   accept_io_->SetUserData(this);
 }
 
-TcpServer::~TcpServer() {
-  destroy(&accept_io_);
-}
+TcpServer::~TcpServer() { destroy(&accept_io_); }
 
 IoLoop* TcpServer::FindExistServerByHost(const net::HostAndPort& host) {
   if (!host.IsValid()) {
     return nullptr;
   }
 
-  auto find_by_host = [host](IoLoop* loop) -> bool {
+  auto find_by_host = [host](IoLoop * loop)->bool {
     TcpServer* server = static_cast<TcpServer*>(loop);
     if (!server) {
       return false;
@@ -98,9 +97,7 @@ IoLoop* TcpServer::FindExistServerByHost(const net::HostAndPort& host) {
   return FindExistLoopByPredicate(find_by_host);
 }
 
-TcpClient* TcpServer::CreateClient(const net::socket_info& info) {
-  return new TcpClient(this, info);
-}
+TcpClient* TcpServer::CreateClient(const net::socket_info& info) { return new TcpClient(this, info); }
 
 void TcpServer::PreLooped(LibEvLoop* loop) {
   net::socket_descr_t fd = sock_.GetFd();
@@ -115,9 +112,7 @@ void TcpServer::PreLooped(LibEvLoop* loop) {
   IoLoop::PreLooped(loop);
 }
 
-void TcpServer::PostLooped(LibEvLoop* loop) {
-  IoLoop::PostLooped(loop);
-}
+void TcpServer::PostLooped(LibEvLoop* loop) { IoLoop::PostLooped(loop); }
 
 void TcpServer::Stoped(LibEvLoop* loop) {
   loop->StopIO(accept_io_);
@@ -127,25 +122,15 @@ void TcpServer::Stoped(LibEvLoop* loop) {
   DCHECK(!err) << err->GetDescription();
 }
 
-ErrnoError TcpServer::Bind(bool reuseaddr) {
-  return sock_.Bind(reuseaddr);
-}
+ErrnoError TcpServer::Bind(bool reuseaddr) { return sock_.Bind(reuseaddr); }
 
-ErrnoError TcpServer::Listen(int backlog) {
-  return sock_.Listen(backlog);
-}
+ErrnoError TcpServer::Listen(int backlog) { return sock_.Listen(backlog); }
 
-const char* TcpServer::ClassName() const {
-  return "TcpServer";
-}
+const char* TcpServer::ClassName() const { return "TcpServer"; }
 
-net::HostAndPort TcpServer::GetHost() const {
-  return sock_.GetHost();
-}
+net::HostAndPort TcpServer::GetHost() const { return sock_.GetHost(); }
 
-ErrnoError TcpServer::Accept(net::socket_info* info) {
-  return sock_.Accept(info);
-}
+ErrnoError TcpServer::Accept(net::socket_info* info) { return sock_.Accept(info); }
 
 void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
   TcpServer* pserver = reinterpret_cast<TcpServer*>(io->GetUserData());

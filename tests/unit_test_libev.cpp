@@ -49,9 +49,10 @@ class ServerHandler : public common::libev::IoLoopObserver {
     UNUSED(id);
   }
 
-  virtual void ChildStatusChanged(common::libev::IoLoop* server, common::libev::child_id_t id) override {
+  virtual void ChildStatusChanged(common::libev::IoLoop* server, pid_t id, int status) override {
     UNUSED(server);
     UNUSED(id);
+    UNUSED(status);
   }
 
   virtual void DataReceived(common::libev::IoClient* client) override { UNUSED(client); }
@@ -71,7 +72,7 @@ void ExitServer(common::libev::tcp::TcpServer* ser) {
 
 TEST(Libev, IoServer) {
   ServerHandler hand;
-  common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(g_hs, &hand);
+  common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(g_hs, false, &hand);
   common::ErrnoError err = serv->Bind(true);
   ASSERT_FALSE(err);
 

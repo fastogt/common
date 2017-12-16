@@ -36,18 +36,19 @@
 namespace common {
 namespace libev {
 
-LibevChild::LibevChild() : base_class(), loop_(nullptr), func_() {}
+LibevChild::LibevChild() : base_class(), loop_(nullptr), func_(), pid_(INVALID_PID) {}
 
 LibevChild::~LibevChild() {}
 
 void LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid) {
-  if (!loop || !pid) {
+  if (!loop || !cb || pid == INVALID_PID) {
     return;
   }
 
   loop->InitChild(this, child_callback, pid);
   loop_ = loop;
   func_ = cb;
+  pid_ = pid;
 }
 
 void LibevChild::Start() {
@@ -66,13 +67,15 @@ void LibevChild::Stop() {
   loop_->StopChild(this);
 }
 
+pid_t LibevChild::GetPid() const { return pid_; }
+
 void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, int revents) {
   UNUSED(loop);
   UNUSED(revents);
 
   LibevChild* child = reinterpret_cast<LibevChild*>(watcher->data);
   CHECK(child);
-  child->func_(child->loop_, child, revents);
+  child->func_(child->loop_, child, watcher->rstatus, revents);
 }
 
 }  // namespace libev

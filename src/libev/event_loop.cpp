@@ -102,9 +102,7 @@ LibEvLoop::~LibEvLoop() {
   ev_loop_destroy(loop_);
 }
 
-void LibEvLoop::SetObserver(EvLoopObserver* observer) {
-  observer_ = observer;
-}
+void LibEvLoop::SetObserver(EvLoopObserver* observer) { observer_ = observer; }
 
 timer_id_t LibEvLoop::CreateTimer(double sec, bool repeat) {
   CHECK(IsLoopThread());
@@ -129,22 +127,21 @@ void LibEvLoop::RemoveTimer(timer_id_t id) {
   }
 }
 
-child_id_t LibEvLoop::RegisterChild(child_id_t child) {
+void LibEvLoop::RegisterChild(pid_t pid) {
   CHECK(IsLoopThread());
 
   LibevChild* ch = new LibevChild;
-  ch->Init(this, child_cb, child);
+  ch->Init(this, child_cb, pid);
   ch->Start();
   childs_.push_back(ch);
-  return ch->get_id();
 }
 
-void LibEvLoop::RemoveChild(pid_t child) {
+void LibEvLoop::RemoveChild(pid_t pid) {
   CHECK(IsLoopThread());
 
   for (std::vector<LibevChild*>::iterator it = childs_.begin(); it != childs_.end(); ++it) {
     LibevChild* ch = *it;
-    if (ch->get_id() == child) {
+    if (ch->GetPid() == pid) {
       childs_.erase(it);
       delete ch;
       return;
@@ -208,7 +205,7 @@ void LibEvLoop::StopTimer(LibevTimer* timer) {
   ev_timer_stop(loop_, eit);
 }
 
-void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, child_id_t pid) {
+void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, pid_t pid) {
   CHECK(IsLoopThread());
   ev_child* eic = child->GetHandle();
   ev_child_init(eic, cb, pid, 0);
@@ -252,13 +249,9 @@ int LibEvLoop::Exec() {
   return EXIT_SUCCESS;
 }
 
-bool LibEvLoop::IsLoopThread() const {
-  return exec_id_ == threads::PlatformThread::GetCurrentId();
-}
+bool LibEvLoop::IsLoopThread() const { return exec_id_ == threads::PlatformThread::GetCurrentId(); }
 
-void LibEvLoop::Stop() {
-  async_stop_->Notify();
-}
+void LibEvLoop::Stop() { async_stop_->Notify(); }
 
 void LibEvLoop::stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents) {
   UNUSED(async);
@@ -277,14 +270,14 @@ void LibEvLoop::timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents) {
   loop->HandleTimer(timer->get_id());
 }
 
-void LibEvLoop::child_cb(LibEvLoop* loop, LibevChild* child, flags_t revents) {
+void LibEvLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents) {
   if (EV_ERROR & revents) {
     DNOTREACHED();
     return;
   }
 
   DCHECK(revents & EV_CHILD);
-  loop->HandleChild(child->get_id());
+  loop->HandleChild(child->GetPid(), status);
 }
 
 void LibEvLoop::HandleTimer(timer_id_t id) {
@@ -293,9 +286,9 @@ void LibEvLoop::HandleTimer(timer_id_t id) {
   }
 }
 
-void LibEvLoop::HandleChild(child_id_t id) {
+void LibEvLoop::HandleChild(pid_t id, int status) {
   if (observer_) {
-    observer_->ChildStatusChanged(this, id);
+    observer_->ChildStatusChanged(this, id, status);
   }
 }
 

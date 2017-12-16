@@ -43,9 +43,11 @@ class LibevChild : public LibevBase<struct ev_child, child_id_t> {
   LibevChild();
   ~LibevChild();
 
-  void Init(LibEvLoop* loop, child_loop_exec_function_t cb, child_id_t pid);
+  void Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid);
   void Start();
   void Stop();
+
+  pid_t GetPid() const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LibevChild);
@@ -53,6 +55,7 @@ class LibevChild : public LibevBase<struct ev_child, child_id_t> {
 
   LibEvLoop* loop_;
   child_loop_exec_function_t func_;
+  pid_t pid_;
 };
 
 }  // namespace libev

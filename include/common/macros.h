@@ -33,6 +33,7 @@
 
 #include <common/logger.h>
 
+#define INVALID_PID -1
 #define INVALID_DESCRIPTOR -1
 #define ERROR_RESULT_VALUE -1
 #define ZERO_RESULT_VALUE 0

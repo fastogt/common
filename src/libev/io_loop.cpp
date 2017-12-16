@@ -49,24 +49,18 @@ std::vector<common::libev::IoLoop*> g_exists_loops;
 namespace common {
 namespace libev {
 
-IoLoop::IoLoop(IoLoopObserver* observer) : IoLoop(new LibEvLoop, observer) {}
-
 IoLoop::IoLoop(LibEvLoop* loop, IoLoopObserver* observer) : loop_(loop), observer_(observer), clients_(), id_() {
   loop_->SetObserver(this);
 }
 
-IoLoop::~IoLoop() {
-  delete loop_;
-}
+IoLoop::~IoLoop() { delete loop_; }
 
 int IoLoop::Exec() {
   int res = loop_->Exec();
   return res;
 }
 
-void IoLoop::Stop() {
-  loop_->Stop();
-}
+void IoLoop::Stop() { loop_->Stop(); }
 
 IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
   IoClient* client = CreateClient(info);
@@ -137,25 +131,19 @@ void IoLoop::CloseClient(IoClient* client) {
              << clients_.size() << " client(s) connected.";
 }
 
-timer_id_t IoLoop::CreateTimer(double sec, bool repeat) {
-  return loop_->CreateTimer(sec, repeat);
-}
+timer_id_t IoLoop::CreateTimer(double sec, bool repeat) { return loop_->CreateTimer(sec, repeat); }
 
-void IoLoop::RemoveTimer(timer_id_t id) {
-  loop_->RemoveTimer(id);
-}
+void IoLoop::RemoveTimer(timer_id_t id) { loop_->RemoveTimer(id); }
 
-patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const {
-  return id_.get_id();
-}
+void IoLoop::RegisterChild(pid_t pid) { loop_->RegisterChild(pid); }
 
-void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
-  loop_->ExecInLoopThread(func);
-}
+void IoLoop::UnRegisterChild(pid_t pid) { loop_->RemoveChild(pid); }
 
-bool IoLoop::IsLoopThread() const {
-  return loop_->IsLoopThread();
-}
+patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const { return id_.get_id(); }
+
+void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) { loop_->ExecInLoopThread(func); }
+
+bool IoLoop::IsLoopThread() const { return loop_->IsLoopThread(); }
 
 IoLoop* IoLoop::FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred) {
   if (!pred) {
@@ -179,17 +167,11 @@ std::vector<IoClient*> IoLoop::GetClients() const {
   return clients_;
 }
 
-void IoLoop::SetName(const std::string& name) {
-  name_ = name;
-}
+void IoLoop::SetName(const std::string& name) { name_ = name; }
 
-std::string IoLoop::GetName() const {
-  return name_;
-}
+std::string IoLoop::GetName() const { return name_; }
 
-std::string IoLoop::GetFormatedName() const {
-  return MemSPrintf("[%s][%s(%llu)]", GetName(), ClassName(), GetId());
-}
+std::string IoLoop::GetFormatedName() const { return MemSPrintf("[%s][%s(%llu)]", GetName(), ClassName(), GetId()); }
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
   IoClient* pclient = reinterpret_cast<IoClient*>(io->GetUserData());
@@ -265,10 +247,10 @@ void IoLoop::TimerEmited(LibEvLoop* loop, timer_id_t id) {
   }
 }
 
-void IoLoop::ChildStatusChanged(LibEvLoop* loop, child_id_t id) {
+void IoLoop::ChildStatusChanged(LibEvLoop* loop, pid_t id, int status) {
   UNUSED(loop);
   if (observer_) {
-    observer_->ChildStatusChanged(this, id);
+    observer_->ChildStatusChanged(this, id, status);
   }
 }
 

@@ -38,7 +38,7 @@ namespace tcp {
 
 class TcpServer : public IoLoop {
  public:
-  explicit TcpServer(const net::HostAndPort& host, IoLoopObserver* observer = nullptr);
+  explicit TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer = nullptr);
   virtual ~TcpServer();
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
