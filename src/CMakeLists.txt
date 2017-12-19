@@ -165,57 +165,6 @@ IF(SNAPPY_FOUND)
   SET(COMMON_LIBS ${COMMON_LIBS} ${SNAPPY_LIBRARIES})
 ENDIF(SNAPPY_FOUND)
 
-FIND_PACKAGE(LibEv QUIET)
-IF(LIBEV_FOUND)
-  SET(LIBEV_TCP_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_server.h
-  )
-
-  SET(LIBEV_TCP_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
-  )
-
-  SET(LIBEV_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/pipe_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/default_event_loop.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/event_child.h
-
-    ${LIBEV_TCP_HEADERS}
-  )
-
-  SET(LIBEV_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_loop_observer.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/loop_controller.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/types.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/event_async.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/event_child.cpp
-
-    ${LIBEV_TCP_SOURCES}
-  )
-  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${LIBEV_INCLUDE_DIRS})
-  SET(COMMON_LIBS ${COMMON_LIBS} ${LIBEV_LIBRARIES})
-ENDIF(LIBEV_FOUND)
-
 SET(HTTP_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/http/http.h
   ${CMAKE_SOURCE_DIR}/include/common/http/http2.h
@@ -434,52 +383,52 @@ ELSEIF(OS_ANDROID)
   SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${THREADS_LIBRARIES})
 ENDIF(OS_WINDOWS)
 
+# common base
 SET(COMMON_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
-    ${CMAKE_SOURCE_DIR}/include/common/logger.h
-    ${CMAKE_SOURCE_DIR}/include/common/macros.h
-    ${CMAKE_SOURCE_DIR}/include/common/eintr_wrapper.h
-    ${CMAKE_SOURCE_DIR}/include/common/optional.h
-    ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
-    ${CMAKE_SOURCE_DIR}/include/common/event.h
-    ${CMAKE_SOURCE_DIR}/include/common/sprintf.h
-    ${CMAKE_SOURCE_DIR}/include/common/byte_writer.h
-    ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversions.h
-    ${CMAKE_SOURCE_DIR}/include/common/icu_utf.h
-    ${CMAKE_SOURCE_DIR}/include/common/string_piece.h
-    ${CMAKE_SOURCE_DIR}/include/common/string16.h
-    ${CMAKE_SOURCE_DIR}/include/common/string_util.h
-    ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
-    ${CMAKE_SOURCE_DIR}/include/common/types.h
-    ${CMAKE_SOURCE_DIR}/include/common/bounded_value.h
-    ${CMAKE_SOURCE_DIR}/include/common/utils.h
-    ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
-    ${CMAKE_SOURCE_DIR}/include/common/portable_endian.h
-    ${CMAKE_SOURCE_DIR}/include/common/sys_byteorder.h
-    ${CMAKE_SOURCE_DIR}/include/common/error.h
-    ${CMAKE_SOURCE_DIR}/include/common/value.h
-    ${CMAKE_SOURCE_DIR}/include/common/intrusive_ptr.h
-    ${CMAKE_SOURCE_DIR}/include/common/time.h
+  ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
+  ${CMAKE_SOURCE_DIR}/include/common/logger.h
+  ${CMAKE_SOURCE_DIR}/include/common/macros.h
+  ${CMAKE_SOURCE_DIR}/include/common/eintr_wrapper.h
+  ${CMAKE_SOURCE_DIR}/include/common/optional.h
+  ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
+  ${CMAKE_SOURCE_DIR}/include/common/event.h
+  ${CMAKE_SOURCE_DIR}/include/common/sprintf.h
+  ${CMAKE_SOURCE_DIR}/include/common/byte_writer.h
+  ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversions.h
+  ${CMAKE_SOURCE_DIR}/include/common/icu_utf.h
+  ${CMAKE_SOURCE_DIR}/include/common/string_piece.h
+  ${CMAKE_SOURCE_DIR}/include/common/string16.h
+  ${CMAKE_SOURCE_DIR}/include/common/string_util.h
+  ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
+  ${CMAKE_SOURCE_DIR}/include/common/types.h
+  ${CMAKE_SOURCE_DIR}/include/common/bounded_value.h
+  ${CMAKE_SOURCE_DIR}/include/common/utils.h
+  ${CMAKE_SOURCE_DIR}/include/common/bind_simple.h
+  ${CMAKE_SOURCE_DIR}/include/common/portable_endian.h
+  ${CMAKE_SOURCE_DIR}/include/common/sys_byteorder.h
+  ${CMAKE_SOURCE_DIR}/include/common/error.h
+  ${CMAKE_SOURCE_DIR}/include/common/value.h
+  ${CMAKE_SOURCE_DIR}/include/common/intrusive_ptr.h
+  ${CMAKE_SOURCE_DIR}/include/common/time.h
 
-    ${PATTERNS_HEADERS}
-    ${SYSTEM_HEADERS}
-    ${FILE_SYSTEM_HEADERS}
-    ${APPLIATION_HEADERS}
-    ${PROTOCOLS_HEADERS}
-    ${SERIALIZER_HEADERS}
-    ${URI_HEADERS}
-    ${THREADS_HEADERS}
-    ${NET_HEADERS}
-    ${DRAW_HEADERS}
-    ${MEMORY_HEADERS}
-    ${MEDIA_HEADERS}
-    ${TEXT_DECODERS_HEADERS}
-    ${HASH_HEADERS}
-    ${SYSTEM_INFO_HEADERS}
-    ${HTTP_HEADERS}
-    ${COMMON_PLATFORM_HEADERS}
-    ${COMPRESS_HEADERS}
-    ${LIBEV_HEADERS}
+  ${PATTERNS_HEADERS}
+  ${SYSTEM_HEADERS}
+  ${FILE_SYSTEM_HEADERS}
+  ${APPLIATION_HEADERS}
+  ${PROTOCOLS_HEADERS}
+  ${SERIALIZER_HEADERS}
+  ${URI_HEADERS}
+  ${THREADS_HEADERS}
+  ${NET_HEADERS}
+  ${DRAW_HEADERS}
+  ${MEMORY_HEADERS}
+  ${MEDIA_HEADERS}
+  ${TEXT_DECODERS_HEADERS}
+  ${HASH_HEADERS}
+  ${SYSTEM_INFO_HEADERS}
+  ${HTTP_HEADERS}
+  ${COMMON_PLATFORM_HEADERS}
+  ${COMPRESS_HEADERS}
 )
 
 SET(COMMON_SOURCES
@@ -523,7 +472,6 @@ SET(COMMON_SOURCES
   ${HTTP_SOURCES}
   ${COMMON_PLATFORM_SOURCES}
   ${COMPRESS_SOURCES}
-  ${LIBEV_SOURCES}
 )
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H) # need to refactor
@@ -563,6 +511,68 @@ IF(PROJECT_BUILD_TYPE_VERSION STREQUAL "release")
   STRIP_TARGET(${COMMON_PROJECT_NAME})
 ENDIF(PROJECT_BUILD_TYPE_VERSION STREQUAL "release")
 
+# common libev
+FIND_PACKAGE(LibEv QUIET)
+IF(LIBEV_FOUND)
+  SET(LIBEV_TCP_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/tcp/tcp_server.h
+  )
+
+  SET(LIBEV_TCP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
+  )
+
+  SET(LIBEV_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/pipe_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/default_event_loop.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_async.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/event_child.h
+
+    ${LIBEV_TCP_HEADERS}
+  )
+
+  SET(LIBEV_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_loop_observer.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/loop_controller.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/types.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_async.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/event_child.cpp
+
+    ${LIBEV_TCP_SOURCES}
+  )
+
+  SET(COMMON_LIBEV_PROJECT_NAME ${PROJECT_NAME_LOWERCASE}_ev)
+  ADD_LIBRARY(${COMMON_LIBEV_PROJECT_NAME} ${LIBEV_HEADERS} ${LIBEV_SOURCES} $<TARGET_OBJECTS:cpuid>)
+  TARGET_INCLUDE_DIRECTORIES(${COMMON_LIBEV_PROJECT_NAME}
+    PRIVATE ${LIBEV_INCLUDE_DIRS}
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+  TARGET_LINK_LIBRARIES(${COMMON_LIBEV_PROJECT_NAME} PRIVATE ${LIBEV_LIBRARIES})
+  SET(COMMON_INSTALL_LIBS ${COMMON_INSTALL_LIBS} ${COMMON_LIBEV_PROJECT_NAME})
+  INSTALL(TARGETS ${COMMON_LIBEV_PROJECT_NAME} DESTINATION ${TARGET_INSTALL_DESTINATION} COMPONENT APPLICATIONS)
+ENDIF(LIBEV_FOUND)
+
+# common qt
 IF(QT_ENABLED)
   SET(COMMON_QT_LIBS ${COMMON_LIBS} ${QT_LIBRARIES})
   SET(COMMON_QT_PROJECT_NAME ${COMMON_PROJECT_NAME}_qt)
