@@ -97,6 +97,7 @@ LibEvLoop::LibEvLoop(struct ev_loop* loop)
       childs_()
 #endif
 {
+  CHECK(loop_) << "Must be evloop!";
   ev_set_userdata(loop_, this);
 }  // namespace libev
 
