@@ -29,6 +29,7 @@
 
 #include <common/utils.h>
 
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>  // for umask
@@ -346,49 +347,33 @@ void freeifnotnull(void* ptr) {
 }  // namespace utils
 
 #ifdef OS_POSIX
-void create_as_daemon() {
-  /* Fork off the parent process */
+bool create_as_daemon() {
   pid_t pid = fork();
-
-  /* An error occurred */
   if (pid < 0) {
-    exit(EXIT_FAILURE);
+    return false;
+  } else if (pid != 0) {
+    _exit(EXIT_SUCCESS);
   }
 
-  /* Success: Let the parent terminate */
-  if (pid > 0) {
-    exit(EXIT_SUCCESS);
-  }
-
-  /* On success: The child process becomes session leader */
   if (setsid() < 0) {
-    exit(EXIT_FAILURE);
+    return false;
   }
 
-  /* Fork off for the second time*/
-  pid = fork();
-
-  /* An error occurred */
-  if (pid < 0) {
-    exit(EXIT_FAILURE);
-  }
-
-  /* Success: Let the parent terminate */
-  if (pid > 0) {
-    exit(EXIT_SUCCESS);
-  }
-
-  /* Set new file permissions */
   umask(0);
 
-  /* Change the working directory to the root directory */
-  /* or another appropriated directory */
-  // chdir("/");
-
-  /* Close all open file descriptors */
-  for (int x = sysconf(_SC_OPEN_MAX); x > 0; x--) {
-    close(x);
+  long maxfd = sysconf(_SC_OPEN_MAX);
+  for (long fd = 0; fd < maxfd; ++fd) {
+    close(fd);
   }
+
+  int fd = open("/dev/null", O_RDWR);
+  if (fd != STDIN_FILENO) {
+    return false;
+  }
+
+  dup2(STDIN_FILENO, STDOUT_FILENO);
+  dup2(STDIN_FILENO, STDERR_FILENO);
+  return true;
 }
 #endif
 

@@ -119,7 +119,7 @@ void freeifnotnull(void* ptr);
 }  // namespace utils
 
 #ifdef OS_POSIX
-void create_as_daemon();
+bool create_as_daemon();
 #endif
 long get_current_process_pid();
 }  // namespace common
