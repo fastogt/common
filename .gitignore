@@ -1,3 +1,4 @@
 CMakeLists.txt.user*
 tests/gtest/
 build_*
+include/common/config.h
