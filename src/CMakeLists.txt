@@ -47,7 +47,6 @@ SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/url.cpp
 )
 
-
 SET(SYSTEM_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/system/system.h
 )
