@@ -48,6 +48,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   explicit IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
   virtual ~IoLoop();
 
+  bool IsRunning() const;
   int Exec() WARN_UNUSED_RESULT;
   virtual void Stop();
 

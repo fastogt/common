@@ -96,7 +96,8 @@ LibEvLoop::LibEvLoop(struct ev_loop* loop)
       ,
       childs_()
 #endif
-{
+      ,
+      is_running_(false) {
   CHECK(loop_) << "Must be evloop!";
   ev_set_userdata(loop_, this);
 }  // namespace libev
@@ -253,7 +254,9 @@ int LibEvLoop::Exec() {
   if (observer_) {
     observer_->PreLooped(this);
   }
+  is_running_ = true;
   ev_loop(loop_, 0);
+  is_running_ = false;
   if (observer_) {
     observer_->PostLooped(this);
   }
@@ -262,6 +265,11 @@ int LibEvLoop::Exec() {
 
 bool LibEvLoop::IsLoopThread() const {
   return exec_id_ == threads::PlatformThread::GetCurrentId();
+}
+
+bool LibEvLoop::IsRunning() const {
+  CHECK(IsLoopThread());
+  return is_running_;
 }
 
 void LibEvLoop::Stop() {

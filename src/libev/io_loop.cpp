@@ -57,6 +57,10 @@ IoLoop::~IoLoop() {
   delete loop_;
 }
 
+bool IoLoop::IsRunning() const {
+  return loop_->IsRunning();
+}
+
 int IoLoop::Exec() {
   int res = loop_->Exec();
   return res;

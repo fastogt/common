@@ -104,6 +104,7 @@ class LibEvLoop {
   void Stop();
 
   bool IsLoopThread() const;
+  bool IsRunning() const;  // can be called only in LoopThread
 
  protected:
   LibEvLoop(struct ev_loop* loop);
@@ -134,6 +135,7 @@ class LibEvLoop {
 #if LIBEV_CHILD_ENABLE
   std::vector<LibevChild*> childs_;
 #endif
+  bool is_running_;
 };
 
 }  // namespace libev
