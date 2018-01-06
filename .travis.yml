@@ -4,6 +4,9 @@
 # http://lint.travis-ci.org/
 language: cpp
 install:
+- DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+- mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
 # /usr/bin/gcc is 4.6 always, but gcc-X.Y is available.
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 # /usr/bin/clang is 3.4, lets override with modern one.
