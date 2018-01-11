@@ -453,14 +453,18 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
     return make_error_perror("remove_directory", EINVAL);
   }
 
-  std::string prPath = prepare_path(path);
-  if (prPath[prPath.length() - 1] == get_separator<char>()) {
-    prPath[prPath.length() - 1] = 0;
+  std::string pr_path = prepare_path(path);
+  if (pr_path[pr_path.length() - 1] == get_separator<char>()) {
+    pr_path[pr_path.length() - 1] = 0;
   }
 
-  const char* prPathPtr = prPath.c_str();
+  const char* pr_path_ptr = pr_path.c_str();
   if (is_recursive) {
-    DIR* dirp = opendir(prPathPtr);
+    DIR* dirp = opendir(pr_path_ptr);
+    if (!dirp) {
+      return common::ErrnoError();
+    }
+
     struct dirent* p;
     while ((p = readdir(dirp)) != NULL) {
       /* Skip the names "." and ".." as we don't want to recurse on them. */
@@ -490,7 +494,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
     closedir(dirp);
   }
 
-  return rmdir_directory_impl(prPathPtr);
+  return rmdir_directory_impl(pr_path_ptr);
 }
 
 ErrnoError change_directory(const std::string& path) {
