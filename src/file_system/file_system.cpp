@@ -152,7 +152,7 @@ ErrnoError call_fcntl_flock(descriptor_t fd_desc, bool do_lock) {
   return ErrnoError();
 }
 
-ErrnoError rmdir_directory_impl(const char* path) {
+ErrnoError do_rmdir_directory(const char* path) {
   bool result = rmdir(path) != ERROR_RESULT_VALUE;
   if (!result && errno != ENOENT) {
     return make_error_perror("rmdir", errno);
@@ -161,7 +161,7 @@ ErrnoError rmdir_directory_impl(const char* path) {
   return ErrnoError();
 }
 
-ErrnoError create_directory_impl(const char* path) {
+ErrnoError do_create_directory(const char* path) {
 #ifdef OS_WIN
   bool result = mkdir(path) != ERROR_RESULT_VALUE;
 #else
@@ -434,7 +434,7 @@ ErrnoError create_directory(const std::string& path, bool is_recursive) {
         const char* path = pr_path_ptr;
 
         if (!is_directory_exist(path)) {
-          ErrnoError err = create_directory_impl(path);
+          ErrnoError err = do_create_directory(path);
           if (err) {
             return err;
           }
@@ -445,7 +445,7 @@ ErrnoError create_directory(const std::string& path, bool is_recursive) {
     }
   }
 
-  return create_directory_impl(pr_path_ptr);
+  return do_create_directory(pr_path_ptr);
 }
 
 ErrnoError remove_directory(const std::string& path, bool is_recursive) {
@@ -462,7 +462,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
   if (is_recursive) {
     DIR* dirp = opendir(pr_path_ptr);
     if (!dirp) {
-      return common::ErrnoError();
+      return ErrnoError();
     }
 
     struct dirent* p;
@@ -494,7 +494,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
     closedir(dirp);
   }
 
-  return rmdir_directory_impl(pr_path_ptr);
+  return do_rmdir_directory(pr_path_ptr);
 }
 
 ErrnoError change_directory(const std::string& path) {

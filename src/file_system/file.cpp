@@ -213,7 +213,7 @@ bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
     return false;
   }
 
-  byte_t* data = reinterpret_cast<byte_t*>(malloc(max_size));
+  byte_t* data = static_cast<byte_t*>(malloc(max_size));
   if (!data) {
     return false;
   }
@@ -233,7 +233,7 @@ bool ANSIFile::Read(std::string* out_data, uint32_t max_size) {
     return false;
   }
 
-  char* data = reinterpret_cast<char*>(malloc(max_size));
+  char* data = static_cast<char*>(malloc(max_size));
   if (!data) {
     return false;
   }

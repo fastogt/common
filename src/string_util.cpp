@@ -392,21 +392,21 @@ bool EqualsASCII(const string16& a, const StringPiece& b) {
 bool StartsWithASCII(const std::string& str, const std::string& search, bool case_sensitive) {
   if (case_sensitive) {
     return str.compare(0, search.length(), search) == 0;
-  } else {
-    return strncasecmp(str.c_str(), search.c_str(), search.length()) == 0;
   }
+
+  return strncasecmp(str.c_str(), search.c_str(), search.length()) == 0;
 }
 
 template <typename STR>
 bool StartsWithT(const STR& str, const STR& search, bool case_sensitive) {
   if (case_sensitive) {
     return str.compare(0, search.length(), search) == 0;
-  } else {
-    if (search.size() > str.size()) {
-      return false;
-    }
-    return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
   }
+
+  if (search.size() > str.size()) {
+    return false;
+  }
+  return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
 }
 
 bool EqualsASCII(const std::string& a, const std::string& b, bool case_sensitive) {
@@ -421,9 +421,9 @@ bool FullEqualsASCIIT(const STR& str, const STR& search, bool case_sensitive) {
 
   if (case_sensitive) {
     return str.compare(0, search.length(), search) == 0;
-  } else {
-    return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
   }
+
+  return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
 }
 
 bool FullEqualsASCII(const std::string& a, const std::string& b, bool case_sensitive) {

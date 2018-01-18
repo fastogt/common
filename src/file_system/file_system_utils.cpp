@@ -56,10 +56,10 @@ string16 ConvertFromCharArray(const char* str) {
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
-                    const std::basic_string<CharT, Traits>& pattern,
-                    bool recursive,
-                    std::vector<FileStringPath<CharT, Traits>>* result) {
+void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
+                  const std::basic_string<CharT, Traits>& pattern,
+                  bool recursive,
+                  std::vector<FileStringPath<CharT, Traits>>* result) {
   typedef typename DirectoryStringPath<CharT, Traits>::value_type value_type;
   if (!folder.IsValid() || pattern.empty() || !result) {
     return;
@@ -100,7 +100,7 @@ void ScanFolderImpl(const DirectoryStringPath<CharT, Traits>& folder,
       const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
       auto dir = folder.MakeDirectoryStringPath(vt);
       if (dir) {
-        ScanFolderImpl(dir.value(), pattern, recursive, result);
+        DoScanFolder(dir.value(), pattern, recursive, result);
       }
     }
   }
@@ -115,7 +115,7 @@ std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<
                                                       const std::basic_string<CharT, Traits>& pattern,
                                                       bool recursive) {
   std::vector<FileStringPath<CharT, Traits>> result;
-  ScanFolderImpl(folder, pattern, recursive, &result);
+  DoScanFolder(folder, pattern, recursive, &result);
   return result;
 }
 

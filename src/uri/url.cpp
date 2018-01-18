@@ -64,7 +64,7 @@ char* uri_encode(const char* str, size_t len) {
   }
 
   const char* pstr = str;
-  char* buf = reinterpret_cast<char*>(malloc(len * 3 + 1));
+  char* buf = static_cast<char*>(malloc(len * 3 + 1));
   if (!buf) {
     return NULL;
   }
@@ -94,7 +94,7 @@ char* uri_decode(const char* str, size_t len) {
   }
 
   const char* pstr = str;
-  char* buf = reinterpret_cast<char*>(malloc(len + 1));
+  char* buf = static_cast<char*>(malloc(len + 1));
   char* pbuf = buf;
 
   while (*pstr) {

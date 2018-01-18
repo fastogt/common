@@ -126,7 +126,7 @@ namespace net {
 namespace {
 
 template <typename CHAR>
-ErrnoError read_from_socket_impl(socket_descr_t fd, CHAR* out, size_t size, size_t* nread) {
+ErrnoError do_read_from_socket(socket_descr_t fd, CHAR* out, size_t size, size_t* nread) {
   if (fd == INVALID_SOCKET_VALUE || !out || size == 0 || !nread) {
     return make_error_perror("read_from_socket", EINVAL);
   }
@@ -150,7 +150,7 @@ ErrnoError read_from_socket_impl(socket_descr_t fd, CHAR* out, size_t size, size
 }
 
 template <typename CHAR>
-ErrnoError write_to_socket_impl(socket_descr_t fd, const CHAR* data, size_t size, size_t* nwritten) {
+ErrnoError do_write_to_socket(socket_descr_t fd, const CHAR* data, size_t size, size_t* nwritten) {
   if (fd == INVALID_SOCKET_VALUE || !data || size == 0 || !nwritten) {
     return make_error_perror("write_to_socket", EINVAL);
   }
@@ -170,12 +170,12 @@ ErrnoError write_to_socket_impl(socket_descr_t fd, const CHAR* data, size_t size
 }
 
 template <typename CHAR>
-ErrnoError sendto_impl(socket_descr_t fd,
-                       const CHAR* data,
-                       uint16_t len,
-                       struct sockaddr* addr,
-                       socklen_t addr_len,
-                       ssize_t* nwritten_out) {
+ErrnoError do_sendto(socket_descr_t fd,
+                     const CHAR* data,
+                     uint16_t len,
+                     struct sockaddr* addr,
+                     socklen_t addr_len,
+                     ssize_t* nwritten_out) {
   if (!data) {
     return make_error_perror("sendto", EINVAL);
   }
@@ -204,12 +204,12 @@ ErrnoError sendto_impl(socket_descr_t fd,
 }
 
 template <typename CHAR>
-ErrnoError recvfrom_impl(socket_descr_t fd,
-                         CHAR* out_data,
-                         uint16_t max_size,
-                         sockaddr* addr,
-                         socklen_t* addr_len,
-                         ssize_t* nread_out) {
+ErrnoError do_recvfrom(socket_descr_t fd,
+                       CHAR* out_data,
+                       uint16_t max_size,
+                       sockaddr* addr,
+                       socklen_t* addr_len,
+                       ssize_t* nread_out) {
   if (!out_data) {
     return make_error_perror("recvfrom", EINVAL);
   }
@@ -239,11 +239,11 @@ ErrnoError recvfrom_impl(socket_descr_t fd,
 
 struct UnBlockAndBlockSocket {
   UnBlockAndBlockSocket(socket_descr_t sock) : sock_(sock) {
-    common::ErrnoError err = set_blocking_socket(sock, false);
+    ErrnoError err = set_blocking_socket(sock, false);
     DCHECK(!err) << err->GetDescription();
   }
   ~UnBlockAndBlockSocket() {
-    common::ErrnoError err = set_blocking_socket(sock_, true);
+    ErrnoError err = set_blocking_socket(sock_, true);
     DCHECK(!err) << err->GetDescription();
   }
 
@@ -259,7 +259,7 @@ socket_t native_to_socket_type(int socktype) {
   return static_cast<socket_t>(socktype);
 }
 
-ErrnoError connect_impl(socket_descr_t sock, const struct sockaddr* addr, socklen_t len, struct timeval* tv) {
+ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_t len, struct timeval* tv) {
   DCHECK(sock != INVALID_SOCKET_VALUE);
   DCHECK(addr);
 
@@ -319,7 +319,7 @@ ErrnoError connect_raw(const char* host,
                        struct timeval* timeout,
                        socket_info* out_info) {
   if (!host || !out_info) {
-    return common::make_error_perror("connect", EINVAL);
+    return make_error_perror("connect", EINVAL);
   }
 
   socket_descr_t sfd = INVALID_SOCKET_VALUE;
@@ -363,7 +363,7 @@ ErrnoError connect_raw(const char* host,
       break; /* Success */
     }
 
-    ErrnoError err = connect_impl(sfd, rp->ai_addr, rp->ai_addrlen, timeout);
+    ErrnoError err = do_connect(sfd, rp->ai_addr, rp->ai_addrlen, timeout);
     if (!err) {
       break;
     }
@@ -534,7 +534,7 @@ ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info
     return err;
   }
 
-  err = connect_impl(fd, addr->ai_addr, addr->ai_addrlen, timeout);
+  err = do_connect(fd, addr->ai_addr, addr->ai_addrlen, timeout);
   if (err) {
     return err;
   }
@@ -620,19 +620,19 @@ ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int c
 #endif
 
 ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten) {
-  return write_to_socket_impl(fd, data, size, nwritten);
+  return do_write_to_socket(fd, data, size, nwritten);
 }
 
 ErrnoError write_to_socket(socket_descr_t fd, const unsigned char* data, size_t size, size_t* nwritten) {
-  return write_to_socket_impl(fd, data, size, nwritten);
+  return do_write_to_socket(fd, data, size, nwritten);
 }
 
 ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t size, size_t* nread) {
-  return read_from_socket_impl(fd, out, size, nread);
+  return do_read_from_socket(fd, out, size, nread);
 }
 
 ErrnoError read_from_socket(socket_descr_t fd, unsigned char* out, size_t size, size_t* nread) {
-  return read_from_socket_impl(fd, out, size, nread);
+  return do_read_from_socket(fd, out, size, nread);
 }
 
 ErrnoError sendto(socket_descr_t fd,
@@ -641,7 +641,7 @@ ErrnoError sendto(socket_descr_t fd,
                   struct sockaddr* addr,
                   socklen_t addr_len,
                   ssize_t* nwritten_out) {
-  return sendto_impl(fd, data, len, addr, addr_len, nwritten_out);
+  return do_sendto(fd, data, len, addr, addr_len, nwritten_out);
 }
 
 ErrnoError sendto(socket_descr_t fd,
@@ -650,7 +650,7 @@ ErrnoError sendto(socket_descr_t fd,
                   struct sockaddr* addr,
                   socklen_t addr_len,
                   ssize_t* nwritten_out) {
-  return sendto_impl(fd, data, len, addr, addr_len, nwritten_out);
+  return do_sendto(fd, data, len, addr, addr_len, nwritten_out);
 }
 
 ErrnoError recvfrom(socket_descr_t fd,
@@ -659,7 +659,7 @@ ErrnoError recvfrom(socket_descr_t fd,
                     sockaddr* addr,
                     socklen_t* addr_len,
                     ssize_t* nread_out) {
-  return recvfrom_impl(fd, out_data, max_size, addr, addr_len, nread_out);
+  return do_recvfrom(fd, out_data, max_size, addr, addr_len, nread_out);
 }
 
 ErrnoError recvfrom(socket_descr_t fd,
@@ -668,7 +668,7 @@ ErrnoError recvfrom(socket_descr_t fd,
                     sockaddr* addr,
                     socklen_t* addr_len,
                     ssize_t* nread_out) {
-  return recvfrom_impl(fd, out_data, max_size, addr, addr_len, nread_out);
+  return do_recvfrom(fd, out_data, max_size, addr, addr_len, nread_out);
 }
 
 ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size) {
@@ -723,6 +723,6 @@ std::string common_gai_strerror(int err) {
     return error_str;
   }
 
-  return common::MemSPrintf("Unknown gai error (%d)", err);
+  return MemSPrintf("Unknown gai error (%d)", err);
 }
 }  // namespace common

@@ -51,8 +51,8 @@ class IEDcoder {
   explicit IEDcoder(EDType type);
 
  private:
-  virtual Error EncodeImpl(const StringPiece& data, std::string* out) = 0;
-  virtual Error DecodeImpl(const StringPiece& data, std::string* out) = 0;
+  virtual Error DoEncode(const StringPiece& data, std::string* out) = 0;
+  virtual Error DoDecode(const StringPiece& data, std::string* out) = 0;
 
   const EDType type_;
 };

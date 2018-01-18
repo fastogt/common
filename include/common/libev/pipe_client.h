@@ -56,7 +56,7 @@ class PipeWriteClient : public DescriptorClient {
   using DescriptorClient::Read;
 };
 
-common::ErrnoError CreatePipe(PipeReadClient** read_client, PipeWriteClient** write_client, IoLoop* server);
+ErrnoError CreatePipe(PipeReadClient** read_client, PipeWriteClient** write_client, IoLoop* server);
 
 }  // namespace libev
 }  // namespace common

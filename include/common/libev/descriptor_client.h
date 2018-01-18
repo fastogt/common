@@ -51,7 +51,7 @@ class DescriptorClient : public IoClient {
   virtual descriptor_t GetFd() const override;
 
  private:
-  virtual Error CloseImpl() override;
+  virtual Error DoClose() override;
 
   file_system::DescriptorHolder desc_;
 };

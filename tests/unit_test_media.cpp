@@ -15,6 +15,7 @@ TEST(ConvertToString, media) {
 TEST(DesireBytesPerSec, Instance) {
   const common::media::DesireBytesPerSec invalid;
   ASSERT_FALSE(invalid.IsValid());
+  ASSERT_FALSE(invalid.InRange(10));
 
   const common::media::DesireBytesPerSec can_be(100, 200);
   ASSERT_TRUE(can_be.IsValid());

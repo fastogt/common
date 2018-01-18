@@ -35,12 +35,12 @@ namespace common {
 
 HtmlEscEDcoder::HtmlEscEDcoder() : IEDcoder(ED_HEX) {}
 
-Error HtmlEscEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
+Error HtmlEscEDcoder::DoEncode(const StringPiece& data, std::string* out) {
   *out = utils::html::encode(data);
   return Error();
 }
 
-Error HtmlEscEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
+Error HtmlEscEDcoder::DoDecode(const StringPiece& data, std::string* out) {
   *out = utils::html::decode(data);
   return Error();
 }

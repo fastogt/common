@@ -34,7 +34,7 @@ class ISerializer {
     if (!deserialized) {
       return make_error_inval();
     }
-    return SerializeImpl(deserialized);
+    return DoSerialize(deserialized);
   }
 
   virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
@@ -42,7 +42,7 @@ class ISerializer {
   virtual Error SerializeToString(std::string* deserialized) const WARN_UNUSED_RESULT = 0;
 
  protected:
-  virtual Error SerializeImpl(serialize_type* deserialized) const = 0;
+  virtual Error DoSerialize(serialize_type* deserialized) const = 0;
 };
 
 }  // namespace serializer

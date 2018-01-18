@@ -37,16 +37,16 @@ TEST(Thread, isCurrentThread) {
 
 #endif
 
-void sleep5Sec() {
+void sleep_5_sec() {
   common::threads::PlatformThread::Sleep(5000);
 }
 
-int valueGetFunc() {
+int value_get_func() {
   return 5;
 }
 
 TEST(Thread, valueAfterExec) {
-  auto c1 = THREAD_MANAGER()->CreateThread(&valueGetFunc);
+  auto c1 = THREAD_MANAGER()->CreateThread(&value_get_func);
   GTEST_ASSERT_EQ(c1->GetHandle(), common::threads::invalid_thread_handle());
   bool res = c1->Start();
   DCHECK(res);
@@ -118,15 +118,15 @@ TEST(Thread, classVirtualMethod) {
   delete b;
 }
 
-int testint() {
+int test_int() {
   return 1;
 }
 
 TEST(Thread, afterstartValidTid) {
-  std::shared_ptr<common::threads::Thread<int> > tp[THREAD_COUNTS];
+  std::shared_ptr<common::threads::Thread<int>> tp[THREAD_COUNTS];
 
   for (size_t i = 0; i < SIZEOFMASS(tp); ++i) {
-    tp[i] = THREAD_MANAGER()->CreateThread(&testint);
+    tp[i] = THREAD_MANAGER()->CreateThread(&test_int);
     GTEST_ASSERT_EQ(tp[i]->GetHandle(), common::threads::invalid_thread_handle());
     bool ress = tp[i]->Start();
     DCHECK(ress);

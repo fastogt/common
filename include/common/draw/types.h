@@ -35,12 +35,22 @@ namespace common {
 namespace draw {
 
 struct Point {
-  Point() : x(0), y(0) {}
-  Point(int x, int y) : x(x), y(y) {}
+  Point();
+  Point(int x, int y);
+
+  bool Equals(const Point& pt) const;
 
   int x;
   int y;
 };
+
+inline bool operator==(const Point& left, const Point& right) {
+  return left.Equals(right);
+}
+
+inline bool operator!=(const Point& left, const Point& right) {
+  return !(left == right);
+}
 
 struct Size {
   Size();  // invalid size

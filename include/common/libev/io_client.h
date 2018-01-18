@@ -68,7 +68,7 @@ class IoClient : IMetaClassInfo {
   virtual descriptor_t GetFd() const = 0;
 
  private:
-  virtual Error CloseImpl() = 0;
+  virtual Error DoClose() = 0;
 
   IoLoop* server_;
   LibevIO* read_write_io_;

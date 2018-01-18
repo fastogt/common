@@ -52,7 +52,7 @@ class TcpClient : public IoClient {
   virtual descriptor_t GetFd() const override;
 
  private:
-  virtual Error CloseImpl() override;
+  virtual Error DoClose() override;
 
   net::SocketHolder sock_;
 };

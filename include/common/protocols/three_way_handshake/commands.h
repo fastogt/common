@@ -72,8 +72,8 @@ typedef uint8_t cmd_id_t;
 
 std::string CmdIdToString(cmd_id_t id);
 
-common::Error StableCommand(const std::string& command, std::string* stabled_command);
-common::Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_id, std::string* cmd_str);
+Error StableCommand(const std::string& command, std::string* stabled_command);
+Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_id, std::string* cmd_str);
 
 template <cmd_id_t cmd_id>
 class InnerCmd {
@@ -97,19 +97,19 @@ typedef InnerCmd<APPROVE_COMMAND> cmd_approve_t;    // ACK
 
 template <typename... Args>
 cmd_request_t MakeRequest(cmd_seq_t id, const char* cmd_fmt, Args... args) {
-  std::string buff = common::MemSPrintf(cmd_fmt, REQUEST_COMMAND, id, args...);
+  std::string buff = MemSPrintf(cmd_fmt, REQUEST_COMMAND, id, args...);
   return cmd_request_t(id, buff);
 }
 
 template <typename... Args>
 cmd_approve_t MakeApproveResponce(cmd_seq_t id, const char* cmd_fmt, Args... args) {
-  std::string buff = common::MemSPrintf(cmd_fmt, APPROVE_COMMAND, id, args...);
+  std::string buff = MemSPrintf(cmd_fmt, APPROVE_COMMAND, id, args...);
   return cmd_approve_t(id, buff);
 }
 
 template <typename... Args>
 cmd_responce_t MakeResponce(cmd_seq_t id, const char* cmd_fmt, Args... args) {
-  std::string buff = common::MemSPrintf(cmd_fmt, RESPONCE_COMMAND, id, args...);
+  std::string buff = MemSPrintf(cmd_fmt, RESPONCE_COMMAND, id, args...);
   return cmd_responce_t(id, buff);
 }
 

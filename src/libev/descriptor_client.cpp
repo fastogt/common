@@ -133,7 +133,7 @@ Error DescriptorClient::Read(unsigned char* out, size_t size, size_t* nread) {
   return Error();
 }
 
-Error DescriptorClient::CloseImpl() {
+Error DescriptorClient::DoClose() {
   ErrnoError err = desc_.Close();
   if (err) {
     return make_error(err->GetDescription());

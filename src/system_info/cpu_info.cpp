@@ -84,9 +84,8 @@ lcpu_count_t CpuInfo::GetThreadsOnCore() const {
 }
 
 std::string CpuInfo::GetNativeCpuID() const {
-  return common::MemSPrintf("%08X %08X %08X %08X", impl_->raw_cpuid_.basic_cpuid[0][0],
-                            impl_->raw_cpuid_.basic_cpuid[0][1], impl_->raw_cpuid_.basic_cpuid[0][2],
-                            impl_->raw_cpuid_.basic_cpuid[0][3]);
+  return MemSPrintf("%08X %08X %08X %08X", impl_->raw_cpuid_.basic_cpuid[0][0], impl_->raw_cpuid_.basic_cpuid[0][1],
+                    impl_->raw_cpuid_.basic_cpuid[0][2], impl_->raw_cpuid_.basic_cpuid[0][3]);
 }
 
 bool CpuInfo::IsValid() const {

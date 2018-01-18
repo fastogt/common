@@ -143,7 +143,7 @@ char table64(unsigned char c) {
 }
 
 template <typename R, typename T>
-R encode64_impl(const T& input) {
+R do_encode64(const T& input) {
   typedef typename T::value_type value_type;
   R encoded;
   value_type c;
@@ -186,7 +186,7 @@ R encode64_impl(const T& input) {
 }
 
 template <typename R, typename T>
-R decode64_impl(const T& input) {
+R do_decode64(const T& input) {
   typedef typename T::value_type value_type;
   value_type c, d;
   const typename T::size_type length = input.size();
@@ -250,19 +250,19 @@ uint64_t crc64(uint64_t crc, const buffer_t& data) {
 namespace base64 {
 
 std::string encode64(const StringPiece& input) {
-  return encode64_impl<std::string>(input);
+  return do_encode64<std::string>(input);
 }
 
 std::string decode64(const StringPiece& input) {
-  return decode64_impl<std::string>(input);
+  return do_decode64<std::string>(input);
 }
 
 buffer_t encode64(const buffer_t& input) {
-  return encode64_impl<buffer_t>(input);
+  return do_encode64<buffer_t>(input);
 }
 
 buffer_t decode64(const buffer_t& input) {
-  return decode64_impl<buffer_t>(input);
+  return do_decode64<buffer_t>(input);
 }
 
 }  // namespace base64

@@ -13,7 +13,7 @@ TEST(Logger, log_level) {
 }
 
 TEST(Logger, set_loglevel) {
-  const common::logging::LOG_LEVEL cur = common::logging::LOG_LEVEL_DEBUG;
+  const common::logging::LOG_LEVEL cur = common::logging::LOG_LEVEL_NOTICE;
   common::logging::SET_CURRENT_LOG_LEVEL(cur);
   ASSERT_EQ(cur, common::logging::CURRENT_LOG_LEVEL());
 }

@@ -67,7 +67,7 @@ Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
     return make_error_inval();
   }
 
-  return EncodeImpl(data, out);
+  return DoEncode(data, out);
 }
 
 Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
@@ -75,7 +75,7 @@ Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
     return make_error_inval();
   }
 
-  return DecodeImpl(data, out);
+  return DoDecode(data, out);
 }
 
 EDType IEDcoder::GetType() const {

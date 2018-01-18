@@ -52,9 +52,9 @@ int wait_condition(pthread_cond_t* condition, pthread_mutex_t* mutex, time64_t m
     }
 
     return pthread_cond_timedwait(condition, mutex, &ts);
-  } else {
-    return pthread_cond_wait(condition, mutex);
   }
+
+  return pthread_cond_wait(condition, mutex);
 }
 
 }  // namespace

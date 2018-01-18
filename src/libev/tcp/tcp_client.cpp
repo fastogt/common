@@ -134,7 +134,7 @@ Error TcpClient::Read(unsigned char* out, size_t size, size_t* nread) {
   return Error();
 }
 
-Error TcpClient::CloseImpl() {
+Error TcpClient::DoClose() {
   ErrnoError err = sock_.Close();
   if (err) {
     return make_error(err->GetDescription());

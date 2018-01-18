@@ -231,7 +231,7 @@ int hd_ringbuf_reserve(http2_ringbuf* ringbuf, uint32_t bufsize) {
   for (size = 1; size < bufsize; size <<= 1) {
   }
 
-  buffer = reinterpret_cast<http2_entry**>(malloc(sizeof(http2_entry*) * size));
+  buffer = static_cast<http2_entry**>(malloc(sizeof(http2_entry*) * size));
   if (buffer == NULL) {
     return -1;
   }
@@ -1317,7 +1317,7 @@ http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(NULL), mask(0), first(0)
   for (size = 1; size < bufsize; size <<= 1) {
   }
 
-  buffer = reinterpret_cast<http2_entry**>(malloc(sizeof(http2_entry*) * size));
+  buffer = static_cast<http2_entry**>(malloc(sizeof(http2_entry*) * size));
   if (!buffer) {
     return;
   }

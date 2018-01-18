@@ -35,11 +35,11 @@ namespace common {
 
 HexEDcoder::HexEDcoder() : IEDcoder(ED_HEX) {}
 
-Error HexEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
+Error HexEDcoder::DoEncode(const StringPiece& data, std::string* out) {
   return compress::EncodeHex(data, false, out);
 }
 
-Error HexEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
+Error HexEDcoder::DoDecode(const StringPiece& data, std::string* out) {
   return compress::DecodeHex(data, out);
 }
 

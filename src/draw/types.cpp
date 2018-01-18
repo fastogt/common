@@ -35,6 +35,14 @@
 namespace common {
 namespace draw {
 
+Point::Point() : x(0), y(0) {}
+
+Point::Point(int x, int y) : x(x), y(y) {}
+
+bool Point::Equals(const Point& pt) const {
+  return x == pt.x && y == pt.y;
+}
+
 Size::Size() : width(0), height(0) {}
 
 Size::Size(int width, int height) : width(width), height(height) {}

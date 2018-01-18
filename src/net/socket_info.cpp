@@ -149,7 +149,7 @@ void socket_info::set_port(uint16_t port) {
 }
 
 struct sockaddr* alloc_sockaddr(socklen_t addr_len) {
-  return reinterpret_cast<struct sockaddr*>(malloc(addr_len));
+  return static_cast<struct sockaddr*>(malloc(addr_len));
 }
 
 struct sockaddr* copy_sockaddr(const struct sockaddr* addr, socklen_t addr_len) {
@@ -179,7 +179,7 @@ void free_sockaddr(struct sockaddr** addr) {
 }
 
 struct addrinfo* alloc_addrinfo() {
-  return reinterpret_cast<struct addrinfo*>(calloc(1, sizeof(struct addrinfo)));
+  return static_cast<struct addrinfo*>(calloc(1, sizeof(struct addrinfo)));
 }
 
 struct addrinfo* copy_addrinfo(const struct addrinfo* info) {

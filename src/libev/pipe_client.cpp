@@ -56,20 +56,20 @@ const char* PipeWriteClient::ClassName() const {
   return "PipeWriteClient";
 }
 
-common::ErrnoError CreatePipe(PipeReadClient** read_client, PipeWriteClient** write_client, IoLoop* server) {
+ErrnoError CreatePipe(PipeReadClient** read_client, PipeWriteClient** write_client, IoLoop* server) {
   if (!read_client || !write_client) {
-    return common::make_errno_error_inval();
+    return make_errno_error_inval();
   }
 
   int pipefd[2] = {0};
   int res = pipe(pipefd);
   if (res == ERROR_RESULT_VALUE) {
-    return common::make_errno_error(errno);
+    return make_errno_error(errno);
   }
 
   *read_client = new PipeReadClient(server, pipefd[0]);
   *write_client = new PipeWriteClient(server, pipefd[1]);
-  return common::ErrnoError();
+  return ErrnoError();
 }
 
 }  // namespace libev

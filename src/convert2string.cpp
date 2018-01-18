@@ -324,7 +324,7 @@ template <typename VALUE, int BASE>
 class StringPieceToNumberTraits : public BaseIteratorRangeToNumberTraits<StringPiece::const_iterator, VALUE, BASE> {};
 
 template <typename VALUE>
-bool StringToIntImpl(const StringPiece& input, VALUE* output) {
+bool DoStringToInt(const StringPiece& input, VALUE* output) {
   return IteratorRangeToNumber<StringPieceToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
@@ -333,7 +333,7 @@ class StringPiece16ToNumberTraits : public BaseIteratorRangeToNumberTraits<Strin
 };
 
 template <typename VALUE>
-bool String16ToIntImpl(const StringPiece16& input, VALUE* output) {
+bool DoString16ToInt(const StringPiece16& input, VALUE* output) {
   return IteratorRangeToNumber<StringPiece16ToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
@@ -341,7 +341,7 @@ template <typename VALUE, int BASE>
 class BytesToNumberTraits : public BaseIteratorRangeToNumberTraits<buffer_t::const_iterator, VALUE, BASE> {};
 
 template <typename VALUE>
-bool BytesToIntImpl(const buffer_t& input, VALUE* output) {
+bool DoBytesToInt(const buffer_t& input, VALUE* output) {
   return IteratorRangeToNumber<BytesToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
@@ -364,7 +364,7 @@ bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
 }
 
 template <typename R, typename T>
-R hex_encode_impl(const T& input, bool is_lower) {
+R do_hex_encode(const T& input, bool is_lower) {
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
@@ -387,7 +387,7 @@ R hex_encode_impl(const T& input, bool is_lower) {
 }
 
 template <typename R, typename T>
-R hex_decode_impl(const T& input) {
+R do_hex_decode(const T& input) {
   std::vector<uint8_t> vec;
   bool res = HexStringToBytesT(input, &vec);
   if (!res) {
@@ -531,7 +531,7 @@ bool ConvertFromString16(const string16& from, char* out) {
   }
 
   char loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -546,7 +546,7 @@ bool ConvertFromString16(const string16& from, unsigned char* out) {
   }
 
   unsigned char loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -561,7 +561,7 @@ bool ConvertFromString16(const string16& from, short* out) {
   }
 
   short loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -576,7 +576,7 @@ bool ConvertFromString16(const string16& from, unsigned short* out) {
   }
 
   unsigned short loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -591,7 +591,7 @@ bool ConvertFromString16(const string16& from, int* out) {
   }
 
   int loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -606,7 +606,7 @@ bool ConvertFromString16(const string16& from, unsigned int* out) {
   }
 
   unsigned int loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -621,7 +621,7 @@ bool ConvertFromString16(const string16& from, long* out) {
   }
 
   long loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -636,7 +636,7 @@ bool ConvertFromString16(const string16& from, unsigned long* out) {
   }
 
   unsigned long loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -651,7 +651,7 @@ bool ConvertFromString16(const string16& from, long long* out) {
   }
 
   long long loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -666,7 +666,7 @@ bool ConvertFromString16(const string16& from, unsigned long long* out) {
   }
 
   unsigned long long loutput = 0;
-  bool res = String16ToIntImpl(from, &loutput);
+  bool res = DoString16ToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -876,7 +876,7 @@ bool ConvertFromString(const std::string& from, char* out) {
   }
 
   char loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -891,7 +891,7 @@ bool ConvertFromString(const std::string& from, unsigned char* out) {
   }
 
   unsigned char loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -906,7 +906,7 @@ bool ConvertFromString(const std::string& from, short* out) {
   }
 
   short loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -921,7 +921,7 @@ bool ConvertFromString(const std::string& from, unsigned short* out) {
   }
 
   unsigned short loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -936,7 +936,7 @@ bool ConvertFromString(const std::string& from, int* out) {
   }
 
   int loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -951,7 +951,7 @@ bool ConvertFromString(const std::string& from, unsigned int* out) {
   }
 
   unsigned int loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -966,7 +966,7 @@ bool ConvertFromString(const std::string& from, long* out) {
   }
 
   long loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -981,7 +981,7 @@ bool ConvertFromString(const std::string& from, unsigned long* out) {
   }
 
   unsigned long loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -996,7 +996,7 @@ bool ConvertFromString(const std::string& from, long long* out) {
   }
 
   long long loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1011,7 +1011,7 @@ bool ConvertFromString(const std::string& from, unsigned long long* out) {
   }
 
   unsigned long long loutput = 0;
-  bool res = StringToIntImpl(from, &loutput);
+  bool res = DoStringToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1201,7 +1201,7 @@ bool ConvertFromBytes(const buffer_t& from, char* out) {
   }
 
   char loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1216,7 +1216,7 @@ bool ConvertFromBytes(const buffer_t& from, unsigned char* out) {
   }
 
   unsigned char loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1231,7 +1231,7 @@ bool ConvertFromBytes(const buffer_t& from, short* out) {
   }
 
   short loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1246,7 +1246,7 @@ bool ConvertFromBytes(const buffer_t& from, unsigned short* out) {
   }
 
   unsigned short loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1261,7 +1261,7 @@ bool ConvertFromBytes(const buffer_t& from, int* out) {
   }
 
   int loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1276,7 +1276,7 @@ bool ConvertFromBytes(const buffer_t& from, unsigned int* out) {
   }
 
   unsigned int loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1291,7 +1291,7 @@ bool ConvertFromBytes(const buffer_t& from, long* out) {
   }
 
   long loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1306,7 +1306,7 @@ bool ConvertFromBytes(const buffer_t& from, unsigned long* out) {
   }
 
   unsigned long loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1321,7 +1321,7 @@ bool ConvertFromBytes(const buffer_t& from, long long* out) {
   }
 
   long long loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1336,7 +1336,7 @@ bool ConvertFromBytes(const buffer_t& from, unsigned long long* out) {
   }
 
   unsigned long long loutput = 0;
-  bool res = BytesToIntImpl(from, &loutput);
+  bool res = DoBytesToInt(from, &loutput);
   if (!res) {
     return false;
   }
@@ -1378,19 +1378,19 @@ namespace utils {
 namespace hex {
 
 buffer_t encode(const buffer_t& input, bool is_lower) {
-  return hex_encode_impl<buffer_t>(input, is_lower);
+  return do_hex_encode<buffer_t>(input, is_lower);
 }
 
 std::string encode(const StringPiece& input, bool is_lower) {
-  return hex_encode_impl<std::string>(input, is_lower);
+  return do_hex_encode<std::string>(input, is_lower);
 }
 
 buffer_t decode(const buffer_t& input) {
-  return hex_decode_impl<buffer_t>(input);
+  return do_hex_decode<buffer_t>(input);
 }
 
 std::string decode(const StringPiece& input) {
-  return hex_decode_impl<std::string>(input);
+  return do_hex_decode<std::string>(input);
 }
 
 }  // namespace hex

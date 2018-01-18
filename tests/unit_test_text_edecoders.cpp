@@ -9,9 +9,8 @@
 #include <common/text_decoders/iedcoder_factory.h>
 #include <common/text_decoders/msgpack_edcoder.h>
 
-#if 0
 TEST(msg_pack, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const std::string raw_data = "alex aalex talex 123 balex";
   common::MsgPackEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
@@ -22,7 +21,6 @@ TEST(msg_pack, enc_dec) {
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
-#endif
 
 TEST(html, enc_dec) {
   const std::string raw_data = "alex aalex talex balex";

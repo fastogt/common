@@ -24,7 +24,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
     common::net::socket_info sc;
     ASSERT_EQ(g_hs, sserver->GetHost());
     common::ErrnoError err = common::net::connect(g_hs, common::net::ST_SOCK_STREAM, &tv, &sc);
-    ASSERT_FALSE(err);
+    ASSERT_TRUE(err);
   }
 
   virtual void Accepted(common::libev::IoClient* client) override {

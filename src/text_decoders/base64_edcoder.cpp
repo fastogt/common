@@ -35,11 +35,11 @@ namespace common {
 
 Base64EDcoder::Base64EDcoder() : IEDcoder(ED_BASE64) {}
 
-Error Base64EDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
+Error Base64EDcoder::DoEncode(const StringPiece& data, std::string* out) {
   return compress::EncodeBase64(data, out);
 }
 
-Error Base64EDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
+Error Base64EDcoder::DoDecode(const StringPiece& data, std::string* out) {
   return compress::DecodeBase64(data, out);
 }
 

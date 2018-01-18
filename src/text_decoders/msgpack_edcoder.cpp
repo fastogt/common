@@ -70,14 +70,14 @@ namespace common {
 
 MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(ED_MSG_PACK) {}
 
-Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
+Error MsgPackEDcoder::DoEncode(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
     return make_error_inval();
   }
 
   cmp_ctx_t cmp;
   std::string lout;
-  cmp_init(&cmp, &lout, NULL, stream_writer);
+  cmp_init(&cmp, &lout, NULL, NULL, stream_writer);
   bool res = cmp_write_str(&cmp, data.data(), data.size());
   if (!res) {
     return make_error("MsgPackEDcoder internal error!");
@@ -86,19 +86,19 @@ Error MsgPackEDcoder::EncodeImpl(const StringPiece& data, std::string* out) {
   return Error();
 }
 
-Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
+Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
   if (!out || data.empty()) {
     return make_error_inval();
   }
   cmp_ctx_t cmp;
-  char* copy = reinterpret_cast<char*>(calloc(data.size() + 1, sizeof(char)));
+  char* copy = static_cast<char*>(calloc(data.size() + 1, sizeof(char)));
   if (!copy) {
     return make_error("Memory allocation failed!");
   }
 
   memcpy(copy, data.data(), data.size());
 
-  cmp_init(&cmp, copy, stream_reader, NULL);
+  cmp_init(&cmp, copy, stream_reader, NULL, NULL);
 
   std::string lout;
 
@@ -113,8 +113,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
       return make_error(cmp_strerror(&cmp));
     }
 
-    char sbuf[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
+    char sbuf[64] = {0};
     switch (obj.type) {
       case CMP_TYPE_POSITIVE_FIXNUM:
       case CMP_TYPE_UINT8:
@@ -147,7 +146,7 @@ Error MsgPackEDcoder::DecodeImpl(const StringPiece& data, std::string* out) {
           free(copy);
           return make_error(cmp_strerror(&cmp));
         }
-        lout.append(sbuf, obj.as.bin_size);
+        lout += std::string(sbuf, obj.as.bin_size);
         break;
       case CMP_TYPE_NIL:
         lout += "NULL";

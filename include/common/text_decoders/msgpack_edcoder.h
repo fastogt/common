@@ -38,8 +38,8 @@ class MsgPackEDcoder : public IEDcoder {
   MsgPackEDcoder();
 
  private:
-  virtual Error EncodeImpl(const StringPiece& data, std::string* out) override;
-  virtual Error DecodeImpl(const StringPiece& data, std::string* out) override;
+  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
+  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
 };
 
 }  // namespace common

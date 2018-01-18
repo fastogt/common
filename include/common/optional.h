@@ -63,7 +63,7 @@ struct OptionalStorage {
   explicit OptionalStorage(T&& value) : is_null_(false), value_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit OptionalStorage(common::in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
+  explicit OptionalStorage(in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
   // When T is not trivially destructible we must call its
   // destructor before deallocating its memory.
   ~OptionalStorage() {
@@ -89,7 +89,7 @@ struct OptionalStorage<T, true> {
   explicit OptionalStorage(T&& value) : is_null_(false), value_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit OptionalStorage(common::in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
+  explicit OptionalStorage(in_place_t, Args&&... args) : is_null_(false), value_(std::forward<Args>(args)...) {}
   // When T is trivially destructible (i.e. its destructor does nothing) there
   // is no need to call it. Explicitly defaulting the destructor means it's not
   // user-provided. Those two together make this destructor trivial.
@@ -122,7 +122,7 @@ class Optional {
  public:
   using value_type = T;
   constexpr Optional() {}
-  constexpr Optional(common::nullopt_t) {}
+  constexpr Optional(nullopt_t) {}
   Optional(const Optional& other) {
     if (!other.storage_.is_null_)
       Init(other.value());
@@ -136,9 +136,9 @@ class Optional {
   Optional(T&& value) : storage_(std::move(value)) {}
   // TODO(alshabalin): Can't use 'constexpr' with std::forward until C++14.
   template <class... Args>
-  explicit Optional(common::in_place_t, Args&&... args) : storage_(common::in_place, std::forward<Args>(args)...) {}
+  explicit Optional(in_place_t, Args&&... args) : storage_(in_place, std::forward<Args>(args)...) {}
   ~Optional() = default;
-  Optional& operator=(common::nullopt_t) {
+  Optional& operator=(nullopt_t) {
     FreeIfNeeded();
     return *this;
   }
@@ -308,51 +308,51 @@ constexpr bool operator>=(const Optional<T>& lhs, const Optional<T>& rhs) {
   return !(lhs < rhs);
 }
 template <class T>
-constexpr bool operator==(const Optional<T>& opt, common::nullopt_t) {
+constexpr bool operator==(const Optional<T>& opt, nullopt_t) {
   return !opt;
 }
 template <class T>
-constexpr bool operator==(common::nullopt_t, const Optional<T>& opt) {
+constexpr bool operator==(nullopt_t, const Optional<T>& opt) {
   return !opt;
 }
 template <class T>
-constexpr bool operator!=(const Optional<T>& opt, common::nullopt_t) {
+constexpr bool operator!=(const Optional<T>& opt, nullopt_t) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator!=(common::nullopt_t, const Optional<T>& opt) {
+constexpr bool operator!=(nullopt_t, const Optional<T>& opt) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator<(const Optional<T>&, common::nullopt_t) {
+constexpr bool operator<(const Optional<T>&, nullopt_t) {
   return false;
 }
 template <class T>
-constexpr bool operator<(common::nullopt_t, const Optional<T>& opt) {
+constexpr bool operator<(nullopt_t, const Optional<T>& opt) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator<=(const Optional<T>& opt, common::nullopt_t) {
+constexpr bool operator<=(const Optional<T>& opt, nullopt_t) {
   return !opt;
 }
 template <class T>
-constexpr bool operator<=(common::nullopt_t, const Optional<T>&) {
+constexpr bool operator<=(nullopt_t, const Optional<T>&) {
   return true;
 }
 template <class T>
-constexpr bool operator>(const Optional<T>& opt, common::nullopt_t) {
+constexpr bool operator>(const Optional<T>& opt, nullopt_t) {
   return !!opt;
 }
 template <class T>
-constexpr bool operator>(common::nullopt_t, const Optional<T>&) {
+constexpr bool operator>(nullopt_t, const Optional<T>&) {
   return false;
 }
 template <class T>
-constexpr bool operator>=(const Optional<T>&, common::nullopt_t) {
+constexpr bool operator>=(const Optional<T>&, nullopt_t) {
   return true;
 }
 template <class T>
-constexpr bool operator>=(common::nullopt_t, const Optional<T>& opt) {
+constexpr bool operator>=(nullopt_t, const Optional<T>& opt) {
   return !opt;
 }
 template <class T>

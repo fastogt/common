@@ -45,27 +45,27 @@ std::string CmdIdToString(cmd_id_t id) {
   return std::string();
 }
 
-common::Error StableCommand(const std::string& command, std::string* stabled_command) {
+Error StableCommand(const std::string& command, std::string* stabled_command) {
   if (command.empty() || !stabled_command) {
-    return common::make_error("Prepare commands, invalid input");
+    return make_error("Prepare commands, invalid input");
   }
 
   size_t pos = command.find_last_of(END_OF_COMMAND);
   if (pos == std::string::npos) {
-    return common::make_error("UNKNOWN SEQUENCE: " + command);
+    return make_error("UNKNOWN SEQUENCE: " + command);
   }
 
   *stabled_command = command.substr(0, pos - 1);
-  return common::Error();
+  return Error();
 }
 
-common::Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_id, std::string* cmd_str) {
+Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_id, std::string* cmd_str) {
   if (command.empty() || !cmd_id || !seq_id || !cmd_str) {
-    return common::make_error("Parse command, invalid input");
+    return make_error("Parse command, invalid input");
   }
 
   std::string stabled_command;
-  common::Error err = StableCommand(command, &stabled_command);
+  Error err = StableCommand(command, &stabled_command);
   if (err) {
     return err;
   }
@@ -73,12 +73,12 @@ common::Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq
   char* star_seq = NULL;
   cmd_id_t lcmd_id = strtoul(stabled_command.c_str(), &star_seq, 10);
   if (*star_seq != ' ') {
-    return common::make_error("PROBLEM EXTRACTING SEQUENCE: " + command);
+    return make_error("PROBLEM EXTRACTING SEQUENCE: " + command);
   }
 
   const char* id_ptr = strchr(star_seq + 1, ' ');
   if (!id_ptr) {
-    return common::make_error("PROBLEM EXTRACTING ID: " + command);
+    return make_error("PROBLEM EXTRACTING ID: " + command);
   }
 
   ptrdiff_t len_seq = id_ptr - (star_seq + 1);
@@ -87,7 +87,7 @@ common::Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq
   *cmd_id = lcmd_id;
   *seq_id = lseq_id;
   *cmd_str = id_ptr + 1;
-  return common::Error();
+  return Error();
 }
 
 }  // namespace three_way_handshake

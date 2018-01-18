@@ -52,7 +52,7 @@ Error IoClient::Close() {
   if (server_) {
     server_->CloseClient(this);
   }
-  return CloseImpl();
+  return DoClose();
 }
 
 IoLoop* IoClient::GetServer() const {

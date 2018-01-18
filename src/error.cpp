@@ -47,7 +47,7 @@ std::string common_strerror(int err) {
     return error_str;
   }
 
-  return common::MemSPrintf("Unknown error (%d)", err);
+  return MemSPrintf("Unknown error (%d)", err);
 }
 #else
 std::string common_strerror(int err) {
@@ -56,7 +56,7 @@ std::string common_strerror(int err) {
     return error_str;
   }
 
-  return common::MemSPrintf("Unknown error (%d)", err);
+  return MemSPrintf("Unknown error (%d)", err);
 }
 #endif
 
@@ -66,7 +66,7 @@ std::string CommonErrorTraits::GetTextFromErrorCode(CommonErrorCode error) {
   } else if (error == COMMON_EINTR) {
     return "Interrupted function call";
   }
-  return common::MemSPrintf("Unknown common error code: %d.", static_cast<int>(error));
+  return MemSPrintf("Unknown common error code: %d.", static_cast<int>(error));
 }
 
 std::string ErrnoTraits::GetTextFromErrorCode(int error) {
