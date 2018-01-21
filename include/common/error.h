@@ -41,13 +41,19 @@ class ErrorBase {
  public:
   typedef T error_code_type;
   typedef trait trait_type;
+  typedef void payload_type;
 
-  ErrorBase(error_code_type error_code) : error_code_(error_code) {}
+  ErrorBase(error_code_type error_code) : error_code_(error_code), user_data_(nullptr) {}
   std::string GetDescription() const { return trait_type::GetTextFromErrorCode(error_code_); }
   error_code_type GetErrorCode() const { return error_code_; }
 
+  void SetPayload(payload_type* user_data) { user_data_ = user_data; }
+
+  payload_type* GetPayload() const { return user_data_; }
+
  private:
   error_code_type error_code_;
+  payload_type* user_data_;
 };
 
 // common error
