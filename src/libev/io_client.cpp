@@ -88,6 +88,31 @@ const char* IoClient::ClassName() const {
   return "IoClient";
 }
 
+Error IoClient::Write(const buffer_t& data, size_t* nwrite_out) {
+  return Write(data.data(), data.size(), nwrite_out);
+}
+
+Error IoClient::Write(const std::string& data, size_t* nwrite_out) {
+  return Write(data.data(), data.size(), nwrite_out);
+}
+
+Error IoClient::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
+  return Read(out_data->data(), max_size, nread_out);
+}
+
+Error IoClient::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
+  char* buff = new char[max_size];
+  Error err = Read(buff, max_size, nread_out);
+  if (err) {
+    delete[] buff;
+    return err;
+  }
+
+  *out_data = std::string(buff, *nread_out);
+  delete[] buff;
+  return err;
+}
+
 std::string IoClient::GetFormatedName() const {
   return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
 }

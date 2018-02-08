@@ -59,29 +59,15 @@ SocketHolder::SocketHolder(socket_descr_t fd) : info_(fd) {}
 
 #ifdef OS_POSIX
 ErrnoError SocketHolder::WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
-  return net::write_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
+  DCHECK(IsValid());
+  return write_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
 }
 
 ErrnoError SocketHolder::ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
-  return net::read_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
+  DCHECK(IsValid());
+  return read_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
 }
 #endif
-
-ErrnoError SocketHolder::Write(const char* data, size_t size, size_t* nwrite_out) {
-  return net::write_to_socket(info_.fd(), data, size, nwrite_out);
-}
-
-ErrnoError SocketHolder::Write(const unsigned char* data, size_t size, size_t* nwrite_out) {
-  return net::write_to_socket(info_.fd(), data, size, nwrite_out);
-}
-
-ErrnoError SocketHolder::Read(char* out, size_t len, size_t* nread_out) {
-  return net::read_from_socket(info_.fd(), out, len, nread_out);
-}
-
-ErrnoError SocketHolder::Read(unsigned char* out, size_t len, size_t* nread_out) {
-  return net::read_from_socket(info_.fd(), out, len, nread_out);
-}
 
 socket_info SocketHolder::GetInfo() const {
   return info_;
@@ -89,6 +75,49 @@ socket_info SocketHolder::GetInfo() const {
 
 socket_descr_t SocketHolder::GetFd() const {
   return info_.fd();
+}
+
+bool SocketHolder::IsValid() const {
+  return info_.is_valid();
+}
+
+ErrnoError SocketHolder::Write(const buffer_t& data, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return write_to_socket(info_.fd(), data.data(), data.size(), nwrite_out);
+}
+
+ErrnoError SocketHolder::Write(const std::string& data, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return write_to_socket(info_.fd(), data.data(), data.size(), nwrite_out);
+}
+
+ErrnoError SocketHolder::Write(const void* data, size_t size, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return write_to_socket(info_.fd(), data, size, nwrite_out);
+}
+
+ErrnoError SocketHolder::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
+  DCHECK(IsValid());
+  return read_from_socket(info_.fd(), out_data->data(), max_size, nread_out);
+}
+
+ErrnoError SocketHolder::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
+  DCHECK(IsValid());
+  char* buff = new char[max_size];
+  ErrnoError err = read_from_socket(info_.fd(), buff, max_size, nread_out);
+  if (err) {
+    delete[] buff;
+    return err;
+  }
+
+  *out_data = std::string(buff, *nread_out);
+  delete[] buff;
+  return err;
+}
+
+ErrnoError SocketHolder::Read(void* out_data, size_t max_size, size_t* nread_out) {
+  DCHECK(IsValid());
+  return read_from_socket(info_.fd(), out_data, max_size, nread_out);
 }
 
 ErrnoError SocketHolder::Close() {
@@ -132,7 +161,7 @@ ErrnoError ClientSocketTcp::SendFile(descriptor_t file_fd, size_t file_size) {
     return make_error_perror("SendFile", EINVAL);
   }
 
-  return net::send_file_to_fd(fd, file_fd, 0, file_size);
+  return send_file_to_fd(fd, file_fd, 0, file_size);
 }
 
 ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}

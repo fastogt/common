@@ -49,7 +49,7 @@ class DescriptorHolder {
 
   ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  ErrnoError Read(void* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Close() WARN_UNUSED_RESULT;
 
   ErrnoError Lock() WARN_UNUSED_RESULT;

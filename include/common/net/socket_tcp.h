@@ -32,6 +32,7 @@
 #include <common/error.h>  // for ErrnoError
 #include <common/net/socket_info.h>
 #include <common/net/types.h>
+#include <common/types.h>
 
 namespace common {
 namespace net {
@@ -45,16 +46,21 @@ class SocketHolder {
 
   socket_info GetInfo() const;
   socket_descr_t GetFd() const;
+  bool IsValid() const;
 
 #ifdef OS_POSIX
   ErrnoError WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
 #endif
 
-  ErrnoError Write(const char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  ErrnoError Write(const unsigned char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  ErrnoError Read(char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
-  ErrnoError Read(unsigned char* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
+
+  ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+
   ErrnoError Close() WARN_UNUSED_RESULT;
 
  protected:

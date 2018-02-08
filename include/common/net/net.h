@@ -64,11 +64,8 @@ ErrnoError write_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int 
 ErrnoError read_ev_to_socket(socket_descr_t fd, const struct iovec* iovec, int count, size_t* nread_out);
 #endif
 
-ErrnoError write_to_socket(socket_descr_t fd, const char* data, size_t size, size_t* nwritten_out) WARN_UNUSED_RESULT;
-ErrnoError write_to_socket(socket_descr_t fd, const unsigned char* data, size_t size, size_t* nwritten_out)
-    WARN_UNUSED_RESULT;
-ErrnoError read_from_socket(socket_descr_t fd, char* out, size_t size, size_t* nread_out) WARN_UNUSED_RESULT;
-ErrnoError read_from_socket(socket_descr_t fd, unsigned char* out, size_t size, size_t* nread_out) WARN_UNUSED_RESULT;
+ErrnoError write_to_socket(socket_descr_t fd, const void* data, size_t size, size_t* nwritten_out) WARN_UNUSED_RESULT;
+ErrnoError read_from_socket(socket_descr_t fd, void* buf, size_t size, size_t* nread_out) WARN_UNUSED_RESULT;
 
 ErrnoError sendto(socket_descr_t fd,
                   const char* data,

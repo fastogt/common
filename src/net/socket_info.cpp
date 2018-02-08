@@ -102,6 +102,10 @@ socket_info::~socket_info() {
   }
 }
 
+bool socket_info::is_valid() const {
+  return fd_ != INVALID_SOCKET_VALUE;
+}
+
 void socket_info::set_fd(socket_descr_t fd) {
   fd_ = fd;
 }

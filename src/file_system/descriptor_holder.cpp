@@ -71,14 +71,19 @@ ErrnoError DescriptorHolder::Read(std::string* out_data, size_t max_size, size_t
   DCHECK(IsValid());
   char* buff = new char[max_size];
   ErrnoError err = read_from_descriptor(fd_, buff, max_size, nread_out);
-  *out_data = std::string(buff, max_size);
+  if (err) {
+    delete[] buff;
+    return err;
+  }
+
+  *out_data = std::string(buff, *nread_out);
   delete[] buff;
   return err;
 }
 
-ErrnoError DescriptorHolder::Read(void* out, size_t len, size_t* nread_out) {
+ErrnoError DescriptorHolder::Read(void* out_data, size_t max_size, size_t* nread_out) {
   DCHECK(IsValid());
-  return read_from_descriptor(fd_, out, len, nread_out);
+  return read_from_descriptor(fd_, out_data, max_size, nread_out);
 }
 
 ErrnoError DescriptorHolder::Close() {

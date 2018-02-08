@@ -112,6 +112,8 @@ class socket_info {
 
   ~socket_info();
 
+  bool is_valid() const;
+
   void set_fd(socket_descr_t fd);
   socket_descr_t fd() const;
 
