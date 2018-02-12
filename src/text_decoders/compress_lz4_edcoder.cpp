@@ -27,59 +27,32 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/iedcoder.h>
+#include <common/text_decoders/compress_lz4_edcoder.h>
+
+#include <common/compress/lz4_compress.h>
 
 namespace common {
 
-const std::array<const char*, ENCODER_DECODER_NUM_TYPES> edecoder_types = {
-    {"Base64", "GZip", "LZ4", "Snappy", "Hex", "MsgPack", "HtmlEscape"}};
+CompressLZ4EDcoder::CompressLZ4EDcoder() : IEDcoder(ED_LZ4) {}
 
-std::string ConvertToString(EDType ed_type) {
-  if (ed_type >= 0 && ed_type < edecoder_types.size()) {
-    return edecoder_types[ed_type];
-  }
-
-  DNOTREACHED();
-  return "UNKNOWN";
+Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, std::string* out) {
+#ifdef HAVE_LZ4
+  return compress::EncodeLZ4(data, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB encode not supported");
+#endif
 }
 
-bool ConvertFromString(const std::string& from, EDType* out) {
-  if (!out) {
-    return false;
-  }
-
-  for (size_t i = 0; i < edecoder_types.size(); ++i) {
-    if (from == edecoder_types[i]) {
-      *out = static_cast<EDType>(i);
-      return true;
-    }
-  }
-
-  return false;
-}
-
-IEDcoder::~IEDcoder() {}
-
-IEDcoder::IEDcoder(EDType type) : type_(type) {}
-
-Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
-  if (data.empty()) {
-    return make_error_inval();
-  }
-
-  return DoEncode(data, out);
-}
-
-Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
-  if (data.empty()) {
-    return make_error_inval();
-  }
-
-  return DoDecode(data, out);
-}
-
-EDType IEDcoder::GetType() const {
-  return type_;
+Error CompressLZ4EDcoder::DoDecode(const StringPiece& data, std::string* out) {
+#ifdef HAVE_LZ4
+  return compress::DecodeLZ4(data, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB decode not supported");
+#endif
 }
 
 }  // namespace common

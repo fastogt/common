@@ -151,10 +151,10 @@ SET(COMPRESS_SOURCES
 
 #dependencies ${ZLIB_LIBRARIES} ${SNAPPY_LIBRARIES}
 IF(ZLIB_FOUND)
-  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h)
-  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp)
-  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
-  SET(COMMON_LIBS ${COMMON_LIBS} ${ZLIB_LIBRARIES})
+  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/lz4_compress.h)
+  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/lz4_compress.cpp)
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${LZ4_INCLUDE_DIRS})
+  SET(COMMON_LIBS ${COMMON_LIBS} ${LZ4_LIBRARIES})
 ENDIF(ZLIB_FOUND)
 
 IF(SNAPPY_FOUND)
@@ -163,6 +163,13 @@ IF(SNAPPY_FOUND)
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${SNAPPY_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${SNAPPY_LIBRARIES})
 ENDIF(SNAPPY_FOUND)
+
+IF(LZ4_FOUND)
+  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h)
+  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp)
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+  SET(COMMON_LIBS ${COMMON_LIBS} ${ZLIB_LIBRARIES})
+ENDIF(LZ4_FOUND)
 
 SET(HTTP_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/http/http.h
@@ -183,6 +190,7 @@ SET(TEXT_DECODERS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/iedcoder_factory.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/base64_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/compress_zlib_edcoder.h
+  ${CMAKE_SOURCE_DIR}/include/common/text_decoders/compress_lz4_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/compress_snappy_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/msgpack_edcoder.h
 )
@@ -194,6 +202,7 @@ SET(TEXT_DECODERS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/text_decoders/iedcoder_factory.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/base64_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/compress_zlib_edcoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/text_decoders/compress_lz4_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/compress_snappy_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/msgpack_edcoder.cpp
 )

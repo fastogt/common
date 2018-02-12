@@ -45,7 +45,7 @@ struct timespec current_timespec() {
 
 time64_t current_utc_mstime() {
   timeval cur_time = current_timeval();
-  time_t now = ::time(NULL);
+  time64_t now = static_cast<time64_t>(::time(NULL));
   return now * 1000 + cur_time.tv_usec / 1000;
 }
 

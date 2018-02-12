@@ -32,6 +32,7 @@
 #include <common/text_decoders/base64_edcoder.h>
 #include <common/text_decoders/compress_snappy_edcoder.h>
 #include <common/text_decoders/compress_zlib_edcoder.h>
+#include <common/text_decoders/compress_lz4_edcoder.h>
 #include <common/text_decoders/hex_edcoder.h>
 #include <common/text_decoders/html_edcoder.h>
 #include <common/text_decoders/msgpack_edcoder.h>
@@ -43,6 +44,8 @@ IEDcoder* CreateEDCoder(EDType type) {
     return new Base64EDcoder;
   } else if (type == ED_ZLIB) {
     return new CompressZlibEDcoder;
+  } else if (type == ED_LZ4) {
+    return new CompressLZ4EDcoder;
   } else if (type == ED_SNAPPY) {
     return new CompressSnappyEDcoder;
   } else if (type == ED_HEX) {
