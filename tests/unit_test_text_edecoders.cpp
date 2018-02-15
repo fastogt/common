@@ -3,6 +3,7 @@
 #include <common/text_decoders/base64_edcoder.h>
 #include <common/text_decoders/compress_snappy_edcoder.h>
 #include <common/text_decoders/compress_zlib_edcoder.h>
+#include <common/text_decoders/compress_bzip2_edcoder.h>
 #include <common/text_decoders/compress_lz4_edcoder.h>
 #include <common/text_decoders/hex_edcoder.h>
 #include <common/text_decoders/html_edcoder.h>
@@ -72,6 +73,21 @@ TEST(zlib, enc_dec) {
 
   std::string dec_data;
   err = zl.Decode(enc_data, &dec_data);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(raw_data, dec_data);
+}
+#endif
+
+#ifdef HAVE_BZIP2
+TEST(bzip2, enc_dec) {
+  const std::string raw_data = "alex aalex talex balex";
+  common::CompressBZip2EDcoder bz;
+  std::string enc_data;
+  common::Error err = bz.Encode(raw_data, &enc_data);
+  ASSERT_FALSE(err);
+
+  std::string dec_data;
+  err = bz.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }

@@ -31,64 +31,103 @@
 
 #ifdef HAVE_LZ4
 
+#include <limits>
+
 #include <lz4.h>
 
-namespace common {
-namespace compress {
+#include <common/compress/coding.h>
 
+namespace common {
 namespace {
-template <typename STR, typename STR2>
-Error EncodeLZ4T(const STR& data, STR2* out) {
-  if (data.empty() || !out) {
+template <typename CHAR, typename STR2>
+Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
+  if (!input || !output || input_length > std::numeric_limits<uint32_t>::max()) {
+    // Can't compress more than 4GB
     return make_error_inval();
   }
 
-  const size_t src_size = data.size() + 1;
-  const size_t max_dst_size = LZ4_compressBound(src_size);
-  char* dst_data = new char[max_dst_size];
-  const char* src_data = reinterpret_cast<const char*>(data.data());
-  int processed = LZ4_compress_default(src_data, dst_data, src_size, max_dst_size);
-  if (processed < 0) {
+  int stabled_input_size = static_cast<int>(input_length);
+  size_t output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
+  int compress_bound = LZ4_compressBound(stabled_input_size);
+  output->resize(static_cast<size_t>(output_header_len + compress_bound));
+
+  int outlen;
+#if LZ4_VERSION_NUMBER >= 10400  // r124+
+  LZ4_stream_t* stream = LZ4_createStream();
+  const char* stabled_input = reinterpret_cast<const char*>(input);
+  char* stabled_output = reinterpret_cast<char*>(&(*output)[output_header_len]);
+#if LZ4_VERSION_NUMBER >= 10700  // r129+
+  outlen = LZ4_compress_fast_continue(stream, stabled_input, stabled_output, stabled_input_size, compress_bound, 1);
+#else  // up to r128
+  outlen =
+      LZ4_compress_limitedOutput_continue(stream, stabled_input, stabled_output, stabled_input_size, compress_bound);
+#endif
+  LZ4_freeStream(stream);
+#else   // up to r123
+  outlen =
+      LZ4_compress_limitedOutput(input, &(*output)[output_header_len], static_cast<int>(input_size), compress_bound);
+#endif  // LZ4_VERSION_NUMBER >= 10400
+
+  if (outlen == 0) {
     return make_error("LZ4 compress internal error");
   }
-
-  *out = STR2(dst_data, dst_data + processed);
+  output->resize(static_cast<size_t>(output_header_len + outlen));
   return Error();
 }
 
-template <typename STR, typename STR2>
-Error DecodeLZ4T(const STR& data, STR2* out) {
-  if (data.empty() || !out) {
+template <typename CHAR, typename STR2>
+Error DecodeLZ4T(const CHAR* input, size_t input_length, STR2* out) {
+  if (!input || !out) {
     return make_error_inval();
   }
 
-  const size_t src_size = data.size() + 1;
-  char* dst_data = new char[src_size];
-  const char* source_data = reinterpret_cast<const char*>(data.data());
-  int processed = LZ4_decompress_fast(source_data, dst_data, src_size);
-  if (processed < 0) {
-    return make_error("LZ4 decompress internal error");
+  uint32_t output_len = 0;
+  // new encoding, using varint32 to store size information
+  if (!compress::GetDecompressedSizeInfo(&input, &input_length, &output_len)) {
+    return make_error_inval();
   }
 
-  *out = STR2(dst_data, dst_data + processed);
+  CHAR* output = new CHAR[output_len];
+#if LZ4_VERSION_NUMBER >= 10400  // r124+
+  LZ4_streamDecode_t* stream = LZ4_createStreamDecode();
+  const char* stabled_input = reinterpret_cast<const char*>(input);
+  char* stabled_output = reinterpret_cast<char*>(output);
+  int decompress_size = LZ4_decompress_safe_continue(stream, stabled_input, stabled_output,
+                                                     static_cast<int>(input_length), static_cast<int>(output_len));
+  LZ4_freeStreamDecode(stream);
+#else   // up to r123
+  int decompress_size =
+      LZ4_decompress_safe(input_data, output, static_cast<int>(input_length), static_cast<int>(output_len));
+#endif  // LZ4_VERSION_NUMBER >= 10400
+
+  if (decompress_size < 0) {
+    delete[] output;
+    return make_error("LZ4 decompress_size internal error");
+  }
+
+  DCHECK(decompress_size == static_cast<int>(output_len));
+  *out = STR2(output, output + decompress_size);
+  delete[] output;
   return Error();
 }
 }  // namespace
 
+namespace compress {
+
 Error EncodeLZ4(const buffer_t& data, buffer_t* out) {
-  return EncodeLZ4T(data, out);
+  return EncodeLZ4T(data.data(), data.size(), out);
 }
 
 Error DecodeLZ4(const buffer_t& data, buffer_t* out) {
-  return DecodeLZ4T(data, out);
+  return DecodeLZ4T(data.data(), data.size(), out);
 }
 
 Error EncodeLZ4(const StringPiece& data, std::string* out) {
-  return EncodeLZ4T(data, out);
+  return EncodeLZ4T(data.data(), data.size(), out);
 }
 
 Error DecodeLZ4(const StringPiece& data, std::string* out) {
-  return DecodeLZ4T(data, out);
+  return DecodeLZ4T(data.data(), data.size(), out);
 }
 
 }  // namespace compress

@@ -27,72 +27,65 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/compress/zlib_compress.h>
+#include <common/compress/bzip2_compress.h>
 
-#ifdef HAVE_ZLIB
-
-#include <common/compress/coding.h>
+#ifdef HAVE_BZIP2
 
 #include <limits>
 
-#define windowBits 15
-#define GZIP_ENCODING 16
+#include <bzlib.h>
+
+#include <common/compress/coding.h>
 
 namespace common {
-namespace compress {
-
 namespace {
-
 template <typename CHAR, typename STR2>
-Error EncodeZlibT(const CHAR* input, size_t input_length, STR2* output, int compression_level) {
+Error EncodeBZip2T(const CHAR* input, size_t input_length, STR2* output) {
   if (!input || !output || input_length > std::numeric_limits<uint32_t>::max()) {
     // Can't compress more than 4GB
     return make_error_inval();
   }
 
   size_t output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
-  // Resize output to be the plain data length.
-  // This may not be big enough if the compression actually expands data.
   output->resize(output_header_len + input_length);
 
-  // The memLevel parameter specifies how much memory should be allocated for
-  // the internal compression state.
-  // memLevel=1 uses minimum memory but is slow and reduces compression ratio.
-  // memLevel=9 uses maximum memory for optimal speed.
-  // The default value is 8. See zconf.h for more details.
-  static const int mem_level = 8;
-  z_stream _stream;
-  memset(&_stream, 0, sizeof(z_stream));
-  int st =
-      deflateInit2(&_stream, compression_level, Z_DEFLATED, windowBits | GZIP_ENCODING, mem_level, Z_DEFAULT_STRATEGY);
-  if (st != Z_OK) {
-    return make_error("ZLIB compress internal error");
+  bz_stream _stream;
+  memset(&_stream, 0, sizeof(bz_stream));
+
+  // Block size 1 is 100K.
+  // 0 is for silent.
+  // 30 is the default workFactor
+  int st = BZ2_bzCompressInit(&_stream, 1, 0, 30);
+  if (st != BZ_OK) {
+    return make_error("BZip2 compress internal error");
   }
 
   // Compress the input, and put compressed data in output.
-  _stream.next_in = (Bytef*)input;
+  _stream.next_in = (char*)input;
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   // Initialize the output size.
   _stream.avail_out = static_cast<unsigned int>(input_length);
-  _stream.next_out = reinterpret_cast<Bytef*>(&(*output)[output_header_len]);
+  _stream.next_out = reinterpret_cast<char*>(&(*output)[output_header_len]);
 
-  st = deflate(&_stream, Z_FINISH);
-  if (st == Z_STREAM_END) {
+  bool compressed = false;
+  st = BZ2_bzCompress(&_stream, BZ_FINISH);
+  if (st == BZ_STREAM_END) {
+    compressed = true;
     output->resize(output->size() - _stream.avail_out);
-    deflateEnd(&_stream);
+    BZ2_bzCompressEnd(&_stream);
     return Error();
   }
-  // The only return value we really care about is Z_STREAM_END.
-  // Z_OK means insufficient output space. This means the compression is
-  // bigger than decompressed size. Just fail the compression in that case.
+  // The only return value we really care about is BZ_STREAM_END.
+  // BZ_FINISH_OK means insufficient output space. This means the compression
+  // is bigger than decompressed size. Just fail the compression in that case.
 
-  deflateEnd(&_stream);
-  return make_error("ZLIB compress internal error");
+  BZ2_bzCompressEnd(&_stream);
+  return make_error("BZip2 compress internal error");
 }
 
 template <typename CHAR, typename STR2>
-Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
+Error DecodeBZip2T(const CHAR* input, size_t input_length, STR2* out) {
   if (!input || !out) {
     return make_error_inval();
   }
@@ -103,54 +96,49 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
     return make_error_inval();
   }
 
-  z_stream _stream;
-  memset(&_stream, 0, sizeof(z_stream));
+  bz_stream _stream;
+  memset(&_stream, 0, sizeof(bz_stream));
 
-  // For raw inflate, the windowBits should be -8..-15.
-  // If windowBits is bigger than zero, it will use either zlib
-  // header or gzip header. Adding 32 to it will do automatic detection.
-  int st = inflateInit2(&_stream, windowBits > 0 ? windowBits + 32 : windowBits);
-  if (st != Z_OK) {
-    return make_error("ZLIB decompress internal error");
+  int st = BZ2_bzDecompressInit(&_stream, 0, 0);
+  if (st != BZ_OK) {
+    return make_error("BZip2 decompress internal error");
   }
 
-  _stream.next_in = (Bytef*)input;
+  _stream.next_in = (char*)input;
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   char* output = new char[output_len];
 
-  _stream.next_out = (Bytef*)output;
+  _stream.next_out = (char*)output;
   _stream.avail_out = static_cast<unsigned int>(output_len);
 
   bool done = false;
   while (!done) {
-    st = inflate(&_stream, Z_SYNC_FLUSH);
+    st = BZ2_bzDecompress(&_stream);
     switch (st) {
-      case Z_STREAM_END:
+      case BZ_STREAM_END:
         done = true;
         break;
-      case Z_OK: {
+      case BZ_OK: {
         // No output space. Increase the output space by 20%.
         // We should never run out of output space if
-
-        size_t old_sz = output_len;
-        uint32_t output_len_delta = output_len / 5;
-        output_len += output_len_delta < 10 ? 10 : output_len_delta;
+        // compress_format_version == 2
+        uint32_t old_sz = output_len;
+        output_len = output_len * 1.2;
         char* tmp = new char[output_len];
         memcpy(tmp, output, old_sz);
         delete[] output;
         output = tmp;
 
         // Set more output.
-        _stream.next_out = (Bytef*)(output + old_sz);
+        _stream.next_out = (char*)(output + old_sz);
         _stream.avail_out = static_cast<unsigned int>(output_len - old_sz);
         break;
       }
-      case Z_BUF_ERROR:
       default:
         delete[] output;
-        inflateEnd(&_stream);
-        return make_error("ZLIB decompress internal error");
+        BZ2_bzDecompressEnd(&_stream);
+        return make_error("BZip2 decompress internal error");
     }
   }
 
@@ -159,28 +147,29 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
   int decompress_size = static_cast<int>(output_len - _stream.avail_out);
   *out = STR2(output, output + decompress_size);
   delete[] output;
-  inflateEnd(&_stream);
+  BZ2_bzDecompressEnd(&_stream);
   return Error();
 }
 }  // namespace
 
-Error EncodeZlib(const buffer_t& data, buffer_t* out, int compression_level) {
-  return EncodeZlibT(data.data(), data.size(), out, compression_level);
+namespace compress {
+
+Error EncodeBZip2(const buffer_t& data, buffer_t* out) {
+  return EncodeBZip2T(data.data(), data.size(), out);
 }
 
-Error DecodeZlib(const buffer_t& data, buffer_t* out) {
-  return DecodeZlibT(data.data(), data.size(), out);
+Error DecodeBZip2(const buffer_t& data, buffer_t* out) {
+  return DecodeBZip2T(data.data(), data.size(), out);
 }
 
-Error EncodeZlib(const StringPiece& data, std::string* out, int compression_level) {
-  return EncodeZlibT(data.data(), data.size(), out, compression_level);
+Error EncodeBZip2(const StringPiece& data, std::string* out) {
+  return EncodeBZip2T(data.data(), data.size(), out);
 }
 
-Error DecodeZlib(const StringPiece& data, std::string* out) {
-  return DecodeZlibT(data.data(), data.size(), out);
+Error DecodeBZip2(const StringPiece& data, std::string* out) {
+  return DecodeBZip2T(data.data(), data.size(), out);
 }
 
 }  // namespace compress
 }  // namespace common
-
 #endif
