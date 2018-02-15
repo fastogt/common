@@ -52,10 +52,10 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
   output->resize(static_cast<size_t>(output_header_len + compress_bound));
 
   int outlen;
-#if LZ4_VERSION_NUMBER >= 10400  // r124+
-  LZ4_stream_t* stream = LZ4_createStream();
   const char* stabled_input = reinterpret_cast<const char*>(input);
   char* stabled_output = reinterpret_cast<char*>(&(*output)[output_header_len]);
+#if LZ4_VERSION_NUMBER >= 10400  // r124+
+  LZ4_stream_t* stream = LZ4_createStream();
 #if LZ4_VERSION_NUMBER >= 10700  // r129+
   outlen = LZ4_compress_fast_continue(stream, stabled_input, stabled_output, stabled_input_size, compress_bound, 1);
 #else  // up to r128
@@ -63,9 +63,8 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
       LZ4_compress_limitedOutput_continue(stream, stabled_input, stabled_output, stabled_input_size, compress_bound);
 #endif
   LZ4_freeStream(stream);
-#else   // up to r123
-  outlen =
-      LZ4_compress_limitedOutput(input, &(*output)[output_header_len], static_cast<int>(input_size), compress_bound);
+#else  // up to r123
+  outlen = LZ4_compress_limitedOutput(stabled_input, stabled_output, stabled_input_size, compress_bound);
 #endif  // LZ4_VERSION_NUMBER >= 10400
 
   if (outlen == 0) {
@@ -88,16 +87,16 @@ Error DecodeLZ4T(const CHAR* input, size_t input_length, STR2* out) {
   }
 
   CHAR* output = new CHAR[output_len];
-#if LZ4_VERSION_NUMBER >= 10400  // r124+
-  LZ4_streamDecode_t* stream = LZ4_createStreamDecode();
   const char* stabled_input = reinterpret_cast<const char*>(input);
   char* stabled_output = reinterpret_cast<char*>(output);
+#if LZ4_VERSION_NUMBER >= 10400  // r124+
+  LZ4_streamDecode_t* stream = LZ4_createStreamDecode();
   int decompress_size = LZ4_decompress_safe_continue(stream, stabled_input, stabled_output,
                                                      static_cast<int>(input_length), static_cast<int>(output_len));
   LZ4_freeStreamDecode(stream);
 #else   // up to r123
   int decompress_size =
-      LZ4_decompress_safe(input_data, output, static_cast<int>(input_length), static_cast<int>(output_len));
+      LZ4_decompress_safe(stabled_input, stabled_output, static_cast<int>(input_length), static_cast<int>(output_len));
 #endif  // LZ4_VERSION_NUMBER >= 10400
 
   if (decompress_size < 0) {

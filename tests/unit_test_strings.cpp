@@ -146,13 +146,14 @@ TEST(string, StringPiece) {
 }
 
 TEST(string, HexCompress) {
-  const common::buffer_t json = MAKE_BUFFER(R"("{"back_end_credentials" : {"creds" :
-      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
-      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
-      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
-      "http_root" : "/home/sasha/timeshift/26"} ]},
-      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
-      "type" : "1"},"type" : "relay"})");
+  const common::buffer_t json = MAKE_BUFFER(
+      "{\"back_end_credentials\" : {\"creds\" :\
+      { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+      \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+      \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+      \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+      \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+      \"type\" : \"1\"},\"type\" : \"relay\"}");
   common::buffer_t encoded_hex;
   common::Error err = common::compress::EncodeHex(json, false, &encoded_hex);
   ASSERT_FALSE(err);
@@ -165,13 +166,13 @@ TEST(string, HexCompress) {
 
 TEST(string, Base64Compress) {
   const common::buffer_t json = MAKE_BUFFER(
-      R"("{"back_end_credentials" : {"creds" :
-      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
-      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
-      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
-      "http_root" : "/home/sasha/timeshift/26"} ]},
-      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
-      "type" : "1"},"type" : "relay"})");
+      "{\"back_end_credentials\" : {\"creds\" :\
+                  { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+                  \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+                  \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+                  \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+                  \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+                  \"type\" : \"1\"},\"type\" : \"relay\"}");
   common::buffer_t encoded_base64;
   common::Error err = common::compress::EncodeBase64(json, &encoded_base64);
   ASSERT_FALSE(err);
@@ -185,13 +186,13 @@ TEST(string, Base64Compress) {
 #ifdef HAVE_ZLIB
 TEST(string, ZlibCompress) {
   const common::buffer_t json = MAKE_BUFFER(
-      R"("{"back_end_credentials" : {"creds" :
-      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
-      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
-      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
-      "http_root" : "/home/sasha/timeshift/26"} ]},
-      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
-      "type" : "1"},"type" : "relay"})");
+      "{\"back_end_credentials\" : {\"creds\" :\
+                      { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+                      \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+                      \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+                      \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+                      \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+                      \"type\" : \"1\"},\"type\" : \"relay\"}");
   common::buffer_t encoded_zlib;
   common::Error err = common::compress::EncodeZlib(json, &encoded_zlib);
   ASSERT_FALSE(err);
@@ -206,13 +207,13 @@ TEST(string, ZlibCompress) {
 #ifdef HAVE_SNAPPY
 TEST(string, SnappyCompress) {
   const std::string json =
-      R"("{"back_end_credentials" : {"creds" :
-      { "host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},"type" : "1"},
-      "id" : "relay_76","input" : {"urls" : [ {"id" : 222,"uri" : "http://example.com"} ]},
-      "output" : {"urls" : [ {"id" : 71,"uri" : "http://example.com","hls_type" : "push",
-      "http_root" : "/home/sasha/timeshift/26"} ]},
-      "stats_credentials" : {"creds" : {"host" : "127.0.0.1:6379","unix_socket" : "/var/run/redis/redis.sock"},
-      "type" : "1"},"type" : "relay"})";
+      "{\"back_end_credentials\" : {\"creds\" :\
+                      { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+                      \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+                      \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+                      \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+                      \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+                      \"type\" : \"1\"},\"type\" : \"relay\"}";
   std::string encoded_snappy;
   common::Error err = common::compress::EncodeSnappy(json, &encoded_snappy);
   ASSERT_FALSE(err);

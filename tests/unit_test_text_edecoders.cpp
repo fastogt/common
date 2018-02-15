@@ -65,7 +65,7 @@ TEST(base64, enc_dec) {
 
 #ifdef HAVE_ZLIB
 TEST(zlib, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const std::string raw_data = "alex aalex talex balexalex aalex talex balex";
   common::CompressZlibEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
@@ -80,7 +80,7 @@ TEST(zlib, enc_dec) {
 
 #ifdef HAVE_BZIP2
 TEST(bzip2, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const std::string raw_data = "alex aalex talex balexalex aalex talex balexalex aalex talex balex";
   common::CompressBZip2EDcoder bz;
   std::string enc_data;
   common::Error err = bz.Encode(raw_data, &enc_data);

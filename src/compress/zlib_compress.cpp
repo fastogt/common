@@ -31,11 +31,13 @@
 
 #ifdef HAVE_ZLIB
 
+#include <string.h>
+
 #include <common/compress/coding.h>
 
 #include <limits>
 
-#define windowBits 15
+#define WINDOW_BITS 15
 #define GZIP_ENCODING 16
 
 namespace common {
@@ -64,7 +66,7 @@ Error EncodeZlibT(const CHAR* input, size_t input_length, STR2* output, int comp
   z_stream _stream;
   memset(&_stream, 0, sizeof(z_stream));
   int st =
-      deflateInit2(&_stream, compression_level, Z_DEFLATED, windowBits | GZIP_ENCODING, mem_level, Z_DEFAULT_STRATEGY);
+      deflateInit2(&_stream, compression_level, Z_DEFLATED, WINDOW_BITS | GZIP_ENCODING, mem_level, Z_DEFAULT_STRATEGY);
   if (st != Z_OK) {
     return make_error("ZLIB compress internal error");
   }
@@ -109,7 +111,7 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
   // For raw inflate, the windowBits should be -8..-15.
   // If windowBits is bigger than zero, it will use either zlib
   // header or gzip header. Adding 32 to it will do automatic detection.
-  int st = inflateInit2(&_stream, windowBits > 0 ? windowBits + 32 : windowBits);
+  int st = inflateInit2(&_stream, WINDOW_BITS > 0 ? WINDOW_BITS + 32 : WINDOW_BITS);
   if (st != Z_OK) {
     return make_error("ZLIB decompress internal error");
   }
