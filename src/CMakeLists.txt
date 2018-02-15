@@ -143,39 +143,41 @@ SET(COMPRESS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/compress/coding.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/hex.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/base64.h
+
+  ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h
+  ${CMAKE_SOURCE_DIR}/include/common/compress/bzip2_compress.h
+  ${CMAKE_SOURCE_DIR}/include/common/compress/snappy_compress.h
+  ${CMAKE_SOURCE_DIR}/include/common/compress/lz4_compress.h
 )
 
 SET(COMPRESS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/compress/coding.cpp
   ${CMAKE_SOURCE_DIR}/src/compress/hex.cpp
   ${CMAKE_SOURCE_DIR}/src/compress/base64.cpp
+
+  ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp
+  ${CMAKE_SOURCE_DIR}/src/compress/bzip2_compress.cpp
+  ${CMAKE_SOURCE_DIR}/src/compress/snappy_compress.cpp
+  ${CMAKE_SOURCE_DIR}/src/compress/lz4_compress.cpp
 )
 
 #dependencies ${ZLIB_LIBRARIES} ${SNAPPY_LIBRARIES} ${LZ4_LIBRARIES} ${BZIP2_LIBRARIES}
 IF(ZLIB_FOUND)
-  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h)
-  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp)
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${ZLIB_LIBRARIES})
 ENDIF(ZLIB_FOUND)
 
 IF(BZIP2_FOUND)
-  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/bzip2_compress.h)
-  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/bzip2_compress.cpp)
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${BZIP2_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${BZIP2_LIBRARIES})
 ENDIF(BZIP2_FOUND)
 
 IF(SNAPPY_FOUND)
-  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/snappy_compress.h)
-  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/snappy_compress.cpp)
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${SNAPPY_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${SNAPPY_LIBRARIES})
 ENDIF(SNAPPY_FOUND)
 
 IF(LZ4_FOUND)
-  SET(COMPRESS_HEADERS ${COMPRESS_HEADERS} ${CMAKE_SOURCE_DIR}/include/common/compress/lz4_compress.h)
-  SET(COMPRESS_SOURCES ${COMPRESS_SOURCES} ${CMAKE_SOURCE_DIR}/src/compress/lz4_compress.cpp)
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${LZ4_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${LZ4_LIBRARIES})
 ENDIF(LZ4_FOUND)
