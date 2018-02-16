@@ -69,10 +69,8 @@ Error EncodeBZip2T(const CHAR* input, size_t input_length, STR2* output) {
   _stream.avail_out = static_cast<unsigned int>(input_length);
   _stream.next_out = reinterpret_cast<char*>(&(*output)[output_header_len]);
 
-  bool compressed = false;
   st = BZ2_bzCompress(&_stream, BZ_FINISH);
   if (st == BZ_STREAM_END) {
-    compressed = true;
     output->resize(output->size() - _stream.avail_out);
     BZ2_bzCompressEnd(&_stream);
     return Error();
