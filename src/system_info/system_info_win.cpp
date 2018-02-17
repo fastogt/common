@@ -111,7 +111,7 @@ std::string OperatingSystemArchitecture() {
   ::GetNativeSystemInfo(&system_info);
   switch (system_info.wProcessorArchitecture) {
     case PROCESSOR_ARCHITECTURE_INTEL:
-      return "x86";
+      return "i386";
     case PROCESSOR_ARCHITECTURE_AMD64:
       return "x86_64";
     case PROCESSOR_ARCHITECTURE_IA64:

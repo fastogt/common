@@ -122,7 +122,7 @@ std::string OperatingSystemArchitecture() {
   }
   std::string arch(info.machine);
   if (arch == "i386" || arch == "i486" || arch == "i586" || arch == "i686") {
-    arch = "x86";
+    arch = "i386";
   } else if (arch == "amd64") {
     arch = "x86_64";
   }
