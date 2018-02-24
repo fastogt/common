@@ -147,6 +147,12 @@ void immediate_exit();
 
 #define LINE_TEXT __FILE__ ":" STRINGIZE(__LINE__)
 
+#if defined(COMPILER_GCC) || defined(COMPILER_CLANG)
+#define ALLOW_UNUSED_TYPE __attribute__((unused))
+#else
+#define ALLOW_UNUSED_TYPE
+#endif
+
 #define UNUSED(x) (void)x
 
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
