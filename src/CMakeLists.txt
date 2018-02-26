@@ -29,6 +29,20 @@ SET(PROTOCOLS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/protocols/three_way_handshake/commands.cpp
 )
 
+IF(JSON_ENABLED)
+  FIND_PACKAGE(JSON-C REQUIRED)
+
+  SET(PROTOCOLS_HEADERS ${PROTOCOLS_HEADERS}
+    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc.h
+    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_error.h
+  )
+
+  SET(PROTOCOLS_SOURCES ${PROTOCOLS_SOURCES}
+    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc.cpp
+    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_error.cpp
+  )
+ENDIF(JSON_ENABLED)
+
 SET(SERIALIZER_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
 )
