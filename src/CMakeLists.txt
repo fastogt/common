@@ -34,13 +34,14 @@ IF(JSON_ENABLED)
 
   SET(PROTOCOLS_HEADERS ${PROTOCOLS_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc.h
-    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_error.h
   )
 
   SET(PROTOCOLS_SOURCES ${PROTOCOLS_SOURCES}
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc.cpp
-    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_error.cpp
   )
+
+  SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${JSONC_INCLUDE_DIRS})
+  SET(COMMON_LIBS ${COMMON_LIBS} ${JSONC_LIBRARIES})
 ENDIF(JSON_ENABLED)
 
 SET(SERIALIZER_HEADERS
@@ -677,6 +678,9 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_hash.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_bounded_value.cpp
   )
+  IF(JSON_ENABLED)
+    SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_json_rpc.cpp)
+  ENDIF(JSON_ENABLED)
   IF(LIBEV_FOUND)
     SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_libev.cpp)
   ENDIF(LIBEV_FOUND)

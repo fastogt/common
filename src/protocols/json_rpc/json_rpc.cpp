@@ -21,13 +21,26 @@ namespace protocols {
 namespace json_rpc {
 
 namespace {
-JsonRPCError GetJsonRpcResult(json_object* rpc, std::string* result) {
+Error GetJsonRpcResult(json_object* rpc, JsonRPCResult* result) {
   CHECK(rpc && result);
 
   json_object* jrpc = NULL;
   json_bool jrpc_exists = json_object_object_get_ex(rpc, JSONRPC_FIELD, &jrpc);
   if (!jrpc_exists) {
-    return make_jsonrpc_error(JSON_RPC_INTERNAL_ERROR);
+    return make_error_inval();
+  }
+
+  json_object* jid = NULL;
+  json_bool jid_exists = json_object_object_get_ex(rpc, JSONRPC_ID_FIELD, &jid);
+  if (!jid_exists) {
+    return make_error_inval();
+  }
+
+  JsonRPCResult res;
+  if (json_object_get_type(jid) == json_type_null) {
+    res.id = "null";
+  } else {
+    res.id = json_object_get_string(jid);
   }
 
   json_object* jerror = NULL;
@@ -41,21 +54,29 @@ JsonRPCError GetJsonRpcResult(json_object* rpc, std::string* result) {
     if (jerror_message_exists && jerror_code_exists) {
       std::string error_str = json_object_get_string(jerror_message);
       JsonRPCErrorCode err_code = static_cast<JsonRPCErrorCode>(json_object_get_int(jerror_code));
-      return make_jsonrpc_error(err_code, error_str);
+      JsonRPCError jerr = {error_str, err_code};
+      res.error = jerr;
+      *result = res;
+      return Error();
     }
 
-    return make_jsonrpc_message_error(json_object_get_string(jerror));
+    JsonRPCError jerr = {json_object_get_string(jerror), JSON_RPC_NOT_RFC_ERROR};
+    res.error = jerr;
+    *result = res;
+    return Error();
   }
 
   json_object* jresult = NULL;
   json_bool jresult_exists = json_object_object_get_ex(rpc, JSONRPC_RESULT_FIELD, &jresult);
   if (!jresult_exists) {
-    return make_jsonrpc_error_inval();
+    return make_error_inval();
   }
 
-  const char* result_str = json_object_get_string(jresult);
-  *result = result_str;
-  return JsonRPCError();
+  JsonRPCMessage msg;
+  msg.result = json_object_get_string(jresult);
+  res.message = msg;
+  *result = res;
+  return Error();
 }
 
 }  // namespace
@@ -78,18 +99,40 @@ Error MakeJsonRPC(const std::string& method, struct json_object* param, struct j
   return Error();
 }
 
-JsonRPCError ParseJsonRPC(const std::string& data, std::string* result) {
+JsonRPCResult::JsonRPCResult() : id(), message(), error() {}
+
+bool JsonRPCResult::IsError() const {
+  if (error) {
+    return true;
+  }
+
+  return false;
+}
+
+bool JsonRPCResult::IsMessage() const {
+  if (IsError()) {
+    return false;
+  }
+
+  if (message) {
+    return true;
+  }
+
+  return false;
+}
+
+Error ParseJsonRPC(const std::string& data, JsonRPCResult* result) {
   if (data.empty() || !result) {
-    return make_jsonrpc_error_inval();
+    return common::make_error_inval();
   }
 
   const char* data_ptr = data.c_str();
   json_object* jdata = json_tokener_parse(data_ptr);
   if (!jdata) {
-    return make_jsonrpc_error_inval();
+    return common::make_error_inval();
   }
 
-  JsonRPCError err = GetJsonRpcResult(jdata, result);
+  Error err = GetJsonRpcResult(jdata, result);
   json_object_put(jdata);
   return err;
 }
