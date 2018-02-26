@@ -10,7 +10,6 @@
 #define JSONRPC_METHOD_FIELD "method"
 #define JSONRPC_PARAMS_FIELD "params"
 #define JSONRPC_ID_FIELD "id"
-#define JSONRPC_VERSION "2.0"
 
 #define JSONRPC_ERROR_FIELD "error"
 #define JSONRPC_ERROR_CODE_FIELD "code"
@@ -61,7 +60,7 @@ JsonRPCError GetJsonRpcResult(json_object* rpc, std::string* result) {
 
 }  // namespace
 
-Error MakeCommand(const std::string& method, struct json_object* param, struct json_object** out_json) {
+Error MakeJsonRPC(const std::string& method, struct json_object* param, struct json_object** out_json) {
   if (method.empty() || !out_json || *out_json) {
     return make_error_inval();
   }
@@ -79,7 +78,7 @@ Error MakeCommand(const std::string& method, struct json_object* param, struct j
   return Error();
 }
 
-JsonRPCError ParseResponce(const std::string& data, std::string* result) {
+JsonRPCError ParseJsonRPC(const std::string& data, std::string* result) {
   if (data.empty() || !result) {
     return make_jsonrpc_error_inval();
   }

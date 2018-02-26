@@ -4,15 +4,17 @@
 
 struct json_object;
 
+#define JSONRPC_VERSION "2.0"
+
 namespace common {
 namespace protocols {
 namespace json_rpc {
 
-Error MakeCommand(const std::string& method,
+Error MakeJsonRPC(const std::string& method,
                   struct json_object* param,
                   struct json_object** out_json) WARN_UNUSED_RESULT;
 
-JsonRPCError ParseResponce(const std::string& data, std::string* result) WARN_UNUSED_RESULT;
+JsonRPCError ParseJsonRPC(const std::string& data, std::string* result) WARN_UNUSED_RESULT;
 
 }  // namespace json_rpc
 }  // namespace protocols
