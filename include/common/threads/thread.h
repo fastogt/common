@@ -203,8 +203,8 @@ class Thread<void> : public ThreadBase {
 
   const function_type func_;
   Event event_;
-  uintptr_t const ptr_ ALLOW_UNUSED_TYPE;
-  lcpu_count_t lcpu_number_ ALLOW_UNUSED_TYPE;
+  uintptr_t const ptr_;
+  lcpu_count_t lcpu_number_;
   ThreadPriority priority_;
 };
 
