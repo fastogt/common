@@ -81,7 +81,7 @@ TEST(Thread, classMethod) {
 class B : public A {
  public:
   B() {}
-  virtual int run() { return 2; }
+  virtual int run() override { return 2; }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(B);

@@ -26,6 +26,13 @@
   "\", \"error\": {\"code\": " STRINGIZE(INVALID_REQUEST_ERROR_CODE) ", \"message\": \"" INVALID_REQUEST_STR \
                                                                      "\"}, \"id\": " NULL_ID "}"
 
+#define PARSE_ERROR_CODE -32700
+#define PARSE_ERROR_STR "Parse error"
+#define PARSE_ERROR                                                                                                  \
+  "{\"jsonrpc\": " JSONRPC_VERSION                                                                                   \
+  ", \"error\": {\"code\": " STRINGIZE(PARSE_ERROR_CODE) ", \"message\": \"" PARSE_ERROR_STR "\"}, \"id\": " NULL_ID \
+                                                         "}"
+
 TEST(json_rpc, make_command) {
   using namespace common::protocols::json_rpc;
   common::Error err = MakeJsonRPC(METHOD, NULL, NULL);
@@ -75,5 +82,19 @@ TEST(json_rpc, parse_method_invalid_request) {
   auto jerr = result.error;
   ASSERT_EQ(INVALID_REQUEST_STR, jerr->message);
   ASSERT_EQ(INVALID_REQUEST_ERROR_CODE, jerr->code);
+  ASSERT_FALSE(result.message);
+}
+
+TEST(json_rpc, parse_error) {
+  using namespace common::protocols::json_rpc;
+  JsonRPCResult result;
+  common::Error err = ParseJsonRPC(PARSE_ERROR, &result);
+  ASSERT_FALSE(err);
+  ASSERT_FALSE(result.IsMessage());
+  ASSERT_TRUE(result.IsError());
+  ASSERT_EQ(NULL_ID, result.id);
+  auto jerr = result.error;
+  ASSERT_EQ(PARSE_ERROR_STR, jerr->message);
+  ASSERT_EQ(PARSE_ERROR_CODE, jerr->code);
   ASSERT_FALSE(result.message);
 }
