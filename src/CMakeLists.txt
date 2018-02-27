@@ -34,10 +34,12 @@ IF(JSON_ENABLED)
 
   SET(PROTOCOLS_HEADERS ${PROTOCOLS_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc.h
+    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_result.h
   )
 
   SET(PROTOCOLS_SOURCES ${PROTOCOLS_SOURCES}
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc.cpp
+    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_result.cpp
   )
 
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${JSONC_INCLUDE_DIRS})

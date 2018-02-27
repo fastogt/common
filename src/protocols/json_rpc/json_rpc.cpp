@@ -99,28 +99,6 @@ Error MakeJsonRPC(const std::string& method, struct json_object* param, struct j
   return Error();
 }
 
-JsonRPCResult::JsonRPCResult() : id(), message(), error() {}
-
-bool JsonRPCResult::IsError() const {
-  if (error) {
-    return true;
-  }
-
-  return false;
-}
-
-bool JsonRPCResult::IsMessage() const {
-  if (IsError()) {
-    return false;
-  }
-
-  if (message) {
-    return true;
-  }
-
-  return false;
-}
-
 Error ParseJsonRPC(const std::string& data, JsonRPCResult* result) {
   if (data.empty() || !result) {
     return common::make_error_inval();
