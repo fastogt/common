@@ -3,6 +3,7 @@
 #include <json-c/json_object.h>
 #include <json-c/json_tokener.h>
 
+#include <common/convert2string.h>
 #include <common/sprintf.h>
 #include <common/system_info/system_info.h>  // for SystemInfo, etc
 
@@ -47,6 +48,16 @@ Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
   json_bool jmethod_exists = json_object_object_get_ex(rpc, JSONRPC_METHOD_FIELD, &jmethod);
   if (!jmethod_exists) {
     return make_error_inval();
+  }
+
+  json_object* jparams = NULL;
+  json_bool jparams_exists = json_object_object_get_ex(rpc, JSONRPC_PARAMS_FIELD, &jparams);
+  if (jparams_exists) {
+    if (json_object_get_type(jparams) == json_type_null) {
+      res.params = std::string();
+    } else {
+      res.params = std::string(json_object_get_string(jparams));
+    }
   }
 
   res.method = json_object_get_string(jmethod);
@@ -114,7 +125,7 @@ Error GetJsonRPCResponce(json_object* rpc, JsonRPCResponce* result) {
 
 }  // namespace
 
-Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object* param, struct json_object** out_json) {
+Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out_json) {
   if (!request.IsValid() || !out_json || *out_json) {
     return make_error_inval();
   }
@@ -125,8 +136,15 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object* para
   json_object_object_add(command_json, JSONRPC_METHOD_FIELD, json_object_new_string(method_ptr));
   const char* jid_ptr = request.id.c_str();
   json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
-  if (param) {
-    json_object_object_add(command_json, JSONRPC_PARAMS_FIELD, param);
+  if (request.params) {
+    std::string data = *request.params;
+    const char* data_ptr = data.empty() ? NULL : data.c_str();
+    json_object* jparams = data_ptr ? json_tokener_parse(data_ptr) : NULL;
+    if (jparams) {
+      json_object_object_add(command_json, JSONRPC_PARAMS_FIELD, jparams);
+    } else {
+      json_object_object_add(command_json, JSONRPC_PARAMS_FIELD, data_ptr ? json_object_new_string(data_ptr) : NULL);
+    }
   }
 
   *out_json = command_json;
@@ -149,8 +167,8 @@ Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
   return err;
 }
 
-Error MakeJsonRPCResponce(const std::string& method, const JsonRPCResponce& responce, struct json_object** out_json) {
-  if (method.empty() || !responce.IsValid() || !out_json || *out_json) {
+Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** out_json) {
+  if (!responce.IsValid() || !out_json || *out_json) {
     return make_error_inval();
   }
 

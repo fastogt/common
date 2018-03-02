@@ -13,15 +13,11 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
-Error MakeJsonRPCRequest(const JsonRPCRequest& request,
-                         struct json_object* param,
-                         struct json_object** out_json) WARN_UNUSED_RESULT;
+Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out_json) WARN_UNUSED_RESULT;
 
 Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) WARN_UNUSED_RESULT;
 
-Error MakeJsonRPCResponce(const std::string& method,
-                          const JsonRPCResponce& responce,
-                          struct json_object** out_json) WARN_UNUSED_RESULT;
+Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** out_json) WARN_UNUSED_RESULT;
 
 Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) WARN_UNUSED_RESULT;
 
