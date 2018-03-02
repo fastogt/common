@@ -21,7 +21,7 @@ namespace protocols {
 namespace json_rpc {
 
 namespace {
-Error GetJsonRpcResult(json_object* rpc, JsonRPCResult* result) {
+Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
   CHECK(rpc && result);
 
   json_object* jrpc = NULL;
@@ -36,9 +36,42 @@ Error GetJsonRpcResult(json_object* rpc, JsonRPCResult* result) {
     return make_error_inval();
   }
 
-  JsonRPCResult res;
+  JsonRPCRequest res;
   if (json_object_get_type(jid) == json_type_null) {
-    res.id = "null";
+    res.id = null_json_rpc_id;
+  } else {
+    res.id = json_object_get_string(jid);
+  }
+
+  json_object* jmethod = NULL;
+  json_bool jmethod_exists = json_object_object_get_ex(rpc, JSONRPC_METHOD_FIELD, &jmethod);
+  if (!jmethod_exists) {
+    return make_error_inval();
+  }
+
+  res.method = json_object_get_string(jmethod);
+  *result = res;
+  return Error();
+}
+
+Error GetJsonRPCResponce(json_object* rpc, JsonRPCResponce* result) {
+  CHECK(rpc && result);
+
+  json_object* jrpc = NULL;
+  json_bool jrpc_exists = json_object_object_get_ex(rpc, JSONRPC_FIELD, &jrpc);
+  if (!jrpc_exists) {
+    return make_error_inval();
+  }
+
+  json_object* jid = NULL;
+  json_bool jid_exists = json_object_object_get_ex(rpc, JSONRPC_ID_FIELD, &jid);
+  if (!jid_exists) {
+    return make_error_inval();
+  }
+
+  JsonRPCResponce res;
+  if (json_object_get_type(jid) == json_type_null) {
+    res.id = null_json_rpc_id;
   } else {
     res.id = json_object_get_string(jid);
   }
@@ -81,16 +114,17 @@ Error GetJsonRpcResult(json_object* rpc, JsonRPCResult* result) {
 
 }  // namespace
 
-Error MakeJsonRPC(const std::string& method, struct json_object* param, struct json_object** out_json) {
-  if (method.empty() || !out_json || *out_json) {
+Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object* param, struct json_object** out_json) {
+  if (!request.IsValid() || !out_json || *out_json) {
     return make_error_inval();
   }
 
-  const char* method_ptr = method.c_str();
+  const char* method_ptr = request.method.c_str();
   json_object* command_json = json_object_new_object();
   json_object_object_add(command_json, JSONRPC_FIELD, json_object_new_string(JSONRPC_VERSION));
   json_object_object_add(command_json, JSONRPC_METHOD_FIELD, json_object_new_string(method_ptr));
-  json_object_object_add(command_json, JSONRPC_ID_FIELD, NULL);
+  const char* jid_ptr = request.id.c_str();
+  json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
   if (param) {
     json_object_object_add(command_json, JSONRPC_PARAMS_FIELD, param);
   }
@@ -99,7 +133,7 @@ Error MakeJsonRPC(const std::string& method, struct json_object* param, struct j
   return Error();
 }
 
-Error ParseJsonRPC(const std::string& data, JsonRPCResult* result) {
+Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
   if (data.empty() || !result) {
     return common::make_error_inval();
   }
@@ -110,7 +144,53 @@ Error ParseJsonRPC(const std::string& data, JsonRPCResult* result) {
     return common::make_error_inval();
   }
 
-  Error err = GetJsonRpcResult(jdata, result);
+  Error err = GetJsonRPCResponce(jdata, result);
+  json_object_put(jdata);
+  return err;
+}
+
+Error MakeJsonRPCResponce(const std::string& method, const JsonRPCResponce& responce, struct json_object** out_json) {
+  if (method.empty() || !responce.IsValid() || !out_json || *out_json) {
+    return make_error_inval();
+  }
+
+  json_rpc_id jid = responce.id;
+  const char* jid_ptr = jid.c_str();
+  json_object* command_json = json_object_new_object();
+  json_object_object_add(command_json, JSONRPC_FIELD, json_object_new_string(JSONRPC_VERSION));
+  json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
+  if (responce.IsError()) {
+    json_object* jerror = json_object_new_object();
+    std::string error_str = responce.error->message;
+    JsonRPCErrorCode ec = responce.error->code;
+    const char* error_ptr = error_str.c_str();
+    json_object_object_add(jerror, JSONRPC_ERROR_MESSAGE_FIELD, json_object_new_string(error_ptr));
+    json_object_object_add(jerror, JSONRPC_ERROR_CODE_FIELD, json_object_new_int(ec));
+    json_object_object_add(command_json, JSONRPC_ERROR_FIELD, jerror);
+  } else if (responce.IsMessage()) {
+    std::string message_str = responce.message->result;
+    const char* message_ptr = message_str.c_str();
+    json_object_object_add(command_json, JSONRPC_RESULT_FIELD, json_object_new_string(message_ptr));
+  } else {
+    NOTREACHED();
+  }
+
+  *out_json = command_json;
+  return Error();
+}
+
+Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
+  if (data.empty() || !result) {
+    return common::make_error_inval();
+  }
+
+  const char* data_ptr = data.c_str();
+  json_object* jdata = json_tokener_parse(data_ptr);
+  if (!jdata) {
+    return common::make_error_inval();
+  }
+
+  Error err = GetJsonRPCRequest(jdata, result);
   json_object_put(jdata);
   return err;
 }
