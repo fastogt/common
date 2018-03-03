@@ -151,6 +151,22 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out
   return Error();
 }
 
+Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) {
+  if (!out_json) {
+    return make_error_inval();
+  }
+
+  struct json_object* jres = NULL;
+  Error err = MakeJsonRPCRequest(request, &jres);
+  if (err) {
+    return err;
+  }
+
+  *out_json = json_object_get_string(jres);
+  json_object_put(jres);
+  return Error();
+}
+
 Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
   if (data.empty() || !result) {
     return common::make_error_inval();
@@ -194,6 +210,22 @@ Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** 
   }
 
   *out_json = command_json;
+  return Error();
+}
+
+Error MakeJsonRPCResponce(const JsonRPCResponce& responce, std::string* out_json) {
+  if (!out_json) {
+    return make_error_inval();
+  }
+
+  struct json_object* jres = NULL;
+  Error err = MakeJsonRPCResponce(responce, &jres);
+  if (err) {
+    return err;
+  }
+
+  *out_json = json_object_get_string(jres);
+  json_object_put(jres);
   return Error();
 }
 

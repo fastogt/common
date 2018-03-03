@@ -14,6 +14,7 @@ typedef Optional<std::string> json_rpc_request_params;
 
 struct JsonRPCRequest {
   JsonRPCRequest();
+
   bool IsValid() const;
   bool Equals(const JsonRPCRequest& req) const;
 
