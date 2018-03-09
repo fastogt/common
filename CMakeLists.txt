@@ -30,6 +30,7 @@ OPTION(DEVELOPER_GENERATE_DOCS "Generate docs api for ${PROJECT_NAME_TITLE} proj
 OPTION(DEVELOPER_ENABLE_COVERALLS "Generate coveralls data" OFF)
 OPTION(DEVELOPER_COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
 OPTION(DCHECK_ALWAYS_ON "Enable dcheck in release." OFF)
+OPTION(BUILD_WITH_FPIC "Build static library with -fPic flags." OFF)
 
 ##################################DEFAULT VALUES##########################################
 IF(NOT CMAKE_BUILD_TYPE)
@@ -52,7 +53,7 @@ MESSAGE(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 INCLUDE(config) ###################
-DEFINE_DEFAULT_DEFINITIONS(OFF, ON, OFF)
+DEFINE_DEFAULT_DEFINITIONS(OFF ${BUILD_WITH_FPIC} OFF)
 DEFINE_PROJECT_DEFINITIONS()
 
 # project sources
