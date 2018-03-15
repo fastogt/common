@@ -65,17 +65,19 @@
 namespace {
 
 ssize_t sendfile(common::net::socket_descr_t out_fd, int in_fd, off_t* offset, size_t count) {
-  off_t orig;
+  off_t orig = 0;
   char buf[BUF_SIZE] = {0};
 
   if (offset) {
     /* Save current file offset and set offset to value in '*offset' */
 
     orig = lseek(in_fd, 0, SEEK_CUR);
-    if (orig == -1)
+    if (orig == -1) {
       return ERROR_RESULT_VALUE;
-    if (lseek(in_fd, *offset, SEEK_SET) == -1)
+    }
+    if (lseek(in_fd, *offset, SEEK_SET) == -1) {
       return ERROR_RESULT_VALUE;
+    }
   }
 
   size_t totSent = 0;
@@ -108,10 +110,12 @@ ssize_t sendfile(common::net::socket_descr_t out_fd, int in_fd, off_t* offset, s
        to the value it had when we were called. */
 
     *offset = lseek(in_fd, 0, SEEK_CUR);
-    if (*offset == -1)
+    if (*offset == -1) {
       return ERROR_RESULT_VALUE;
-    if (lseek(in_fd, orig, SEEK_SET) == -1)
+    }
+    if (lseek(in_fd, orig, SEEK_SET) == -1) {
       return ERROR_RESULT_VALUE;
+    }
   }
 
   return totSent;
