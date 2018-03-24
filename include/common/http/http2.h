@@ -37,7 +37,7 @@
 #include <vector>   // for vector
 
 #include <common/error.h>      // for Error
-#include <common/http/http.h>  // for http_request (ptr only), etc
+#include <common/http/http.h>  // for HttpRequest (ptr only), etc
 #include <common/http/http2_huffman.h>
 
 #define PREFACE_STARTS "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
@@ -205,7 +205,9 @@ struct http2_context {
   uint8_t bad;
 };
 
-typedef struct { http2_entry* table[MAP_SIZE]; } http2_map;
+typedef struct {
+  http2_entry* table[MAP_SIZE];
+} http2_map;
 typedef std::vector<http2_nv> http2_nvs_t;
 
 struct http2_deflater {
@@ -450,11 +452,11 @@ frames_t parse_frames(const char* data, uint32_t len);
 frames_t find_frames_by_type(const frames_t& frames, frame_t type);
 
 std::pair<http::http_status, Error> parse_http_request(const frame_headers& frame,
-                                                       http::http_request* req_out) WARN_UNUSED_RESULT;
+                                                       http::HttpRequest* req_out) WARN_UNUSED_RESULT;
 }  // namespace http2
 
 std::string ConvertToString(http::http_method method);
 std::string ConvertToString(http::http_status status);
 std::string ConvertToString(http::HttpHeader header);
-std::string ConvertToString(http::http_request request);
+std::string ConvertToString(http::HttpRequest request);
 }  // namespace common

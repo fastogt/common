@@ -125,6 +125,7 @@ SET(NET_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/net/socket_info.h
   ${CMAKE_SOURCE_DIR}/include/common/net/net.h
   ${CMAKE_SOURCE_DIR}/include/common/net/socket_tcp.h
+  ${CMAKE_SOURCE_DIR}/include/common/net/http_client.h
 )
 
 SET(NET_SOURCES
@@ -132,6 +133,7 @@ SET(NET_SOURCES
   ${CMAKE_SOURCE_DIR}/src/net/socket_info.cpp
   ${CMAKE_SOURCE_DIR}/src/net/net.cpp
   ${CMAKE_SOURCE_DIR}/src/net/socket_tcp.cpp
+  ${CMAKE_SOURCE_DIR}/src/net/http_client.cpp
 )
 
 SET(MEMORY_HEADERS

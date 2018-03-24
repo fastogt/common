@@ -2117,7 +2117,7 @@ frames_t find_frames_by_type(const frames_t& frames, frame_t type) {
   return res;
 }
 
-std::pair<http::http_status, Error> parse_http_request(const frame_headers& frame, http::http_request* req_out) {
+std::pair<http::http_status, Error> parse_http_request(const frame_headers& frame, http::HttpRequest* req_out) {
   if (!frame.IsValid() || frame.type() != HTTP2_HEADERS || !req_out) {
     return std::make_pair(http::HS_FORBIDDEN, make_error_inval());
   }
@@ -2126,9 +2126,8 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
 
   http::http_method lmethod = http::HM_GET;
   uri::Upath lpath;
-  std::string lprotocol;
   std::string lbody;
-  http::http_request::headers_t lheaders;
+  http::headers_t lheaders;
 
   std::vector<http2_nv> nva = frame.nva();
   for (size_t i = 0; i < nva.size(); ++i) {
@@ -2166,8 +2165,7 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
     return std::make_pair(http::HS_FORBIDDEN, make_error("Scheme not found."));
   }
 
-  lprotocol = HTTP_2_0_PROTOCOL_NAME;
-  *req_out = http::http_request(lmethod, lpath, lprotocol, lheaders, lbody);
+  *req_out = http::HttpRequest(lmethod, lpath, http::HP_2_0, lheaders, lbody);
 
   return std::make_pair(http::HS_OK, Error());
 }

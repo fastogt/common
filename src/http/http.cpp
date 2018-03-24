@@ -36,7 +36,7 @@
 
 namespace common {
 
-std::string ConvertToString(http::http_protocols protocol) {
+std::string ConvertToString(http::http_protocol protocol) {
   if (protocol == http::HP_1_0) {
     return HTTP_1_0_PROTOCOL_NAME;
   } else if (protocol == http::HP_1_1) {
@@ -49,7 +49,7 @@ std::string ConvertToString(http::http_protocols protocol) {
   return "UNKNOWN";
 }
 
-bool ConvertFromString(const std::string& from, http::http_protocols* out) {
+bool ConvertFromString(const std::string& from, http::http_protocol* out) {
   if (!out) {
     return false;
   }
@@ -79,45 +79,40 @@ bool HttpHeader::IsValid() const {
   return !key.empty();
 }
 
-http_request::http_request() : method_(), path_(), protocol_(), headers_(), body_() {}
+HttpRequest::HttpRequest() : method_(), path_(), protocol_(), headers_(), body_() {}
 
-http_request::http_request(http_method method,
-                           const uri::Upath& path,
-                           const std::string& protocol,
-                           const headers_t& headers,
-                           const std::string& body)
+HttpRequest::HttpRequest(http_method method,
+                         const uri::Upath& path,
+                         http_protocol protocol,
+                         const headers_t& headers,
+                         const std::string& body)
     : method_(method), path_(path), protocol_(protocol), headers_(headers), body_(body) {}
 
-http::http_protocols http_request::protocol() const {
-  http::http_protocols p;
-  if (!ConvertFromString(protocol_, &p)) {
-    return HP_1_0;
-  }
-
-  return p;
+http::http_protocol HttpRequest::GetProtocol() const {
+  return protocol_;
 }
 
-http_request::headers_t http_request::headers() const {
+headers_t HttpRequest::GetHeaders() const {
   return headers_;
 }
 
-uri::Upath http_request::path() const {
+uri::Upath HttpRequest::GetPath() const {
   return path_;
 }
 
-void http_request::setPath(const uri::Upath& path) {
+void HttpRequest::SetPath(const uri::Upath& path) {
   path_ = path;
 }
 
-http::http_method http_request::method() const {
+http::http_method HttpRequest::GetMethod() const {
   return method_;
 }
 
-std::string http_request::body() const {
+std::string HttpRequest::GetBody() const {
   return body_;
 }
 
-bool http_request::findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value) {
+bool HttpRequest::FindHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value) {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string cur_key = headers_[i].key;
     if (EqualsASCII(cur_key, key, caseSensitive)) {
@@ -129,7 +124,7 @@ bool http_request::findHeaderByKeyAndChange(const std::string& key, bool caseSen
   return false;
 }
 
-void http_request::removeHeaderByKey(const std::string& key, bool caseSensitive) {
+void HttpRequest::RemoveHeaderByKey(const std::string& key, bool caseSensitive) {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].key;
     if (EqualsASCII(curKey, key, caseSensitive)) {
@@ -139,7 +134,7 @@ void http_request::removeHeaderByKey(const std::string& key, bool caseSensitive)
   }
 }
 
-header_t http_request::findHeaderByKey(const std::string& key, bool caseSensitive) const {
+header_t HttpRequest::FindHeaderByKey(const std::string& key, bool caseSensitive) const {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].key;
     if (EqualsASCII(curKey, key, caseSensitive)) {
@@ -150,7 +145,7 @@ header_t http_request::findHeaderByKey(const std::string& key, bool caseSensitiv
   return header_t();
 }
 
-header_t http_request::findHeaderByValue(const std::string& value, bool caseSensitive) const {
+header_t HttpRequest::FindHeaderByValue(const std::string& value, bool caseSensitive) const {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].value;
     if (EqualsASCII(curKey, value, caseSensitive)) {
@@ -161,7 +156,7 @@ header_t http_request::findHeaderByValue(const std::string& value, bool caseSens
   return header_t();
 }
 
-std::pair<http_status, Error> parse_http_request(const std::string& request, http_request* req_out) {
+std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
   if (request.empty() || !req_out) {
     return std::make_pair(HS_FORBIDDEN, make_error_inval());
   }
@@ -172,8 +167,8 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
 
   http_method lmethod = HM_GET;
   uri::Upath lpath;
-  std::string lprotocol;
-  http_request::headers_t lheaders;
+  http_protocol lprotocol;
+  headers_t lheaders;
 
   string_size_t pos = 0;
   string_size_t start = 0;
@@ -201,7 +196,10 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
               return std::make_pair(HS_BAD_REQUEST, make_error("Bad filename."));
             }
 
-            lprotocol = protcolAndPath.substr(spaceP);
+            std::string protocol_str = protcolAndPath.substr(spaceP);
+            if (!ConvertFromString(protocol_str, &lprotocol)) {
+              DNOTREACHED() << "Unknown protocol: " << protocol_str;
+            }
             lpath = uri::Upath(path);
           } else {
             return std::make_pair(HS_FORBIDDEN, make_error("Not allowed."));
@@ -241,9 +239,84 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, htt
     return std::make_pair(HS_BAD_REQUEST, make_error("Not found CRLF"));
   }
 
-  *req_out = http_request(lmethod, lpath, lprotocol, lheaders, lbody ? lbody : std::string());
+  *req_out = HttpRequest(lmethod, lpath, lprotocol, lheaders, lbody ? lbody : std::string());
   utils::freeifnotnull(lbody);
   return std::make_pair(HS_OK, Error());
+}
+
+HttpResponse::HttpResponse() : protocol_(), status_(), headers_(), body_() {}
+
+HttpResponse::HttpResponse(http_protocol protocol,
+                           http_status status,
+                           const headers_t& headers,
+                           const std::string& body)
+    : protocol_(protocol), status_(status), headers_(headers), body_(body) {}
+
+Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
+  if (response.empty() || !res_out) {
+    return make_error_inval();
+  }
+
+  typedef std::string::size_type string_size_t;
+
+  string_size_t pos = 0;
+  string_size_t start = 0;
+  uint8_t line_count = 0;
+  http_protocol lprotocol;
+  headers_t lheaders;
+  uint16_t lstatus;
+  while ((pos = response.find("\r\n", start)) != std::string::npos) {
+    std::string line = response.substr(start, pos - start);
+    if (line_count == 0) {
+      if (line.size() < 4) {
+        return make_error_inval();
+      }
+
+      size_t spaceP = line.find_first_of(" ");
+      if (spaceP != std::string::npos) {
+        std::string status_str = line.substr(spaceP + 1);
+        std::string protocol_str = line.substr(0, spaceP);
+        size_t http_sep = protocol_str.find_first_of("/");
+        if (http_sep == std::string::npos) {
+          return make_error_inval();
+        }
+
+        if (!ConvertFromString(protocol_str, &lprotocol)) {
+          DNOTREACHED() << "Unknown protocol: " << protocol_str;
+        }
+
+        size_t status_sep = status_str.find_first_of(" ");
+        if (status_sep == std::string::npos) {
+          return make_error_inval();
+        }
+
+        std::string status_num = status_str.substr(0, status_sep);
+        if (!ConvertFromString(status_num, &lstatus)) {
+          return make_error_inval();
+        }
+      } else {
+        return make_error_inval();
+      }
+    } else {
+      string_size_t delem = line.find_first_of(':');
+      if (delem != std::string::npos) {
+        std::string key = line.substr(0, delem);
+        std::string value = line.substr(delem + 1);
+        std::string trimkey;
+        TrimWhitespaceASCII(key, TRIM_ALL, &trimkey);
+
+        std::string trimvalue;
+        TrimWhitespaceASCII(value, TRIM_ALL, &trimvalue);
+        HttpHeader header(trimkey, trimvalue);
+        lheaders.push_back(header);
+      }
+    }
+    line_count++;
+    start = pos + 2;
+  }
+
+  *res_out = HttpResponse(lprotocol, static_cast<http_status>(lstatus), lheaders, std::string());
+  return Error();
 }
 
 }  // namespace http
@@ -387,13 +460,13 @@ std::string ConvertToString(http::HttpHeader header) {
   return header.key + ":" + header.value;
 }
 
-std::string ConvertToString(http::http_request request) {
-  uri::Upath upath = request.path();
-  http::http_method method = request.method();
+std::string ConvertToString(http::HttpRequest request) {
+  uri::Upath upath = request.GetPath();
+  http::http_method method = request.GetMethod();
 
   std::string headerout = MemSPrintf("%s /%s %s\r\n", ConvertToString(method), upath.GetPath(),
-                                     ConvertToString(request.protocol()));  // "GET /hello.htm HTTP/1.1\r\n"
-  http::http_request::headers_t headers = request.headers();
+                                     ConvertToString(request.GetProtocol()));  // "GET /hello.htm HTTP/1.1\r\n"
+  http::headers_t headers = request.GetHeaders();
   for (size_t i = 0; i < headers.size(); ++i) {
     http::header_t header = headers[i];
     std::string headerStr = ConvertToString(header);
@@ -406,7 +479,7 @@ std::string ConvertToString(http::http_request request) {
   return headerout;
 }
 
-buffer_t ConvertToBytes(http::http_request request) {
+buffer_t ConvertToBytes(http::HttpRequest request) {
   std::string request_str = ConvertToString(request);
   buffer_t res;
   if (!ConvertFromString(request_str, &res)) {

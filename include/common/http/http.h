@@ -115,45 +115,59 @@ struct HttpHeader {
   std::string value;
 };
 
-enum http_protocols { HP_1_0, HP_1_1, HP_2_0 };
+enum http_protocol { HP_1_0, HP_1_1, HP_2_0 };
 
 typedef HttpHeader header_t;
+typedef std::vector<header_t> headers_t;
 
-struct http_request {
+class HttpRequest {
  public:
-  typedef std::vector<header_t> headers_t;
+  HttpRequest();
+  HttpRequest(http_method method,
+              const uri::Upath& path,
+              http_protocol protocol,
+              const headers_t& headers,
+              const std::string& body);
 
-  http_request();
-  http_request(http_method method,
-               const uri::Upath& path,
-               const std::string& protocol,
-               const headers_t& headers,
-               const std::string& body);
+  http_protocol GetProtocol() const;
+  headers_t GetHeaders() const;
 
-  http_protocols protocol() const;
-  headers_t headers() const;
+  uri::Upath GetPath() const;
+  void SetPath(const uri::Upath& path);
 
-  uri::Upath path() const;
-  void setPath(const uri::Upath& path);
+  http::http_method GetMethod() const;
+  std::string GetBody() const;
 
-  http::http_method method() const;
-  std::string body() const;
+  bool FindHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value);
+  void RemoveHeaderByKey(const std::string& key, bool caseSensitive);
 
-  bool findHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value);
-  void removeHeaderByKey(const std::string& key, bool caseSensitive);
-
-  header_t findHeaderByKey(const std::string& key, bool caseSensitive) const;
-  header_t findHeaderByValue(const std::string& value, bool caseSensitive) const;
+  header_t FindHeaderByKey(const std::string& key, bool caseSensitive) const;
+  header_t FindHeaderByValue(const std::string& value, bool caseSensitive) const;
 
  private:
   http_method method_;
   uri::Upath path_;
-  std::string protocol_;
+  http_protocol protocol_;
   headers_t headers_;
   std::string body_;
 };
 
-std::pair<http_status, Error> parse_http_request(const std::string& request, http_request* req_out) WARN_UNUSED_RESULT;
+std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) WARN_UNUSED_RESULT;
+
+class HttpResponse {
+ public:
+  HttpResponse();
+  HttpResponse(http_protocol protocol, http_status status, const headers_t& headers, const std::string& body);
+
+ private:
+  http_protocol protocol_;
+  http_status status_;
+  headers_t headers_;
+  std::string body_;
+};
+
+Error parse_http_responce(const std::string& response, HttpResponse* res_out) WARN_UNUSED_RESULT;
+
 }  // namespace http
 
 std::string ConvertToString(http::http_method method);
@@ -161,9 +175,9 @@ bool ConvertFromString(const std::string& from, http::http_method* out) WARN_UNU
 
 std::string ConvertToString(http::http_status status);
 std::string ConvertToString(http::HttpHeader header);
-std::string ConvertToString(http::http_request request);
-buffer_t ConvertToBytes(http::http_request request);
+std::string ConvertToString(http::HttpRequest request);
+buffer_t ConvertToBytes(http::HttpRequest request);
 
-std::string ConvertToString(http::http_protocols protocol);
-bool ConvertFromString(const std::string& from, http::http_protocols* out) WARN_UNUSED_RESULT;
+std::string ConvertToString(http::http_protocol protocol);
+bool ConvertFromString(const std::string& from, http::http_protocol* out) WARN_UNUSED_RESULT;
 }  // namespace common

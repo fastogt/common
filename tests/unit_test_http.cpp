@@ -1,28 +1,29 @@
 #include <gtest/gtest.h>
 
 #include <common/http/http2.h>
+#include <common/net/http_client.h>
 
 using namespace common;
 
 TEST(Http, parse) {
-  http::http_request r1;
+  http::HttpRequest r1;
   std::pair<http::http_status, Error> err = http::parse_http_request(std::string(), &r1);
   ASSERT_TRUE(err.second);
 }
 
 TEST(Http, parse_GET) {
-  http::http_request r1;
+  http::HttpRequest r1;
   const std::string request =
       "GET /path/file.html HTTP/1.0\r\nFrom: someuser@jmarshall.com\r\n User-Agent: "
       "HTTPTool/1.0\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request, &r1);
-  ASSERT_EQ(r1.method(), http::HM_GET);
-  ASSERT_EQ(r1.path().GetPath(), "path/file.html");
-  ASSERT_TRUE(r1.headers().size() == 2);
-  ASSERT_TRUE(r1.body().empty());
+  ASSERT_EQ(r1.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r1.GetPath().GetPath(), "path/file.html");
+  ASSERT_TRUE(r1.GetHeaders().size() == 2);
+  ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
 
-  http::http_request r2;
+  http::HttpRequest r2;
   const std::string request2 =
       "GET /hello.htm HTTP/1.1\r\n"
       "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
@@ -31,13 +32,13 @@ TEST(Http, parse_GET) {
       "Accept-Encoding: gzip, deflate\r\n"
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request2, &r2);
-  ASSERT_EQ(r2.method(), http::HM_GET);
-  ASSERT_EQ(r2.path().GetPath(), "hello.htm");
-  ASSERT_TRUE(r2.headers().size() == 5);
-  ASSERT_TRUE(r2.body().empty());
+  ASSERT_EQ(r2.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r2.GetPath().GetPath(), "hello.htm");
+  ASSERT_TRUE(r2.GetHeaders().size() == 5);
+  ASSERT_TRUE(r2.GetBody().empty());
   ASSERT_FALSE(err.second);
 
-  http::http_request r4;
+  http::HttpRequest r4;
   const std::string request4 =
       "GET /hello.htm?home=Cosby&favorite+flavor=flies HTTP/1.1\r\n"
       "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
@@ -46,14 +47,14 @@ TEST(Http, parse_GET) {
       "Accept-Encoding: gzip, deflate\r\n"
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request4, &r4);
-  ASSERT_EQ(r4.method(), http::HM_GET);
-  ASSERT_EQ(r4.path().GetPath(), "hello.htm");
+  ASSERT_EQ(r4.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r4.GetPath().GetPath(), "hello.htm");
   // ASSERT_EQ(r4.path().Query(), "home=Cosby&favorite flavor=flies");
-  ASSERT_TRUE(r4.headers().size() == 5);
-  ASSERT_TRUE(r4.body().empty());
+  ASSERT_TRUE(r4.GetHeaders().size() == 5);
+  ASSERT_TRUE(r4.GetBody().empty());
   ASSERT_FALSE(err.second);
 
-  http::http_request r5;
+  http::HttpRequest r5;
   const std::string request5 =
       "GET /[object LocalMediaStream] HTTP/1.1\r\n"
       "Host:localhost:8080\r\n"
@@ -66,15 +67,15 @@ TEST(Http, parse_GET) {
 
   err = http::parse_http_request(request5, &r5);
   ASSERT_FALSE(err.second);
-  ASSERT_EQ(r5.method(), http::HM_GET);
-  ASSERT_EQ(r5.path().GetPath(), "[object LocalMediaStream]");
-  ASSERT_TRUE(r5.protocol() == http::HP_1_1);
-  ASSERT_TRUE(r5.headers().size() == 7);
-  ASSERT_TRUE(r5.body().empty());
+  ASSERT_EQ(r5.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r5.GetPath().GetPath(), "[object LocalMediaStream]");
+  ASSERT_TRUE(r5.GetProtocol() == http::HP_1_1);
+  ASSERT_TRUE(r5.GetHeaders().size() == 7);
+  ASSERT_TRUE(r5.GetBody().empty());
 }
 
 TEST(Http, parse_HEAD) {
-  http::http_request r3;
+  http::HttpRequest r3;
   const std::string request3 =
       "HEAD /hello.htm HTTP/1.1\r\n"
       "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
@@ -83,15 +84,15 @@ TEST(Http, parse_HEAD) {
       "Accept-Encoding: gzip, deflate\r\n"
       "Connection: Keep-Alive\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
-  ASSERT_EQ(r3.method(), http::HM_HEAD);
-  ASSERT_EQ(r3.path().GetPath(), "hello.htm");
-  ASSERT_TRUE(r3.headers().size() == 5);
-  ASSERT_TRUE(r3.body().empty());
+  ASSERT_EQ(r3.GetMethod(), http::HM_HEAD);
+  ASSERT_EQ(r3.GetPath().GetPath(), "hello.htm");
+  ASSERT_TRUE(r3.GetHeaders().size() == 5);
+  ASSERT_TRUE(r3.GetBody().empty());
   ASSERT_FALSE(err.second);
 }
 
 TEST(Http, parse_POST) {
-  http::http_request r3;
+  http::HttpRequest r3;
   const std::string request3 =
       "POST /hello.htm HTTP/1.1\r\n"
       "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
@@ -101,11 +102,11 @@ TEST(Http, parse_POST) {
       "Content-Length: 32\r\n\r\n"
       "home=Cosby&favorite+flavor=flies";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
-  ASSERT_EQ(r3.method(), http::HM_POST);
-  ASSERT_EQ(r3.path().GetPath(), "hello.htm");
-  ASSERT_TRUE(r3.headers().size() == 5);
-  ASSERT_EQ(r3.body(), "home=Cosby&favorite flavor=flies");
-  ASSERT_TRUE(r3.body().size() == 32);
+  ASSERT_EQ(r3.GetMethod(), http::HM_POST);
+  ASSERT_EQ(r3.GetPath().GetPath(), "hello.htm");
+  ASSERT_TRUE(r3.GetHeaders().size() == 5);
+  ASSERT_EQ(r3.GetBody(), "home=Cosby&favorite flavor=flies");
+  ASSERT_TRUE(r3.GetBody().size() == 32);
   ASSERT_FALSE(err.second);
 }
 
@@ -361,12 +362,12 @@ TEST(Http2, frame_headers) {
 
   std::vector<http2::http2_nv> nva0 = head0->nva();
   ASSERT_TRUE(nva0.size() == 7);
-  http::http_request r0;
+  http::HttpRequest r0;
   std::pair<http::http_status, Error> err0 = http2::parse_http_request(*head0, &r0);
-  ASSERT_EQ(r0.method(), http::HM_GET);
-  ASSERT_EQ(r0.path().GetPath(), "/");
-  ASSERT_TRUE(r0.headers().size() == 3);
-  ASSERT_TRUE(r0.body().empty());
+  ASSERT_EQ(r0.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r0.GetPath().GetPath(), "/");
+  ASSERT_TRUE(r0.GetHeaders().size() == 3);
+  ASSERT_TRUE(r0.GetBody().empty());
   ASSERT_FALSE(err0.second);
 
   const uint8_t headers_frame[] = {0x00, 0x00, 0x29, 0x01, 0x25, 0x00, 0x00, 0x00, 0x0D, /*header*/
@@ -394,12 +395,12 @@ TEST(Http2, frame_headers) {
 
   std::vector<http2::http2_nv> nva1 = head1->nva();
   ASSERT_TRUE(nva1.size() == 7);
-  http::http_request r1;
+  http::HttpRequest r1;
   std::pair<http::http_status, Error> err = http2::parse_http_request(*head1, &r1);
-  ASSERT_EQ(r1.method(), http::HM_GET);
-  ASSERT_EQ(r1.path().GetPath(), "/");
-  ASSERT_TRUE(r1.headers().size() == 3);
-  ASSERT_TRUE(r1.body().empty());
+  ASSERT_EQ(r1.GetMethod(), http::HM_GET);
+  ASSERT_EQ(r1.GetPath().GetPath(), "/");
+  ASSERT_TRUE(r1.GetHeaders().size() == 3);
+  ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
   // headers frame//
 }
@@ -432,4 +433,19 @@ TEST(Http2, frame_goaway) {
   ASSERT_TRUE(sizeof(uint32_t) * 2 == goaway->payload_size() - oplen);
   ASSERT_TRUE(memcmp(opd, opd2, oplen) == 0);
   // goaway frame///
+}
+
+TEST(http_client, get) {
+  net::HostAndPort example("example.com", 80);
+  uri::Upath root;
+  net::HttpClient cl(example);
+  ErrnoError err = cl.Connect();
+  ASSERT_FALSE(err);
+  Error err2 = cl.Get(root);
+  ASSERT_FALSE(err2);
+  http::HttpResponse resp;
+  err2 = cl.ReadResponce(&resp);
+  ASSERT_FALSE(err2);
+  err = cl.Disconnect();
+  ASSERT_FALSE(err);
 }
