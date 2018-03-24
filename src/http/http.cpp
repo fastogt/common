@@ -167,7 +167,7 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
 
   http_method lmethod = HM_GET;
   uri::Upath lpath;
-  http_protocol lprotocol;
+  http_protocol lprotocol = HP_1_0;
   headers_t lheaders;
 
   string_size_t pos = 0;
@@ -262,7 +262,7 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
   string_size_t pos = 0;
   string_size_t start = 0;
   uint8_t line_count = 0;
-  http_protocol lprotocol;
+  http_protocol lprotocol = HP_1_0;
   headers_t lheaders;
   uint16_t lstatus;
   while ((pos = response.find("\r\n", start)) != std::string::npos) {
