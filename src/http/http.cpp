@@ -112,10 +112,10 @@ std::string HttpRequest::GetBody() const {
   return body_;
 }
 
-bool HttpRequest::FindHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value) {
+bool HttpRequest::FindHeaderByKeyAndChange(const std::string& key, bool case_sensitive, header_t new_value) {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string cur_key = headers_[i].key;
-    if (EqualsASCII(cur_key, key, caseSensitive)) {
+    if (EqualsASCII(cur_key, key, case_sensitive)) {
       headers_[i] = new_value;
       return true;
     }
@@ -124,36 +124,46 @@ bool HttpRequest::FindHeaderByKeyAndChange(const std::string& key, bool caseSens
   return false;
 }
 
-void HttpRequest::RemoveHeaderByKey(const std::string& key, bool caseSensitive) {
+void HttpRequest::RemoveHeaderByKey(const std::string& key, bool case_sensitive) {
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].key;
-    if (EqualsASCII(curKey, key, caseSensitive)) {
+    if (EqualsASCII(curKey, key, case_sensitive)) {
       headers_.erase(headers_.begin(), headers_.begin() + i);
       return;
     }
   }
 }
 
-header_t HttpRequest::FindHeaderByKey(const std::string& key, bool caseSensitive) const {
+bool HttpRequest::FindHeaderByKey(const std::string& key, bool case_sensitive, header_t* hdr) const {
+  if (!hdr) {
+    return false;
+  }
+
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].key;
-    if (EqualsASCII(curKey, key, caseSensitive)) {
-      return headers_[i];
+    if (EqualsASCII(curKey, key, case_sensitive)) {
+      *hdr = headers_[i];
+      return true;
     }
   }
 
-  return header_t();
+  return false;
 }
 
-header_t HttpRequest::FindHeaderByValue(const std::string& value, bool caseSensitive) const {
+bool HttpRequest::FindHeaderByValue(const std::string& value, bool case_sensitive, header_t* hdr) const {
+  if (!hdr) {
+    return false;
+  }
+
   for (size_t i = 0; i < headers_.size(); ++i) {
     std::string curKey = headers_[i].value;
-    if (EqualsASCII(curKey, value, caseSensitive)) {
-      return headers_[i];
+    if (EqualsASCII(curKey, value, case_sensitive)) {
+      *hdr = headers_[i];
+      return true;
     }
   }
 
-  return header_t();
+  return false;
 }
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
@@ -252,12 +262,38 @@ HttpResponse::HttpResponse(http_protocol protocol,
                            const std::string& body)
     : protocol_(protocol), status_(status), headers_(headers), body_(body) {}
 
+bool HttpResponse::FindHeaderByKey(const std::string& key, bool case_sensitive, header_t* hdr) const {
+  if (!hdr) {
+    return false;
+  }
+
+  for (size_t i = 0; i < headers_.size(); ++i) {
+    std::string curKey = headers_[i].key;
+    if (EqualsASCII(curKey, key, case_sensitive)) {
+      *hdr = headers_[i];
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void HttpResponse::SetBody(const std::string& body) {
+  body_ = body;
+}
+
+bool HttpResponse::IsEmptyBody() const {
+  return body_.empty();
+}
+
 Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
   if (response.empty() || !res_out) {
     return make_error_inval();
   }
 
   typedef std::string::size_type string_size_t;
+
+  const string_size_t len = response.size();
 
   string_size_t pos = 0;
   string_size_t start = 0;
@@ -315,7 +351,23 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
     start = pos + 2;
   }
 
-  *res_out = HttpResponse(lprotocol, static_cast<http_status>(lstatus), lheaders, std::string());
+  HttpResponse lres(lprotocol, static_cast<http_status>(lstatus), lheaders, std::string());
+  if (len != start && line_count != 0) {
+    const char* responce_str = response.c_str() + start;
+    http::header_t cont;
+    if (lres.FindHeaderByKey("Content-Length", false, &cont)) {
+      size_t body_len = 0;
+      if (ConvertFromString(cont.value, &body_len) && body_len + start == len) {
+        lres.SetBody(std::string(responce_str, body_len));
+      }
+    }
+  }
+
+  if (line_count == 0) {
+    return make_error("Not found CRLF");
+  }
+
+  *res_out = lres;
   return Error();
 }
 

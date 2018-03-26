@@ -43,6 +43,7 @@ class HttpClient {
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
 
   virtual Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;
+  virtual Error Head(const uri::Upath& path) WARN_UNUSED_RESULT;
 
   virtual Error ReadResponce(http::HttpResponse* responce) WARN_UNUSED_RESULT;
   virtual ~HttpClient();

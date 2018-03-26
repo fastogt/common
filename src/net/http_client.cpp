@@ -29,6 +29,8 @@
 
 #include <common/net/http_client.h>
 
+#include <common/convert2string.h>
+
 namespace common {
 namespace net {
 
@@ -46,6 +48,13 @@ Error HttpClient::Get(const uri::Upath& path) {
   HostAndPort hs = sock_.GetHost();
   http::HttpHeader header("Host", hs.GetHost());
   http::HttpRequest req(http::HM_GET, path, http::HP_1_0, {header}, std::string());
+  return SendRequest(req);
+}
+
+Error HttpClient::Head(const uri::Upath& path) {
+  HostAndPort hs = sock_.GetHost();
+  http::HttpHeader header("Host", hs.GetHost());
+  http::HttpRequest req(http::HM_HEAD, path, http::HP_1_0, {header}, std::string());
   return SendRequest(req);
 }
 
@@ -74,7 +83,25 @@ Error HttpClient::ReadResponce(http::HttpResponse* responce) {
     return make_error_from_errno(err);
   }
 
-  return http::parse_http_responce(data, responce);
+  Error parse_error = http::parse_http_responce(data, responce);
+  if (parse_error) {
+    return parse_error;
+  }
+
+  if (responce->IsEmptyBody()) {
+    http::header_t cont;
+    if (responce->FindHeaderByKey("Content-Length", false, &cont)) {
+      size_t body_len = 0;
+      if (ConvertFromString(cont.value, &body_len)) {
+        err = sock_.Read(&data, body_len, &nread);
+        if (!err) {
+          responce->SetBody(data);
+        }
+      }
+    }
+  }
+
+  return Error();
 }
 
 HttpClient::~HttpClient() {}

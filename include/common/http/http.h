@@ -138,11 +138,11 @@ class HttpRequest {
   http::http_method GetMethod() const;
   std::string GetBody() const;
 
-  bool FindHeaderByKeyAndChange(const std::string& key, bool caseSensitive, header_t new_value);
-  void RemoveHeaderByKey(const std::string& key, bool caseSensitive);
+  bool FindHeaderByKeyAndChange(const std::string& key, bool case_sensitive, header_t new_value);
+  void RemoveHeaderByKey(const std::string& key, bool case_sensitive);
 
-  header_t FindHeaderByKey(const std::string& key, bool caseSensitive) const;
-  header_t FindHeaderByValue(const std::string& value, bool caseSensitive) const;
+  bool FindHeaderByKey(const std::string& key, bool case_sensitive, header_t* hdr) const;
+  bool FindHeaderByValue(const std::string& value, bool case_sensitive, header_t* hdr) const;
 
  private:
   http_method method_;
@@ -158,6 +158,11 @@ class HttpResponse {
  public:
   HttpResponse();
   HttpResponse(http_protocol protocol, http_status status, const headers_t& headers, const std::string& body);
+
+  bool FindHeaderByKey(const std::string& key, bool case_sensitive, header_t* hdr) const;
+
+  void SetBody(const std::string& body);
+  bool IsEmptyBody() const;
 
  private:
   http_protocol protocol_;

@@ -446,6 +446,23 @@ TEST(http_client, get) {
   http::HttpResponse resp;
   err2 = cl.ReadResponce(&resp);
   ASSERT_FALSE(err2);
+  ASSERT_FALSE(resp.IsEmptyBody());
+  err = cl.Disconnect();
+  ASSERT_FALSE(err);
+}
+
+TEST(http_client, head) {
+  net::HostAndPort example("example.com", 80);
+  uri::Upath root;
+  net::HttpClient cl(example);
+  ErrnoError err = cl.Connect();
+  ASSERT_FALSE(err);
+  Error err2 = cl.Head(root);
+  ASSERT_FALSE(err2);
+  http::HttpResponse resp;
+  err2 = cl.ReadResponce(&resp);
+  ASSERT_FALSE(err2);
+  ASSERT_TRUE(resp.IsEmptyBody());
   err = cl.Disconnect();
   ASSERT_FALSE(err);
 }
