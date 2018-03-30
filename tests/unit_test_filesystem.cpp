@@ -7,6 +7,12 @@
 #include <common/time.h>
 #include <common/utf_string_conversions.h>
 
+#ifdef OS_WIN
+#define EXIST_EXE "sh.exe"
+#else
+#define EXIST_EXE "sh"
+#endif
+
 TEST(file_system, CreateRemoveDirectoryRecursive) {
   const std::string home = getenv("HOME");
   bool is_exist = common::file_system::is_directory_exist(home);
@@ -60,4 +66,8 @@ TEST(file_system, CreateRemoveDirectoryRecursive) {
   ASSERT_TRUE(!err);
   is_exist = common::file_system::is_directory_exist(home_test);
   ASSERT_FALSE(is_exist);
+
+  std::string exe_path;
+  bool found = common::file_system::find_file_in_path(EXIST_EXE, &exe_path);
+  ASSERT_TRUE(found);
 }
