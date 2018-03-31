@@ -60,6 +60,7 @@ class File {
   ErrnoError Open(const path_type& file_path, uint32_t flags) WARN_UNUSED_RESULT;
   path_type GetPath() const;
   bool IsValid() const;
+  bool IsOpen() const;
 
   descriptor_t GetFd() const;
 
@@ -70,7 +71,7 @@ class File {
   ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
   ErrnoError Read(void* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;
-  ErrnoError Close() WARN_UNUSED_RESULT;
+  ErrnoError Close();
 
   ErrnoError Lock() WARN_UNUSED_RESULT;
   ErrnoError Unlock() WARN_UNUSED_RESULT;
@@ -85,15 +86,19 @@ class File {
   path_type file_path_;
 };
 
+typedef CloseOnExitResource<File> CloseOnExitFile;
+
 class ANSIFile {
  public:
   typedef ascii_string_path path_type;
 
-  explicit ANSIFile(const path_type& file_path);
+  explicit ANSIFile();
   ~ANSIFile();
 
-  ErrnoError Open(const char* mode) WARN_UNUSED_RESULT;
-  bool IsOpened() const;
+  ErrnoError Open(const path_type::value_type& file_path, const char* mode) WARN_UNUSED_RESULT;
+  ErrnoError Open(const path_type& file_path, const char* mode) WARN_UNUSED_RESULT;
+  bool IsValid() const;
+  bool IsOpen() const;
 
   ErrnoError Lock() WARN_UNUSED_RESULT;
   ErrnoError Unlock() WARN_UNUSED_RESULT;
@@ -118,8 +123,8 @@ class ANSIFile {
 
   ErrnoError Truncate(off_t pos) WARN_UNUSED_RESULT;
 
-  void Flush();
-  void Close();
+  ErrnoError Flush() WARN_UNUSED_RESULT;
+  ErrnoError Close();
 
   bool IsEOF() const;
 
@@ -128,6 +133,8 @@ class ANSIFile {
   path_type path_;
   FILE* file_;
 };
+
+typedef CloseOnExitResource<ANSIFile> CloseOnExitANSIFile;
 
 }  // namespace file_system
 }  // namespace common

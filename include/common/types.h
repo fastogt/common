@@ -59,6 +59,16 @@ class ClonableBase {
   virtual ~ClonableBase() {}
 };
 
+template <typename T>
+class CloseOnExitResource : public T {
+ public:
+  using T::T;
+  ~CloseOnExitResource() { T::Close(); }
+
+  CloseOnExitResource(const CloseOnExitResource&) = delete;
+  CloseOnExitResource& operator=(const CloseOnExitResource&) = delete;
+};
+
 std::ostream& operator<<(std::ostream& out, const buffer_t& buff);
 
 }  // namespace common

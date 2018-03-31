@@ -53,61 +53,122 @@ bool File::IsValid() const {
   return holder_ && holder_->IsValid();
 }
 
+bool File::IsOpen() const {
+  return IsValid();
+}
+
 ErrnoError File::Write(const buffer_t& data, size_t* nwrite_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Write", EINVAL);
+  }
+
   return holder_->Write(data, nwrite_out);
 }
 
 descriptor_t File::GetFd() const {
   DCHECK(IsValid());
-  return holder_->GetFd();
+  return holder_ && holder_->GetFd();
 }
 
 ErrnoError File::Write(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Write", EINVAL);
+  }
+
   return holder_->Write(data, nwrite_out);
 }
 
 ErrnoError File::Write(const void* data, size_t size, size_t* nwrite_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Write", EINVAL);
+  }
+
   return holder_->Write(data, size, nwrite_out);
 }
 
 ErrnoError File::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Read", EINVAL);
+  }
+
   return holder_->Read(out_data, max_size, nread_out);
 }
 
 ErrnoError File::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Read", EINVAL);
+  }
+
   return holder_->Read(out_data, max_size, nread_out);
 }
 
 ErrnoError File::Read(void* out, size_t len, size_t* nread_out) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Read", EINVAL);
+  }
+
   return holder_->Read(out, len, nread_out);
 }
+
 ErrnoError File::Close() {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Close", EINVAL);
+  }
+
   return holder_->Close();
 }
 
 ErrnoError File::Lock() {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Lock", EINVAL);
+  }
+
   return holder_->Lock();
 }
+
 ErrnoError File::Unlock() {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Unlock", EINVAL);
+  }
+
   return holder_->Unlock();
 }
 
 ErrnoError File::Seek(off_t offset, int whence) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Seek", EINVAL);
+  }
+
   return holder_->Seek(offset, whence);
 }
 
 ErrnoError File::Truncate(off_t pos) {
   DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Truncate", EINVAL);
+  }
+
   return holder_->Truncate(pos);
 }
 
@@ -172,25 +233,31 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   return ErrnoError();
 }
 
-ANSIFile::ANSIFile(const path_type& file_path) : path_(file_path), file_(NULL) {}
+ANSIFile::ANSIFile() : path_(), file_(NULL) {}
 
 ANSIFile::~ANSIFile() {}
 
-ErrnoError ANSIFile::Open(const char* mode) {
-  if (!file_) {
-    std::string spath = path_.GetPath();
-    const char* path = spath.c_str();
-    file_ = fopen(path, mode);
-    if (file_) {
-      return ErrnoError();
-    }
-    return make_error_perror("ANSIFile::Open", errno);
+ErrnoError ANSIFile::Open(const path_type::value_type& file_path, const char* mode) {
+  return Open(path_type(file_path), mode);
+}
+
+ErrnoError ANSIFile::Open(const path_type& file_path, const char* mode) {
+  DCHECK(!IsValid());
+
+  std::string spath = file_path.GetPath();
+  const char* path = spath.c_str();
+  file_ = fopen(path, mode);
+  if (file_) {
+    path_ = file_path;
+    return ErrnoError();
   }
 
-  return ErrnoError();
+  return make_error_perror("ANSIFile::Open", errno);
 }
 
 ErrnoError ANSIFile::Lock() {
+  DCHECK(IsValid());
+
   if (!file_) {
     return make_error_perror("ANSIFile::Unlock", EINVAL);
   }
@@ -200,6 +267,8 @@ ErrnoError ANSIFile::Lock() {
 }
 
 ErrnoError ANSIFile::Unlock() {
+  DCHECK(IsValid());
+
   if (!file_) {
     return make_error_perror("ANSIFile::Unlock", EINVAL);
   }
@@ -209,6 +278,8 @@ ErrnoError ANSIFile::Unlock() {
 }
 
 bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
+  DCHECK(IsValid());
+
   if (!file_ || !out_data) {
     return false;
   }
@@ -229,6 +300,8 @@ bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
 }
 
 bool ANSIFile::Read(std::string* out_data, uint32_t max_size) {
+  DCHECK(IsValid());
+
   if (!file_ || !out_data) {
     return false;
   }
@@ -249,6 +322,8 @@ bool ANSIFile::Read(std::string* out_data, uint32_t max_size) {
 }
 
 bool ANSIFile::ReadLine(buffer_t* out_data) {
+  DCHECK(IsValid());
+
   if (!file_ || !out_data) {
     return false;
   }
@@ -264,6 +339,8 @@ bool ANSIFile::ReadLine(buffer_t* out_data) {
 }
 
 bool ANSIFile::ReadLine(std::string* out_data) {
+  DCHECK(IsValid());
+
   if (!file_ || !out_data) {
     return false;
   }
@@ -283,6 +360,8 @@ bool ANSIFile::ReadLine(std::string* out_data) {
 }
 
 bool ANSIFile::IsEOF() const {
+  DCHECK(IsValid());
+
   if (!file_) {
     return true;
   }
@@ -291,6 +370,8 @@ bool ANSIFile::IsEOF() const {
 }
 
 bool ANSIFile::Write(const buffer_t& data) {
+  DCHECK(IsValid());
+
   if (!file_ || data.empty()) {
     DNOTREACHED();
     return false;
@@ -301,6 +382,8 @@ bool ANSIFile::Write(const buffer_t& data) {
 }
 
 bool ANSIFile::Write(const std::string& data) {
+  DCHECK(IsValid());
+
   if (!file_ || data.empty()) {
     DNOTREACHED();
     return false;
@@ -311,6 +394,8 @@ bool ANSIFile::Write(const std::string& data) {
 }
 
 bool ANSIFile::Write(const string16& data) {
+  DCHECK(IsValid());
+
   if (!file_ || data.empty()) {
     DNOTREACHED();
     return false;
@@ -321,6 +406,8 @@ bool ANSIFile::Write(const string16& data) {
 }
 
 ErrnoError ANSIFile::Truncate(off_t pos) {
+  DCHECK(IsValid());
+
   if (!file_) {
     return make_error_perror("ANSIFile::Truncate", EINVAL);
   }
@@ -328,23 +415,35 @@ ErrnoError ANSIFile::Truncate(off_t pos) {
   return ftruncate(fileno(file_), pos);
 }
 
-void ANSIFile::Flush() {
+ErrnoError ANSIFile::Flush() {
+  DCHECK(IsValid());
+
   if (!file_) {
-    return;
+    return make_error_perror("ANSIFile::Flush", EINVAL);
   }
 
   fflush(file_);
+  return ErrnoError();
 }
 
-bool ANSIFile::IsOpened() const {
+bool ANSIFile::IsValid() const {
   return file_ != NULL;
 }
 
-void ANSIFile::Close() {
-  if (file_) {
-    fclose(file_);
-    file_ = NULL;
+bool ANSIFile::IsOpen() const {
+  return IsValid();
+}
+
+ErrnoError ANSIFile::Close() {
+  DCHECK(IsValid());
+
+  if (!file_) {
+    return make_error_perror("ANSIFile::Close", EINVAL);
   }
+
+  fclose(file_);
+  file_ = NULL;
+  return ErrnoError();
 }
 
 ErrnoError create_node(const std::string& path) {
