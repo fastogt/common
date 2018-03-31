@@ -86,8 +86,6 @@ class File {
   path_type file_path_;
 };
 
-typedef CloseOnExitResource<File> CloseOnExitFile;
-
 class ANSIFile {
  public:
   typedef ascii_string_path path_type;
@@ -133,8 +131,6 @@ class ANSIFile {
   path_type path_;
   FILE* file_;
 };
-
-typedef CloseOnExitResource<ANSIFile> CloseOnExitANSIFile;
 
 }  // namespace file_system
 }  // namespace common
