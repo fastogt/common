@@ -38,6 +38,7 @@ std::string EscapedText(const std::string& str);  // add \n at the end if needed
 
 string16 ConvertToString16(const char* from);
 string16 ConvertToString16(const std::string& from);
+string16 ConvertToString16(const StringPiece& from);
 string16 ConvertToString16(const buffer_t& from);
 string16 ConvertToString16(const string16& from);
 string16 ConvertToString16(const StringPiece16& from);
@@ -61,6 +62,7 @@ string16 ConvertToString16(double value);
 std::string ConvertToString(const char* from);
 std::string ConvertToString(const buffer_t& from);
 std::string ConvertToString(const string16& from);
+std::string ConvertToString(const StringPiece16& from);
 std::string ConvertToString(const std::string& from);
 std::string ConvertToString(const StringPiece& from);
 
@@ -98,6 +100,7 @@ buffer_t ConvertToBytes(unsigned long long value);
 buffer_t ConvertToBytes(float value, int prec = 2);
 buffer_t ConvertToBytes(double value, int prec = 2);
 
+bool ConvertFromString16(const string16& from, StringPiece* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, std::string* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, buffer_t* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, bool* out) WARN_UNUSED_RESULT;
@@ -116,6 +119,7 @@ bool ConvertFromString16(const string16& from, double* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, string16* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, StringPiece16* out) WARN_UNUSED_RESULT;
 
+bool ConvertFromString(const std::string& from, StringPiece16* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, string16* out) WARN_UNUSED_RESULT;
 #if defined(WCHAR_T_IS_UTF16)
 #else
@@ -165,9 +169,18 @@ buffer_t decode(const buffer_t& input);
 std::string decode(const StringPiece& input);
 
 }  // namespace hex
+
+namespace unicode {
+
+std::string encode(const StringPiece16& input, bool is_lower);
+
+string16 decode(const StringPiece& input);
+
+}  // namespace unicode
 }  // namespace utils
 
-bool HexStringToInt(const StringPiece& input, int* output);
+bool HexStringToInt(const StringPiece& input, int32_t* output);
+bool HexStringToUInt(const StringPiece& input, uint32_t* output);
 bool HexStringToInt64(const StringPiece& input, int64_t* output);
 bool HexStringToUInt64(const StringPiece& input, uint64_t* output);
 bool HexStringToBytes(const std::string& input, std::vector<uint8_t>* output);

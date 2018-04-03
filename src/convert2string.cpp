@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <limits>
 
+#include <common/portable_endian.h>
 #include <common/sprintf.h>
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
 
@@ -301,7 +302,7 @@ class BaseIteratorRangeToNumberTraits {
 };
 
 template <typename ITERATOR>
-class BaseHexIteratorRangeToIntTraits : public BaseIteratorRangeToNumberTraits<ITERATOR, int, 16> {};
+class BaseHexIteratorRangeToIntTraits : public BaseIteratorRangeToNumberTraits<ITERATOR, int32_t, 16> {};
 
 template <typename ITERATOR>
 class BaseHexIteratorRangeToUIntTraits : public BaseIteratorRangeToNumberTraits<ITERATOR, uint32_t, 16> {};
@@ -346,21 +347,38 @@ bool DoBytesToInt(const buffer_t& input, VALUE* output) {
 }
 
 template <typename STR>
-bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
+bool UnicodeStringToBytesT(const STR& input, std::vector<uint16_t>* output) {
   DCHECK_EQ(output->size(), 0u);
   size_t count = input.size();
-  if (count == 0 || (count % 2) != 0) {
+  if (count == 0 || (count % 4) != 0) {
     return false;
   }
-  for (uintptr_t i = 0; i < count / 2; ++i) {
-    uint8_t msb = 0;  // most significant 4 bits
-    uint8_t lsb = 0;  // least significant 4 bits
-    if (!CharToDigit<16>(input[i * 2], &msb) || !CharToDigit<16>(input[i * 2 + 1], &lsb)) {
+
+  for (size_t i = 0; i < count / 4; ++i) {
+    uint8_t c0 = 0;  // most significant 4 bits
+    uint8_t c1 = 0;  // least significant 4 bits
+    uint8_t c2 = 0;  // most significant 4 bits
+    uint8_t c3 = 0;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 4], &c0) || !CharToDigit<16>(input[i * 4 + 1], &c1) ||
+        !CharToDigit<16>(input[i * 4 + 2], &c2) || !CharToDigit<16>(input[i * 4 + 3], &c3)) {
       return false;
     }
-    output->push_back((msb << 4) | lsb);
+
+    uint16_t val = (c0 << 12) | (c1 << 8) | (c2 << 4) | c3;
+    output->push_back(val);
   }
   return true;
+}
+
+template <typename R, typename T>
+R do_unicode_decode(const T& input) {
+  std::vector<uint16_t> vec;
+  bool res = UnicodeStringToBytesT(input, &vec);
+  if (!res) {
+    return R();
+  }
+
+  return R(vec.begin(), vec.end());
 }
 
 template <typename R, typename T>
@@ -386,6 +404,24 @@ R do_hex_encode(const T& input, bool is_lower) {
   return decoded;
 }
 
+template <typename STR>
+bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
+  DCHECK_EQ(output->size(), 0u);
+  size_t count = input.size();
+  if (count == 0 || (count % 2) != 0) {
+    return false;
+  }
+  for (uintptr_t i = 0; i < count / 2; ++i) {
+    uint8_t msb = 0;  // most significant 4 bits
+    uint8_t lsb = 0;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 2], &msb) || !CharToDigit<16>(input[i * 2 + 1], &lsb)) {
+      return false;
+    }
+    output->push_back((msb << 4) | lsb);
+  }
+  return true;
+}
+
 template <typename R, typename T>
 R do_hex_decode(const T& input) {
   std::vector<uint8_t> vec;
@@ -395,6 +431,35 @@ R do_hex_decode(const T& input) {
   }
 
   return R(vec.begin(), vec.end());
+}
+
+template <typename R, typename T>
+R do_unicode_encode(const T& input, bool is_lower) {
+  static const char uHexChars[] = "0123456789ABCDEF";
+  static const char lHexChars[] = "0123456789abcdef";
+
+  typedef typename T::value_type value_type;
+  const typename T::size_type size = input.size();
+  R decoded;
+  decoded.resize(size * 4);
+
+  for (size_t i = 0; i < size; ++i) {
+    value_type b = htobe16(input[i]);
+    uint8_t msb = b;       // most significant 4 bits
+    uint8_t lsb = b >> 8;  // least significant 4 bits
+    if (is_lower) {
+      decoded[(i * 4)] = lHexChars[(msb >> 4) & 0xf];
+      decoded[(i * 4) + 1] = lHexChars[(msb & 0xf) & 0xf];
+      decoded[(i * 4) + 2] = lHexChars[(lsb >> 4) & 0xf];
+      decoded[(i * 4) + 3] = lHexChars[lsb & 0xf];
+    } else {
+      decoded[(i * 4)] = uHexChars[(msb >> 4) & 0xf];
+      decoded[(i * 4) + 1] = uHexChars[(msb & 0xf) & 0xf];
+      decoded[(i * 4) + 2] = uHexChars[(lsb >> 4) & 0xf];
+      decoded[(i * 4) + 3] = uHexChars[lsb & 0xf];
+    }
+  }
+  return decoded;
 }
 
 }  // namespace
@@ -412,6 +477,14 @@ string16 ConvertToString16(const char* from) {
 }
 
 string16 ConvertToString16(const std::string& from) {
+#if defined(WCHAR_T_IS_UTF16)
+  return UTF8ToWide(from);
+#elif defined(WCHAR_T_IS_UTF32)
+  return UTF8ToUTF16(from);
+#endif
+}
+
+string16 ConvertToString16(const StringPiece& from) {
 #if defined(WCHAR_T_IS_UTF16)
   return UTF8ToWide(from);
 #elif defined(WCHAR_T_IS_UTF32)
@@ -487,6 +560,18 @@ string16 ConvertToString16(double value) {
 }
 
 //
+bool ConvertFromString16(const string16& from, StringPiece* out) {
+  if (!out) {
+    return false;
+  }
+#if defined(WCHAR_T_IS_UTF16)
+  *out = WideToUTF8(from);
+#elif defined(WCHAR_T_IS_UTF32)
+  *out = UTF16ToUTF8(from);
+#endif
+  return true;
+}
+
 bool ConvertFromString16(const string16& from, std::string* out) {
   if (!out) {
     return false;
@@ -732,6 +817,16 @@ std::string ConvertToString(const buffer_t& from) {
 std::string ConvertToString(const string16& from) {
   std::string ascii;
   if (!ConvertFromString16(from, &ascii)) {
+    return std::string();
+  }
+
+  return ascii;
+}
+
+std::string ConvertToString(const StringPiece16& from) {
+  std::string ascii;
+  string16 s16 = ConvertToString16(from);
+  if (!ConvertFromString16(s16, &ascii)) {
     return std::string();
   }
 
@@ -1394,10 +1489,24 @@ std::string decode(const StringPiece& input) {
 }
 
 }  // namespace hex
+
+namespace unicode {
+std::string encode(const StringPiece16& input, bool is_lower) {
+  return do_unicode_encode<std::string>(input, is_lower);
+}
+
+string16 decode(const StringPiece& input) {
+  return do_unicode_decode<string16>(input);
+}
+}  // namespace unicode
 }  // namespace utils
 
-bool HexStringToInt(const StringPiece& input, int* output) {
+bool HexStringToInt(const StringPiece& input, int32_t* output) {
   return IteratorRangeToNumber<HexIteratorRangeToIntTraits>::Invoke(input.begin(), input.end(), output);
+}
+
+bool HexStringToUInt(const StringPiece& input, uint32_t* output) {
+  return IteratorRangeToNumber<HexIteratorRangeToUIntTraits>::Invoke(input.begin(), input.end(), output);
 }
 
 bool HexStringToInt64(const StringPiece& input, int64_t* output) {

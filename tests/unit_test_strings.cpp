@@ -613,6 +613,20 @@ TEST(ConvertToString, double) {
   ASSERT_EQ(s, "3.141593");
 }
 
+TEST(ConvertToString, hex) {
+  std::string china("你好");
+  std::string hexed = common::utils::hex::encode(china, true);
+  ASSERT_EQ("e4bda0e5a5bd", hexed);  //"\u4f60\u597d"
+  common::string16 utf = common::UTF8ToUTF16("你好");
+  ASSERT_EQ(utf.size(), 2);
+
+  std::string unicoded = common::utils::unicode::encode(utf, true);
+  ASSERT_EQ("4f60597d", unicoded);
+
+  common::string16 decoded32 = common::utils::unicode::decode(unicoded);
+  ASSERT_EQ(decoded32, utf);
+}
+
 #ifdef QT_ENABLED
 void ConvertQtTests(const char* test_str) {
   const common::string16 string16_str = common::UTF8ToUTF16(test_str);
