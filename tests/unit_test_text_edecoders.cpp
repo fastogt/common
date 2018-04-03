@@ -1,15 +1,16 @@
 #include <gtest/gtest.h>
 
 #include <common/text_decoders/base64_edcoder.h>
-#include <common/text_decoders/compress_snappy_edcoder.h>
-#include <common/text_decoders/compress_zlib_edcoder.h>
 #include <common/text_decoders/compress_bzip2_edcoder.h>
 #include <common/text_decoders/compress_lz4_edcoder.h>
+#include <common/text_decoders/compress_snappy_edcoder.h>
+#include <common/text_decoders/compress_zlib_edcoder.h>
 #include <common/text_decoders/hex_edcoder.h>
 #include <common/text_decoders/html_edcoder.h>
 #include <common/text_decoders/iedcoder.h>
 #include <common/text_decoders/iedcoder_factory.h>
 #include <common/text_decoders/msgpack_edcoder.h>
+#include <common/text_decoders/unicode_edcoder.h>
 
 TEST(msg_pack, enc_dec) {
   const std::string raw_data = "alex aalex talex 123 balex";
@@ -40,6 +41,19 @@ TEST(html, enc_dec) {
 TEST(hex, enc_dec) {
   const std::string raw_data = "alex aalex talex balex";
   common::HexEDcoder zl;
+  std::string enc_data;
+  common::Error err = zl.Encode(raw_data, &enc_data);
+  ASSERT_FALSE(err);
+
+  std::string dec_data;
+  err = zl.Decode(enc_data, &dec_data);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(raw_data, dec_data);
+}
+
+TEST(unicode, enc_dec) {
+  const std::string raw_data = "alex aalex talex balex";
+  common::UnicodeEDcoder zl;
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);

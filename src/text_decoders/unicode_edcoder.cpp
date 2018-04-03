@@ -27,53 +27,30 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/iedcoder_factory.h>
-
-#include <common/text_decoders/base64_edcoder.h>
-#include <common/text_decoders/compress_bzip2_edcoder.h>
-#include <common/text_decoders/compress_lz4_edcoder.h>
-#include <common/text_decoders/compress_snappy_edcoder.h>
-#include <common/text_decoders/compress_zlib_edcoder.h>
-#include <common/text_decoders/hex_edcoder.h>
-#include <common/text_decoders/html_edcoder.h>
-#include <common/text_decoders/msgpack_edcoder.h>
 #include <common/text_decoders/unicode_edcoder.h>
+
+#include <common/compress/unicode.h>
+
+#include <common/convert2string.h>
 
 namespace common {
 
-IEDcoder* CreateEDCoder(EDType type) {
-  if (type == ED_BASE64) {
-    return new Base64EDcoder;
-  } else if (type == ED_ZLIB) {
-    return new CompressZlibEDcoder;
-  } else if (type == ED_BZIP2) {
-    return new CompressBZip2EDcoder;
-  } else if (type == ED_LZ4) {
-    return new CompressLZ4EDcoder;
-  } else if (type == ED_SNAPPY) {
-    return new CompressSnappyEDcoder;
-  } else if (type == ED_HEX) {
-    return new HexEDcoder;
-  } else if (type == ED_UNICODE) {
-    return new UnicodeEDcoder;
-  } else if (type == ED_MSG_PACK) {
-    return new MsgPackEDcoder;
-  } else if (type == ED_HTML_ESC) {
-    return new HtmlEscEDcoder;
-  }
+UnicodeEDcoder::UnicodeEDcoder() : IEDcoder(ED_UNICODE) {}
 
-  DNOTREACHED() << "Unknown EDCoder type:" << type;
-  return nullptr;
+Error UnicodeEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+  string16 sdata = ConvertToString16(data);
+  return compress::EncodeUnicode(sdata, false, out);
 }
 
-IEDcoder* CreateEDCoder(const std::string& name) {
-  EDType t;
-  if (!ConvertFromString(name, &t)) {
-    DNOTREACHED() << "Unknown EDCoder name:" << name;
-    return nullptr;
+Error UnicodeEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+  string16 sdata;
+  Error err = compress::DecodeUnicode(data, &sdata);
+  if (err) {
+    return err;
   }
 
-  return CreateEDCoder(t);
+  *out = ConvertToString(sdata);
+  return Error();
 }
 
 }  // namespace common
