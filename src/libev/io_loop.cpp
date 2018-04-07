@@ -239,11 +239,13 @@ std::vector<IoClient*> IoLoop::GetClients() const {
   return clients_;
 }
 
+#if LIBEV_CHILD_ENABLE
 std::vector<IoChild*> IoLoop::GetChilds() const {
   CHECK(IsLoopThread());
 
   return childs_;
 }
+#endif
 
 void IoLoop::SetName(const std::string& name) {
   name_ = name;

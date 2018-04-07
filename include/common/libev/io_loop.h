@@ -82,7 +82,9 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   bool IsLoopThread() const;
 
   std::vector<IoClient*> GetClients() const;
+#if LIBEV_CHILD_ENABLE
   std::vector<IoChild*> GetChilds() const;
+#endif
 
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
