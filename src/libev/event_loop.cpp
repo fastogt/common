@@ -91,12 +91,7 @@ LibEvLoop::LibEvLoop(struct ev_loop* loop)
       exec_id_(),
       async_stop_(new LibevAsync),
       async_custom_(new AsyncCustom),
-      timers_()
-#if LIBEV_CHILD_ENABLE
-      ,
-      childs_()
-#endif
-      ,
+      timers_(),
       is_running_(false) {
   CHECK(loop_) << "Must be evloop!";
   ev_set_userdata(loop_, this);
@@ -134,30 +129,6 @@ void LibEvLoop::RemoveTimer(timer_id_t id) {
     }
   }
 }
-
-#if LIBEV_CHILD_ENABLE
-void LibEvLoop::RegisterChild(pid_t pid) {
-  CHECK(IsLoopThread());
-
-  LibevChild* ch = new LibevChild;
-  ch->Init(this, child_cb, pid);
-  ch->Start();
-  childs_.push_back(ch);
-}
-
-void LibEvLoop::RemoveChild(pid_t pid) {
-  CHECK(IsLoopThread());
-
-  for (std::vector<LibevChild*>::iterator it = childs_.begin(); it != childs_.end(); ++it) {
-    LibevChild* ch = *it;
-    if (ch->GetPid() == pid) {
-      childs_.erase(it);
-      delete ch;
-      return;
-    }
-  }
-}
-#endif
 
 void LibEvLoop::InitAsync(LibevAsync* as, async_callback_t cb) {
   ev_async* eas = as->GetHandle();
@@ -293,31 +264,11 @@ void LibEvLoop::timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents) {
   loop->HandleTimer(timer->get_id());
 }
 
-#if LIBEV_CHILD_ENABLE
-void LibEvLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents) {
-  if (EV_ERROR & revents) {
-    DNOTREACHED();
-    return;
-  }
-
-  DCHECK(revents & EV_CHILD);
-  loop->HandleChild(child->GetPid(), status);
-}
-#endif
-
 void LibEvLoop::HandleTimer(timer_id_t id) {
   if (observer_) {
     observer_->TimerEmited(this, id);
   }
 }
-
-#if LIBEV_CHILD_ENABLE
-void LibEvLoop::HandleChild(pid_t id, int status) {
-  if (observer_) {
-    observer_->ChildStatusChanged(this, id, status);
-  }
-}
-#endif
 
 void LibEvLoop::HandleStop() {
   async_stop_->Stop();
@@ -326,13 +277,6 @@ void LibEvLoop::HandleStop() {
     LibevTimer* timer = timers[i];
     RemoveTimer(timer->get_id());
   }
-#if LIBEV_CHILD_ENABLE
-  const std::vector<LibevChild*> childs = childs_;
-  for (size_t i = 0; i < childs.size(); ++i) {
-    LibevChild* child = childs[i];
-    RemoveChild(child->GetPid());
-  }
-#endif
 
   if (observer_) {
     observer_->Stoped(this);

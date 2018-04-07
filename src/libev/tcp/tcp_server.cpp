@@ -35,6 +35,7 @@
 
 #include <common/libev/default_event_loop.h>
 #include <common/libev/event_io.h>
+#include <common/libev/io_child.h>
 #include <common/libev/io_loop.h>
 
 namespace {
@@ -102,6 +103,12 @@ IoLoop* TcpServer::FindExistServerByHost(const net::HostAndPort& host) {
 TcpClient* TcpServer::CreateClient(const net::socket_info& info) {
   return new TcpClient(this, info);
 }
+
+#if LIBEV_CHILD_ENABLE
+IoChild* TcpServer::CreateChild() {
+  return new IoChild(this);
+}
+#endif
 
 void TcpServer::PreLooped(LibEvLoop* loop) {
   net::socket_descr_t fd = sock_.GetFd();

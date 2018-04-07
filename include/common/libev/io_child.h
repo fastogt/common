@@ -29,44 +29,44 @@
 
 #pragma once
 
-#include <common/libev/io_loop.h>         // for IoLoop
-#include <common/libev/tcp/tcp_client.h>  // for TcpClient
+#include <common/libev/types.h>
+
+#if LIBEV_CHILD_ENABLE
+
+#include <common/error.h>
+#include <common/patterns/crtp_pattern.h>
 
 namespace common {
 namespace libev {
-namespace tcp {
 
-class TcpServer : public IoLoop {
+class IoLoop;
+
+class IoChild : IMetaClassInfo {
  public:
-  explicit TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer = nullptr);
-  virtual ~TcpServer();
+  friend class IoLoop;
+  IoChild(IoLoop* server);
+  virtual ~IoChild();
 
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
+  pid_t GetPid() const;
 
-  const char* ClassName() const override;
-  net::HostAndPort GetHost() const;
+  IoLoop* GetServer() const;
 
-  static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
+  void SetName(const std::string& name);
+  std::string GetName() const;
+
+  patterns::id_counter<IoChild>::type_t GetId() const;
+  virtual const char* ClassName() const override;
+  std::string GetFormatedName() const;
 
  private:
-  virtual TcpClient* CreateClient(const net::socket_info& info) override;
-#if LIBEV_CHILD_ENABLE
-  virtual IoChild* CreateChild() override;
-#endif
-  virtual void PreLooped(LibEvLoop* loop) override;
-  virtual void PostLooped(LibEvLoop* loop) override;
+  IoLoop* server_;
+  LibevChild* child_;
 
-  virtual void Stoped(LibEvLoop* loop) override;
-
-  static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
-
-  ErrnoError Accept(net::socket_info* info) WARN_UNUSED_RESULT;
-
-  net::ServerSocketTcp sock_;
-  LibevIO* accept_io_;
+  std::string name_;
+  const patterns::id_counter<IoChild> id_;
 };
 
-}  // namespace tcp
 }  // namespace libev
 }  // namespace common
+
+#endif

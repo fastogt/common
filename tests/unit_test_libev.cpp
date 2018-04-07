@@ -49,11 +49,17 @@ class ServerHandler : public common::libev::IoLoopObserver {
     UNUSED(id);
   }
 
-  virtual void ChildStatusChanged(common::libev::IoLoop* server, pid_t id, int status) override {
+#if LIBEV_CHILD_ENABLE
+  virtual void Accepted(common::libev::IoChild* child) override { UNUSED(child); }
+  virtual void Moved(common::libev::IoLoop* server, common::libev::IoChild* child) override {
     UNUSED(server);
-    UNUSED(id);
+    UNUSED(child);
+  }
+  virtual void ChildStatusChanged(common::libev::IoChild* child, int status) override {
+    UNUSED(child);
     UNUSED(status);
   }
+#endif
 
   virtual void DataReceived(common::libev::IoClient* client) override { UNUSED(client); }
 

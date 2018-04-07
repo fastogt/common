@@ -36,6 +36,9 @@ namespace libev {
 
 class IoLoop;
 class IoClient;
+#if LIBEV_CHILD_ENABLE
+class IoChild;
+#endif
 
 class IoLoopObserver {
  public:
@@ -46,7 +49,9 @@ class IoLoopObserver {
   virtual void Closed(IoClient* client) = 0;
   virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
 #if LIBEV_CHILD_ENABLE
-  virtual void ChildStatusChanged(IoLoop* server, pid_t id, int status) = 0;
+  virtual void Accepted(IoChild* child) = 0;
+  virtual void Moved(IoLoop* server, IoChild* child) = 0;  // owner server, now child is orphan
+  virtual void ChildStatusChanged(IoChild* child, int status) = 0;
 #endif
 
   virtual void DataReceived(IoClient* client) = 0;

@@ -44,7 +44,7 @@ class LibevChild : public LibevBase<struct ev_child, child_id_t> {
   LibevChild();
   ~LibevChild();
 
-  void Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid);
+  bool Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid);
   void Start();
   void Stop();
 

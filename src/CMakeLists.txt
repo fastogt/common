@@ -591,6 +591,7 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_io.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_child.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_child.h
 
     ${LIBEV_TCP_HEADERS}
   )
@@ -609,6 +610,7 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/event_io.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/event_timer.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/event_child.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/io_child.cpp
 
     ${LIBEV_TCP_SOURCES}
   )

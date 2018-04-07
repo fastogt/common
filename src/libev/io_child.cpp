@@ -27,46 +27,56 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/libev/io_child.h>
 
-#include <common/libev/io_loop.h>         // for IoLoop
-#include <common/libev/tcp/tcp_client.h>  // for TcpClient
+#if LIBEV_CHILD_ENABLE
+
+#include <inttypes.h>
+
+#include <common/libev/event_child.h>
+#include <common/libev/io_loop.h>
+#include <common/sprintf.h>
 
 namespace common {
 namespace libev {
-namespace tcp {
 
-class TcpServer : public IoLoop {
- public:
-  explicit TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer = nullptr);
-  virtual ~TcpServer();
+IoChild::IoChild(IoLoop* server) : server_(server), child_(new LibevChild), name_(), id_() {
+  child_->SetUserData(this);
+}
 
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
+IoChild::~IoChild() {
+  destroy(&child_);
+}
 
-  const char* ClassName() const override;
-  net::HostAndPort GetHost() const;
+patterns::id_counter<IoChild>::type_t IoChild::GetId() const {
+  return id_.get_id();
+}
 
-  static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
+pid_t IoChild::GetPid() const {
+  return child_->GetPid();
+}
 
- private:
-  virtual TcpClient* CreateClient(const net::socket_info& info) override;
-#if LIBEV_CHILD_ENABLE
-  virtual IoChild* CreateChild() override;
-#endif
-  virtual void PreLooped(LibEvLoop* loop) override;
-  virtual void PostLooped(LibEvLoop* loop) override;
+IoLoop* IoChild::GetServer() const {
+  return server_;
+}
 
-  virtual void Stoped(LibEvLoop* loop) override;
+void IoChild::SetName(const std::string& name) {
+  name_ = name;
+}
 
-  static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
+std::string IoChild::GetName() const {
+  return name_;
+}
 
-  ErrnoError Accept(net::socket_info* info) WARN_UNUSED_RESULT;
+const char* IoChild::ClassName() const {
+  return "IoClient";
+}
 
-  net::ServerSocketTcp sock_;
-  LibevIO* accept_io_;
-};
+std::string IoChild::GetFormatedName() const {
+  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
+}
 
-}  // namespace tcp
 }  // namespace libev
 }  // namespace common
+
+#endif

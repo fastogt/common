@@ -38,6 +38,11 @@
 #include <common/libev/io_client.h>
 #include <common/libev/io_loop_observer.h>
 
+#if LIBEV_CHILD_ENABLE
+#include <common/libev/event_child.h>
+#include <common/libev/io_child.h>
+#endif
+
 namespace {
 
 typedef std::unique_lock<std::mutex> lock_t;
@@ -148,12 +153,55 @@ void IoLoop::RemoveTimer(timer_id_t id) {
 }
 
 #if LIBEV_CHILD_ENABLE
-void IoLoop::RegisterChild(pid_t pid) {
-  loop_->RegisterChild(pid);
+IoChild* IoLoop::RegisterChild(pid_t pid) {
+  IoChild* client = CreateChild();
+  RegisterChild(client, pid);
+  return client;
 }
 
-void IoLoop::UnRegisterChild(pid_t pid) {
-  loop_->RemoveChild(pid);
+void IoLoop::RegisterChild(IoChild* child, pid_t pid) {
+  CHECK(IsLoopThread());
+  CHECK(child);
+  const std::string formated_name = child->GetFormatedName();
+
+  if (child->GetServer()) {
+    CHECK(child->GetServer() == this);
+  } else {
+    child->server_ = this;
+  }
+
+  // Initialize and start watcher to read client requests
+  LibevChild* child_ev = child->child_;
+  bool is_inited = child_ev->Init(loop_, child_cb, pid);
+  if (!is_inited) {
+    DNOTREACHED();
+    return;
+  }
+  child_ev->Start();
+
+  if (observer_) {
+    observer_->Accepted(child);
+  }
+  childs_.push_back(child);
+  INFO_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
+             << "], " << childs_.size() << " childs(s) connected.";
+}
+
+void IoLoop::UnRegisterChild(IoChild* child) {
+  CHECK(IsLoopThread());
+  CHECK(child && child->GetServer() == this);
+  const std::string formated_name = child->GetFormatedName();
+
+  LibevChild* child_ev = child->child_;
+  child_ev->Stop();
+  child->server_ = nullptr;
+
+  if (observer_) {
+    observer_->Moved(this, child);
+  }
+  childs_.erase(std::remove(childs_.begin(), childs_.end(), child), childs_.end());
+  INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+             << childs_.size() << " client(s) connected.";
 }
 #endif
 
@@ -189,6 +237,12 @@ std::vector<IoClient*> IoLoop::GetClients() const {
   CHECK(IsLoopThread());
 
   return clients_;
+}
+
+std::vector<IoChild*> IoLoop::GetChilds() const {
+  CHECK(IsLoopThread());
+
+  return childs_;
 }
 
 void IoLoop::SetName(const std::string& name) {
@@ -232,6 +286,37 @@ void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
   }
 }
 
+#if LIBEV_CHILD_ENABLE
+void IoLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents) {
+  IoChild* pchild = reinterpret_cast<IoChild*>(child->GetUserData());
+  IoLoop* pserver = pchild->GetServer();
+  pserver->ChildStatus(loop, pchild, status, revents);
+}
+
+void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t revents) {
+  CHECK(IsLoopThread());
+  CHECK(loop_ == loop);
+  CHECK(child && child->GetServer() == this);
+
+  if (EV_ERROR & revents) {
+    DNOTREACHED();
+    return;
+  }
+
+  if (EV_ERROR & revents) {
+    DNOTREACHED();
+    return;
+  }
+
+  if (revents & EV_CHILD) {
+    if (observer_) {
+      observer_->ChildStatusChanged(child, status);
+    }
+  }
+}
+
+#endif
+
 void IoLoop::PreLooped(LibEvLoop* loop) {
   UNUSED(loop);
   {
@@ -256,6 +341,14 @@ void IoLoop::Stoped(LibEvLoop* loop) {
     DCHECK(!err) << err->GetDescription();
     delete client;
   }
+
+#if LIBEV_CHILD_ENABLE
+  const std::vector<IoChild*> childs = GetChilds();
+  for (size_t i = 0; i < childs.size(); ++i) {
+    IoChild* child = childs[i];
+    delete child;
+  }
+#endif
 }
 
 void IoLoop::PostLooped(LibEvLoop* loop) {
@@ -276,15 +369,6 @@ void IoLoop::TimerEmited(LibEvLoop* loop, timer_id_t id) {
     observer_->TimerEmited(this, id);
   }
 }
-
-#if LIBEV_CHILD_ENABLE
-void IoLoop::ChildStatusChanged(LibEvLoop* loop, pid_t id, int status) {
-  UNUSED(loop);
-  if (observer_) {
-    observer_->ChildStatusChanged(this, id, status);
-  }
-}
-#endif
 
 }  // namespace libev
 }  // namespace common
