@@ -205,10 +205,6 @@ void IoLoop::UnRegisterChild(IoChild* child) {
 }
 #endif
 
-patterns::id_counter<IoLoop>::type_t IoLoop::GetId() const {
-  return id_.get_id();
-}
-
 void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
   loop_->ExecInLoopThread(func);
 }
@@ -246,18 +242,6 @@ std::vector<IoChild*> IoLoop::GetChilds() const {
   return childs_;
 }
 #endif
-
-void IoLoop::SetName(const std::string& name) {
-  name_ = name;
-}
-
-std::string IoLoop::GetName() const {
-  return name_;
-}
-
-std::string IoLoop::GetFormatedName() const {
-  return MemSPrintf("[%s][%s(%llu)]", GetName(), ClassName(), GetId());
-}
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
   IoClient* pclient = reinterpret_cast<IoClient*>(io->GetUserData());

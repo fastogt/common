@@ -31,6 +31,8 @@
 
 #include <common/libev/event_loop.h>
 
+#include <common/libev/io_base.h>
+
 namespace common {
 namespace net {
 class socket_info;
@@ -46,7 +48,7 @@ class IoClient;
 class IoChild;
 #endif
 
-class IoLoop : public EvLoopObserver, IMetaClassInfo {
+class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
  public:
   explicit IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
   virtual ~IoLoop();
@@ -69,13 +71,7 @@ class IoLoop : public EvLoopObserver, IMetaClassInfo {
   void UnRegisterChild(IoChild* child);
 #endif
 
-  patterns::id_counter<IoLoop>::type_t GetId() const;
-
-  void SetName(const std::string& name);
-  std::string GetName() const;
-
   virtual const char* ClassName() const override = 0;
-  std::string GetFormatedName() const;
 
   void ExecInLoopThread(custom_loop_exec_function_t func);
 

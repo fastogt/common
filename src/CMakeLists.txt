@@ -592,6 +592,7 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_timer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_child.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_child.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/io_base.h
 
     ${LIBEV_TCP_HEADERS}
   )

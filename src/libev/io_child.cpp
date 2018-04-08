@@ -31,16 +31,13 @@
 
 #if LIBEV_CHILD_ENABLE
 
-#include <inttypes.h>
-
 #include <common/libev/event_child.h>
 #include <common/libev/io_loop.h>
-#include <common/sprintf.h>
 
 namespace common {
 namespace libev {
 
-IoChild::IoChild(IoLoop* server) : server_(server), child_(new LibevChild), name_(), id_() {
+IoChild::IoChild(IoLoop* server) : base_class(), server_(server), child_(new LibevChild) {
   child_->SetUserData(this);
 }
 
@@ -48,32 +45,16 @@ IoChild::~IoChild() {
   destroy(&child_);
 }
 
-patterns::id_counter<IoChild>::type_t IoChild::GetId() const {
-  return id_.get_id();
+IoLoop* IoChild::GetServer() const {
+  return server_;
 }
 
 pid_t IoChild::GetPid() const {
   return child_->GetPid();
 }
 
-IoLoop* IoChild::GetServer() const {
-  return server_;
-}
-
-void IoChild::SetName(const std::string& name) {
-  name_ = name;
-}
-
-std::string IoChild::GetName() const {
-  return name_;
-}
-
 const char* IoChild::ClassName() const {
   return "IoClient";
-}
-
-std::string IoChild::GetFormatedName() const {
-  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
 }
 
 }  // namespace libev

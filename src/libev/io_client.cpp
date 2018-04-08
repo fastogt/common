@@ -29,10 +29,6 @@
 
 #include <common/libev/io_client.h>
 
-#include <inttypes.h>
-
-#include <common/sprintf.h>
-
 #include <common/libev/event_io.h>
 #include <common/libev/io_loop.h>
 
@@ -40,7 +36,7 @@ namespace common {
 namespace libev {
 
 IoClient::IoClient(IoLoop* server, flags_t flags)
-    : server_(server), read_write_io_(new LibevIO), flags_(flags), name_(), id_() {
+    : base_class(), server_(server), read_write_io_(new LibevIO), flags_(flags) {
   read_write_io_->SetUserData(this);
 }
 
@@ -59,14 +55,6 @@ IoLoop* IoClient::GetServer() const {
   return server_;
 }
 
-void IoClient::SetName(const std::string& name) {
-  name_ = name;
-}
-
-std::string IoClient::GetName() const {
-  return name_;
-}
-
 flags_t IoClient::GetFlags() const {
   return flags_;
 }
@@ -78,10 +66,6 @@ void IoClient::SetFlags(flags_t flags) {
     read_write_io_->SetEvents(flags);
     read_write_io_->Start();
   }
-}
-
-patterns::id_counter<IoClient>::type_t IoClient::GetId() const {
-  return id_.get_id();
 }
 
 const char* IoClient::ClassName() const {
@@ -111,10 +95,6 @@ Error IoClient::Read(std::string* out_data, size_t max_size, size_t* nread_out) 
   *out_data = std::string(buff, *nread_out);
   delete[] buff;
   return err;
-}
-
-std::string IoClient::GetFormatedName() const {
-  return MemSPrintf("[%s][%s(%" PRIuMAX ")]", GetName(), ClassName(), GetId());
 }
 
 }  // namespace libev

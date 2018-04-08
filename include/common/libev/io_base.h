@@ -29,51 +29,31 @@
 
 #pragma once
 
-#include <common/error.h>
-#include <common/libev/io_base.h>
-#include <common/libev/types.h>
+#include <common/patterns/crtp_pattern.h>
+
+#include <common/sprintf.h>
 
 namespace common {
 namespace libev {
 
-class IoLoop;
-
-class IoClient : public IoBase<IoClient> {
+template <typename T>
+class IoBase : IMetaClassInfo {
  public:
-  friend class IoLoop;
-  typedef IoBase<IoClient> base_class;
+  typedef patterns::id_counter<T> id_t;
+  explicit IoBase() : name_(), id_() {}
+  virtual ~IoBase() {}
 
-  IoClient(IoLoop* server, flags_t flags = EV_READ);
-  virtual ~IoClient();
+  void SetName(const std::string& name) { name_ = name; }
+  std::string GetName() const { return name_; }
 
-  Error Close() WARN_UNUSED_RESULT;
+  typename id_t::type_t GetId() const { return id_.get_id(); }
 
-  IoLoop* GetServer() const;
-
-  flags_t GetFlags() const;
-  void SetFlags(flags_t flags);
-
-  virtual const char* ClassName() const override;
-
-  virtual Error Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  virtual Error Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  virtual Error Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
-
-  virtual Error Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual Error Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual Error Read(unsigned char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
-  virtual Error Read(char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
-
- protected:  // executed IoLoop
-  virtual descriptor_t GetFd() const = 0;
+  virtual const char* ClassName() const override = 0;
+  virtual std::string GetFormatedName() const { return MemSPrintf("[%s][%s(%zu)]", GetName(), ClassName(), GetId()); }
 
  private:
-  virtual Error DoClose() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(IoClient);
-  IoLoop* server_;
-  LibevIO* read_write_io_;
-  flags_t flags_;
+  std::string name_;
+  const id_t id_;
 };
 
 }  // namespace libev

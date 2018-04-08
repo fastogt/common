@@ -33,37 +33,30 @@
 
 #if LIBEV_CHILD_ENABLE
 
-#include <common/error.h>
-#include <common/patterns/crtp_pattern.h>
+#include <common/libev/io_base.h>
 
 namespace common {
 namespace libev {
 
 class IoLoop;
 
-class IoChild : IMetaClassInfo {
+class IoChild : public IoBase<IoChild> {
  public:
   friend class IoLoop;
-  IoChild(IoLoop* server);
+  typedef IoBase<IoChild> base_class;
+
+  explicit IoChild(IoLoop* server);
   virtual ~IoChild();
 
+  IoLoop* GetServer() const;
   pid_t GetPid() const;
 
-  IoLoop* GetServer() const;
-
-  void SetName(const std::string& name);
-  std::string GetName() const;
-
-  patterns::id_counter<IoChild>::type_t GetId() const;
   virtual const char* ClassName() const override;
-  std::string GetFormatedName() const;
 
  private:
+  DISALLOW_COPY_AND_ASSIGN(IoChild);
   IoLoop* server_;
   LibevChild* child_;
-
-  std::string name_;
-  const patterns::id_counter<IoChild> id_;
 };
 
 }  // namespace libev
