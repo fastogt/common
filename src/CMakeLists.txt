@@ -29,6 +29,14 @@ SET(PROTOCOLS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/protocols/three_way_handshake/commands.cpp
 )
 
+SET(SERIALIZER_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
+)
+
+SET(SERIALIZER_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/serializer/iserializer.cpp
+)
+
 IF(JSON_ENABLED)
   FIND_PACKAGE(JSON-C REQUIRED)
 
@@ -46,17 +54,17 @@ IF(JSON_ENABLED)
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_types.cpp
   )
 
+  SET(SERIALIZER_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/serializer/json_serializer.h
+  )
+
+  SET(SERIALIZER_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/serializer/json_serializer.cpp
+  )
+
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${JSONC_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${JSONC_LIBRARIES})
 ENDIF(JSON_ENABLED)
-
-SET(SERIALIZER_HEADERS
-  ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
-)
-
-SET(SERIALIZER_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/serializer/iserializer.cpp
-)
 
 SET(URI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/uri/upath.h

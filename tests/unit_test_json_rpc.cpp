@@ -39,7 +39,7 @@ void make_parse_commands(const std::string& method, const std::string& id, const
   req.method = method;
   req.id = id;
   req.params = params;
-  common::Error err = MakeJsonRPCRequest(req, NULL);
+  common::Error err = MakeJsonRPCRequest(req, static_cast<json_object**>(NULL));  // inval
   ASSERT_TRUE(err);
 
   json_object* res = NULL;
