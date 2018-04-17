@@ -23,42 +23,52 @@ namespace common {
 namespace serializer {
 
 template <typename T>
-class JsonSerializer : public common::serializer::ISerializer<struct json_object*> {
+class JsonSerializerBase : public ISerializer<struct json_object*> {
  public:
-  typedef common::serializer::ISerializer<struct json_object*> base_class;
+  typedef ISerializer<struct json_object*> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
-  virtual common::Error SerializeToString(std::string* deserialized) const override final WARN_UNUSED_RESULT {
+  virtual Error SerializeToString(std::string* deserialized) const override final WARN_UNUSED_RESULT {
     serialize_type des = NULL;
-    common::Error err = base_class::Serialize(&des);
+    Error err = base_class::Serialize(&des);
     if (err) {
       return err;
     }
 
     *deserialized = json_object_get_string(des);
     json_object_put(des);
-    return common::Error();
+    return Error();
   }
 
-  virtual common::Error SerializeFromString(const std::string& data,
-                                            serialize_type* out) const override final WARN_UNUSED_RESULT {
+  virtual Error SerializeFromString(const std::string& data,
+                                    serialize_type* out) const override final WARN_UNUSED_RESULT {
     const char* data_ptr = data.c_str();
     serialize_type res = json_tokener_parse(data_ptr);
     if (!res) {
-      return common::make_error_inval();
+      return make_error_inval();
     }
 
     *out = res;
-    return common::Error();
+    return Error();
   }
 
-  common::Error DeSerialize(const serialize_type& serialized) WARN_UNUSED_RESULT {
+  Error DeSerialize(const serialize_type& serialized) WARN_UNUSED_RESULT {
     if (!serialized) {
-      return common::make_error_inval();
+      return make_error_inval();
     }
 
     return DoDeSerialize(serialized);
   }
+
+ protected:
+  virtual Error DoDeSerialize(json_object* deserialized) = 0;
+};
+
+template <typename T>
+class JsonSerializer : public JsonSerializerBase<T> {
+ public:
+  typedef JsonSerializerBase<T> base_class;
+  typedef typename base_class::serialize_type serialize_type;
 
  protected:
   virtual common::Error DoDeSerialize(json_object* deserialized) = 0;
@@ -67,6 +77,29 @@ class JsonSerializer : public common::serializer::ISerializer<struct json_object
   virtual common::Error DoSerialize(serialize_type* deserialized) const override final {
     json_object* obj = json_object_new_object();
     common::Error err = SerializeFields(obj);
+    if (err) {
+      json_object_put(obj);
+      return err;
+    }
+
+    *deserialized = obj;
+    return common::Error();
+  }
+};
+
+template <typename T>
+class JsonSerializerArray : public JsonSerializerBase<T> {
+ public:
+  typedef JsonSerializerBase<T> base_class;
+  typedef typename base_class::serialize_type serialize_type;
+
+ protected:
+  virtual common::Error DoDeSerialize(json_object* deserialized_array) = 0;
+  virtual common::Error SerializeArray(json_object* deserialized_array) const = 0;
+
+  virtual common::Error DoSerialize(serialize_type* deserialized) const override final {
+    json_object* obj = json_object_new_array();
+    common::Error err = SerializeArray(obj);
     if (err) {
       json_object_put(obj);
       return err;
