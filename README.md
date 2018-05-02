@@ -44,8 +44,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-**Style**<br/>
+Style
+=======
 .clang_format
 cmake -DCHECK_STYLE=ON
 make check_style
-Note: needed clang-tidy
+
+**Note: need clang-tidy**
