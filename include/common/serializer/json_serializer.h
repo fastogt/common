@@ -28,14 +28,14 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
   typedef ISerializer<struct json_object*> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
-  virtual Error SerializeToString(std::string* deserialized) const override final WARN_UNUSED_RESULT {
+  virtual Error SerializeToString(std::string* out) const override final WARN_UNUSED_RESULT {
     serialize_type des = NULL;
     Error err = base_class::Serialize(&des);
     if (err) {
       return err;
     }
 
-    *deserialized = json_object_get_string(des);
+    *out = json_object_get_string(des);
     json_object_put(des);
     return Error();
   }
@@ -61,7 +61,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
   }
 
  protected:
-  virtual Error DoDeSerialize(json_object* deserialized) = 0;
+  virtual Error DoDeSerialize(json_object* serialized) = 0;
 };
 
 template <typename T>
@@ -71,10 +71,10 @@ class JsonSerializer : public JsonSerializerBase<T> {
   typedef typename base_class::serialize_type serialize_type;
 
  protected:
-  virtual common::Error DoDeSerialize(json_object* deserialized) = 0;
-  virtual common::Error SerializeFields(json_object* deserialized) const = 0;
+  virtual common::Error DoDeSerialize(json_object* serialized) = 0;
+  virtual common::Error SerializeFields(json_object* out) const = 0;
 
-  virtual common::Error DoSerialize(serialize_type* deserialized) const override final {
+  virtual common::Error DoSerialize(serialize_type* out) const override final {
     json_object* obj = json_object_new_object();
     common::Error err = SerializeFields(obj);
     if (err) {
@@ -82,7 +82,7 @@ class JsonSerializer : public JsonSerializerBase<T> {
       return err;
     }
 
-    *deserialized = obj;
+    *out = obj;
     return common::Error();
   }
 };
@@ -94,10 +94,10 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
   typedef typename base_class::serialize_type serialize_type;
 
  protected:
-  virtual common::Error DoDeSerialize(json_object* deserialized_array) = 0;
-  virtual common::Error SerializeArray(json_object* deserialized_array) const = 0;
+  virtual common::Error DoDeSerialize(json_object* serialized_array) = 0;
+  virtual common::Error SerializeArray(json_object* out_array) const = 0;
 
-  virtual common::Error DoSerialize(serialize_type* deserialized) const override final {
+  virtual common::Error DoSerialize(serialize_type* out) const override final {
     json_object* obj = json_object_new_array();
     common::Error err = SerializeArray(obj);
     if (err) {
@@ -105,7 +105,7 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
       return err;
     }
 
-    *deserialized = obj;
+    *out = obj;
     return common::Error();
   }
 };

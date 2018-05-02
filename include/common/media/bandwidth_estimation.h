@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <common/macros.h>
 #include <common/media/types.h>  // for bandwidth_t
 
 namespace common {
@@ -72,4 +73,7 @@ DesireBytesPerSec CalculateDesireH264BandwidthBytesPerSec(int width, int height,
 DesireBytesPerSec CalculateDesireMPEGBandwidthBytesPerSec(int width, int height);
 
 }  // namespace media
+
+std::string ConvertToString(const media::DesireBytesPerSec& from);
+bool ConvertFromString(const std::string& from, media::DesireBytesPerSec* out) WARN_UNUSED_RESULT;
 }  // namespace common

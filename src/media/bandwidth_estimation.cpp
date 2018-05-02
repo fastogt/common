@@ -31,6 +31,8 @@
 
 #include <common/macros.h>  // for DNOTREACHED
 
+#include <common/convert2string.h>
+
 #define KBITS_TO_BYTES(X) (X * 1024 / 8)
 
 #define PROFILE_H264_CONSTRAINED (1 << 9)
@@ -235,4 +237,39 @@ DesireBytesPerSec CalculateDesireMPEGBandwidthBytesPerSec(int width, int height)
 }
 
 }  // namespace media
+
+std::string ConvertToString(const media::DesireBytesPerSec& from) {
+  if (!from.IsValid()) {
+    return std::string();
+  }
+
+  std::ostringstream bw;
+  bw << from.min << ":" << from.max;
+  return bw.str();
+}
+
+bool ConvertFromString(const std::string& from, media::DesireBytesPerSec* out) {
+  if (!out) {
+    return false;
+  }
+
+  media::DesireBytesPerSec res;
+  size_t del = from.find_first_of(':');
+  if (del != std::string::npos) {
+    media::bandwidth_t lmin;
+    bool ok = ConvertFromString(from.substr(0, del), &lmin);
+    if (ok) {
+      res.max = lmin;
+    }
+
+    media::bandwidth_t lmax;
+    ok = ConvertFromString(from.substr(del + 1), &lmax);
+    if (ok) {
+      res.max = lmax;
+    }
+  }
+
+  *out = res;
+  return true;
+}
 }  // namespace common

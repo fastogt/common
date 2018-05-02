@@ -55,6 +55,7 @@ IF(JSON_ENABLED)
   )
 
   SET(SERIALIZER_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
     ${CMAKE_SOURCE_DIR}/include/common/serializer/json_serializer.h
   )
 
