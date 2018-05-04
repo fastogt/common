@@ -43,11 +43,3 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
-
-Style
--------------
-`.clang_format`<br/>
-`cmake -DCHECK_STYLE=ON`<br/>
-`make check_style`<br/>
-`make check_style_format`<br/>
-**Note**: need `clang-tidy`<br/>
