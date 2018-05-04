@@ -9,7 +9,7 @@ Visit our site: [www.fastogt.com](http://www.fastogt.com)
 
 Contribute
 ==========
-Contributions are always welcome! Just try to follow our coding style: [FastoGT Coding Style](https://github.com/fasto/common/wiki/Coding-Style)
+Contributions are always welcome! Just try to follow our coding style: [FastoGT Coding Style](https://github.com/fastogt/fastonosql/wiki/Coding-Style)
 
 Build
 ========
