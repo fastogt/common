@@ -210,7 +210,7 @@ ErrnoError get_file_size_by_path(const std::string& path, off_t* size) {
   return ErrnoError();
 }
 
-ErrnoError ftruncate(descriptor_t fd_desc, off_t lenght) {
+ErrnoError Ftruncate(descriptor_t fd_desc, off_t lenght) {
   if (fd_desc == INVALID_DESCRIPTOR) {
     return make_error_perror("ftruncate", EINVAL);
   }
@@ -239,7 +239,7 @@ ErrnoError clear_file_by_descriptor(descriptor_t fd_desc) {
     return make_error_perror("clear_file_by_descriptor", EINVAL);
   }
 
-  return ftruncate(fd_desc, 0);
+  return Ftruncate(fd_desc, 0);
 }
 
 ErrnoError touch(const std::string& path) {

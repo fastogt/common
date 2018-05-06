@@ -412,7 +412,7 @@ ErrnoError ANSIFile::Truncate(off_t pos) {
     return make_error_perror("ANSIFile::Truncate", EINVAL);
   }
 
-  return ftruncate(fileno(file_), pos);
+  return Ftruncate(fileno(file_), pos);
 }
 
 ErrnoError ANSIFile::Flush() {

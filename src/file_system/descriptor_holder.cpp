@@ -108,7 +108,7 @@ ErrnoError DescriptorHolder::Seek(off_t offset, int whence) {
 
 ErrnoError DescriptorHolder::Truncate(off_t pos) {
   DCHECK(IsValid());
-  return ftruncate(fd_, pos);
+  return Ftruncate(fd_, pos);
 }
 
 }  // namespace file_system
