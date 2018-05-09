@@ -82,8 +82,13 @@ IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
 }
 
 void IoLoop::UnRegisterClient(IoClient* client) {
-  CHECK(IsLoopThread());
-  CHECK(client && client->GetServer() == this);
+  if (!client) {
+    DNOTREACHED();
+    return;
+  }
+
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  CHECK(client->GetServer() == this) << "Must have same server!";
   const std::string formated_name = client->GetFormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
@@ -100,12 +105,16 @@ void IoLoop::UnRegisterClient(IoClient* client) {
 }
 
 void IoLoop::RegisterClient(IoClient* client) {
-  CHECK(IsLoopThread());
-  CHECK(client);
+  if (!client) {
+    DNOTREACHED();
+    return;
+  }
+
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   const std::string formated_name = client->GetFormatedName();
 
   if (client->GetServer()) {
-    CHECK(client->GetServer() == this);
+    CHECK(client->GetServer() == this) << "Must have same server!";
   } else {
     client->server_ = this;
   }
@@ -129,8 +138,13 @@ void IoLoop::RegisterClient(IoClient* client) {
 }
 
 void IoLoop::CloseClient(IoClient* client) {
-  CHECK(IsLoopThread());
-  CHECK(client && client->GetServer() == this);
+  if (!client) {
+    DNOTREACHED();
+    return;
+  }
+
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  CHECK(client->GetServer() == this) << "Must have same server!";
   const std::string formated_name = client->GetFormatedName();
 
   LibevIO* client_ev = client->read_write_io_;
@@ -160,7 +174,7 @@ IoChild* IoLoop::RegisterChild(pid_t pid) {
 }
 
 void IoLoop::RegisterChild(IoChild* child, pid_t pid) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(child);
   const std::string formated_name = child->GetFormatedName();
 
@@ -188,7 +202,7 @@ void IoLoop::RegisterChild(IoChild* child, pid_t pid) {
 }
 
 void IoLoop::UnRegisterChild(IoChild* child) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(child && child->GetServer() == this);
   const std::string formated_name = child->GetFormatedName();
 
@@ -230,14 +244,14 @@ IoLoop* IoLoop::FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred) {
 }
 
 std::vector<IoClient*> IoLoop::GetClients() const {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   return clients_;
 }
 
 #if LIBEV_CHILD_ENABLE
 std::vector<IoChild*> IoLoop::GetChilds() const {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   return childs_;
 }
@@ -250,7 +264,7 @@ void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
 }
 
 void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(loop_ == loop);
   CHECK(client && client->GetServer() == this);
 
@@ -280,7 +294,7 @@ void IoLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t re
 }
 
 void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t revents) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(loop_ == loop);
   CHECK(child && child->GetServer() == this);
 
@@ -315,9 +329,13 @@ void IoLoop::PreLooped(LibEvLoop* loop) {
   }
 }
 
-void IoLoop::Stoped(LibEvLoop* loop) {
+void IoLoop::Started(LibEvLoop* loop) {
   UNUSED(loop);
-  CHECK(IsLoopThread());
+}
+
+void IoLoop::Stopped(LibEvLoop* loop) {
+  UNUSED(loop);
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   const std::vector<IoClient*> cl = GetClients();
 

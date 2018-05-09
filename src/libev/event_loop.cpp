@@ -108,7 +108,7 @@ void LibEvLoop::SetObserver(EvLoopObserver* observer) {
 }
 
 timer_id_t LibEvLoop::CreateTimer(double sec, bool repeat) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   LibevTimer* timer = new LibevTimer;
   timer->Init(this, timer_cb, sec, repeat);
@@ -118,7 +118,7 @@ timer_id_t LibEvLoop::CreateTimer(double sec, bool repeat) {
 }
 
 void LibEvLoop::RemoveTimer(timer_id_t id) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   for (std::vector<LibevTimer*>::iterator it = timers_.begin(); it != timers_.end(); ++it) {
     LibevTimer* timer = *it;
@@ -136,13 +136,13 @@ void LibEvLoop::InitAsync(LibevAsync* as, async_callback_t cb) {
 }
 
 void LibEvLoop::StartAsync(LibevAsync* as) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   struct ev_async* eas = as->GetHandle();
   ev_async_start(loop_, eas);
 }
 
 void LibEvLoop::StopAsync(LibevAsync* as) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   struct ev_async* eas = as->GetHandle();
   ev_async_stop(loop_, eas);
 }
@@ -158,13 +158,13 @@ void LibEvLoop::InitIO(LibevIO* io, io_callback_t cb, descriptor_t fd, flags_t e
 }
 
 void LibEvLoop::StartIO(LibevIO* io) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_io* eio = io->GetHandle();
   ev_io_start(loop_, eio);
 }
 
 void LibEvLoop::StopIO(LibevIO* io) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_io* eio = io->GetHandle();
   ev_io_stop(loop_, eio);
 }
@@ -175,32 +175,32 @@ void LibEvLoop::InitTimer(LibevTimer* timer, timer_callback_t cb, double sec, bo
 }
 
 void LibEvLoop::StartTimer(LibevTimer* timer) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_timer* eit = timer->GetHandle();
   ev_timer_start(loop_, eit);
 }
 
 void LibEvLoop::StopTimer(LibevTimer* timer) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_timer* eit = timer->GetHandle();
   ev_timer_stop(loop_, eit);
 }
 
 #if LIBEV_CHILD_ENABLE
 void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, pid_t pid) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_child* eic = child->GetHandle();
   ev_child_init(eic, cb, pid, 0);
 }
 
 void LibEvLoop::StartChild(LibevChild* child) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_child* eic = child->GetHandle();
   ev_child_start(loop_, eic);
 }
 
 void LibEvLoop::StopChild(LibevChild* child) {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   ev_child* eic = child->GetHandle();
   ev_child_stop(loop_, eic);
 }
@@ -226,6 +226,7 @@ int LibEvLoop::Exec() {
     observer_->PreLooped(this);
   }
   is_running_ = true;
+  Start();
   ev_loop(loop_, 0);
   is_running_ = false;
   if (observer_) {
@@ -239,12 +240,16 @@ bool LibEvLoop::IsLoopThread() const {
 }
 
 bool LibEvLoop::IsRunning() const {
-  CHECK(IsLoopThread());
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
   return is_running_;
 }
 
 void LibEvLoop::Stop() {
   async_stop_->Notify();
+}
+
+void LibEvLoop::Start() {
+  HandleStart();
 }
 
 void LibEvLoop::stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents) {
@@ -270,6 +275,12 @@ void LibEvLoop::HandleTimer(timer_id_t id) {
   }
 }
 
+void LibEvLoop::HandleStart() {
+  if (observer_) {
+    observer_->Started(this);
+  }
+}
+
 void LibEvLoop::HandleStop() {
   async_stop_->Stop();
   const std::vector<LibevTimer*> timers = timers_;
@@ -279,7 +290,7 @@ void LibEvLoop::HandleStop() {
   }
 
   if (observer_) {
-    observer_->Stoped(this);
+    observer_->Stopped(this);
   }
   ev_unloop(loop_, EVUNLOOP_ONE);
 }

@@ -47,7 +47,8 @@ class EvLoopObserver {
   virtual ~EvLoopObserver();
 
   virtual void PreLooped(LibEvLoop* loop) = 0;
-  virtual void Stoped(LibEvLoop* loop) = 0;
+  virtual void Started(LibEvLoop* loop) = 0;
+  virtual void Stopped(LibEvLoop* loop) = 0;
   virtual void PostLooped(LibEvLoop* loop) = 0;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) = 0;
 };
@@ -102,11 +103,13 @@ class LibEvLoop {
   LibEvLoop(struct ev_loop* loop);
 
  private:
+  void Start();
   class AsyncCustom;
 
   static void stop_cb(LibEvLoop* loop, LibevAsync* async, flags_t revents);
   static void timer_cb(LibEvLoop* loop, LibevTimer* timer, flags_t revents);
 
+  void HandleStart();
   void HandleStop();
   void HandleTimer(timer_id_t id);
 

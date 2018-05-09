@@ -127,9 +127,9 @@ void TcpServer::PostLooped(LibEvLoop* loop) {
   IoLoop::PostLooped(loop);
 }
 
-void TcpServer::Stoped(LibEvLoop* loop) {
+void TcpServer::Stopped(LibEvLoop* loop) {
   loop->StopIO(accept_io_);
-  IoLoop::Stoped(loop);
+  IoLoop::Stopped(loop);
 
   ErrnoError err = sock_.Close();
   DCHECK(!err) << err->GetDescription();

@@ -66,7 +66,7 @@ void ILoopController::Stop() {
     loop_->Stop();
   }
 
-  HandleStoped();
+  HandleStopped();
 }
 
 void ILoopController::ExecInLoopThread(custom_loop_exec_function_t func) const {

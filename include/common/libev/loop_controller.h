@@ -56,7 +56,7 @@ class ILoopController {
   virtual IoLoop* CreateServer(IoLoopObserver* handler) = 0;
 
   virtual void HandleStarted() = 0;
-  virtual void HandleStoped() = 0;
+  virtual void HandleStopped() = 0;
 };
 
 }  // namespace libev

@@ -57,7 +57,7 @@ class TcpServer : public IoLoop {
   virtual void PreLooped(LibEvLoop* loop) override;
   virtual void PostLooped(LibEvLoop* loop) override;
 
-  virtual void Stoped(LibEvLoop* loop) override;
+  virtual void Stopped(LibEvLoop* loop) override;
 
   static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
 

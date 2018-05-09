@@ -91,7 +91,8 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
 #endif
 
   virtual void PreLooped(LibEvLoop* loop) override;
-  virtual void Stoped(LibEvLoop* loop) override;
+  virtual void Started(LibEvLoop* loop) override;
+  virtual void Stopped(LibEvLoop* loop) override;
   virtual void PostLooped(LibEvLoop* loop) override;
   virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
 
