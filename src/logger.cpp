@@ -35,6 +35,7 @@
 #include <iostream>
 #include <memory>
 
+#include <common/file_system/types.h>
 #include <common/sprintf.h>
 
 #ifdef OS_MACOSX
@@ -91,11 +92,13 @@ void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level) {
 
 void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level) {
   INIT_LOGGER(project_name, level);
-  g_logger_file_helper->open(file_path, std::ofstream::out | std::ofstream::app);
+  const std::string stabled_path = file_system::prepare_path(file_path);
+
+  g_logger_file_helper->open(stabled_path, std::ofstream::out | std::ofstream::app);
   if (g_logger_file_helper->is_open()) {
     SET_LOGER_STREAM(g_logger_file_helper.get());
   } else {
-    WARNING_LOG() << "Can't open file: " << file_path << " , error: " << strerror(errno);
+    WARNING_LOG() << "Can't open file: " << stabled_path << " , error: " << strerror(errno);
   }
 }
 
