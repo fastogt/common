@@ -4,6 +4,3 @@
 [submodule "src/third-party/cmp"]
 	path = src/third-party/cmp
 	url = https://github.com/camgunz/cmp.git
-[submodule "src/third-party/cpuid/libcpuid"]
-	path = src/third-party/cpuid/libcpuid
-	url = https://github.com/fastogt/libcpuid.git
