@@ -130,9 +130,9 @@ typedef int descriptor_t;
 #error Please add support for your architecture
 #endif
 
-#ifdef ARCH_CPU_X86_64
+#ifdef ARCH_CPU_64_BITS
 #define WORDSIZE 64
-#elif define(ARCH_CPU_32_BITS)
+#elif defined(ARCH_CPU_32_BITS)
 #define WORDSIZE 32
 #else
 #error Please add word site for your architecture
