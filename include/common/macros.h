@@ -127,7 +127,7 @@ typedef int descriptor_t;
 #define ARCH_CPU_BIG_ENDIAN 1
 #endif
 #else
-#error Please add support for your architecture in build/build_config.h
+#error Please add support for your architecture
 #endif
 
 // Type detection for wchar_t.
