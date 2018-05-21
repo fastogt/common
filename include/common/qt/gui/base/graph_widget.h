@@ -61,7 +61,7 @@ class GraphWidget : public QWidget {
  public:
   enum { min_width = 640, min_height = 480 };
 
-  typedef std::vector<std::pair<qreal, qreal> > nodes_container_type;
+  typedef std::vector<std::pair<qreal, qreal>> nodes_container_type;
   explicit GraphWidget(QWidget* parent = Q_NULLPTR);
 
   void setNodes(const nodes_container_type& nodes);

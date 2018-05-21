@@ -80,7 +80,7 @@ Error TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
     size_t n;
     ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return  make_error_from_errno(err);
+      return make_error_from_errno(err);
     }
     total += n;
     bytes_left -= n;
@@ -102,7 +102,7 @@ Error TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_ou
     size_t n;
     ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return  make_error_from_errno(err);
+      return make_error_from_errno(err);
     }
     total += n;
     bytes_left -= n;

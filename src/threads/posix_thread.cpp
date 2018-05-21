@@ -48,7 +48,9 @@ typedef cpuset_t cpu_set_t;
 
 #define SYSCTL_CORE_COUNT "machdep.cpu.core_count"
 
-typedef struct cpu_set { uint32_t count; } cpu_set_t;
+typedef struct cpu_set {
+  uint32_t count;
+} cpu_set_t;
 
 #define CPU_ZERO(cpusetp) (cpusetp)->count = 0
 #define CPU_SET(num, cpusetp) (cpusetp)->count |= (1 << num)

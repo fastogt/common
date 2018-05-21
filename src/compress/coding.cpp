@@ -58,7 +58,7 @@ char* EncodeVarint32(char* dst, uint32_t v) {
   return reinterpret_cast<char*>(ptr);
 }
 
-template<typename CHART>
+template <typename CHART>
 const CHART* GetVarint32PtrFallback(const CHART* p, const CHART* limit, uint32_t* value) {
   uint32_t result = 0;
   for (uint32_t shift = 0; shift <= 28 && p < limit; shift += 7) {
@@ -76,7 +76,7 @@ const CHART* GetVarint32PtrFallback(const CHART* p, const CHART* limit, uint32_t
   return nullptr;
 }
 
-template<typename CHART>
+template <typename CHART>
 const CHART* GetVarint32Ptr(const CHART* p, const CHART* limit, uint32_t* value) {
   if (p < limit) {
     uint32_t result = *(reinterpret_cast<const unsigned char*>(p));

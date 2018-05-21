@@ -174,11 +174,11 @@ class Optional {
     DCHECK(!storage_.is_null_);
     return &value();
   }
-  constexpr const T& operator*() const & { return value(); }
+  constexpr const T& operator*() const& { return value(); }
   // TODO(mlamouri): using 'constexpr' here breaks compiler that assume it was
   // meant to be 'constexpr const'.
   T& operator*() & { return value(); }
-  constexpr const T&& operator*() const && { return std::move(value()); }
+  constexpr const T&& operator*() const&& { return std::move(value()); }
   // TODO(mlamouri): using 'constexpr' here breaks compiler that assume it was
   // meant to be 'constexpr const'.
   T&& operator*() && { return std::move(value()); }
@@ -191,7 +191,7 @@ class Optional {
     return storage_.value_;
   }
   // TODO(mlamouri): can't use 'constexpr' with DCHECK.
-  const T& value() const & {
+  const T& value() const& {
     DCHECK(!storage_.is_null_);
     return storage_.value_;
   }
@@ -202,12 +202,12 @@ class Optional {
     return std::move(storage_.value_);
   }
   // TODO(mlamouri): can't use 'constexpr' with DCHECK.
-  const T&& value() const && {
+  const T&& value() const&& {
     DCHECK(!storage_.is_null_);
     return std::move(storage_.value_);
   }
   template <class U>
-  constexpr T value_or(U&& default_value) const & {
+  constexpr T value_or(U&& default_value) const& {
     // TODO(mlamouri): add the following assert when possible:
     // static_assert(std::is_copy_constructible<T>::value,
     //               "T must be copy constructible");

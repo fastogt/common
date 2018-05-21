@@ -63,7 +63,7 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
       LZ4_compress_limitedOutput_continue(stream, stabled_input, stabled_output, stabled_input_size, compress_bound);
 #endif
   LZ4_freeStream(stream);
-#else  // up to r123
+#else   // up to r123
   outlen = LZ4_compress_limitedOutput(stabled_input, stabled_output, stabled_input_size, compress_bound);
 #endif  // LZ4_VERSION_NUMBER >= 10400
 
