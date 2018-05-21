@@ -130,6 +130,14 @@ typedef int descriptor_t;
 #error Please add support for your architecture
 #endif
 
+#ifdef ARCH_CPU_X86_64
+#define WORDSIZE 64
+#elif define(ARCH_CPU_32_BITS)
+#define WORDSIZE 32
+#else
+#error Please add word site for your architecture
+#endif
+
 // Type detection for wchar_t.
 #if defined(OS_WIN)
 #define WCHAR_T_IS_UTF16
