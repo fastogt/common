@@ -16,7 +16,9 @@
 
 #include <sys/stat.h>
 
+#ifdef HAVE_UDEV
 #include <libudev.h>
+#endif
 
 #define MACHINE_ID_BUFF_SIZE 32
 
@@ -28,6 +30,7 @@ bool GetHddID(std::string* serial) {
     return false;
   }
 
+#ifdef HAVE_UDEV
   struct stat stats;
   int err = stat("/", &stats);
   if (err < 0) {
@@ -68,6 +71,9 @@ bool GetHddID(std::string* serial) {
   udev_device_unref(device);
   udev_unref(udev);
   return serial_id != NULL;
+#else
+  return false;
+#endif
 }
 
 bool GetMachineID(std::string* serial) {
