@@ -361,13 +361,16 @@ ErrnoError move_file(const std::string& pathFrom, const std::string& pathTo) {
 
   std::string pr_from = prepare_path(pathFrom);
   std::string pr_to = prepare_path(pathTo);
-
+#ifdef OS_WIN
+  WINBOOL res = MoveFileExA(pr_from.c_str(), pr_to.c_str(), MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING);
+  bool result = res != 0;
+#else
   int res = rename(pr_from.c_str(), pr_to.c_str());
   bool result = res != ERROR_RESULT_VALUE;
+#endif
   if (!result) {
     return make_error_perror("rename", errno);
   }
-
   return ErrnoError();
 }
 
