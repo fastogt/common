@@ -119,6 +119,7 @@ SET(THREADS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/threads/types.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/event.h
   ${CMAKE_SOURCE_DIR}/include/common/threads/event_dispatcher.h
+  ${CMAKE_SOURCE_DIR}/include/common/threads/thread_pool.h
 )
 
 SET(THREADS_SOURCES
@@ -127,6 +128,7 @@ SET(THREADS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/threads/thread_manager.cpp
   ${CMAKE_SOURCE_DIR}/src/threads/event_bus.cpp
   ${CMAKE_SOURCE_DIR}/src/threads/event_dispatcher.cpp
+  ${CMAKE_SOURCE_DIR}/src/threads/thread_pool.cpp
 )
 
 SET(NET_HEADERS

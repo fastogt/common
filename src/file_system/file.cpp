@@ -293,9 +293,12 @@ bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
   if (res > 0) {
     *out_data = buffer_t(data, data + res);
   } else if (feof(file_)) {
+    *out_data = buffer_t();
+    free(data);
+    return false;
   }
-  free(data);
 
+  free(data);
   return true;
 }
 
@@ -315,9 +318,12 @@ bool ANSIFile::Read(std::string* out_data, uint32_t max_size) {
   if (res > 0) {
     *out_data = std::string(data, res);
   } else if (feof(file_)) {
+    *out_data = std::string();
+    free(data);
+    return false;
   }
-  free(data);
 
+  free(data);
   return true;
 }
 
