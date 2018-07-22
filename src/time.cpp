@@ -60,7 +60,7 @@ time64_t current_mstime() {
   return timeval2mstime(&tv);
 }
 
-struct timespec timeval2timespec(struct timeval* tv) {
+struct timespec timeval2timespec(const struct timeval* tv) {
   if (!tv) {
     return timespec();
   }
@@ -71,7 +71,7 @@ struct timespec timeval2timespec(struct timeval* tv) {
   return ts;
 }
 
-struct timeval timespec2timeval(struct timespec* ts) {
+struct timeval timespec2timeval(const struct timespec* ts) {
   if (!ts) {
     return timeval();
   }
@@ -82,7 +82,7 @@ struct timeval timespec2timeval(struct timespec* ts) {
   return tv;
 }
 
-time64_t timeval2mstime(struct timeval* tv) {
+time64_t timeval2mstime(const struct timeval* tv) {
   if (!tv) {
     return 0;
   }
