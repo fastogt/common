@@ -15,6 +15,7 @@
 #pragma once
 
 #include <queue>
+#include <functional>
 #include <vector>
 #include <thread>
 #include <mutex>
