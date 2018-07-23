@@ -14,12 +14,12 @@
 
 #pragma once
 
-#include <queue>
-#include <functional>
-#include <vector>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
+#include <functional>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <vector>
 
 namespace common {
 namespace threads {
@@ -50,5 +50,5 @@ class ThreadPool {
   std::condition_variable condition_;
   bool stop_;
 };
-}
-}
+}  // namespace threads
+}  // namespace common

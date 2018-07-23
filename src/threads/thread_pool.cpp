@@ -62,5 +62,5 @@ void ThreadPool::RunWork() {
     task();
   }
 }
-}
-}
+}  // namespace threads
+}  // namespace common
