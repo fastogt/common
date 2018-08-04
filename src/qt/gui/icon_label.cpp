@@ -78,9 +78,21 @@ void IconLabel::setText(const QString& text) {
 }
 
 void IconLabel::setIcon(const QIcon& icon, const QSize& size) {
+  if (!size.isValid()) {
+    return;
+  }
+
   const QPixmap pm = icon.pixmap(size);
   icon_->setPixmap(pm);
   icon_->setFixedSize(size);
+}
+
+bool IconLabel::openExternalLinks() const {
+  return text_->openExternalLinks();
+}
+
+void IconLabel::setOpenExternalLinks(bool open) {
+  text_->setOpenExternalLinks(open);
 }
 
 Qt::TextElideMode IconLabel::elideMode() const {

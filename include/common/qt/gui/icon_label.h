@@ -50,6 +50,9 @@ class IconLabel : public QWidget {
 
   void setIcon(const QIcon& icon, const QSize& size);
 
+  bool openExternalLinks() const;
+  void setOpenExternalLinks(bool open);
+
   Qt::TextElideMode elideMode() const;
   void setElideMode(Qt::TextElideMode);
 
