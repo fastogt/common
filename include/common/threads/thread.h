@@ -121,13 +121,8 @@ class Thread final : public ThreadBase {
     return NULL;
   }
 
-  Thread()
-      : res_(),
-        func_(function_type()),
-        event_(1, 0),
-        priority_(PRIORITY_NORMAL) {}
-  Thread(function_type func)
-      : res_(), func_(func), event_(1, 0), priority_(PRIORITY_NORMAL) {}
+  Thread() : res_(), func_(function_type()), event_(1, 0), priority_(PRIORITY_NORMAL) {}
+  Thread(function_type func) : res_(), func_(func), event_(1, 0), priority_(PRIORITY_NORMAL) {}
 
   void Run() { res_ = func_(); }
 
@@ -190,17 +185,13 @@ class Thread<void> : public ThreadBase {
     return NULL;
   }
 
-  Thread()
-      : func_(function_type()), event_(1, 0), ptr_(0), lcpu_number_(invalid_cpu_number), priority_(PRIORITY_NORMAL) {}
-  Thread(const function_type& func, uintptr_t ptr, lcpu_count_t lcpunumber)
-      : func_(func), event_(1, 0), ptr_(ptr), lcpu_number_(lcpunumber), priority_(PRIORITY_NORMAL) {}
+  Thread() : func_(function_type()), event_(1, 0), priority_(PRIORITY_NORMAL) {}
+  Thread(function_type func) : func_(func), event_(1, 0), priority_(PRIORITY_NORMAL) {}
 
   void Run() { func_(); }
 
   const function_type func_;
   Event event_;
-  uintptr_t const ptr_;
-  lcpu_count_t lcpu_number_;
   ThreadPriority priority_;
 };
 
