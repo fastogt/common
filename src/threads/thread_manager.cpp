@@ -31,73 +31,8 @@
 
 #include <common/system_info/cpu_info.h>  // for CpuInfo, CurrentCpuInfo
 
-#define THREADS_PER_CORE_DEFAULT 4
-
-#if defined(HAVE_PTHREAD) && !defined(OS_WIN) && !defined(OS_MACOSX) && !defined(OS_FREEBSD) && !defined(OS_ANDROID)
-#define MAX_LCPU_SIZE (__CPU_SETSIZE / __NCPUBITS) * THREADS_PER_CORE_DEFAULT
-#else
-#define MAX_LCPU_SIZE 16 * THREADS_PER_CORE_DEFAULT
-#endif
-
-#define COUNT_ADDRESSES 4
-
-namespace {
-struct CoreCache {
-  uintptr_t addr[COUNT_ADDRESSES];
-};
-
-CoreCache max_lcpu[MAX_LCPU_SIZE];
-}  // namespace
-
 namespace common {
 namespace threads {
-
-lcpu_count_t ThreadManager::AllocLCpuNumber(uintptr_t fc) const {
-  if (fc == 0) {  // main loop or invalid func addr
-    return 0;
-  }
-
-  const lcpu_count_t lc = LogicalCpusCount();
-  const lcpu_count_t threads_on_core = ThreadsOnCore();
-  if (SIZEOFMASS(max_lcpu) < lc) {
-    DNOTREACHED();
-    return 0;
-  }
-
-  for (auto i = 0; i < COUNT_ADDRESSES; ++i) {
-    for (lcpu_count_t j = 0; j < lc; j += threads_on_core) {
-      uintptr_t cur = max_lcpu[j].addr[i];
-      if (cur == 0) {
-        max_lcpu[j].addr[i] = fc;
-        return j;
-      }
-
-      if (cur == fc) {
-        return j;
-      } else {
-        if ((cur - WORDSIZE * WORDSIZE) < fc && fc < (cur + WORDSIZE * WORDSIZE)) {
-          return j;
-        }
-      }
-    }
-  }
-
-  return 0;
-}
-
-void ThreadManager::ReleaseLCpuNumber(lcpu_count_t index, uintptr_t fc) {
-  if (index >= SIZEOFMASS(max_lcpu)) {
-    DNOTREACHED();
-    return;
-  }
-
-  for (auto i = 0; i < COUNT_ADDRESSES; ++i) {
-    if (max_lcpu[index].addr[i] == fc) {
-      max_lcpu[index].addr[i] = 0;
-      return;
-    }
-  }
-}
 
 lcpu_count_t ThreadManager::LogicalCpusCount() const {
   return info_.GetLogicalCpusCount();

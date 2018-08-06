@@ -59,9 +59,7 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
                                                                                                    Args&&... args) {
     typedef Thread<typename std::result_of<Callable(T, Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
-    uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
-    thread_type* rthr = new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...),
-                                        func_addr, invalid_cpu_number);
+    thread_type* rthr = new thread_type(std::bind(std::forward<Callable>(func), t, std::forward<Args>(args)...));
     return ThreadSPtr(rthr);
   }
 
@@ -70,9 +68,7 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
                                                                                                 Args&&... args) {
     typedef Thread<typename std::result_of<Callable(Args...)>::type> thread_type;
     typedef std::shared_ptr<thread_type> ThreadSPtr;
-    uintptr_t func_addr = *reinterpret_cast<uintptr_t*>(&func);
-    thread_type* rthr = new thread_type(utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...),
-                                        func_addr, invalid_cpu_number);
+    thread_type* rthr = new thread_type(utils::bind_simple(std::forward<Callable>(func), std::forward<Args>(args)...));
     return ThreadSPtr(rthr);
   }
 
@@ -91,23 +87,13 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   // for inner use
   template <typename RT>
   void WrapThread(Thread<RT>* thr) {
-    if (thr->lcpu_number_ == invalid_cpu_number) {
-      thr->lcpu_number_ = AllocLCpuNumber(thr->ptr_);
-    }
-
     PlatformThread::SetTlsDataByKey(key_, thr);
-    PlatformThread::SetAffinity(&thr->handle_, thr->lcpu_number_);
   }
 
   template <typename RT>
-  void UnWrapThread(Thread<RT>* thr) {
-    ReleaseLCpuNumber(thr->lcpu_number_, thr->ptr_);
-  }
+  void UnWrapThread(Thread<RT>*) {}
 
  private:
-  lcpu_count_t AllocLCpuNumber(uintptr_t fc) const;
-  void ReleaseLCpuNumber(lcpu_count_t index, uintptr_t fc);
-
   lcpu_count_t LogicalCpusCount() const;
   lcpu_count_t ThreadsOnCore() const;
 

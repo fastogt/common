@@ -34,8 +34,8 @@
 #include <common/convert2string.h>  // for ConvertFromString
 
 namespace {
-const char localhost_text[] = "localhost";
-const char localhost_digits[] = "127.0.0.1";
+const char kLocalhostText[] = "localhost";
+const char kLocalhostDigits[] = "127.0.0.1";
 }  // namespace
 
 namespace common {
@@ -65,17 +65,17 @@ bool IsLocalHost(const std::string& host) {
     return false;
   }
 
-  COMPILE_ASSERT(SIZEOFMASS(localhost_text) == SIZEOFMASS(localhost_digits),
-                 "Size of constat should be same, because 1 condition.");
-  if (host.size() != SIZEOFMASS(localhost_text) - 1) {
+  COMPILE_ASSERT(SIZEOFMASS(kLocalhostText) == SIZEOFMASS(kLocalhostDigits),
+                 "Size of constant should be same, because 1 condition.");
+  if (host.size() != SIZEOFMASS(kLocalhostText) - 1) {
     return false;
   }
 
-  return host == localhost_text || host == localhost_digits;
+  return host == kLocalhostText || host == kLocalhostDigits;
 }
 
 HostAndPort HostAndPort::CreateLocalHost(uint16_t port) {
-  return HostAndPort(localhost_text, port);
+  return HostAndPort(kLocalhostText, port);
 }
 
 bool HostAndPort::Equals(const HostAndPort& other) const {
