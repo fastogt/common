@@ -745,6 +745,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_hash.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_bounded_value.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_license.cpp
+    ${CMAKE_SOURCE_DIR}/tests/unit_test_cpu.cpp
   )
   IF(JSON_ENABLED)
     SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_json_rpc.cpp)
@@ -758,24 +759,4 @@ IF(DEVELOPER_ENABLE_TESTS)
 
   ADD_TEST_TARGET(${UNIT_TESTS_PROJECT_NAME})
   SET_PROPERTY(TARGET ${UNIT_TESTS_PROJECT_NAME} PROPERTY FOLDER "Unit tests")
-
-  SET(OTHER_TESTS_PROJECT_NAME ${COMMON_PROJECT_NAME}_other_tests)
-  ADD_EXECUTABLE(${OTHER_TESTS_PROJECT_NAME}
-    #
-    ${CMAKE_SOURCE_DIR}/tests/test_cpu.cpp
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_common.cpp
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_func.h
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_func.cpp
-
-    # performance
-    ${CMAKE_SOURCE_DIR}/tests/test_thread.cpp
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_empty.cpp
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_many.cpp
-    ${CMAKE_SOURCE_DIR}/tests/test_thread_many_empty.cpp
-  )
-
-  TARGET_LINK_LIBRARIES(${OTHER_TESTS_PROJECT_NAME} ${GTEST_BOTH_LIBRARIES} ${COMMON_INSTALL_LIBS})
-
-  #ADD_TEST_TARGET(${OTHER_TESTS_PROJECT_NAME})
-  #SET_PROPERTY(TARGET ${OTHER_TESTS_PROJECT_NAME} PROPERTY FOLDER "Other tests")
 ENDIF(DEVELOPER_ENABLE_TESTS)

@@ -68,4 +68,4 @@ bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
 }
 
 }  // namespace license
-}  // namespace iptv_cloud
+}  // namespace common
