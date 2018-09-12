@@ -629,6 +629,32 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/tcp/tcp_server.cpp
   )
 
+  SET(LIBEV_HTTP_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http2_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_server.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http2_server.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_streams.h
+  )
+
+  SET(LIBEV_HTTP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http2_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http_server.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http2_server.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http_streams.cpp
+  )
+
+  SET(LIBEV_WEBSOCKET_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/websocket/websocket_client.h
+    ${CMAKE_SOURCE_DIR}/include/common/libev/websocket/websocket_server.h
+  )
+
+  SET(LIBEV_WEBSOCKET_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/websocket/websocket_client.cpp
+    ${CMAKE_SOURCE_DIR}/src/libev/websocket/websocket_server.cpp
+  )
+
   SET(LIBEV_HEADERS
     ${CMAKE_SOURCE_DIR}/include/common/libev/types.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/loop_controller.h
@@ -647,6 +673,8 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_base.h
 
     ${LIBEV_TCP_HEADERS}
+    ${LIBEV_HTTP_HEADERS}
+    ${LIBEV_WEBSOCKET_HEADERS}
   )
 
   SET(LIBEV_SOURCES
@@ -666,6 +694,8 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/io_child.cpp
 
     ${LIBEV_TCP_SOURCES}
+    ${LIBEV_HTTP_SOURCES}
+    ${LIBEV_WEBSOCKET_SOURCES}
   )
 
   SET(COMMON_LIBEV_PROJECT_NAME ${PROJECT_NAME_LOWERCASE}_ev)
