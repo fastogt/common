@@ -630,6 +630,7 @@ IF(LIBEV_FOUND)
   )
 
   SET(LIBEV_HTTP_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_server_info.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/http/http2_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/http/http_server.h
@@ -638,6 +639,7 @@ IF(LIBEV_FOUND)
   )
 
   SET(LIBEV_HTTP_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/libev/http/http_server_info.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/http/http_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/http/http2_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/http/http_server.cpp

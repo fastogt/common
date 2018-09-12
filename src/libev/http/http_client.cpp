@@ -63,11 +63,6 @@ namespace common {
 namespace libev {
 namespace http {
 
-HttpServerInfo::HttpServerInfo() : server_name(), server_url() {}
-
-HttpServerInfo::HttpServerInfo(const std::string& server_name, const std::string& server_url)
-    : server_name(server_name), server_url(server_url) {}
-
 HttpClient::HttpClient(common::libev::IoLoop* server, const common::net::socket_info& info)
     : TcpClient(server, info), isAuth_(false) {}
 

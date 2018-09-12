@@ -35,19 +35,12 @@
 
 #include <common/http/http.h>
 
+#include <common/libev/http/http_server_info.h>
 #include <common/libev/tcp/tcp_client.h>
 
 namespace common {
 namespace libev {
 namespace http {
-
-struct HttpServerInfo {
-  HttpServerInfo();
-  HttpServerInfo(const std::string& server_name, const std::string& server_url);
-
-  std::string server_name;
-  std::string server_url;
-};
 
 class HttpClient : public common::libev::tcp::TcpClient {
  public:
