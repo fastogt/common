@@ -81,6 +81,10 @@ bool SocketHolder::IsValid() const {
   return info_.is_valid();
 }
 
+ErrnoError SocketHolder::SetBlocking(bool block) {
+  return set_blocking_socket(info_.fd(), block);
+}
+
 ErrnoError SocketHolder::Write(const buffer_t& data, size_t* nwrite_out) {
   DCHECK(IsValid());
   return write_to_socket(info_.fd(), data.data(), data.size(), nwrite_out);

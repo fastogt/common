@@ -45,9 +45,9 @@ descriptor_t DescriptorClient::GetFd() const {
   return desc_.GetFd();
 }
 
-Error DescriptorClient::Write(const void* data, size_t size, size_t* nwrite_out) {
+ErrnoError DescriptorClient::Write(const void* data, size_t size, size_t* nwrite_out) {
   if (!data || !size || !nwrite_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -57,19 +57,19 @@ Error DescriptorClient::Write(const void* data, size_t size, size_t* nwrite_out)
     size_t n;
     ErrnoError err = desc_.Write(data, size, &n);
     if (err) {
-      return make_error_from_errno(err);
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nwrite_out = total;  // return number actually sent here
-  return Error();
+  return ErrnoError();
 }
 
-Error DescriptorClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError DescriptorClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_out) {
   if (!out_data || !max_size || !nread_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;              // how many bytes we've readed
@@ -79,19 +79,20 @@ Error DescriptorClient::Read(unsigned char* out_data, size_t max_size, size_t* n
     size_t n;
     ErrnoError err = desc_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return make_error_from_errno(err);
+      *nread_out = total;  // return number actually readed here eagain
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nread_out = total;  // return number actually readed here
-  return Error();
+  return ErrnoError();
 }
 
-Error DescriptorClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError DescriptorClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
   if (!out_data || !max_size || !nread_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;              // how many bytes we've readed
@@ -101,23 +102,19 @@ Error DescriptorClient::Read(char* out_data, size_t max_size, size_t* nread_out)
     size_t n;
     ErrnoError err = desc_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return make_error_from_errno(err);
+      *nread_out = total;  // return number actually readed here eagain
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nread_out = total;  // return number actually readed here
-  return Error();
+  return ErrnoError();
 }
 
-Error DescriptorClient::DoClose() {
-  ErrnoError err = desc_.Close();
-  if (err) {
-    return make_error_from_errno(err);
-  }
-
-  return Error();
+ErrnoError DescriptorClient::DoClose() {
+  return desc_.Close();
 }
 
 }  // namespace libev

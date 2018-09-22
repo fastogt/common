@@ -46,7 +46,7 @@ class IoClient : public IoBase<IoClient> {
   IoClient(IoLoop* server, flags_t flags = EV_READ);
   virtual ~IoClient();
 
-  Error Close() WARN_UNUSED_RESULT;
+  ErrnoError Close() WARN_UNUSED_RESULT;
 
   IoLoop* GetServer() const;
 
@@ -55,20 +55,20 @@ class IoClient : public IoBase<IoClient> {
 
   virtual const char* ClassName() const override;
 
-  virtual Error Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  virtual Error Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  virtual Error Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  virtual ErrnoError Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
 
-  virtual Error Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual Error Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual Error Read(unsigned char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
-  virtual Error Read(char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+  virtual ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+  virtual ErrnoError Read(unsigned char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Read(char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
 
  private:
-  virtual Error DoClose() = 0;
+  virtual ErrnoError DoClose() = 0;
 
   DISALLOW_COPY_AND_ASSIGN(IoClient);
   IoLoop* server_;

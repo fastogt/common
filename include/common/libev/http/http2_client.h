@@ -48,23 +48,23 @@ class Http2Client : public HttpClient {
 
   Http2Client(common::libev::IoLoop* server, const common::net::socket_info& info);
 
-  virtual common::Error SendError(common::http::http_protocol protocol,
-                                  common::http::http_status status,
-                                  const char* extra_header,
-                                  const char* text,
-                                  bool is_keep_alive,
-                                  const HttpServerInfo& info) override WARN_UNUSED_RESULT;
+  virtual common::ErrnoError SendError(common::http::http_protocol protocol,
+                                       common::http::http_status status,
+                                       const char* extra_header,
+                                       const char* text,
+                                       bool is_keep_alive,
+                                       const HttpServerInfo& info) override WARN_UNUSED_RESULT;
   virtual common::ErrnoError SendFileByFd(common::http::http_protocol protocol,
                                           int fdesc,
                                           off_t size) override WARN_UNUSED_RESULT;
-  virtual common::Error SendHeaders(common::http::http_protocol protocol,
-                                    common::http::http_status status,
-                                    const char* extra_header,
-                                    const char* mime_type,
-                                    off_t* length,
-                                    time_t* mod,
-                                    bool is_keep_alive,
-                                    const HttpServerInfo& info) override WARN_UNUSED_RESULT;
+  virtual common::ErrnoError SendHeaders(common::http::http_protocol protocol,
+                                         common::http::http_status status,
+                                         const char* extra_header,
+                                         const char* mime_type,
+                                         off_t* length,
+                                         time_t* mod,
+                                         bool is_keep_alive,
+                                         const HttpServerInfo& info) override WARN_UNUSED_RESULT;
 
   void ProcessFrames(const common::http2::frames_t& frames);
 

@@ -78,27 +78,28 @@ bool HttpClient::IsAuthenticated() const {
   return isAuth_;
 }
 
-common::Error HttpClient::SendOk(common::http::http_protocol protocol,
-                                 const char* extra_header,
-                                 const char* text,
-                                 bool is_keep_alive,
-                                 const HttpServerInfo& info) {
+common::ErrnoError HttpClient::SendOk(common::http::http_protocol protocol,
+                                      const char* extra_header,
+                                      const char* text,
+                                      bool is_keep_alive,
+                                      const HttpServerInfo& info) {
   return SendError(protocol, common::http::HS_OK, extra_header, text, is_keep_alive, info);
 }
 
-common::Error HttpClient::SendError(common::http::http_protocol protocol,
-                                    common::http::http_status status,
-                                    const char* extra_header,
-                                    const char* text,
-                                    bool is_keep_alive,
-                                    const HttpServerInfo& info) {
+common::ErrnoError HttpClient::SendError(common::http::http_protocol protocol,
+                                         common::http::http_status status,
+                                         const char* extra_header,
+                                         const char* text,
+                                         bool is_keep_alive,
+                                         const HttpServerInfo& info) {
   CHECK(protocol <= common::http::HP_1_1);
   const std::string title = common::ConvertToString(status);
 
   char err_data[1024] = {0};
   off_t err_len = common::SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title,
                                    text, info.server_url, info.server_name);
-  common::Error err = SendHeaders(protocol, status, extra_header, "text/html", &err_len, nullptr, is_keep_alive, info);
+  common::ErrnoError err =
+      SendHeaders(protocol, status, extra_header, "text/html", &err_len, nullptr, is_keep_alive, info);
   if (err) {
     DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
   }
@@ -116,14 +117,14 @@ common::ErrnoError HttpClient::SendFileByFd(common::http::http_protocol protocol
   return common::net::send_file_to_fd(GetFd(), fdesc, 0, size);
 }
 
-common::Error HttpClient::SendHeaders(common::http::http_protocol protocol,
-                                      common::http::http_status status,
-                                      const char* extra_header,
-                                      const char* mime_type,
-                                      off_t* length,
-                                      time_t* mod,
-                                      bool is_keep_alive,
-                                      const HttpServerInfo& info) {
+common::ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
+                                           common::http::http_status status,
+                                           const char* extra_header,
+                                           const char* mime_type,
+                                           off_t* length,
+                                           time_t* mod,
+                                           bool is_keep_alive,
+                                           const HttpServerInfo& info) {
   CHECK(protocol <= common::http::HP_1_1);
   const std::string title = common::ConvertToString(status);
 
@@ -177,7 +178,7 @@ common::Error HttpClient::SendHeaders(common::http::http_protocol protocol,
 
   DCHECK(strlen(header_data) == cur_pos);
   size_t nwrite = 0;
-  common::Error err = Write(header_data, cur_pos, &nwrite);
+  common::ErrnoError err = Write(header_data, cur_pos, &nwrite);
   DCHECK(!err);
   return err;
 }

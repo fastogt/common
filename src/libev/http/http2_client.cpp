@@ -103,18 +103,18 @@ bool Http2Client::is_http2() const {
   return main_stream.get();
 }
 
-common::Error Http2Client::SendError(common::http::http_protocol protocol,
-                                     common::http::http_status status,
-                                     const char* extra_header,
-                                     const char* text,
-                                     bool is_keep_alive,
-                                     const HttpServerInfo& info) {
+common::ErrnoError Http2Client::SendError(common::http::http_protocol protocol,
+                                          common::http::http_status status,
+                                          const char* extra_header,
+                                          const char* text,
+                                          bool is_keep_alive,
+                                          const HttpServerInfo& info) {
   if (is_http2() && protocol == common::http::HP_2_0) {
     const std::string title = common::ConvertToString(status);
     char err_data[1024] = {0};
     off_t err_len = common::SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title,
                                      text, info.server_url, info.server_name);
-    common::Error err =
+    common::ErrnoError err =
         SendHeaders(protocol, status, extra_header, "text/html", &err_len, nullptr, is_keep_alive, info);
     if (err) {
       DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
@@ -124,13 +124,13 @@ common::Error Http2Client::SendError(common::http::http_protocol protocol,
     StreamSPtr header_stream = findStreamByType(common::http2::HTTP2_HEADERS);
     if (!header_stream) {
       common::ErrnoError errr = DEBUG_MSG_PERROR("findStreamByType", EAGAIN, common::logging::LOG_LEVEL_ERR);
-      return common::make_error_from_errno(errr);
+      return errr;
     }
 
     common::http2::frame_hdr hdr = common::http2::frame_data::create_frame_header(common::http2::HTTP2_FLAG_END_STREAM,
                                                                                   header_stream->sid(), err_len);
     common::http2::frame_data fdata(hdr, err_data);
-    return common::make_error_from_errno(header_stream->sendFrame(fdata));
+    return header_stream->sendFrame(fdata);
   }
 
   return HttpClient::SendError(protocol, status, extra_header, text, is_keep_alive, info);
@@ -159,19 +159,19 @@ common::ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protoco
   return HttpClient::SendFileByFd(protocol, fdesc, size);
 }
 
-common::Error Http2Client::SendHeaders(common::http::http_protocol protocol,
-                                       common::http::http_status status,
-                                       const char* extra_header,
-                                       const char* mime_type,
-                                       off_t* length,
-                                       time_t* mod,
-                                       bool is_keep_alive,
-                                       const HttpServerInfo& info) {
+common::ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
+                                            common::http::http_status status,
+                                            const char* extra_header,
+                                            const char* mime_type,
+                                            off_t* length,
+                                            time_t* mod,
+                                            bool is_keep_alive,
+                                            const HttpServerInfo& info) {
   if (is_http2() && protocol == common::http::HP_2_0) {
     StreamSPtr header_stream = findStreamByType(common::http2::HTTP2_HEADERS);
     if (!header_stream) {
       common::ErrnoError err = DEBUG_MSG_PERROR("findStreamByType", EAGAIN, common::logging::LOG_LEVEL_ERR);
-      return common::make_error_from_errno(err);
+      return err;
     }
 
     common::http2::http2_nvs_t nvs;
@@ -228,7 +228,7 @@ common::Error Http2Client::SendHeaders(common::http::http_protocol protocol,
         common::http2::HTTP2_FLAG_END_HEADERS, header_stream->sid(), buff.size());
     common::http2::frame_headers fhdr(hdr, buff);
 
-    return common::make_error_from_errno(header_stream->sendFrame(fhdr));
+    return header_stream->sendFrame(fhdr);
   }
 
   return HttpClient::SendHeaders(protocol, status, extra_header, mime_type, length, mod, is_keep_alive, info);

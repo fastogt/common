@@ -43,16 +43,18 @@ class TcpClient : public IoClient {
 
   net::socket_info GetInfo() const;
 
-  virtual Error Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+  ErrnoError SetBlocking(bool block) WARN_UNUSED_RESULT;
 
-  virtual Error Read(unsigned char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
-  virtual Error Read(char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+
+  virtual ErrnoError Read(unsigned char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  virtual ErrnoError Read(char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
 
  protected:
   virtual descriptor_t GetFd() const override;
 
  private:
-  virtual Error DoClose() override;
+  virtual ErrnoError DoClose() override;
 
   net::SocketHolder sock_;
 };

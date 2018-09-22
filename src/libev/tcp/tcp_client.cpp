@@ -46,9 +46,13 @@ descriptor_t TcpClient::GetFd() const {
   return sock_.GetFd();
 }
 
-Error TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
+ErrnoError TcpClient::SetBlocking(bool block) {
+  return sock_.SetBlocking(block);
+}
+
+ErrnoError TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
   if (!data || !size || !nwrite_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;          // how many bytes we've sent
@@ -58,19 +62,19 @@ Error TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
     size_t n;
     ErrnoError err = sock_.Write(data, size, &n);
     if (err) {
-      return make_error_from_errno(err);
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nwrite_out = total;  // return number actually sent here
-  return Error();
+  return ErrnoError();
 }
 
-Error TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
   if (!out_data || !max_size || !nread_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;              // how many bytes we've readed
@@ -80,19 +84,20 @@ Error TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
     size_t n;
     ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return make_error_from_errno(err);
+      *nread_out = total;  // return number actually readed here eagain
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nread_out = total;  // return number actually readed here
-  return Error();
+  return ErrnoError();
 }
 
-Error TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_out) {
   if (!out_data || !max_size || !nread_out) {
-    return make_error_inval();
+    return make_errno_error_inval();
   }
 
   size_t total = 0;              // how many bytes we've readed
@@ -102,23 +107,19 @@ Error TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_ou
     size_t n;
     ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
     if (err) {
-      return make_error_from_errno(err);
+      *nread_out = total;  // return number actually readed here eagain
+      return err;
     }
     total += n;
     bytes_left -= n;
   }
 
   *nread_out = total;  // return number actually readed here
-  return Error();
+  return ErrnoError();
 }
 
-Error TcpClient::DoClose() {
-  ErrnoError err = sock_.Close();
-  if (err) {
-    return make_error_from_errno(err);
-  }
-
-  return Error();
+ErrnoError TcpClient::DoClose() {
+  return sock_.Close();
 }
 
 }  // namespace tcp
