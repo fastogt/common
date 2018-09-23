@@ -33,13 +33,36 @@ namespace common {
 namespace libev {
 namespace websocket {
 
-WebSocketClient::WebSocketClient(common::libev::IoLoop* server, const common::net::socket_info& info)
-    : Http2Client(server, info) {}
+WebSocketClient::WebSocketClient(libev::IoLoop* server, const net::socket_info& info) : Http2Client(server, info) {}
 
 WebSocketClient::~WebSocketClient() {}
 
 const char* WebSocketClient::ClassName() const {
   return "WebSocketClient";
+}
+
+ErrnoError WebSocketClient::StartHandshake(const uri::Url& url) {
+  if (!url.IsValid()) {
+    return make_errno_error_inval();
+  }
+
+  uri::Url::scheme sc = url.GetScheme();
+  if (!(sc == uri::Url::ws || sc == uri::Url::wss)) {
+    return make_errno_error_inval();
+  }
+
+  uri::Upath path = url.GetPath();
+  const std::string request = MemSPrintf(
+      "GET /%s HTTP/1.1\r\n"
+      "Host: %s\r\n"
+      "Upgrade: websocket\r\n"
+      "Connection: Upgrade\r\n"
+      "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
+      "Sec-WebSocket-Version: 13\r\n"
+      "\r\n",
+      path.GetHpath(), url.GetHost());
+  size_t nout;
+  return Write(request.c_str(), request.size(), &nout);
 }
 
 }  // namespace websocket

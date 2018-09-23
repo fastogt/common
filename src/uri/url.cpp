@@ -31,22 +31,20 @@
 
 #include <common/sprintf.h>
 
+namespace common {
+namespace uri {
 namespace {
-const char* scheme_names[common::uri::Url::num_schemes] = {"unknown", "http", "https", "ftp",  "file",
-                                                           "ws",      "udp",  "tcp",   "rtmp", "dev"};
-
 const char* scheme_name(int level) {
-  if (level >= 0 && level < common::uri::Url::num_schemes) {
-    return scheme_names[level];
+  static const char* kSchemeNames[Url::num_schemes] = {"unknown", "http", "https", "ftp",  "file", "ws",
+                                                       "wss",     "udp",  "tcp",   "rtmp", "dev"};
+  if (level >= 0 && level < Url::num_schemes) {
+    return kSchemeNames[level];
   }
 
   DNOTREACHED();
-  return scheme_names[0];
+  return kSchemeNames[0];
 }
 }  // namespace
-
-namespace common {
-namespace uri {
 namespace detail {
 
 char from_hex(char ch) {
@@ -145,8 +143,15 @@ bool get_schemes(const char* url_s, size_t len, Url::scheme* prot) {
         }
         return false;
       } else if (url_s[0] == 'w' || url_s[0] == 'W') {
-        *prot = Url::ws;
-        return true;
+        if (url_s[1] == 's' || url_s[1] == 'S') {
+          if (url_s[2] == ':') {
+            *prot = Url::ws;
+          } else {
+            *prot = Url::wss;
+          }
+          return true;
+        }
+        return false;
       } else if (url_s[0] == 'u' || url_s[0] == 'U') {
         *prot = Url::udp;
         return true;
@@ -191,6 +196,8 @@ void Url::Parse(const std::string& url_s) {
       start = 6;
     } else if (scheme_ == ws) {
       start = 5;
+    } else if (scheme_ == wss) {
+      start = 6;
     } else if (scheme_ == udp) {
       start = 6;
     } else if (scheme_ == tcp) {

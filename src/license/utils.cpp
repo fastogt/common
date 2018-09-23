@@ -34,7 +34,7 @@ namespace license {
 std::string GetNativeCpuID() {
   unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;
   native_cpuid(&eax, &ebx, &ecx, &edx);
-  return common::MemSPrintf("%08X %08X %08X %08X", eax, ebx, ecx, edx);
+  return MemSPrintf("%08X %08X %08X %08X", eax, ebx, ecx, edx);
 }
 
 }  // namespace license

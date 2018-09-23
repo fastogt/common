@@ -35,14 +35,13 @@ namespace common {
 namespace libev {
 namespace websocket {
 
-WebSocketServer::WebSocketServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
-    : TcpServer(host, observer) {}
+WebSocketServer::WebSocketServer(const net::HostAndPort& host, IoLoopObserver* observer) : TcpServer(host, observer) {}
 
 const char* WebSocketServer::ClassName() const {
   return "WebSocketServer";
 }
 
-common::libev::tcp::TcpClient* WebSocketServer::CreateClient(const common::net::socket_info& info) {
+tcp::TcpClient* WebSocketServer::CreateClient(const net::socket_info& info) {
   return new WebSocketClient(this, info);
 }
 

@@ -45,10 +45,11 @@ class Url {
     ftp = 3,
     file = 4,
     ws = 5,
-    udp = 6,
-    tcp = 7,
-    rtmp = 8,
-    dev = 9,
+    wss = 6,
+    udp = 7,
+    tcp = 8,
+    rtmp = 9,
+    dev = 10,
     num_schemes
   };
   enum {

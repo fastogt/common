@@ -169,13 +169,13 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) {
 
 Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
   if (data.empty() || !result) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   const char* data_ptr = data.c_str();
   json_object* jdata = json_tokener_parse(data_ptr);
   if (!jdata) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   Error err = GetJsonRPCResponce(jdata, result);
@@ -231,13 +231,13 @@ Error MakeJsonRPCResponce(const JsonRPCResponce& responce, std::string* out_json
 
 Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
   if (data.empty() || !result) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   const char* data_ptr = data.c_str();
   json_object* jdata = json_tokener_parse(data_ptr);
   if (!jdata) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   Error err = GetJsonRPCRequest(jdata, result);

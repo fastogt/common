@@ -35,12 +35,11 @@ namespace common {
 namespace libev {
 namespace http {
 
-HttpServer::HttpServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
-    : TcpServer(host, observer) {}
+HttpServer::HttpServer(const net::HostAndPort& host, IoLoopObserver* observer) : TcpServer(host, observer) {}
 
 HttpServer::~HttpServer() {}
 
-common::libev::tcp::TcpClient* HttpServer::CreateClient(const common::net::socket_info& info) {
+tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info) {
   return new HttpClient(this, info);
 }
 

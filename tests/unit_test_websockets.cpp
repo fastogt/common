@@ -10,12 +10,11 @@
 #include <common/net/net.h>
 
 #define BUF_SIZE 4096
-
+#define HOST "demos.kaazing.com"
 namespace {
-const char kHost[] = "demos.kaazing.com";
+const common::uri::Url ws_url("ws://" HOST "/echo");
 const common::net::HostAndPort g_hs("localhost", 8011);
-const char kRequest[] = "/echo";
-const common::net::HostAndPort kHostAndPort(kHost, 80);
+const common::net::HostAndPort kHostAndPort(HOST, 80);
 const common::libev::http::HttpServerInfo kHinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);
 }  // namespace
 
@@ -38,17 +37,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     common::libev::websocket::WebSocketClient* cl = new common::libev::websocket::WebSocketClient(sserver, sc);
     cl->SetBlocking(false);
     sserver->RegisterClient(cl);
-    const std::string request = common::MemSPrintf(
-        "GET %s HTTP/1.1\r\n"
-        "Host: %s\r\n"
-        "Upgrade: websocket\r\n"
-        "Connection: Upgrade\r\n"
-        "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
-        "Sec-WebSocket-Version: 13\r\n"
-        "\r\n",
-        kRequest, kHost);
-    size_t nout;
-    errn = cl->Write(request.c_str(), request.size(), &nout);
+    errn = cl->StartHandshake(ws_url);
     ASSERT_FALSE(errn);
   }
 

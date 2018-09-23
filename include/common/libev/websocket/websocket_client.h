@@ -30,16 +30,20 @@
 
 #include <common/libev/http/http2_client.h>
 
+#include <common/uri/url.h>
+
 namespace common {
 namespace libev {
 namespace websocket {
 
 class WebSocketClient : public http::Http2Client {
  public:
-  WebSocketClient(common::libev::IoLoop* server, const common::net::socket_info& info);
+  WebSocketClient(libev::IoLoop* server, const net::socket_info& info);
   ~WebSocketClient();
 
   const char* ClassName() const override;
+
+  ErrnoError StartHandshake(const uri::Url& url) WARN_UNUSED_RESULT;
 };
 
 }  // namespace websocket

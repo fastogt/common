@@ -35,13 +35,13 @@ namespace common {
 namespace libev {
 namespace websocket {
 
-class WebSocketServer : public common::libev::tcp::TcpServer {
+class WebSocketServer : public libev::tcp::TcpServer {
  public:
-  explicit WebSocketServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer = nullptr);
+  explicit WebSocketServer(const net::HostAndPort& host, libev::IoLoopObserver* observer = nullptr);
   const char* ClassName() const override;
 
  protected:
-  virtual common::libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
+  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
 };
 
 }  // namespace websocket

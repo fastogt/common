@@ -35,15 +35,15 @@ namespace common {
 namespace libev {
 namespace http {
 
-class HttpServer : public common::libev::tcp::TcpServer {
+class HttpServer : public libev::tcp::TcpServer {
  public:
-  HttpServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer);
+  HttpServer(const net::HostAndPort& host, libev::IoLoopObserver* observer);
   ~HttpServer();
 
   virtual const char* ClassName() const override;
 
  protected:
-  virtual common::libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
+  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
 };
 
 }  // namespace http

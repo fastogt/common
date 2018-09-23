@@ -37,12 +37,12 @@ namespace http {
 
 class Http2Server : public HttpServer {
  public:
-  Http2Server(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer);
+  Http2Server(const net::HostAndPort& host, libev::IoLoopObserver* observer);
 
   virtual const char* ClassName() const override;
 
  protected:
-  virtual common::libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
+  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
 };
 
 }  // namespace http

@@ -19,20 +19,19 @@
 
 #include <common/license/utils.h>
 
+namespace common {
 namespace {
 std::string MakeMd5Hash(const std::string& data) {
-  common::hash::MD5_CTX md5;
-  common::hash::MD5_Init(&md5);
+  hash::MD5_CTX md5;
+  hash::MD5_Init(&md5);
   const unsigned char* cdata = reinterpret_cast<const unsigned char*>(data.c_str());
-  common::hash::MD5_Update(&md5, cdata, data.size());
+  hash::MD5_Update(&md5, cdata, data.size());
   unsigned char md5_result[16];
-  common::hash::MD5_Final(&md5, md5_result);
+  hash::MD5_Final(&md5, md5_result);
   std::string hs(std::begin(md5_result), std::end(md5_result));
-  return common::utils::hex::encode(hs, true);
+  return utils::hex::encode(hs, true);
 }
 }  // namespace
-
-namespace common {
 namespace license {
 
 bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {

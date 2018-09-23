@@ -35,80 +35,79 @@ namespace common {
 namespace libev {
 namespace http {
 
-common::http2::frame_t IStream::type() const {
+http2::frame_t IStream::GetType() const {
   return init_frame_.type();
 }
 
-IStream::stream_id_t IStream::sid() const {
+IStream::stream_id_t IStream::GetSid() const {
   return init_frame_.stream_id();
 }
 
-IStream::IStream(const common::net::socket_info& info, const common::http2::frame_base& frame)
-    : sock_(info), init_frame_(frame) {}
+IStream::IStream(const net::socket_info& info, const http2::frame_base& frame) : sock_(info), init_frame_(frame) {}
 
-bool IStream::processFrame(const common::http2::frame_base& frame) {
+bool IStream::ProcessFrame(const http2::frame_base& frame) {
   if (!frame.IsValid()) {
     NOTREACHED();
     return false;
   }
 
-  return processFrameImpl(frame);
+  return ProcessFrameImpl(frame);
 }
 
-common::ErrnoError IStream::sendData(const common::buffer_t& buff) {
+ErrnoError IStream::SendData(const buffer_t& buff) {
   size_t nwrite = 0;
-  common::ErrnoError err = sock_.Write((const char*)buff.data(), buff.size(), &nwrite);
+  ErrnoError err = sock_.Write((const char*)buff.data(), buff.size(), &nwrite);
   return err;
 }
 
-common::ErrnoError IStream::sendFrame(const common::http2::frame_base& frame) {
-  CHECK(sid() == frame.stream_id());
-  common::buffer_t raw = frame.raw_data();
-  return sendData(raw);
+ErrnoError IStream::SendFrame(const http2::frame_base& frame) {
+  CHECK(GetSid() == frame.stream_id());
+  buffer_t raw = frame.raw_data();
+  return SendData(raw);
 }
 
-common::ErrnoError IStream::sendCloseFrame() {
-  common::http2::frame_hdr hdr = common::http2::frame_rst::create_frame_header(0, sid());
-  uint32_t er = be32toh(common::http2::HTTP2_STREAM_CLOSED);
-  common::http2::frame_rst rst(hdr, &er);
-  return sendFrame(rst);
+ErrnoError IStream::SendCloseFrame() {
+  http2::frame_hdr hdr = http2::frame_rst::create_frame_header(0, GetSid());
+  uint32_t er = be32toh(http2::HTTP2_STREAM_CLOSED);
+  http2::frame_rst rst(hdr, &er);
+  return SendFrame(rst);
 }
 
-IStream* IStream::createStream(const common::net::socket_info& info, const common::http2::frame_base& frame) {
+IStream* IStream::CreateStream(const net::socket_info& info, const http2::frame_base& frame) {
   if (!frame.IsValid()) {
     NOTREACHED();
     return nullptr;
   }
 
-  common::http2::frame_t type = frame.type();
+  http2::frame_t type = frame.type();
 
   switch (type) {
-    case common::http2::HTTP2_DATA:
+    case http2::HTTP2_DATA:
       return new HTTP2DataStream(info, frame);
-    case common::http2::HTTP2_HEADERS:
+    case http2::HTTP2_HEADERS:
       return new HTTP2HeadersStream(info, frame);
-    case common::http2::HTTP2_PRIORITY: {
+    case http2::HTTP2_PRIORITY: {
       IStream* res = new HTTP2PriorityStream(info, frame);
       return res;
     }
-    case common::http2::HTTP2_RST_STREAM:
+    case http2::HTTP2_RST_STREAM:
       NOTREACHED();
       return nullptr;
-    case common::http2::HTTP2_SETTINGS:
+    case http2::HTTP2_SETTINGS:
       return new HTTP2SettingsStream(info, frame);
-    case common::http2::HTTP2_PUSH_PROMISE:
+    case http2::HTTP2_PUSH_PROMISE:
       NOTREACHED();
       return nullptr;
-    case common::http2::HTTP2_PING:
+    case http2::HTTP2_PING:
       NOTREACHED();
       return nullptr;
-    case common::http2::HTTP2_GOAWAY:
+    case http2::HTTP2_GOAWAY:
       NOTREACHED();
       return nullptr;
-    case common::http2::HTTP2_WINDOW_UPDATE:
+    case http2::HTTP2_WINDOW_UPDATE:
       NOTREACHED();
       return nullptr;
-    case common::http2::HTTP2_CONTINUATION:
+    case http2::HTTP2_CONTINUATION:
       NOTREACHED();
       return nullptr;
 
@@ -120,54 +119,56 @@ IStream* IStream::createStream(const common::net::socket_info& info, const commo
 
 IStream::~IStream() {}
 
-HTTP2DataStream::HTTP2DataStream(const common::net::socket_info& info, const common::http2::frame_base& frame)
-    : IStream(info, frame) {
-  CHECK(common::http2::HTTP2_DATA == frame.type());
+HTTP2DataStream::HTTP2DataStream(const net::socket_info& info, const http2::frame_base& frame) : IStream(info, frame) {
+  CHECK(http2::HTTP2_DATA == frame.type());
 }
 
-bool HTTP2DataStream::processFrameImpl(const common::http2::frame_base& frame) {
+bool HTTP2DataStream::ProcessFrameImpl(const http2::frame_base& frame) {
+  UNUSED(frame);
   return true;
 }
 
-HTTP2PriorityStream::HTTP2PriorityStream(const common::net::socket_info& info, const common::http2::frame_base& frame)
+HTTP2PriorityStream::HTTP2PriorityStream(const net::socket_info& info, const http2::frame_base& frame)
     : IStream(info, frame) {
-  CHECK(common::http2::HTTP2_PRIORITY == frame.type());
+  CHECK(http2::HTTP2_PRIORITY == frame.type());
 }
 
 HTTP2PriorityStream::~HTTP2PriorityStream() {}
 
-bool HTTP2PriorityStream::processFrameImpl(const common::http2::frame_base& frame) {
-  sendCloseFrame();
+bool HTTP2PriorityStream::ProcessFrameImpl(const http2::frame_base& frame) {
+  UNUSED(frame);
+  SendCloseFrame();
   return true;
 }
 
-HTTP2SettingsStream::HTTP2SettingsStream(const common::net::socket_info& info, const common::http2::frame_base& frame)
+HTTP2SettingsStream::HTTP2SettingsStream(const net::socket_info& info, const http2::frame_base& frame)
     : IStream(info, frame), negotiated_(false) {
-  CHECK(common::http2::HTTP2_SETTINGS == frame.type());
+  CHECK(http2::HTTP2_SETTINGS == frame.type());
 }
 
-bool HTTP2SettingsStream::isNegotiated() const {
+bool HTTP2SettingsStream::IsNegotiated() const {
   return negotiated_;
 }
 
-bool HTTP2SettingsStream::processFrameImpl(const common::http2::frame_base& frame) {
-  if (frame.type() == common::http2::HTTP2_SETTINGS) {
-    sendFrame(frame);
-    if (frame.flags() & common::http2::HTTP2_FLAG_ACK) {
+bool HTTP2SettingsStream::ProcessFrameImpl(const http2::frame_base& frame) {
+  if (frame.type() == http2::HTTP2_SETTINGS) {
+    SendFrame(frame);
+    if (frame.flags() & http2::HTTP2_FLAG_ACK) {
       negotiated_ = true;
     }
-  } else if (frame.type() != common::http2::HTTP2_GOAWAY) {
-    sendCloseFrame();
+  } else if (frame.type() != http2::HTTP2_GOAWAY) {
+    SendCloseFrame();
   }
   return true;
 }
 
-HTTP2HeadersStream::HTTP2HeadersStream(const common::net::socket_info& info, const common::http2::frame_base& frame)
+HTTP2HeadersStream::HTTP2HeadersStream(const net::socket_info& info, const http2::frame_base& frame)
     : IStream(info, frame) {
-  CHECK(common::http2::HTTP2_HEADERS == frame.type());
+  CHECK(http2::HTTP2_HEADERS == frame.type());
 }
 
-bool HTTP2HeadersStream::processFrameImpl(const common::http2::frame_base& frame) {
+bool HTTP2HeadersStream::ProcessFrameImpl(const common::http2::frame_base& frame) {
+  UNUSED(frame);
   return false;
 }
 
