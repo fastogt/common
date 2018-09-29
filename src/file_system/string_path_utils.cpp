@@ -29,7 +29,11 @@
 
 #include <common/file_system/string_path_utils.h>
 
+#if defined(OS_WIN)
+#include <fileapi.h>
+#else
 #include <sys/stat.h>
+#endif
 #include <unistd.h>
 
 #include <common/convert2string.h>
@@ -109,12 +113,21 @@ tribool is_directory(const std::string& path) {
     return INDETERMINATE;
   }
 
+  std::string p_path = (path);
+#if defined(OS_WIN)
+  DWORD ftype = ::GetFileAttributesA(p_path.c_str());
+  if (ftype == INVALID_FILE_ATTRIBUTES) {
+    return INDETERMINATE;
+  }
+
+  return ftype & FILE_ATTRIBUTE_DIRECTORY ? SUCCESS : FAIL;
+#else
   struct stat filestat;
-  std::string p_path = prepare_path(path);
   if (::stat(p_path.c_str(), &filestat) != ERROR_RESULT_VALUE) {
     return S_ISDIR(filestat.st_mode) ? SUCCESS : FAIL;
   }
   return INDETERMINATE;
+#endif
 }
 
 template <>
