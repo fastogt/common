@@ -113,7 +113,7 @@ tribool is_directory(const std::string& path) {
     return INDETERMINATE;
   }
 
-  std::string p_path = (path);
+  std::string p_path = prepare_path(path);
 #if defined(OS_WIN)
   DWORD ftype = ::GetFileAttributesA(p_path.c_str());
   if (ftype == INVALID_FILE_ATTRIBUTES) {
