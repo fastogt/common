@@ -90,6 +90,11 @@ FundamentalValue* Value::CreateDoubleValue(double in_value) {
 }
 
 // static
+StringValue* Value::CreateEmptyStringValue() {
+  return CreateStringValue(std::string());
+}
+
+// static
 StringValue* Value::CreateStringValue(const std::string& in_value) {
   return new StringValue(in_value);
 }

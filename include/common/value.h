@@ -83,6 +83,7 @@ class Value {
   static FundamentalValue* CreateULongLongIntegerValue(unsigned long long in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
 
+  static StringValue* CreateEmptyStringValue();
   static StringValue* CreateStringValue(const std::string& in_value);
   static ArrayValue* CreateArrayValue();
   static ByteArrayValue* CreateByteArrayValue(const byte_array_t& array);
