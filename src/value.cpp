@@ -952,7 +952,7 @@ bool ZSetValue::Equals(const Value* other) const {
     Value* lkey = (*lhs_it).first;
     Value* lval = (*lhs_it).second;
 
-    if (!lkey->Equals(rkey) || lval->Equals(rval)) {
+    if (!lkey->Equals(rkey) || !lval->Equals(rval)) {
       return false;
     }
   }
@@ -1034,7 +1034,7 @@ bool HashValue::Equals(const Value* other) const {
     Value* lkey = (*lhs_it).first;
     Value* lval = (*lhs_it).second;
 
-    if (!lkey->Equals(rkey) || lval->Equals(rval)) {
+    if (!lkey->Equals(rkey) || !lval->Equals(rval)) {
       return false;
     }
   }
