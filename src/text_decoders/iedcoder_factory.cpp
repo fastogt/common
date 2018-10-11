@@ -38,6 +38,8 @@
 #include <common/text_decoders/html_edcoder.h>
 #include <common/text_decoders/msgpack_edcoder.h>
 #include <common/text_decoders/unicode_edcoder.h>
+#include <common/text_decoders/uunicode_edcoder.h>
+#include <common/text_decoders/xhex_edcoder.h>
 
 namespace common {
 
@@ -54,8 +56,12 @@ IEDcoder* CreateEDCoder(EDType type) {
     return new CompressSnappyEDcoder;
   } else if (type == ED_HEX) {
     return new HexEDcoder;
+  } else if (type == ED_XHEX) {
+    return new XHexEDcoder;
   } else if (type == ED_UNICODE) {
     return new UnicodeEDcoder;
+  } else if (type == ED_UUNICODE) {
+    return new UUnicodeEDcoder;
   } else if (type == ED_MSG_PACK) {
     return new MsgPackEDcoder;
   } else if (type == ED_HTML_ESC) {
