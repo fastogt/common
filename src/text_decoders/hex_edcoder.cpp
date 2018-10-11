@@ -33,10 +33,10 @@
 
 namespace common {
 
-HexEDcoder::HexEDcoder() : IEDcoder(ED_HEX) {}
+HexEDcoder::HexEDcoder(bool is_lower) : IEDcoder(ED_HEX), is_lower_(is_lower) {}
 
 Error HexEDcoder::DoEncode(const StringPiece& data, std::string* out) {
-  return compress::EncodeHex(data, false, out);
+  return compress::EncodeHex(data, is_lower_, out);
 }
 
 Error HexEDcoder::DoDecode(const StringPiece& data, std::string* out) {

@@ -370,10 +370,45 @@ bool UnicodeStringToBytesT(const STR& input, std::vector<uint16_t>* output) {
   return true;
 }
 
+template <typename STR>
+bool UUnicodeStringToBytesT(const STR& input, std::vector<uint16_t>* output) {
+  DCHECK_EQ(output->size(), 0u);
+  size_t count = input.size();
+  if (count == 0 || (count % 6) != 0) {
+    return false;
+  }
+
+  for (size_t i = 0; i < count / 6; ++i) {
+    uint8_t c0 = 0;  // most significant 4 bits
+    uint8_t c1 = 0;  // least significant 4 bits
+    uint8_t c2 = 0;  // most significant 4 bits
+    uint8_t c3 = 0;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 6 + 2], &c0) || !CharToDigit<16>(input[i * 6 + 3], &c1) ||
+        !CharToDigit<16>(input[i * 6 + 4], &c2) || !CharToDigit<16>(input[i * 6 + 5], &c3)) {
+      return false;
+    }
+
+    uint16_t val = (c0 << 12) | (c1 << 8) | (c2 << 4) | c3;
+    output->push_back(val);
+  }
+  return true;
+}
+
 template <typename R, typename T>
 R do_unicode_decode(const T& input) {
   std::vector<uint16_t> vec;
   bool res = UnicodeStringToBytesT(input, &vec);
+  if (!res) {
+    return R();
+  }
+
+  return R(vec.begin(), vec.end());
+}
+
+template <typename R, typename T>
+R do_uunicode_decode(const T& input) {
+  std::vector<uint16_t> vec;
+  bool res = UUnicodeStringToBytesT(input, &vec);
   if (!res) {
     return R();
   }
@@ -404,6 +439,32 @@ R do_hex_encode(const T& input, bool is_lower) {
   return decoded;
 }
 
+template <typename R, typename T>
+R do_xhex_encode(const T& input, bool is_lower) {
+  static const char uHexChars[] = "0123456789ABCDEF";
+  static const char lHexChars[] = "0123456789abcdef";
+
+  typedef typename T::value_type value_type;
+  const typename T::size_type size = input.size();
+  R decoded;
+  decoded.resize(size * 4);
+
+  for (size_t i = 0; i < size; ++i) {
+    value_type b = input[i];
+    decoded[(i * 4)] = '\\';
+    if (is_lower) {
+      decoded[(i * 4) + 1] = 'x';
+      decoded[(i * 4) + 2] = lHexChars[(b >> 4) & 0xf];
+      decoded[(i * 4) + 3] = lHexChars[b & 0xf];
+    } else {
+      decoded[(i * 4) + 1] = 'X';
+      decoded[(i * 4) + 2] = uHexChars[(b >> 4) & 0xf];
+      decoded[(i * 4) + 3] = uHexChars[b & 0xf];
+    }
+  }
+  return decoded;
+}
+
 template <typename STR>
 bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
   DCHECK_EQ(output->size(), 0u);
@@ -422,10 +483,39 @@ bool HexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
   return true;
 }
 
+template <typename STR>
+bool XHexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
+  DCHECK_EQ(output->size(), 0u);
+  size_t count = input.size();
+  if (count == 0 || (count % 4) != 0) {
+    return false;
+  }
+  for (uintptr_t i = 0; i < count / 4; ++i) {
+    uint8_t msb = 0;  // most significant 4 bits
+    uint8_t lsb = 0;  // least significant 4 bits
+    if (!CharToDigit<16>(input[i * 4 + 2], &msb) || !CharToDigit<16>(input[i * 4 + 3], &lsb)) {
+      return false;
+    }
+    output->push_back((msb << 4) | lsb);
+  }
+  return true;
+}
+
 template <typename R, typename T>
 R do_hex_decode(const T& input) {
   std::vector<uint8_t> vec;
   bool res = HexStringToBytesT(input, &vec);
+  if (!res) {
+    return R();
+  }
+
+  return R(vec.begin(), vec.end());
+}
+
+template <typename R, typename T>
+R do_xhex_decode(const T& input) {
+  std::vector<uint8_t> vec;
+  bool res = XHexStringToBytesT(input, &vec);
   if (!res) {
     return R();
   }
@@ -457,6 +547,38 @@ R do_unicode_encode(const T& input, bool is_lower) {
       decoded[(i * 4) + 1] = uHexChars[(msb & 0xf) & 0xf];
       decoded[(i * 4) + 2] = uHexChars[(lsb >> 4) & 0xf];
       decoded[(i * 4) + 3] = uHexChars[lsb & 0xf];
+    }
+  }
+  return decoded;
+}
+
+template <typename R, typename T>
+R do_uunicode_encode(const T& input, bool is_lower) {
+  static const char uHexChars[] = "0123456789ABCDEF";
+  static const char lHexChars[] = "0123456789abcdef";
+
+  typedef typename T::value_type value_type;
+  const typename T::size_type size = input.size();
+  R decoded;
+  decoded.resize(size * 6);
+
+  for (size_t i = 0; i < size; ++i) {
+    value_type b = htobe16(input[i]);
+    uint8_t msb = b;       // most significant 4 bits
+    uint8_t lsb = b >> 8;  // least significant 4 bits
+    decoded[(i * 6)] = '\\';
+    if (is_lower) {
+      decoded[(i * 6) + 1] = 'u';
+      decoded[(i * 6) + 2] = lHexChars[(msb >> 4) & 0xf];
+      decoded[(i * 6) + 3] = lHexChars[(msb & 0xf) & 0xf];
+      decoded[(i * 6) + 4] = lHexChars[(lsb >> 4) & 0xf];
+      decoded[(i * 6) + 5] = lHexChars[lsb & 0xf];
+    } else {
+      decoded[(i * 6) + 1] = 'U';
+      decoded[(i * 6) + 2] = uHexChars[(msb >> 4) & 0xf];
+      decoded[(i * 6) + 3] = uHexChars[(msb & 0xf) & 0xf];
+      decoded[(i * 6) + 4] = uHexChars[(lsb >> 4) & 0xf];
+      decoded[(i * 6) + 5] = uHexChars[lsb & 0xf];
     }
   }
   return decoded;
@@ -1490,6 +1612,26 @@ std::string decode(const StringPiece& input) {
 
 }  // namespace hex
 
+namespace xhex {
+
+buffer_t encode(const buffer_t& input, bool is_lower) {
+  return do_xhex_encode<buffer_t>(input, is_lower);
+}
+
+std::string encode(const StringPiece& input, bool is_lower) {
+  return do_xhex_encode<std::string>(input, is_lower);
+}
+
+buffer_t decode(const buffer_t& input) {
+  return do_xhex_decode<buffer_t>(input);
+}
+
+std::string decode(const StringPiece& input) {
+  return do_xhex_decode<std::string>(input);
+}
+
+}  // namespace xhex
+
 namespace unicode {
 std::string encode(const StringPiece16& input, bool is_lower) {
   return do_unicode_encode<std::string>(input, is_lower);
@@ -1499,6 +1641,16 @@ string16 decode(const StringPiece& input) {
   return do_unicode_decode<string16>(input);
 }
 }  // namespace unicode
+
+namespace uunicode {
+std::string encode(const StringPiece16& input, bool is_lower) {
+  return do_uunicode_encode<std::string>(input, is_lower);
+}
+
+string16 decode(const StringPiece& input) {
+  return do_uunicode_decode<string16>(input);
+}
+}  // namespace uunicode
 }  // namespace utils
 
 bool HexStringToInt(const StringPiece& input, int32_t* output) {

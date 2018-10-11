@@ -35,11 +35,13 @@ namespace common {
 
 class UnicodeEDcoder : public IEDcoder {
  public:
-  UnicodeEDcoder();
+  UnicodeEDcoder(bool is_lower = true);
 
  private:
   virtual Error DoEncode(const StringPiece& data, std::string* out) override;
   virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+
+  bool is_lower_;
 };
 
 }  // namespace common

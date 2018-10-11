@@ -29,19 +29,17 @@
 
 #pragma once
 
-#include <common/text_decoders/iedcoder.h>  // for IEDcoder
+#include <string>
+
+#include <common/error.h>
+#include <common/string_piece.h>
+#include <common/types.h>
 
 namespace common {
+namespace compress {
 
-class HexEDcoder : public IEDcoder {
- public:
-  HexEDcoder(bool is_lower = true);
+Error EncodeUUnicode(const StringPiece16& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeUUnicode(const StringPiece& data, string16* out) WARN_UNUSED_RESULT;
 
- private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
-
-  bool is_lower_;
-};
-
+}  // namespace compress
 }  // namespace common

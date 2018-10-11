@@ -170,13 +170,29 @@ std::string decode(const StringPiece& input);
 
 }  // namespace hex
 
+namespace xhex {
+
+buffer_t encode(const buffer_t& input, bool is_lower);
+std::string encode(const StringPiece& input, bool is_lower);
+
+buffer_t decode(const buffer_t& input);
+std::string decode(const StringPiece& input);
+
+}  // namespace xhex
+
 namespace unicode {
 
 std::string encode(const StringPiece16& input, bool is_lower);
-
 string16 decode(const StringPiece& input);
 
 }  // namespace unicode
+
+namespace uunicode {
+
+std::string encode(const StringPiece16& input, bool is_lower);
+string16 decode(const StringPiece& input);
+
+}  // namespace uunicode
 }  // namespace utils
 
 bool HexStringToInt(const StringPiece& input, int32_t* output);

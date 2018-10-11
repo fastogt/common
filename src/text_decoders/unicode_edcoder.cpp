@@ -35,11 +35,11 @@
 
 namespace common {
 
-UnicodeEDcoder::UnicodeEDcoder() : IEDcoder(ED_UNICODE) {}
+UnicodeEDcoder::UnicodeEDcoder(bool is_lower) : IEDcoder(ED_UNICODE), is_lower_(is_lower) {}
 
 Error UnicodeEDcoder::DoEncode(const StringPiece& data, std::string* out) {
   string16 sdata = ConvertToString16(data);
-  return compress::EncodeUnicode(sdata, false, out);
+  return compress::EncodeUnicode(sdata, is_lower_, out);
 }
 
 Error UnicodeEDcoder::DoDecode(const StringPiece& data, std::string* out) {

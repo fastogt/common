@@ -176,7 +176,9 @@ SET(MEDIA_SOURCES
 SET(COMPRESS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/compress/coding.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/hex.h
+  ${CMAKE_SOURCE_DIR}/include/common/compress/xhex.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/unicode.h
+  ${CMAKE_SOURCE_DIR}/include/common/compress/uunicode.h
   ${CMAKE_SOURCE_DIR}/include/common/compress/base64.h
 
   ${CMAKE_SOURCE_DIR}/include/common/compress/zlib_compress.h
@@ -188,7 +190,9 @@ SET(COMPRESS_HEADERS
 SET(COMPRESS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/compress/coding.cpp
   ${CMAKE_SOURCE_DIR}/src/compress/hex.cpp
+  ${CMAKE_SOURCE_DIR}/src/compress/xhex.cpp
   ${CMAKE_SOURCE_DIR}/src/compress/unicode.cpp
+  ${CMAKE_SOURCE_DIR}/src/compress/uunicode.cpp
   ${CMAKE_SOURCE_DIR}/src/compress/base64.cpp
 
   ${CMAKE_SOURCE_DIR}/src/compress/zlib_compress.cpp
@@ -232,7 +236,9 @@ SET(HTTP_SOURCES
 
 SET(TEXT_DECODERS_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/hex_edcoder.h
+  ${CMAKE_SOURCE_DIR}/include/common/text_decoders/xhex_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/unicode_edcoder.h
+  ${CMAKE_SOURCE_DIR}/include/common/text_decoders/uunicode_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/html_edcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/iedcoder.h
   ${CMAKE_SOURCE_DIR}/include/common/text_decoders/iedcoder_factory.h
@@ -246,7 +252,9 @@ SET(TEXT_DECODERS_HEADERS
 
 SET(TEXT_DECODERS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/text_decoders/hex_edcoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/text_decoders/xhex_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/unicode_edcoder.cpp
+  ${CMAKE_SOURCE_DIR}/src/text_decoders/uunicode_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/html_edcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/iedcoder.cpp
   ${CMAKE_SOURCE_DIR}/src/text_decoders/iedcoder_factory.cpp

@@ -27,21 +27,48 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/compress/xhex.h>
 
-#include <common/text_decoders/iedcoder.h>  // for IEDcoder
+#include <common/convert2string.h>
 
 namespace common {
+namespace compress {
 
-class HexEDcoder : public IEDcoder {
- public:
-  HexEDcoder(bool is_lower = true);
+Error EncodeXHex(const StringPiece& data, bool is_lower, std::string* out) {
+  if (!out) {
+    return make_error_inval();
+  }
 
- private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+  *out = utils::xhex::encode(data, is_lower);
+  return Error();
+}
 
-  bool is_lower_;
-};
+Error EncodeXHex(const buffer_t& data, bool is_lower, buffer_t* out) {
+  if (!out) {
+    return make_error_inval();
+  }
 
+  *out = utils::xhex::encode(data, is_lower);
+  return Error();
+}
+
+Error DecodeXHex(const buffer_t& data, buffer_t* out) {
+  if (!out) {
+    return make_error_inval();
+  }
+
+  *out = utils::xhex::decode(data);
+  return Error();
+}
+
+Error DecodeXHex(const StringPiece& data, std::string* out) {
+  if (!out) {
+    return make_error_inval();
+  }
+
+  *out = utils::xhex::decode(data);
+  return Error();
+}
+
+}  // namespace compress
 }  // namespace common

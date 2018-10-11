@@ -173,7 +173,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     cur_pos += last_len;
   }
 
-  DCHECK(strlen(header_data) == cur_pos);
+  DCHECK(strlen(header_data) == static_cast<size_t>(cur_pos));
   size_t nwrite = 0;
   ErrnoError err = Write(header_data, cur_pos, &nwrite);
   DCHECK(!err);

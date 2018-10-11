@@ -33,9 +33,9 @@
 
 namespace common {
 
-class HexEDcoder : public IEDcoder {
+class UUnicodeEDcoder : public IEDcoder {
  public:
-  HexEDcoder(bool is_lower = true);
+  UUnicodeEDcoder(bool is_lower = true);
 
  private:
   virtual Error DoEncode(const StringPiece& data, std::string* out) override;

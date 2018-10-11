@@ -27,21 +27,20 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/text_decoders/xhex_edcoder.h>
 
-#include <common/text_decoders/iedcoder.h>  // for IEDcoder
+#include <common/compress/xhex.h>
 
 namespace common {
 
-class HexEDcoder : public IEDcoder {
- public:
-  HexEDcoder(bool is_lower = true);
+XHexEDcoder::XHexEDcoder(bool is_lower) : IEDcoder(ED_XHEX), is_lower_(is_lower) {}
 
- private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+Error XHexEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+  return compress::EncodeXHex(data, is_lower_, out);
+}
 
-  bool is_lower_;
-};
+Error XHexEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+  return compress::DecodeXHex(data, out);
+}
 
 }  // namespace common

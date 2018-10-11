@@ -27,21 +27,30 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/text_decoders/uunicode_edcoder.h>
 
-#include <common/text_decoders/iedcoder.h>  // for IEDcoder
+#include <common/compress/uunicode.h>
+
+#include <common/convert2string.h>
 
 namespace common {
 
-class HexEDcoder : public IEDcoder {
- public:
-  HexEDcoder(bool is_lower = true);
+UUnicodeEDcoder::UUnicodeEDcoder(bool is_lower) : IEDcoder(ED_UUNICODE), is_lower_(is_lower) {}
 
- private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+Error UUnicodeEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+  string16 sdata = ConvertToString16(data);
+  return compress::EncodeUUnicode(sdata, is_lower_, out);
+}
 
-  bool is_lower_;
-};
+Error UUnicodeEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+  string16 sdata;
+  Error err = compress::DecodeUUnicode(data, &sdata);
+  if (err) {
+    return err;
+  }
+
+  *out = ConvertToString(sdata);
+  return Error();
+}
 
 }  // namespace common
