@@ -12,6 +12,18 @@
 #include <common/text_decoders/msgpack_edcoder.h>
 #include <common/text_decoders/unicode_edcoder.h>
 
+TEST(msg_pack, in_enc_dec) {
+  const std::string raw_data = "alex aalex talex 123 balex";
+  common::MsgPackEDcoder zl;
+  std::string enc_data;
+  common::Error err = zl.Decode(raw_data, &enc_data);
+  ASSERT_TRUE(err);
+
+  std::string dec_data;
+  err = zl.Encode(enc_data, &dec_data);
+  ASSERT_TRUE(err);
+}
+
 TEST(msg_pack, enc_dec) {
   const std::string raw_data = "alex aalex talex 123 balex";
   common::MsgPackEDcoder zl;
@@ -49,6 +61,18 @@ TEST(hex, enc_dec) {
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
+}
+
+TEST(xhex, enc_dec) {
+  const std::string raw_data = "alex aalex talex balex";
+  common::HexEDcoder zl;
+  std::string enc_data;
+  common::Error err = zl.Decode(raw_data, &enc_data);
+  ASSERT_TRUE(err);
+
+  std::string dec_data;
+  err = zl.Encode(enc_data, &dec_data);
+  ASSERT_TRUE(err);
 }
 
 TEST(unicode, enc_dec) {

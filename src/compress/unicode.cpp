@@ -35,20 +35,18 @@ namespace common {
 namespace compress {
 
 Error EncodeUnicode(const StringPiece16& data, bool is_lower, std::string* out) {
-  if (!out) {
+  if (!utils::unicode::encode(data, is_lower, out)) {
     return make_error_inval();
   }
 
-  *out = utils::unicode::encode(data, is_lower);
   return Error();
 }
 
 Error DecodeUnicode(const StringPiece& data, string16* out) {
-  if (!out) {
+  if (!utils::unicode::decode(data, out)) {
     return make_error_inval();
   }
 
-  *out = utils::unicode::decode(data);
   return Error();
 }
 

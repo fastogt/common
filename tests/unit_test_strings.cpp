@@ -227,43 +227,53 @@ TEST(string, SnappyCompress) {
 
 TEST(Utils, hex) {
   const std::string invalid_hex = "C";
-  auto invalid_dec = common::utils::hex::decode(invalid_hex);
-  ASSERT_TRUE(invalid_dec.empty());
+  std::string invalid_dec;
+  bool is_ok = common::utils::hex::decode(invalid_hex, &invalid_dec);
+  ASSERT_FALSE(is_ok);
 
   const std::string invalid_hex_2 = "CY";
-  auto invalid_dec2 = common::utils::hex::decode(invalid_hex_2);
-  ASSERT_TRUE(invalid_dec2.empty());
+  is_ok = common::utils::hex::decode(invalid_hex_2, &invalid_dec);
+  ASSERT_FALSE(is_ok);
 
   std::string empty_hex;
-  invalid_dec = common::utils::hex::decode(empty_hex);
-  ASSERT_TRUE(invalid_dec.empty());
+  is_ok = common::utils::hex::decode(empty_hex, &invalid_dec);
+  ASSERT_FALSE(is_ok);
 
   const common::buffer_t hex = MAKE_BUFFER("CDFF");
-  auto dec = common::utils::hex::decode(hex);
+  common::buffer_t dec;
+  is_ok = common::utils::hex::decode(hex, &dec);
+  ASSERT_TRUE(is_ok);
 
   ASSERT_EQ(dec.size(), 2);
   ASSERT_EQ(dec[0], 0xCD);
   ASSERT_EQ(dec[1], 0xFF);
 
-  common::buffer_t enc = common::utils::hex::encode(dec, false);
+  common::buffer_t enc;
+  is_ok = common::utils::hex::encode(dec, false, &enc);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(hex, enc);
 
   const common::buffer_t hex2 = MAKE_BUFFER("11ff");
-  dec = common::utils::hex::decode(hex2);
-
+  is_ok = common::utils::hex::decode(hex2, &dec);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(dec.size(), 2);
   ASSERT_EQ(dec[0], 0x11);
   ASSERT_EQ(dec[1], 0xFF);
 
-  enc = common::utils::hex::encode(dec, true);
+  common::utils::hex::encode(dec, true, &enc);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(hex2, enc);
 
   const common::buffer_t seq = MAKE_BUFFER("1234567890");
-  const std::vector<uint8_t> dec_seq = {18, 52, 86, 120, 144};
-  std::vector<uint8_t> dec2 = common::utils::hex::decode(seq);
+  const common::buffer_t dec_seq = {18, 52, 86, 120, 144};
+  common::buffer_t dec2;
+  is_ok = common::utils::hex::decode(seq, &dec2);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(dec_seq, dec2);
 
-  common::buffer_t enc2 = common::utils::hex::encode(dec2, false);
+  common::buffer_t enc2;
+  is_ok = common::utils::hex::encode(dec2, false, &enc2);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(seq, enc2);
 
   const common::buffer_t dec_seq_x = {103, 101, 116, 32, 39, 00, 171, 32, 39};
@@ -281,12 +291,19 @@ TEST(Utils, hex) {
   ASSERT_TRUE(common::ConvertFromString(dec_seq_x_str, &dec_seq_x3));
   ASSERT_EQ(dec_seq_x, dec_seq_x3);
 
-  common::buffer_t enc_bin_x = common::utils::hex::encode(dec_seq_x, true);
-  common::buffer_t dec_bin_x = common::utils::hex::decode(enc_bin_x);
+  common::buffer_t enc_bin_x;
+  is_ok = common::utils::hex::encode(dec_seq_x, true, &enc_bin_x);
+  ASSERT_TRUE(is_ok);
+  common::buffer_t dec_bin_x;
+  is_ok = common::utils::hex::decode(enc_bin_x, &dec_bin_x);
   ASSERT_EQ(dec_seq_x, dec_bin_x);
 
-  std::string enc_bin_x2 = common::utils::hex::encode(bin_data_x, true);
-  std::string dec_bin_x2 = common::utils::hex::decode(enc_bin_x2);
+  std::string enc_bin_x2;
+  is_ok = common::utils::hex::encode(bin_data_x, true, &enc_bin_x2);
+  ASSERT_TRUE(is_ok);
+  std::string dec_bin_x2;
+  is_ok = common::utils::hex::decode(enc_bin_x2, &dec_bin_x2);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(bin_data_x, dec_bin_x2);
 }
 
@@ -615,15 +632,21 @@ TEST(ConvertToString, double) {
 
 TEST(ConvertToString, hex) {
   std::string china("你好");
-  std::string hexed = common::utils::hex::encode(china, true);
+  std::string hexed;
+  bool is_ok = common::utils::hex::encode(china, true, &hexed);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ("e4bda0e5a5bd", hexed);  //"\u4f60\u597d"
   common::string16 utf = common::UTF8ToUTF16("你好");
   ASSERT_EQ(utf.size(), 2);
 
-  std::string unicoded = common::utils::unicode::encode(utf, true);
+  std::string unicoded;
+  is_ok = common::utils::unicode::encode(utf, true, &unicoded);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ("4f60597d", unicoded);
 
-  common::string16 decoded32 = common::utils::unicode::decode(unicoded);
+  common::string16 decoded32;
+  is_ok = common::utils::unicode::decode(unicoded, &decoded32);
+  ASSERT_TRUE(is_ok);
   ASSERT_EQ(decoded32, utf);
 }
 

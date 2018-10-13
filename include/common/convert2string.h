@@ -162,35 +162,35 @@ bool ConvertFromBytes(const buffer_t& from, buffer_t* out) WARN_UNUSED_RESULT;
 namespace utils {
 namespace hex {
 
-buffer_t encode(const buffer_t& input, bool is_lower);
-std::string encode(const StringPiece& input, bool is_lower);
+bool encode(const buffer_t& input, bool is_lower, buffer_t* out);
+bool encode(const StringPiece& input, bool is_lower, std::string* out);
 
-buffer_t decode(const buffer_t& input);
-std::string decode(const StringPiece& input);
+bool decode(const buffer_t& input, buffer_t* out);
+bool decode(const StringPiece& input, std::string* out);
 
 }  // namespace hex
 
 namespace xhex {
 
-buffer_t encode(const buffer_t& input, bool is_lower);
-std::string encode(const StringPiece& input, bool is_lower);
+bool encode(const buffer_t& input, bool is_lower, buffer_t* out);
+bool encode(const StringPiece& input, bool is_lower, std::string* out);
 
-buffer_t decode(const buffer_t& input);
-std::string decode(const StringPiece& input);
+bool decode(const buffer_t& input, buffer_t* out);
+bool decode(const StringPiece& input, std::string* out);
 
 }  // namespace xhex
 
 namespace unicode {
 
-std::string encode(const StringPiece16& input, bool is_lower);
-string16 decode(const StringPiece& input);
+bool encode(const StringPiece16& input, bool is_lower, std::string* out);
+bool decode(const StringPiece& input, string16* out);
 
 }  // namespace unicode
 
 namespace uunicode {
 
-std::string encode(const StringPiece16& input, bool is_lower);
-string16 decode(const StringPiece& input);
+bool encode(const StringPiece16& input, bool is_lower, std::string* out);
+bool decode(const StringPiece& input, string16* out);
 
 }  // namespace uunicode
 }  // namespace utils

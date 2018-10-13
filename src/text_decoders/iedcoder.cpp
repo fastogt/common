@@ -63,7 +63,7 @@ IEDcoder::~IEDcoder() {}
 IEDcoder::IEDcoder(EDType type) : type_(type) {}
 
 Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
-  if (data.empty()) {
+  if (!out || data.empty()) {
     return make_error_inval();
   }
 
@@ -71,7 +71,7 @@ Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
 }
 
 Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
-  if (data.empty()) {
+  if (!out || data.empty()) {
     return make_error_inval();
   }
 

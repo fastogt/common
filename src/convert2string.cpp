@@ -394,36 +394,50 @@ bool UUnicodeStringToBytesT(const STR& input, std::vector<uint16_t>* output) {
   return true;
 }
 
-template <typename R, typename T>
-R do_unicode_decode(const T& input) {
+template <typename T, typename U>
+bool do_unicode_decode(const T& input, U* out) {
+  if (!out) {
+    return false;
+  }
+
   std::vector<uint16_t> vec;
   bool res = UnicodeStringToBytesT(input, &vec);
   if (!res) {
-    return R();
+    return false;
   }
 
-  return R(vec.begin(), vec.end());
+  *out = U(vec.begin(), vec.end());
+  return true;
 }
 
-template <typename R, typename T>
-R do_uunicode_decode(const T& input) {
+template <typename T, typename U>
+bool do_uunicode_decode(const T& input, U* out) {
+  if (!out) {
+    return false;
+  }
+
   std::vector<uint16_t> vec;
   bool res = UUnicodeStringToBytesT(input, &vec);
   if (!res) {
-    return R();
+    return false;
   }
 
-  return R(vec.begin(), vec.end());
+  *out = U(vec.begin(), vec.end());
+  return true;
 }
 
-template <typename R, typename T>
-R do_hex_encode(const T& input, bool is_lower) {
+template <typename T, typename U>
+bool do_hex_encode(const T& input, bool is_lower, U* out) {
+  if (!out) {
+    return false;
+  }
+
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
   typedef typename T::value_type value_type;
   const typename T::size_type size = input.size();
-  R decoded;
+  U decoded;
   decoded.resize(size * 2);
 
   for (size_t i = 0; i < size; ++i) {
@@ -436,17 +450,23 @@ R do_hex_encode(const T& input, bool is_lower) {
       decoded[(i * 2) + 1] = uHexChars[b & 0xf];
     }
   }
-  return decoded;
+
+  *out = decoded;
+  return true;
 }
 
-template <typename R, typename T>
-R do_xhex_encode(const T& input, bool is_lower) {
+template <typename T, typename U>
+bool do_xhex_encode(const T& input, bool is_lower, U* out) {
+  if (!out) {
+    return false;
+  }
+
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
   typedef typename T::value_type value_type;
   const typename T::size_type size = input.size();
-  R decoded;
+  U decoded;
   decoded.resize(size * 4);
 
   for (size_t i = 0; i < size; ++i) {
@@ -462,7 +482,9 @@ R do_xhex_encode(const T& input, bool is_lower) {
       decoded[(i * 4) + 3] = uHexChars[b & 0xf];
     }
   }
-  return decoded;
+
+  *out = decoded;
+  return true;
 }
 
 template <typename STR>
@@ -501,36 +523,50 @@ bool XHexStringToBytesT(const STR& input, std::vector<uint8_t>* output) {
   return true;
 }
 
-template <typename R, typename T>
-R do_hex_decode(const T& input) {
+template <typename T, typename U>
+bool do_hex_decode(const T& input, U* out) {
+  if (!out) {
+    return false;
+  }
+
   std::vector<uint8_t> vec;
   bool res = HexStringToBytesT(input, &vec);
   if (!res) {
-    return R();
+    return false;
   }
 
-  return R(vec.begin(), vec.end());
+  *out = U(vec.begin(), vec.end());
+  return true;
 }
 
-template <typename R, typename T>
-R do_xhex_decode(const T& input) {
+template <typename T, typename U>
+bool do_xhex_decode(const T& input, U* out) {
+  if (!out) {
+    return false;
+  }
+
   std::vector<uint8_t> vec;
   bool res = XHexStringToBytesT(input, &vec);
   if (!res) {
-    return R();
+    return false;
   }
 
-  return R(vec.begin(), vec.end());
+  *out = U(vec.begin(), vec.end());
+  return true;
 }
 
-template <typename R, typename T>
-R do_unicode_encode(const T& input, bool is_lower) {
+template <typename T, typename U>
+bool do_unicode_encode(const T& input, bool is_lower, U* out) {
+  if (!out) {
+    return false;
+  }
+
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
   typedef typename T::value_type value_type;
   const typename T::size_type size = input.size();
-  R decoded;
+  U decoded;
   decoded.resize(size * 4);
 
   for (size_t i = 0; i < size; ++i) {
@@ -549,17 +585,23 @@ R do_unicode_encode(const T& input, bool is_lower) {
       decoded[(i * 4) + 3] = uHexChars[lsb & 0xf];
     }
   }
-  return decoded;
+
+  *out = decoded;
+  return true;
 }
 
-template <typename R, typename T>
-R do_uunicode_encode(const T& input, bool is_lower) {
+template <typename T, typename U>
+bool do_uunicode_encode(const T& input, bool is_lower, U* out) {
+  if (!out) {
+    return false;
+  }
+
   static const char uHexChars[] = "0123456789ABCDEF";
   static const char lHexChars[] = "0123456789abcdef";
 
   typedef typename T::value_type value_type;
   const typename T::size_type size = input.size();
-  R decoded;
+  U decoded;
   decoded.resize(size * 6);
 
   for (size_t i = 0; i < size; ++i) {
@@ -581,7 +623,9 @@ R do_uunicode_encode(const T& input, bool is_lower) {
       decoded[(i * 6) + 5] = uHexChars[lsb & 0xf];
     }
   }
-  return decoded;
+
+  *out = decoded;
+  return true;
 }
 
 }  // namespace
@@ -1594,61 +1638,61 @@ bool ConvertFromBytes(const buffer_t& from, buffer_t* out) {
 namespace utils {
 namespace hex {
 
-buffer_t encode(const buffer_t& input, bool is_lower) {
-  return do_hex_encode<buffer_t>(input, is_lower);
+bool encode(const buffer_t& input, bool is_lower, buffer_t* out) {
+  return do_hex_encode(input, is_lower, out);
 }
 
-std::string encode(const StringPiece& input, bool is_lower) {
-  return do_hex_encode<std::string>(input, is_lower);
+bool encode(const StringPiece& input, bool is_lower, std::string* out) {
+  return do_hex_encode(input, is_lower, out);
 }
 
-buffer_t decode(const buffer_t& input) {
-  return do_hex_decode<buffer_t>(input);
+bool decode(const buffer_t& input, buffer_t* out) {
+  return do_hex_decode(input, out);
 }
 
-std::string decode(const StringPiece& input) {
-  return do_hex_decode<std::string>(input);
+bool decode(const StringPiece& input, std::string* out) {
+  return do_hex_decode(input, out);
 }
 
 }  // namespace hex
 
 namespace xhex {
 
-buffer_t encode(const buffer_t& input, bool is_lower) {
-  return do_xhex_encode<buffer_t>(input, is_lower);
+bool encode(const buffer_t& input, bool is_lower, buffer_t* out) {
+  return do_xhex_encode(input, is_lower, out);
 }
 
-std::string encode(const StringPiece& input, bool is_lower) {
-  return do_xhex_encode<std::string>(input, is_lower);
+bool encode(const StringPiece& input, bool is_lower, std::string* out) {
+  return do_xhex_encode(input, is_lower, out);
 }
 
-buffer_t decode(const buffer_t& input) {
-  return do_xhex_decode<buffer_t>(input);
+bool decode(const buffer_t& input, buffer_t* out) {
+  return do_xhex_decode(input, out);
 }
 
-std::string decode(const StringPiece& input) {
-  return do_xhex_decode<std::string>(input);
+bool decode(const StringPiece& input, std::string* out) {
+  return do_xhex_decode(input, out);
 }
 
 }  // namespace xhex
 
 namespace unicode {
-std::string encode(const StringPiece16& input, bool is_lower) {
-  return do_unicode_encode<std::string>(input, is_lower);
+bool encode(const StringPiece16& input, bool is_lower, std::string* out) {
+  return do_unicode_encode(input, is_lower, out);
 }
 
-string16 decode(const StringPiece& input) {
-  return do_unicode_decode<string16>(input);
+bool decode(const StringPiece& input, string16* out) {
+  return do_unicode_decode(input, out);
 }
 }  // namespace unicode
 
 namespace uunicode {
-std::string encode(const StringPiece16& input, bool is_lower) {
-  return do_uunicode_encode<std::string>(input, is_lower);
+bool encode(const StringPiece16& input, bool is_lower, std::string* out) {
+  return do_uunicode_encode(input, is_lower, out);
 }
 
-string16 decode(const StringPiece& input) {
-  return do_uunicode_decode<string16>(input);
+bool decode(const StringPiece& input, string16* out) {
+  return do_uunicode_decode(input, out);
 }
 }  // namespace uunicode
 }  // namespace utils

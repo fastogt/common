@@ -21,7 +21,11 @@
 
 namespace common {
 namespace {
-std::string MakeMd5Hash(const std::string& data) {
+bool MakeMd5Hash(const std::string& data, std::string* out) {
+  if (!out) {
+    return false;
+  }
+
   hash::MD5_CTX md5;
   hash::MD5_Init(&md5);
   const unsigned char* cdata = reinterpret_cast<const unsigned char*>(data.c_str());
@@ -29,7 +33,7 @@ std::string MakeMd5Hash(const std::string& data) {
   unsigned char md5_result[16];
   hash::MD5_Final(&md5, md5_result);
   std::string hs(std::begin(md5_result), std::end(md5_result));
-  return utils::hex::encode(hs, true);
+  return utils::hex::encode(hs, true, out);
 }
 }  // namespace
 namespace license {
@@ -46,8 +50,10 @@ bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
       return false;
     }
 
-    std::string cpu_id_hash = MakeMd5Hash(cpu_id);
-    std::string hdd_id_hash = MakeMd5Hash(hdd_id);
+    std::string cpu_id_hash;
+    MakeMd5Hash(cpu_id, &cpu_id_hash);
+    std::string hdd_id_hash;
+    MakeMd5Hash(hdd_id, &hdd_id_hash);
     *hash = cpu_id_hash + hdd_id_hash;
     return true;
   } else if (t == MACHINE_ID) {
@@ -56,8 +62,10 @@ bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
       return false;
     }
 
-    std::string cpu_id_hash = MakeMd5Hash(cpu_id);
-    std::string machine_id_hash = MakeMd5Hash(system_id);
+    std::string cpu_id_hash;
+    MakeMd5Hash(cpu_id, &cpu_id_hash);
+    std::string machine_id_hash;
+    MakeMd5Hash(system_id, &machine_id_hash);
     *hash = cpu_id_hash + machine_id_hash;
     return true;
   }

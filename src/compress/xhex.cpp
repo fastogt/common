@@ -35,38 +35,34 @@ namespace common {
 namespace compress {
 
 Error EncodeXHex(const StringPiece& data, bool is_lower, std::string* out) {
-  if (!out) {
+  if (!utils::xhex::encode(data, is_lower, out)) {
     return make_error_inval();
   }
 
-  *out = utils::xhex::encode(data, is_lower);
   return Error();
 }
 
 Error EncodeXHex(const buffer_t& data, bool is_lower, buffer_t* out) {
-  if (!out) {
+  if (utils::xhex::encode(data, is_lower, out)) {
     return make_error_inval();
   }
 
-  *out = utils::xhex::encode(data, is_lower);
   return Error();
 }
 
 Error DecodeXHex(const buffer_t& data, buffer_t* out) {
-  if (!out) {
+  if (!utils::xhex::decode(data, out)) {
     return make_error_inval();
   }
 
-  *out = utils::xhex::decode(data);
   return Error();
 }
 
 Error DecodeXHex(const StringPiece& data, std::string* out) {
-  if (!out) {
+  if (!utils::xhex::decode(data, out)) {
     return make_error_inval();
   }
 
-  *out = utils::xhex::decode(data);
   return Error();
 }
 
