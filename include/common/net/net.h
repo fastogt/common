@@ -92,7 +92,7 @@ ErrnoError recvfrom(socket_descr_t fd,
                     socklen_t* addr_len,
                     ssize_t* nread_out) WARN_UNUSED_RESULT;
 
-ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size) WARN_UNUSED_RESULT;
+ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, off_t size) WARN_UNUSED_RESULT;
 ErrnoError send_file(const std::string& path, const HostAndPort& to) WARN_UNUSED_RESULT;
 
 }  // namespace net

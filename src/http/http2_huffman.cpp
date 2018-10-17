@@ -5039,7 +5039,7 @@ ssize_t http2_huffman_encode(buffer_t& bufs, const uint8_t* src, uint32_t srclen
     if (rembits == 8) {
       http2_bufs_fast_addb_hold(bufs, 0);
     }
-    rembits = huff_encode_sym(bufs, rembits, sym);
+    rembits = huff_encode_sym(bufs, static_cast<uint32_t>(rembits), sym);
     if (rembits < 0) {
       return static_cast<int>(rembits);
     }

@@ -46,7 +46,7 @@ TableModel::~TableModel() {}
 int TableModel::rowCount(const QModelIndex& parent) const {
   UNUSED(parent);
 
-  return data_.size();
+  return static_cast<int>(data_.size());
 }
 
 QModelIndex TableModel::index(int row, int column, const QModelIndex& parent) const {
@@ -80,7 +80,7 @@ void TableModel::removeItem(TableItem* child) {
   int index = -1;
   for (size_t i = 0; i < child_count; ++i) {
     if (data_[i] == child) {
-      index = i;
+      index = static_cast<int>(i);
       break;
     }
   }

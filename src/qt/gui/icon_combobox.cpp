@@ -38,12 +38,12 @@ namespace common {
 namespace qt {
 namespace gui {
 
-IconComboBox::IconComboBox(QWidget* parent) : QWidget(parent), icon_(NULL), combo_(NULL) {
+IconComboBox::IconComboBox(QWidget* parent) : QWidget(parent), icon_(nullptr), combo_(nullptr) {
   init(QIcon(), QSize());
 }
 
 IconComboBox::IconComboBox(const QIcon& icon, const QSize& icon_size, QWidget* parent)
-    : QWidget(parent), icon_(NULL), combo_(NULL) {
+    : QWidget(parent), icon_(nullptr), combo_(nullptr) {
   init(icon, icon_size);
 }
 

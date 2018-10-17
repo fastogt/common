@@ -37,8 +37,8 @@
 
 namespace {
 
-QString g_project;
-QTranslator g_tr;
+QString kProject;
+QTranslator kTr;
 
 QString trPath() {
   const QString app_dir = common::qt::ApplicationDirPath();
@@ -48,7 +48,7 @@ QString trPath() {
 QStringList qmLanguages() {
   const QString tr_path = trPath();
   static QDir trd(tr_path);
-  return trd.entryList(QStringList(g_project + "_*.qm"));
+  return trd.entryList(QStringList(kProject + "_*.qm"));
 }
 
 QPair<QString, QLocale> convertToLocale(const QString& fileName) {
@@ -88,7 +88,7 @@ QString applyLanguage(const QString& lang) {
   }
 
   QString qmPath = pathToQm(langres);
-  bool isLoad = g_tr.load(qmPath, trPath());
+  bool isLoad = kTr.load(qmPath, trPath());
 
   if (!isLoad && langres != builtInLanguage) {
     return builtInLanguage;
@@ -115,6 +115,6 @@ QStringList supportedLanguages() {
 }  // namespace common
 
 void INIT_TRANSLATION(const QString& project_name) {
-  g_project = project_name;
-  qApp->installTranslator(&g_tr);
+  kProject = project_name;
+  qApp->installTranslator(&kTr);
 }

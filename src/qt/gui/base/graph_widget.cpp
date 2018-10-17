@@ -61,7 +61,7 @@ void adjust_axis(qreal* min, qreal* max, unsigned* numTicks) {
     step *= 2;
   }
 
-  *numTicks = int(ceil(*max / step) - floor(*min / step));
+  *numTicks = unsigned(ceil(*max / step) - floor(*min / step));
   if (*numTicks < MinTicks) {
     *numTicks = MinTicks;
   }

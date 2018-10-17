@@ -304,7 +304,7 @@ ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void
       break; /* EOF */
     }
 
-    uint32_t numSent = 0;
+    size_t numSent = 0;
     ErrnoError err = cb(buf, numRead, user_data, &numSent);
     if (err) {
       return err;
@@ -425,7 +425,7 @@ ErrnoError create_directory(const std::string& path, bool is_recursive) {
 
   const char* pr_path_ptr = pr_path.c_str();
   if (is_recursive) {
-    char* p = NULL;
+    char* p = nullptr;
 #ifdef OS_WIN
     uint8_t shift = 3;
 #else
@@ -469,7 +469,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
     }
 
     struct dirent* p;
-    while ((p = readdir(dirp)) != NULL) {
+    while ((p = readdir(dirp)) != nullptr) {
       /* Skip the names "." and ".." as we don't want to recurse on them. */
       if (!strcmp(p->d_name, ".") || !strcmp(p->d_name, "..")) {
         continue;

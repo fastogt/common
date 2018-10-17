@@ -72,7 +72,7 @@ void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
   }
 
   struct dirent* dent;
-  while ((dent = readdir(dirp)) != NULL) {
+  while ((dent = readdir(dirp)) != nullptr) {
     /* Skip the names "." and ".." as we don't want to recurse on them. */
     if (!strcmp(dent->d_name, ".") || !strcmp(dent->d_name, "..")) {
       continue;

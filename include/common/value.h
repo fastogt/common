@@ -148,7 +148,7 @@ class FundamentalValue : public Value {
   explicit FundamentalValue(unsigned long long in_value);
   explicit FundamentalValue(double in_value);
 
-  virtual ~FundamentalValue();
+  virtual ~FundamentalValue() override;
 
   virtual bool GetAsBoolean(bool* out_value) const override WARN_UNUSED_RESULT;
   virtual bool GetAsInteger(int* out_value) const override WARN_UNUSED_RESULT;
@@ -175,7 +175,7 @@ class FundamentalValue : public Value {
 class StringValue : public Value {
  public:
   explicit StringValue(const std::string& in_value);
-  virtual ~StringValue();
+  virtual ~StringValue() override;
 
   virtual bool GetAsString(std::string* out_value) const override WARN_UNUSED_RESULT;
   virtual StringValue* DeepCopy() const override;
@@ -194,7 +194,7 @@ class ArrayValue : public Value {
   typedef ValueVector::const_iterator const_iterator;
 
   ArrayValue();
-  virtual ~ArrayValue();
+  virtual ~ArrayValue() override;
 
   void clear();
 
@@ -268,7 +268,7 @@ class ByteArrayValue : public Value {
   typedef byte_array_t::value_type value_type;
 
   explicit ByteArrayValue(const byte_array_t& array);
-  virtual ~ByteArrayValue();
+  virtual ~ByteArrayValue() override;
 
   void Clear();
 
@@ -308,7 +308,7 @@ class SetValue : public Value {
   typedef ValueSet::const_iterator const_iterator;
 
   SetValue();
-  virtual ~SetValue();
+  virtual ~SetValue() override;
 
   void Clear();
 
@@ -347,7 +347,7 @@ class ZSetValue : public Value {
   typedef ValueZSet::value_type value_type;
 
   ZSetValue();
-  virtual ~ZSetValue();
+  virtual ~ZSetValue() override;
 
   void Clear();
 
@@ -388,7 +388,7 @@ class HashValue : public Value {
   typedef ValueHash::value_type value_type;
 
   HashValue();
-  virtual ~HashValue();
+  virtual ~HashValue() override;
 
   void Clear();
 

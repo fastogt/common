@@ -233,7 +233,7 @@ ErrnoError File::Open(const path_type& file_path, uint32_t flags) {
   return ErrnoError();
 }
 
-ANSIFile::ANSIFile() : path_(), file_(NULL) {}
+ANSIFile::ANSIFile() : path_(), file_(nullptr) {}
 
 ANSIFile::~ANSIFile() {}
 

@@ -238,7 +238,7 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
     start = pos + 2;
   }
 
-  char* lbody = NULL;
+  char* lbody = nullptr;
   if (len != start && line_count != 0) {
     const char* request_str = request.c_str() + start;
     lbody = uri::detail::uri_decode(request_str, strlen(request_str));
@@ -300,7 +300,7 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
   uint8_t line_count = 0;
   http_protocol lprotocol = HP_1_0;
   headers_t lheaders;
-  uint16_t lstatus;
+  uint16_t lstatus = 0;
   while ((pos = response.find("\r\n", start)) != std::string::npos) {
     std::string line = response.substr(start, pos - start);
     if (line_count == 0) {

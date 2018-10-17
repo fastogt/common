@@ -35,7 +35,7 @@
 #include <common/portable_endian.h>
 
 #define MAKE_STATIC_ENT(N, V, T, H) \
-  { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, NULL, 0, (H), (T) }
+  { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, nullptr, 0, (H), (T) }
 
 #define lstreq(A, B, N) ((sizeof((A)) - 1) == (N) && memcmp((A), (B), (N)) == 0)
 
@@ -127,7 +127,7 @@ int http2_hd_entry_init(http2_entry* ent, const http2_nv* oent, int token) {
   ent->nv.value = oent->value;
 
   ent->token = token;
-  ent->next = NULL;
+  ent->next = nullptr;
   ent->hash = 0;
 
   return 0;
@@ -157,7 +157,7 @@ uint32_t name_hash(const http2_nv* nv) {
 void hd_map_insert(http2_map* map, http2_entry* ent) {
   http2_entry** bucket = &map->table[ent->hash & (MAP_SIZE - 1)];
 
-  if (*bucket == NULL) {
+  if (*bucket == nullptr) {
     *bucket = ent;
     return;
   }
@@ -168,7 +168,7 @@ void hd_map_insert(http2_map* map, http2_entry* ent) {
 }
 
 http2_entry* hd_map_find(http2_map* map, int* exact_match, const http2_nv* nv, int token, uint32_t hash) {
-  http2_entry* res = NULL;
+  http2_entry* res = nullptr;
   *exact_match = 0;
 
   for (http2_entry* p = map->table[hash & (MAP_SIZE - 1)]; p; p = p->next) {
@@ -191,20 +191,20 @@ http2_entry* hd_map_find(http2_map* map, int* exact_match, const http2_nv* nv, i
 void hd_map_remove(http2_map* map, http2_entry* ent) {
   http2_entry** bucket = &map->table[ent->hash & (MAP_SIZE - 1)];
 
-  if (*bucket == NULL) {
+  if (*bucket == nullptr) {
     return;
   }
 
   if (*bucket == ent) {
     *bucket = ent->next;
-    ent->next = NULL;
+    ent->next = nullptr;
     return;
   }
 
   for (http2_entry* p = *bucket; p; p = p->next) {
     if (p->next == ent) {
       p->next = ent->next;
-      ent->next = NULL;
+      ent->next = nullptr;
       return;
     }
   }
@@ -232,7 +232,7 @@ int hd_ringbuf_reserve(http2_ringbuf* ringbuf, uint32_t bufsize) {
   }
 
   buffer = static_cast<http2_entry**>(malloc(sizeof(http2_entry*) * size));
-  if (buffer == NULL) {
+  if (buffer == nullptr) {
     return -1;
   }
   for (i = 0; i < ringbuf->len; ++i) {
@@ -450,14 +450,14 @@ http2_entry* add_hd_table_incremental(http2_context* context,
   http2_entry* new_ent = new http2_entry;
   int rv = http2_hd_entry_init(new_ent, nv, token);
   if (rv != 0) {
-    return NULL;
+    return nullptr;
   }
 
   rv = hd_ringbuf_push_front(&context->hd_table, new_ent);
 
   if (rv != 0) {
     delete new_ent;
-    return NULL;
+    return nullptr;
   }
 
   new_ent->seq = context->next_seq++;
@@ -1023,7 +1023,7 @@ int deflate_nv(http2_deflater* deflater, buffer_t& bufs, const http2_nv* nv) {
   }
 
   if (indexing_mode == HTTP2_WITH_INDEXING) {
-    http2_entry* new_ent = NULL;
+    http2_entry* new_ent = nullptr;
     if (idx != -1 && idx < HTTP2_STATIC_TABLE_LENGTH) {
       http2_nv nv_indname;
       nv_indname = *nv;
@@ -1151,7 +1151,7 @@ int hd_inflate_commit_newname(http2_inflater* inflater, http2_nv* nv_out, int* t
 
   if (inflater->index_required) {
     http2_entry* new_ent =
-        add_hd_table_incremental(&inflater->ctx, &nv, lookup_token(nv.name.data(), nv.namelen()), NULL, 0);
+        add_hd_table_incremental(&inflater->ctx, &nv, lookup_token(nv.name.data(), nv.namelen()), nullptr, 0);
 
     if (new_ent) {
       emit_indexed_header(nv_out, token_out, new_ent);
@@ -1204,7 +1204,7 @@ int hd_inflate_commit_indname(http2_inflater* inflater, http2_nv* nv_out, int* t
       }
     }
 
-    http2_entry* new_ent = add_hd_table_incremental(&inflater->ctx, &nv, ent_name->token, NULL, 0);
+    http2_entry* new_ent = add_hd_table_incremental(&inflater->ctx, &nv, ent_name->token, nullptr, 0);
 
     /* At this point, ent_name might be deleted. */
 
@@ -1307,7 +1307,7 @@ uint32_t http2_nv::valuelen() const {
   return value.size();
 }
 
-http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(NULL), mask(0), first(0), len(0) {
+http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(nullptr), mask(0), first(0), len(0) {
   if (bufsize == 0) {
     DNOTREACHED();
     return;
@@ -1330,7 +1330,7 @@ http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(NULL), mask(0), first(0)
 http2_ringbuf::~http2_ringbuf() {
   if (buffer) {
     free(buffer);
-    buffer = NULL;
+    buffer = nullptr;
   }
 }
 
@@ -1390,10 +1390,10 @@ ssize_t http2_inflater::http2_inflate_hd2(http2_nv* nv_out,
   }
 
   if (ent_keep) {
-    ent_keep = NULL;
+    ent_keep = nullptr;
   }
 
-  nv_keep = NULL;
+  nv_keep = nullptr;
   *token_out = -1;
   *inflate_flags = HTTP2_INFLATE_NONE;
 
@@ -1446,7 +1446,7 @@ ssize_t http2_inflater::http2_inflate_hd2(http2_nv* nv_out,
           goto almost_ok;
         }
         ctx.hd_table_bufsize_max = left;
-        hd_context_shrink_table_size(&ctx, NULL);
+        hd_context_shrink_table_size(&ctx, nullptr);
         state = HTTP2_STATE_INFLATE_START;
         break;
       case HTTP2_STATE_READ_INDEX: {
@@ -2026,7 +2026,7 @@ const http2_priority_spec* frame_headers::priority() const {
     return reinterpret_cast<const http2_priority_spec*>(payload_.data());
   }
 
-  return NULL;
+  return nullptr;
 }
 
 http2_nvs_t frame_headers::nva() const {

@@ -53,8 +53,8 @@ bool ConvertFromString16(const string16& value, QString* out) {
 }
 
 std::string ConvertToString(const QString& from) {
-  QByteArray sUtf8 = from.toUtf8();
-  return std::string(sUtf8.constData(), sUtf8.length());
+  QByteArray utf8 = from.toUtf8();
+  return std::string(utf8.constData(), utf8.size());
 }
 
 bool ConvertFromString(const std::string& value, QString* out) {
@@ -68,7 +68,7 @@ bool ConvertFromString(const std::string& value, QString* out) {
 
 buffer_t ConvertToBytes(const QString& from) {
   QByteArray sUtf8 = from.toUtf8();
-  return MAKE_BUFFER_SIZE(sUtf8.constData(), sUtf8.length());
+  return MAKE_BUFFER_SIZE(sUtf8.constData(), sUtf8.size());
 }
 
 bool ConvertFromBytes(const buffer_t& value, QString* out) {

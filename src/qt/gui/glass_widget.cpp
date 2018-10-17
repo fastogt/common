@@ -74,7 +74,7 @@ void GlassWidget::start() {
   showAnimationBlock();
 
   QEvent event(QEvent::Resize);
-  eventFilter(0, &event);
+  eventFilter(nullptr, &event);
 }
 
 void GlassWidget::stop() {

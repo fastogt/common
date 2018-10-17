@@ -63,7 +63,7 @@ struct SendDataHelper {
   uint32_t all_size;
 };
 
-ErrnoError send_data_frame(const char* buff, uint32_t buff_len, void* user_data, uint32_t* processed) {
+ErrnoError send_data_frame(const char* buff, size_t buff_len, void* user_data, size_t* processed) {
   SendDataHelper* helper = reinterpret_cast<SendDataHelper*>(user_data);
   libev::http::StreamSPtr header_stream = helper->header_stream;
 
@@ -144,7 +144,7 @@ ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protocol, int f
     help.header_stream = header_stream;
     help.all_size = size;
 
-    ErrnoError err = file_system::read_file_cb(fdesc, NULL, size, &send_data_frame, &help);
+    ErrnoError err = file_system::read_file_cb(fdesc, nullptr, size, &send_data_frame, &help);
     if (err) {
       DEBUG_MSG_ERROR(err, logging::LOG_LEVEL_ERR);
       return err;

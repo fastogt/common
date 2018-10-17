@@ -64,7 +64,7 @@
 
 namespace {
 
-ssize_t sendfile(common::net::socket_descr_t out_fd, int in_fd, off_t* offset, size_t count) {
+ssize_t sendfile(common::net::socket_descr_t out_fd, descriptor_t in_fd, off_t* offset, size_t count) {
   off_t orig = 0;
   char buf[BUF_SIZE] = {0};
 
@@ -80,19 +80,19 @@ ssize_t sendfile(common::net::socket_descr_t out_fd, int in_fd, off_t* offset, s
     }
   }
 
-  size_t totSent = 0;
+  ssize_t totSent = 0;
 
   while (count > 0) {
-    ssize_t numRead = read(in_fd, buf, BUF_SIZE);
-    if (numRead == ERROR_RESULT_VALUE) {
+    ssize_t num_read = read(in_fd, buf, BUF_SIZE);
+    if (num_read == ERROR_RESULT_VALUE) {
       return ERROR_RESULT_VALUE;
     }
-    if (numRead == 0) {
+    if (num_read == 0) {
       break; /* EOF */
     }
 
     size_t numSent = 0;
-    common::ErrnoError err = common::net::write_to_socket(out_fd, buf, numRead, &numSent);
+    common::ErrnoError err = common::net::write_to_socket(out_fd, buf, static_cast<size_t>(num_read), &numSent);
     if (err) {
       return ERROR_RESULT_VALUE;
     }
@@ -198,7 +198,7 @@ ErrnoError do_recvfrom(socket_descr_t fd,
 }
 
 struct UnBlockAndBlockSocket {
-  UnBlockAndBlockSocket(socket_descr_t sock) : sock_(sock) {
+  explicit UnBlockAndBlockSocket(socket_descr_t sock) : sock_(sock) {
     ErrnoError err = set_blocking_socket(sock, false);
     DCHECK(!err) << err->GetDescription();
   }
@@ -247,7 +247,7 @@ ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_
       fd_set master_set;
       FD_ZERO(&master_set);
       FD_SET(sock, &master_set);
-      res = select(sock + 1, &master_set, NULL, NULL, tv);
+      res = select(sock + 1, &master_set, nullptr, nullptr, tv);
 #endif
       if (res == -1) {
         return make_error_perror("async_connect poll", errno);
@@ -284,8 +284,8 @@ ErrnoError connect_raw(const char* host,
 
   socket_descr_t sfd = INVALID_SOCKET_VALUE;
 
-  struct addrinfo hints, *rp = NULL;
-  struct addrinfo* result = NULL;
+  struct addrinfo hints, *rp = nullptr;
+  struct addrinfo* result = nullptr;
   char _port[6];
   snprintf(_port, sizeof(_port), "%u", port);
   memset(&hints, 0, sizeof(hints));
@@ -293,9 +293,9 @@ ErrnoError connect_raw(const char* host,
   hints.ai_socktype = socket_type_to_native(socktype);
   hints.ai_flags = AI_PASSIVE; /* For wildcard IP address */
   hints.ai_protocol = 0;       /* Any protocol */
-  hints.ai_canonname = NULL;
-  hints.ai_addr = NULL;
-  hints.ai_next = NULL;
+  hints.ai_canonname = nullptr;
+  hints.ai_addr = nullptr;
+  hints.ai_next = nullptr;
   /* Try with IPv6 if no IPv4 address was found. We do it in this order since
    * in a client you can't afford to test if you have IPv6 connectivity
    * as this would add latency to every connect. Otherwise a more sensible
@@ -309,7 +309,7 @@ ErrnoError connect_raw(const char* host,
     }
   }
 
-  for (rp = result; rp != NULL; rp = rp->ai_next) {
+  for (rp = result; rp != nullptr; rp = rp->ai_next) {
     if (rp->ai_socktype != socktype) {
       continue;
     }
@@ -331,7 +331,7 @@ ErrnoError connect_raw(const char* host,
     ::close(sfd);
   }
 
-  if (rp == NULL) { /* No address succeeded */
+  if (!rp) { /* No address succeeded */
     int err = errno;
     CHECK(err) << "Errno(" << err << ") should be not zero!";
     return make_error_perror("getaddrinfo", err);
@@ -657,7 +657,7 @@ ErrnoError recvfrom(socket_descr_t fd,
   return do_recvfrom(fd, out_data, max_size, addr, addr_len, nread_out);
 }
 
-ErrnoError send_file_to_fd(socket_descr_t sock, int fd, off_t offset, off_t size) {
+ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, off_t size) {
   if (sock == INVALID_SOCKET_VALUE || fd == INVALID_DESCRIPTOR) {
     return make_error_perror("send_file_to_fd", EINVAL);
   }
@@ -676,7 +676,7 @@ ErrnoError send_file(const std::string& path, const HostAndPort& to) {
   }
 
   socket_info info;
-  ErrnoError err = connect(to, ST_SOCK_STREAM, NULL, &info);
+  ErrnoError err = connect(to, ST_SOCK_STREAM, nullptr, &info);
   if (err) {
     return err;
   }

@@ -56,7 +56,7 @@ bool IStream::ProcessFrame(const http2::frame_base& frame) {
 
 ErrnoError IStream::SendData(const buffer_t& buff) {
   size_t nwrite = 0;
-  ErrnoError err = sock_.Write((const char*)buff.data(), buff.size(), &nwrite);
+  ErrnoError err = sock_.Write(buff.data(), buff.size(), &nwrite);
   return err;
 }
 

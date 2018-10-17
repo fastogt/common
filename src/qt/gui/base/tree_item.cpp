@@ -63,13 +63,13 @@ TreeItem* TreeItem::child(size_t pos) const {
     return childrens_[pos];
   }
 
-  return NULL;
+  return nullptr;
 }
 
 int TreeItem::indexOf(TreeItem* item) const {
   for (size_t i = 0; i < childrens_.size(); ++i) {
     if (item == childrens_[i]) {
-      return i;
+      return static_cast<int>(i);
     }
   }
   return -1;

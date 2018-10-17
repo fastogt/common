@@ -120,7 +120,7 @@ tribool is_directory(const std::string& path) {
     return INDETERMINATE;
   }
 
-  return ftype & FILE_ATTRIBUTE_DIRECTORY ? SUCCESS : FAIL;
+  return (ftype & FILE_ATTRIBUTE_DIRECTORY) ? SUCCESS : FAIL;
 #else
   struct stat filestat;
   if (::stat(p_path.c_str(), &filestat) != ERROR_RESULT_VALUE) {
