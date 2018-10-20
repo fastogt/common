@@ -94,6 +94,10 @@ void INIT_LOGGER(const std::string& project_name, const std::string& file_path, 
   INIT_LOGGER(project_name, level);
   const std::string stabled_path = file_system::prepare_path(file_path);
 
+  if (g_logger_file_helper->is_open()) {
+    g_logger_file_helper->close();
+  }
+
   g_logger_file_helper->open(stabled_path, std::ofstream::out | std::ofstream::app);
   if (g_logger_file_helper->is_open()) {
     SET_LOGER_STREAM(g_logger_file_helper.get());
