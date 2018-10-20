@@ -144,6 +144,7 @@ LogMessage::~LogMessage() {
   }
 
   *g_logger << stream_.str();
+  g_logger->flush();
   if (level_ <= logging::LOG_LEVEL_CRIT) {
 #ifdef NDEBUG
     immediate_exit();
