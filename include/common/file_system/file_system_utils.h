@@ -35,15 +35,19 @@ namespace common {
 namespace file_system {
 
 template <typename CharT, typename Traits>
-std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
-                                                      const std::basic_string<CharT, Traits>& pattern,
-                                                      bool recursive);
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(
+    const DirectoryStringPath<CharT, Traits>& folder,
+    const std::basic_string<CharT, Traits>& pattern,
+    bool recursive,
+    bool (*filter_predicate)(const FileStringPath<CharT, Traits>&) = nullptr);
 
 template <typename CharT, typename Traits>
-std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
-                                                      const CharT* pattern,
-                                                      bool recursive) {
-  return ScanFolder(folder, std::basic_string<CharT, Traits>(pattern), recursive);
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(
+    const DirectoryStringPath<CharT, Traits>& folder,
+    const CharT* pattern,
+    bool recursive,
+    bool (*filter_predicate)(const FileStringPath<CharT, Traits>&) = nullptr) {
+  return ScanFolder(folder, std::basic_string<CharT, Traits>(pattern), recursive, filter_predicate);
 }
 
 }  // namespace file_system
