@@ -169,12 +169,12 @@ inline bool operator==(std::nullptr_t, const intrusive_ptr<T>& a) {
 
 template <typename T>
 inline bool operator!=(const intrusive_ptr<T>& a, std::nullptr_t) {
-  return (bool)a;
+  return static_cast<bool>(a);
 }
 
 template <typename T>
 inline bool operator!=(std::nullptr_t, const intrusive_ptr<T>& a) noexcept {
-  return (bool)a;
+  return static_cast<bool>(a);
 }
 
 template <typename T>

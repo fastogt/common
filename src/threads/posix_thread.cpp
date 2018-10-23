@@ -32,13 +32,13 @@
 #include <sched.h>  // for sched_get_priority_max, etc
 
 #if defined(OS_LINUX) || defined(OS_ANDROID)
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
 #include <sys/syscall.h>
 #else
 #include <syscall.h>  // for __NR_gettid
 #endif
 #include <unistd.h>  // for syscall
-#elif OS_FREEBSD
+#elif defined(OS_FREEBSD)
 #include <pthread_np.h>
 typedef cpuset_t cpu_set_t;
 #elif defined(OS_MACOSX)
@@ -116,7 +116,7 @@ void* threadFunc(void* params) {
   return result;
 #else
   pthread_exit(result);
-  return NULL;
+  return nullptr;
 #endif
 }
 
@@ -181,7 +181,7 @@ bool PlatformThread::Create(PlatformThreadHandle* thread_handle,
   params->tid_ = &thread_handle->thread_id_;
 
   pthread_attr_t custom_sched_attr;
-  pthread_attr_t* pcustom_sched_attr = NULL;
+  pthread_attr_t* pcustom_sched_attr = nullptr;
 
   if (priority != PRIORITY_NORMAL) {
     pcustom_sched_attr = &custom_sched_attr;
@@ -254,7 +254,7 @@ bool PlatformThread::InitTlsKey(platform_tls_t* key) {
     return false;
   }
 
-  int res = pthread_key_create(key, NULL);
+  int res = pthread_key_create(key, nullptr);
   bool result = res == 0;
   DCHECK(result);
   return result;

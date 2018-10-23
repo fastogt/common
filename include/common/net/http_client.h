@@ -39,7 +39,7 @@ class HttpClient {
  public:
   explicit HttpClient(const HostAndPort& host);
 
-  ErrnoError Connect(struct timeval* tv = NULL) WARN_UNUSED_RESULT;
+  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
 
   virtual Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;

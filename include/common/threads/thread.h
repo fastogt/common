@@ -97,14 +97,14 @@ class Thread final : public ThreadBase {
   }
 
   void Join() {
-    void* res = NULL;
+    void* res = nullptr;
     if (PlatformThread::Join(&(handle_), &res)) {
       event_.Reset();
     }
   }
 
   result_type JoinAndGet() {
-    void* res = NULL;
+    void* res = nullptr;
     if (PlatformThread::Join(&handle_, &res)) {
       event_.Reset();
     }
@@ -118,7 +118,7 @@ class Thread final : public ThreadBase {
     WrapThread(thr);
     thr->Run();
     UnWrapThread(thr);
-    return NULL;
+    return nullptr;
   }
 
   Thread() : res_(), func_(function_type()), event_(1, 0), priority_(PRIORITY_NORMAL) {}
@@ -170,7 +170,7 @@ class Thread<void> : public ThreadBase {
   }
 
   void Join() {
-    void* res = NULL;
+    void* res = nullptr;
     if (PlatformThread::Join(&(handle_), &res)) {
       event_.Reset();
     }
@@ -182,7 +182,7 @@ class Thread<void> : public ThreadBase {
     WrapThread(thr);
     thr->Run();
     UnWrapThread(thr);
-    return NULL;
+    return nullptr;
   }
 
   Thread() : func_(function_type()), event_(1, 0), priority_(PRIORITY_NORMAL) {}

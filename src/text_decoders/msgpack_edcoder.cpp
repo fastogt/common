@@ -77,7 +77,7 @@ Error MsgPackEDcoder::DoEncode(const StringPiece& data, std::string* out) {
 
   cmp_ctx_t cmp;
   std::string lout;
-  cmp_init(&cmp, &lout, NULL, NULL, stream_writer);
+  cmp_init(&cmp, &lout, nullptr, nullptr, stream_writer);
   bool res = cmp_write_str(&cmp, data.data(), data.size());
   if (!res) {
     return make_error("MsgPackEDcoder internal error!");
@@ -98,7 +98,7 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
 
   memcpy(copy, data.data(), data.size());
 
-  cmp_init(&cmp, copy, stream_reader, NULL, NULL);
+  cmp_init(&cmp, copy, stream_reader, nullptr, nullptr);
 
   std::string lout;
 

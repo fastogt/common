@@ -29,7 +29,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
   typedef typename base_class::serialize_type serialize_type;
 
   virtual Error SerializeToString(std::string* out) const override final WARN_UNUSED_RESULT {
-    serialize_type des = NULL;
+    serialize_type des = nullptr;
     Error err = base_class::Serialize(&des);
     if (err) {
       return err;

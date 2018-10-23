@@ -51,7 +51,7 @@ class IoChild;
 class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
  public:
   explicit IoLoop(LibEvLoop* loop, IoLoopObserver* observer = nullptr);
-  virtual ~IoLoop();
+  virtual ~IoLoop() override;
 
   bool IsRunning() const;
   int Exec() WARN_UNUSED_RESULT;

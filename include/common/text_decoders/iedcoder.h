@@ -36,7 +36,7 @@
 
 namespace common {
 
-enum EDType {
+enum EDType : unsigned {
   ED_BASE64 = 0,
   ED_ZLIB,
   ED_BZIP2,

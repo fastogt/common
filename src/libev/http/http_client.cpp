@@ -175,9 +175,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
 
   DCHECK(strlen(header_data) == static_cast<size_t>(cur_pos));
   size_t nwrite = 0;
-  ErrnoError err = Write(header_data, cur_pos, &nwrite);
-  DCHECK(!err);
-  return err;
+  return Write(header_data, cur_pos, &nwrite);
 }
 
 }  // namespace http

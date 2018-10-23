@@ -270,17 +270,19 @@ FundamentalValue::FundamentalValue(bool in_value) : Value(TYPE_BOOLEAN), boolean
 
 FundamentalValue::FundamentalValue(int in_value) : Value(TYPE_INTEGER), integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned int in_value) : Value(TYPE_UINTEGER), integer_value_(in_value) {}
+FundamentalValue::FundamentalValue(unsigned int in_value)
+    : Value(TYPE_UINTEGER), integer_value_(static_cast<int>(in_value)) {}
 
 FundamentalValue::FundamentalValue(long in_value) : Value(TYPE_LONG_INTEGER), long_integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned long in_value) : Value(TYPE_ULONG_INTEGER), long_integer_value_(in_value) {}
+FundamentalValue::FundamentalValue(unsigned long in_value)
+    : Value(TYPE_ULONG_INTEGER), long_integer_value_(static_cast<long>(in_value)) {}
 
 FundamentalValue::FundamentalValue(long long in_value)
     : Value(TYPE_LONG_LONG_INTEGER), long_long_integer_value_(in_value) {}
 
 FundamentalValue::FundamentalValue(unsigned long long in_value)
-    : Value(TYPE_ULONG_LONG_INTEGER), long_long_integer_value_(in_value) {}
+    : Value(TYPE_ULONG_LONG_INTEGER), long_long_integer_value_(static_cast<long long>(in_value)) {}
 
 FundamentalValue::FundamentalValue(double in_value) : Value(TYPE_DOUBLE), double_value_(in_value) {}
 
@@ -304,7 +306,7 @@ bool FundamentalValue::GetAsInteger(int* out_value) const {
 
 bool FundamentalValue::GetAsUInteger(unsigned int* out_value) const {
   if (out_value && IsType(TYPE_UINTEGER)) {
-    *out_value = integer_value_;
+    *out_value = static_cast<unsigned int>(integer_value_);
   }
 
   return (IsType(TYPE_UINTEGER));
@@ -320,7 +322,7 @@ bool FundamentalValue::GetAsLongInteger(long* out_value) const {
 
 bool FundamentalValue::GetAsULongInteger(unsigned long* out_value) const {
   if (out_value && IsType(TYPE_ULONG_INTEGER)) {
-    *out_value = long_integer_value_;
+    *out_value = static_cast<unsigned long>(long_integer_value_);
   }
 
   return (IsType(TYPE_ULONG_INTEGER));
@@ -336,7 +338,7 @@ bool FundamentalValue::GetAsLongLongInteger(long long* out_value) const {
 
 bool FundamentalValue::GetAsULongLongInteger(unsigned long long* out_value) const {
   if (out_value && IsType(TYPE_ULONG_LONG_INTEGER)) {
-    *out_value = long_long_integer_value_;
+    *out_value = static_cast<unsigned long long>(long_long_integer_value_);
   }
 
   return (IsType(TYPE_ULONG_LONG_INTEGER));
@@ -361,15 +363,15 @@ FundamentalValue* FundamentalValue::DeepCopy() const {
   } else if (t == TYPE_INTEGER) {
     return CreateIntegerValue(integer_value_);
   } else if (t == TYPE_UINTEGER) {
-    return CreateUIntegerValue(integer_value_);
+    return CreateUIntegerValue(static_cast<unsigned int>(integer_value_));
   } else if (t == TYPE_LONG_INTEGER) {
     return CreateLongIntegerValue(long_integer_value_);
   } else if (t == TYPE_ULONG_INTEGER) {
-    return CreateULongIntegerValue(long_integer_value_);
+    return CreateULongIntegerValue(static_cast<unsigned long>(long_integer_value_));
   } else if (t == TYPE_LONG_LONG_INTEGER) {
     return CreateLongLongIntegerValue(long_long_integer_value_);
   } else if (t == TYPE_ULONG_LONG_INTEGER) {
-    return CreateULongLongIntegerValue(long_long_integer_value_);
+    return CreateULongLongIntegerValue(static_cast<unsigned long long>(long_long_integer_value_));
   } else if (t == TYPE_DOUBLE) {
     return CreateDoubleValue(double_value_);
   }

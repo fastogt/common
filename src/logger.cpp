@@ -130,7 +130,7 @@ void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level) {
 }
 
 LogMessage::LogMessage(LOG_LEVEL level, bool new_line) : file_(), line_(), level_(level), new_line_(new_line) {
-  stream_ << PrepareHeader(NULL, 0, level);
+  stream_ << PrepareHeader(nullptr, 0, level);
 }
 
 LogMessage::LogMessage(const char* file, int line, LOG_LEVEL level, bool new_line)

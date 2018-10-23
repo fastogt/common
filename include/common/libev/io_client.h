@@ -44,7 +44,7 @@ class IoClient : public IoBase<IoClient> {
   typedef IoBase<IoClient> base_class;
 
   IoClient(IoLoop* server, flags_t flags = EV_READ);
-  virtual ~IoClient();
+  virtual ~IoClient() override;
 
   ErrnoError Close() WARN_UNUSED_RESULT;
 

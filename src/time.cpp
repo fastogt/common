@@ -37,7 +37,7 @@ namespace time {
 struct timespec current_timespec() {
   struct timespec time_to_wait;
   struct timeval now;
-  gettimeofday(&now, NULL);
+  gettimeofday(&now, nullptr);
   time_to_wait.tv_sec = now.tv_sec;
   time_to_wait.tv_nsec = now.tv_usec * 1000;
   return time_to_wait;
@@ -45,13 +45,13 @@ struct timespec current_timespec() {
 
 time64_t current_utc_mstime() {
   timeval cur_time = current_timeval();
-  time64_t now = static_cast<time64_t>(::time(NULL));
+  time64_t now = static_cast<time64_t>(::time(nullptr));
   return now * 1000 + cur_time.tv_usec / 1000;
 }
 
 struct timeval current_timeval() {
   struct timeval tv;
-  gettimeofday(&tv, NULL);
+  gettimeofday(&tv, nullptr);
   return tv;
 }
 

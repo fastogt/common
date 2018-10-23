@@ -31,7 +31,7 @@ inline const char* strcasestr(const char* s, const char* find) {
     do {
       do {
         if ((sc = *s++) == 0)
-          return NULL;
+          return nullptr;
       } while ((char)tolower((unsigned char)sc) != c);
     } while (strncasecmp(s, find, len) != 0);
     s--;
@@ -62,7 +62,7 @@ inline int vasprintf(char** ptr, const char* format, va_list ap) {
   va_list ap2;
 
   va_copy(ap2, ap);
-  ret = vsnprintf(NULL, 0, format, ap2);
+  ret = vsnprintf(nullptr, 0, format, ap2);
   va_end(ap2);
   if (ret < 0) {
     return ret;

@@ -41,7 +41,7 @@ class TreeModel : public QAbstractItemModel {
   Q_OBJECT
  public:
   explicit TreeModel(QObject* parent = Q_NULLPTR);
-  virtual ~TreeModel();
+  virtual ~TreeModel() override;
 
   virtual int rowCount(const QModelIndex& parent) const override;
   virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override;

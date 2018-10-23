@@ -58,13 +58,13 @@ char to_hex(char code) {
 
 char* uri_encode(const char* str, size_t len) {
   if (!str || len == 0) {
-    return NULL;
+    return nullptr;
   }
 
   const char* pstr = str;
   char* buf = static_cast<char*>(malloc(len * 3 + 1));
   if (!buf) {
-    return NULL;
+    return nullptr;
   }
 
   char* pbuf = buf;
@@ -88,7 +88,7 @@ char* uri_encode(const char* str, size_t len) {
 
 char* uri_decode(const char* str, size_t len) {
   if (!str || len == 0) {
-    return NULL;
+    return nullptr;
   }
 
   const char* pstr = str;

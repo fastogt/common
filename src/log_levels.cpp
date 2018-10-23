@@ -53,7 +53,7 @@ const char* log_levels_name(int level) {
 const char* log_level_to_text(LOG_LEVEL level) {
   if (level < 0 || level >= LOG_NUM_LEVELS) {
     DNOTREACHED() << "Invalid input log level: " << level;
-    return NULL;
+    return nullptr;
   }
 
   return log_levels_name(level);
@@ -65,7 +65,7 @@ bool text_to_log_level(const char* level_text, LOG_LEVEL* level) {
     return false;
   }
 
-  for (size_t i = 0; i < LOG_NUM_LEVELS; ++i) {
+  for (int i = 0; i < LOG_NUM_LEVELS; ++i) {
     const char* name = log_levels_name(i);
     if (strcmp(level_text, name) == 0) {
       *level = static_cast<LOG_LEVEL>(i);

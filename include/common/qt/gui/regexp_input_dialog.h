@@ -43,7 +43,7 @@ namespace gui {
 class RegExpInputDialog : public QDialog {
   Q_OBJECT
  public:
-  explicit RegExpInputDialog(QWidget* parent = Q_NULLPTR, Qt::WindowFlags = 0);
+  explicit RegExpInputDialog(QWidget* parent = Q_NULLPTR, Qt::WindowFlags = Qt::WindowFlags());
 
   void setLabelText(const QString& label);
   void setText(const QString& text);

@@ -47,7 +47,7 @@ class GlassWidget : public QObject {
               qreal opacity = 0.5,
               const QColor& color = QColor(111, 111, 100),
               QObject* parent = Q_NULLPTR);
-  ~GlassWidget();
+  virtual ~GlassWidget() override;
 
   void start();
   void stop();

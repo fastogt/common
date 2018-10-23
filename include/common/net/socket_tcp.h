@@ -89,7 +89,7 @@ class ClientSocketTcp : public SocketTcp {
  public:
   explicit ClientSocketTcp(const HostAndPort& host);
 
-  ErrnoError Connect(struct timeval* tv = NULL) WARN_UNUSED_RESULT;
+  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
   bool IsConnected() const;
   ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT;

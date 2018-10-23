@@ -81,7 +81,7 @@ int cp(const char* from, const char* to) {
     goto out_error;
   }
 
-  while (nread = read(fd_from, buf, sizeof buf), nread > 0) {
+  while ((nread = read(fd_from, buf, sizeof buf)) > 0) {
     char* out_ptr = buf;
     ssize_t nwritten;
     do {
@@ -296,21 +296,21 @@ ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void
   }
 
   while (count > 0) {
-    ssize_t numRead = read(in_fd, buf, FS_BUF_SIZE);
-    if (numRead == -1) {
+    ssize_t num_read = read(in_fd, buf, FS_BUF_SIZE);
+    if (num_read == -1) {
       return make_error_perror("read", errno);
     }
-    if (numRead == 0) {
+    if (num_read == 0) {
       break; /* EOF */
     }
 
-    size_t numSent = 0;
-    ErrnoError err = cb(buf, numRead, user_data, &numSent);
+    size_t num_sent = 0;
+    ErrnoError err = cb(buf, num_read, user_data, &num_sent);
     if (err) {
       return err;
     }
 
-    count -= numSent;
+    count -= num_sent;
   }
 
   if (offset) {

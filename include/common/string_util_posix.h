@@ -36,19 +36,20 @@ inline int vasprintf(char** ptr, const char* format, va_list ap) {
   va_list ap2;
 
   va_copy(ap2, ap);
-  ret = vsnprintf(NULL, 0, format, ap2);
+  ret = vsnprintf(nullptr, 0, format, ap2);
   va_end(ap2);
   if (ret < 0) {
     return ret;
   }
 
-  (*ptr) = (char*)malloc(ret + 1);
+  size_t stabled_ret = static_cast<size_t>(ret);
+  (*ptr) = static_cast<char*>(malloc(stabled_ret + 1));
   if (!*ptr) {
     return -1;
   }
 
   va_copy(ap2, ap);
-  ret = vsnprintf(*ptr, ret + 1, format, ap2);
+  ret = vsnprintf(*ptr, stabled_ret + 1, format, ap2);
   va_end(ap2);
 
   return ret;

@@ -37,7 +37,7 @@ namespace libev {
 class PipeReadClient : public DescriptorClient {
  public:
   PipeReadClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
-  virtual ~PipeReadClient();
+  virtual ~PipeReadClient() override;
 
   virtual const char* ClassName() const override;
 
@@ -48,7 +48,7 @@ class PipeReadClient : public DescriptorClient {
 class PipeWriteClient : public DescriptorClient {
  public:
   PipeWriteClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_WRITE);
-  virtual ~PipeWriteClient();
+  virtual ~PipeWriteClient() override;
 
   virtual const char* ClassName() const override;
 

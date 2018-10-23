@@ -38,7 +38,7 @@ namespace http {
 class HttpServer : public libev::tcp::TcpServer {
  public:
   HttpServer(const net::HostAndPort& host, libev::IoLoopObserver* observer);
-  ~HttpServer();
+  virtual ~HttpServer() override;
 
   virtual const char* ClassName() const override;
 

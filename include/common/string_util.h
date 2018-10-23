@@ -367,7 +367,7 @@ inline Char HexDigitToInt(Char c) {
 
 // Returns true if it's a whitespace character.
 inline bool IsWhitespace(wchar_t c) {
-  return wcschr(kWhitespaceWide, c) != NULL;
+  return wcschr(kWhitespaceWide, c) != nullptr;
 }
 
 // Return a byte string in human-readable format with a unit suffix. Not

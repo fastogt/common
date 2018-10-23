@@ -130,13 +130,13 @@ class BasicStringPiece {
   // We provide non-explicit singleton constructors so users can pass
   // in a "const char*" or a "string" wherever a "StringPiece" is
   // expected (likewise for char16, string16, StringPiece16).
-  BasicStringPiece() : ptr_(NULL), length_(0) {}
+  BasicStringPiece() : ptr_(nullptr), length_(0) {}
   BasicStringPiece(const value_type* str)
-      : ptr_(str), length_((str == NULL) ? 0 : STRING_TYPE::traits_type::length(str)) {}
+      : ptr_(str), length_((str == nullptr) ? 0 : STRING_TYPE::traits_type::length(str)) {}
   BasicStringPiece(const STRING_TYPE& str) : ptr_(str.data()), length_(str.size()) {}
   BasicStringPiece(const value_type* offset, size_type len) : ptr_(offset), length_(len) {}
   BasicStringPiece(const typename STRING_TYPE::const_iterator& begin, const typename STRING_TYPE::const_iterator& end)
-      : ptr_((end > begin) ? &(*begin) : NULL), length_((end > begin) ? (size_type)(end - begin) : 0) {}
+      : ptr_((end > begin) ? &(*begin) : nullptr), length_((end > begin) ? static_cast<size_type>(end - begin) : 0) {}
 
   // data() may return a pointer to a buffer with embedded NULs, and the
   // returned buffer may or may not be null terminated.  Therefore it is
@@ -148,7 +148,7 @@ class BasicStringPiece {
   bool empty() const { return length_ == 0; }
 
   void clear() {
-    ptr_ = NULL;
+    ptr_ = nullptr;
     length_ = 0;
   }
   void set(const value_type* data, size_type len) {

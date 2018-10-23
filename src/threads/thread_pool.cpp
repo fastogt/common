@@ -15,7 +15,7 @@ void ThreadPool::Post(task_t task) {
   condition_.notify_one();
 }
 
-void ThreadPool::Start(uint16_t count_threads) {
+void ThreadPool::Start(size_t count_threads) {
   InitWork(count_threads);
 }
 
@@ -30,7 +30,7 @@ void ThreadPool::Restart() {
   InitWork(workers_.size());
 }
 
-void ThreadPool::InitWork(uint16_t threads) {
+void ThreadPool::InitWork(size_t threads) {
   workers_.clear();
   tasks_t q;
   tasks_.swap(q);

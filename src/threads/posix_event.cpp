@@ -42,7 +42,7 @@ int wait_condition(pthread_cond_t* condition, pthread_mutex_t* mutex, time64_t m
     // milliseconds (1e-3) to seconds and nanoseconds (1e-9).
     struct timespec ts;
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     ts.tv_sec = tv.tv_sec + (milliseconds / 1000);
     ts.tv_nsec = tv.tv_usec * 1000 + (milliseconds % 1000) * 1000000;
     // Handle overflow.
@@ -62,8 +62,8 @@ namespace threads {
 
 struct Event::event_t {
   event_t() : event_status(0), is_manual_reset(0) {
-    pthread_mutex_init(&event_mutex, NULL);
-    pthread_cond_init(&event_cond, NULL);
+    pthread_mutex_init(&event_mutex, nullptr);
+    pthread_cond_init(&event_cond, nullptr);
   }
 
   ~event_t() {

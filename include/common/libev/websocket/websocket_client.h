@@ -39,7 +39,7 @@ namespace websocket {
 class WebSocketClient : public http::Http2Client {
  public:
   WebSocketClient(libev::IoLoop* server, const net::socket_info& info);
-  ~WebSocketClient();
+  virtual ~WebSocketClient() override;
 
   const char* ClassName() const override;
 

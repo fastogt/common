@@ -322,7 +322,7 @@ std::string decode(const StringPiece& input) {
 
 char* strdupornull(const std::string& src) {
   if (src.empty()) {
-    return NULL;
+    return nullptr;
   }
   const char* csrc = src.c_str();
   return strdupornull(csrc);
@@ -330,7 +330,7 @@ char* strdupornull(const std::string& src) {
 
 char* strdupornull(const char* src) {
   if (!src) {
-    return NULL;
+    return nullptr;
   }
 
   return strdup(src);

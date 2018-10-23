@@ -149,7 +149,7 @@ void Upath::Parse(const char* url_s, size_t len) {
     return;
   }
 
-  if (len >= 4 && strstr(url_s, "/../") != NULL) {
+  if (len >= 4 && strstr(url_s, "/../") != nullptr) {
     return;
   }
 
@@ -169,7 +169,7 @@ void Upath::Parse(const char* url_s, size_t len) {
 namespace detail {
 const char* get_mime_type(const char* name) {
   const char* dot = strrchr(name, '.');
-  if (dot == NULL) {
+  if (dot == nullptr) {
     return "text/plain; charset=UTF-8";
   }
   if (strcmp(dot, ".html") == 0 || strcmp(dot, ".htm") == 0) {

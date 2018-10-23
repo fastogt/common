@@ -109,10 +109,12 @@
 #define BYTE_ORDER __LITTLE_ENDIAN
 #endif
 
+#if 0
 #define __BYTE_ORDER BYTE_ORDER
 #define __BIG_ENDIAN BIG_ENDIAN
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
 #define __PDP_ENDIAN PDP_ENDIAN
+#endif
 #else
 #error platform not supported
 #endif

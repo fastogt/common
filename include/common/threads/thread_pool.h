@@ -34,12 +34,12 @@ class ThreadPool {
   ~ThreadPool();
 
   void Post(task_t task);
-  void Start(uint16_t count_threads);
+  void Start(size_t count_threads);
   void Stop();
   void Restart();
 
  private:
-  void InitWork(uint16_t threads);
+  void InitWork(size_t threads);
   void WaitFinishWork();
 
   void RunWork();

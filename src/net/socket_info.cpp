@@ -41,15 +41,15 @@
 namespace common {
 namespace net {
 
-socket_info::socket_info() : fd_(INVALID_SOCKET_VALUE), addr_(NULL), host_(NULL), port_(0) {}
+socket_info::socket_info() : fd_(INVALID_SOCKET_VALUE), addr_(nullptr), host_(nullptr), port_(0) {}
 
-socket_info::socket_info(socket_descr_t fd) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {}
+socket_info::socket_info(socket_descr_t fd) : fd_(fd), addr_(nullptr), host_(nullptr), port_(0) {}
 
-socket_info::socket_info(socket_descr_t fd, struct addrinfo* info) : fd_(fd), addr_(NULL), host_(NULL), port_(0) {
+socket_info::socket_info(socket_descr_t fd, struct addrinfo* info) : fd_(fd), addr_(nullptr), host_(nullptr), port_(0) {
   addr_ = copy_addrinfo(info);
 }
 
-socket_info::socket_info(const socket_info& other) : fd_(other.fd_), addr_(NULL), host_(NULL), port_(other.port_) {
+socket_info::socket_info(const socket_info& other) : fd_(other.fd_), addr_(nullptr), host_(nullptr), port_(other.port_) {
   addr_ = copy_addrinfo(other.addr_);
   if (other.host_) {
     host_ = strdup(other.host_);
@@ -69,12 +69,12 @@ socket_info& socket_info::operator=(const socket_info& other) {
   return *this;
 }
 
-socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_(NULL) {
+socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_(nullptr) {
   fd_ = other.fd_;
   addr_ = other.addr_;
 
   other.fd_ = INVALID_SOCKET_VALUE;
-  other.addr_ = NULL;
+  other.addr_ = nullptr;
 }
 
 socket_info& socket_info::operator=(socket_info&& other) {
@@ -89,7 +89,7 @@ socket_info& socket_info::operator=(socket_info&& other) {
   addr_ = other.addr_;
 
   other.fd_ = INVALID_SOCKET_VALUE;
-  other.addr_ = NULL;
+  other.addr_ = nullptr;
 
   return *this;
 }
@@ -98,7 +98,7 @@ socket_info::~socket_info() {
   freeaddrinfo_ex(&addr_);
   if (host_) {
     free(host_);
-    host_ = NULL;
+    host_ = nullptr;
   }
 }
 
@@ -136,7 +136,7 @@ const char* socket_info::host() const {
 void socket_info::set_host(const char* host) {
   if (host_) {
     free(host_);
-    host_ = NULL;
+    host_ = nullptr;
   }
 
   if (host) {
@@ -158,12 +158,12 @@ struct sockaddr* alloc_sockaddr(socklen_t addr_len) {
 
 struct sockaddr* copy_sockaddr(const struct sockaddr* addr, socklen_t addr_len) {
   if (!addr) {
-    return NULL;
+    return nullptr;
   }
 
   struct sockaddr* laddr = alloc_sockaddr(addr_len);
   if (!laddr) {
-    return NULL;
+    return nullptr;
   }
 
   memcpy(laddr, addr, addr_len);
@@ -178,7 +178,7 @@ void free_sockaddr(struct sockaddr** addr) {
   struct sockaddr* laddr = *addr;
   if (laddr) {
     free(laddr);
-    *addr = NULL;
+    *addr = nullptr;
   }
 }
 
@@ -188,12 +188,12 @@ struct addrinfo* alloc_addrinfo() {
 
 struct addrinfo* copy_addrinfo(const struct addrinfo* info) {
   if (!info) {
-    return NULL;
+    return nullptr;
   }
 
   struct addrinfo* linfo = alloc_addrinfo();
   if (!linfo) {
-    return NULL;
+    return nullptr;
   }
 
   if (info->ai_addr) {
@@ -204,8 +204,8 @@ struct addrinfo* copy_addrinfo(const struct addrinfo* info) {
   linfo->ai_flags = info->ai_flags;
   linfo->ai_protocol = info->ai_protocol;
   linfo->ai_socktype = info->ai_socktype;
-  linfo->ai_next = NULL;
-  linfo->ai_canonname = NULL;
+  linfo->ai_next = nullptr;
+  linfo->ai_canonname = nullptr;
   return linfo;
 }
 
@@ -218,7 +218,7 @@ void freeaddrinfo_ex(struct addrinfo** info) {
   if (linfo) {
     free_sockaddr(&linfo->ai_addr);
     free(linfo);
-    *info = NULL;
+    *info = nullptr;
   }
 }
 

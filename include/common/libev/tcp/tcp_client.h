@@ -39,7 +39,7 @@ namespace tcp {
 class TcpClient : public IoClient {
  public:
   TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
-  virtual ~TcpClient();
+  virtual ~TcpClient() override;
 
   net::socket_info GetInfo() const;
 

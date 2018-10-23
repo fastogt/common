@@ -433,7 +433,7 @@ ErrnoError ANSIFile::Flush() {
 }
 
 bool ANSIFile::IsValid() const {
-  return file_ != NULL;
+  return file_ != nullptr;
 }
 
 bool ANSIFile::IsOpen() const {
@@ -448,7 +448,7 @@ ErrnoError ANSIFile::Close() {
   }
 
   fclose(file_);
-  file_ = NULL;
+  file_ = nullptr;
   return ErrnoError();
 }
 

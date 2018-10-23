@@ -38,7 +38,7 @@ namespace libev {
 class DescriptorClient : public IoClient {
  public:
   DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
-  virtual ~DescriptorClient();
+  virtual ~DescriptorClient() override;
 
   virtual const char* ClassName() const override;
 

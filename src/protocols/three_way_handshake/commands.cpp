@@ -70,7 +70,7 @@ Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_
     return err;
   }
 
-  char* star_seq = NULL;
+  char* star_seq = nullptr;
   cmd_id_t lcmd_id = strtoul(stabled_command.c_str(), &star_seq, 10);
   if (*star_seq != ' ') {
     return make_error("PROBLEM EXTRACTING SEQUENCE: " + command);

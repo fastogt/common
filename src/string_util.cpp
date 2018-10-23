@@ -738,7 +738,7 @@ static void EatSameChars(const CHAR** pattern,
                          const CHAR** string,
                          const CHAR* string_end,
                          NEXT next) {
-  const CHAR* escape = NULL;
+  const CHAR* escape = nullptr;
   while (*pattern != pattern_end && *string != string_end) {
     if (!escape && IsWildcard(**pattern)) {
       // We don't want to match wildcard here, except if it's escaped.
@@ -772,7 +772,7 @@ static void EatSameChars(const CHAR** pattern,
       return;
     }
 
-    escape = NULL;
+    escape = nullptr;
   }
 }
 

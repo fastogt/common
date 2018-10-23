@@ -331,7 +331,7 @@ int emit_string(buffer_t& bufs, const buffer_t& src) {
   int huffman = 0;
 
   const uint8_t* str = src.data();
-  uint32_t len = src.size();
+  uint32_t len = static_cast<uint32_t>(src.size());
   uint32_t enclen = http2_huffman_encode_count(str, len);
 
   if (enclen < len) {
@@ -1300,11 +1300,11 @@ fail:
 }
 
 uint32_t http2_nv::namelen() const {
-  return name.size();
+  return static_cast<uint32_t>(name.size());
 }
 
 uint32_t http2_nv::valuelen() const {
-  return value.size();
+  return static_cast<uint32_t>(value.size());
 }
 
 http2_ringbuf::http2_ringbuf(uint32_t bufsize) : buffer(nullptr), mask(0), first(0), len(0) {

@@ -54,7 +54,8 @@ QModelIndex TableModel::index(int row, int column, const QModelIndex& parent) co
     return QModelIndex();
   }
 
-  TableItem* childItem = data_[row];
+  size_t stabled_row_index = static_cast<size_t>(row);
+  TableItem* childItem = data_[stabled_row_index];
   if (childItem) {
     return createIndex(row, column, childItem);
   }
