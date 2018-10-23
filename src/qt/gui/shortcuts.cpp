@@ -42,19 +42,19 @@ FastoQKeySequence::FastoQKeySequence(Qt::KeyboardModifiers mod, int key)
     : skey_(QKeySequence::UnknownKey), mod_(mod), key_(key) {}
 
 FastoQKeySequence::operator QKeySequence() {
-  if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
+  if (isStandartKeyInit()) {
     return QKeySequence(skey_);
   }
 
-  return QKeySequence(mod_ + key_);
+  return QKeySequence(mod_ | key_);
 }
 
 FastoQKeySequence::operator QKeySequence() const {
-  if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
+  if (isStandartKeyInit()) {
     return QKeySequence(skey_);
   }
 
-  return QKeySequence(mod_ + key_);
+  return QKeySequence(mod_ | key_);
 }
 
 bool FastoQKeySequence::operator==(QKeyEvent* ev) const {
@@ -62,11 +62,15 @@ bool FastoQKeySequence::operator==(QKeyEvent* ev) const {
     return false;
   }
 
-  if (mod_ == Qt::NoModifier && key_ == Qt::Key_unknown) {
+  if (isStandartKeyInit()) {
     return ev->matches(skey_);
   }
 
   return ev->modifiers() == mod_ && ev->key() == key_;
+}
+
+bool FastoQKeySequence::isStandartKeyInit() const {
+  return mod_ == Qt::NoModifier && key_ == Qt::Key_unknown;
 }
 
 bool isAutoCompleteShortcut(QKeyEvent* keyEvent) {

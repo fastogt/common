@@ -47,6 +47,8 @@ class FastoQKeySequence {
   bool operator==(QKeyEvent* ev) const;
 
  private:
+  bool isStandartKeyInit() const;
+
   const QKeySequence::StandardKey skey_;
   const Qt::KeyboardModifiers mod_;
   const int key_;
