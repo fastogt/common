@@ -49,7 +49,8 @@ socket_info::socket_info(socket_descr_t fd, struct addrinfo* info) : fd_(fd), ad
   addr_ = copy_addrinfo(info);
 }
 
-socket_info::socket_info(const socket_info& other) : fd_(other.fd_), addr_(nullptr), host_(nullptr), port_(other.port_) {
+socket_info::socket_info(const socket_info& other)
+    : fd_(other.fd_), addr_(nullptr), host_(nullptr), port_(other.port_) {
   addr_ = copy_addrinfo(other.addr_);
   if (other.host_) {
     host_ = strdup(other.host_);
