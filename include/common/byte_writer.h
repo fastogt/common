@@ -61,6 +61,20 @@ class ByteWriter<CharT, sz, typename is_byte<CharT>::type> {
 
   inline void append_object(unsigned char obj) { buffer_.push_back(obj); }
 
+  inline void append_object(int obj) {
+    buffer_.push_back((obj >> 24) & 0xFF);
+    buffer_.push_back((obj >> 16) & 0xFF);
+    buffer_.push_back((obj >> 8) & 0xFF);
+    buffer_.push_back(obj & 0xFF);
+  }
+
+  inline void append_object(unsigned int obj) {
+    buffer_.push_back((obj >> 24) & 0xFF);
+    buffer_.push_back((obj >> 16) & 0xFF);
+    buffer_.push_back((obj >> 8) & 0xFF);
+    buffer_.push_back(obj & 0xFF);
+  }
+
   template <typename ch>
   inline void append_object(const std::basic_string<ch>& obj) {
     for (size_t i = 0; i < obj.size(); ++i) {
