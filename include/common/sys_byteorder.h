@@ -43,6 +43,7 @@
 #else
 #include <byteswap.h>
 #endif
+
 namespace common {
 inline uint16_t ByteSwap(uint16_t x) {
 #if defined(OS_MACOSX)
