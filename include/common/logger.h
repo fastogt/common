@@ -51,6 +51,9 @@ bool LOG_IS_ON(LOG_LEVEL level);
 LOG_LEVEL CURRENT_LOG_LEVEL();
 void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level);
 
+void SET_LOGGER_PROJECT_NAME(const std::string& project_name);
+std::string LOGGER_PROJECT_NAME();
+
 class LogMessage {
  public:
   explicit LogMessage(LOG_LEVEL level, bool new_line = true);

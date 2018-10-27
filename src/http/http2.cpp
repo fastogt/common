@@ -142,7 +142,7 @@ bool value_eq(const http2_nv* a, const http2_nv* b) {
 }
 
 uint32_t name_hash(const http2_nv* nv) {
-  /* 32 bit FNV-1a: http://isthe.com/chongo/tech/comp/fnv/ */
+  // 32 bit FNV-1a: http://isthe.com/chongo/tech/comp/fnv/
   uint32_t h = 2166136261u;
   uint32_t i;
 
@@ -1244,7 +1244,6 @@ int hd_inflate_commit_indname(http2_inflater* inflater, http2_nv* nv_out, int* t
 
 void hd_inflate_set_huffman_encoded(http2_inflater* inflater, const uint8_t* in) {
   inflater->huffman_encoded = (*in & (1 << 7)) != 0;
-  ;
 }
 
 ssize_t hd_inflate_read_huff(http2_inflater* inflater, buffer_t& bufs, uint8_t* in, uint8_t* last) {

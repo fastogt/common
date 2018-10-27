@@ -31,9 +31,9 @@
 
 #ifdef HAVE_LZ4
 
-#include <limits>
-
 #include <lz4.h>
+
+#include <limits>
 
 #include <common/compress/coding.h>
 

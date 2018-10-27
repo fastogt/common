@@ -38,7 +38,7 @@ namespace system_info {
 
 long GetProcessRss(pid_t pid) {
   char buff[64] = {0};
-  sprintf(buff, "ps --no-headers -p %ld -o rss", static_cast<long>(pid));
+  snprintf(buff, sizeof(buff), "ps --no-headers -p %ld -o rss", static_cast<long>(pid));
 
   FILE* fp = popen(buff, "r");
   if (!fp) {
@@ -63,7 +63,7 @@ long GetProcessRss(pid_t pid) {
 
 double GetCpuLoad(pid_t pid) {
   char buff[32] = {0};
-  sprintf(buff, "ps -o pcpu= %ld", static_cast<long>(pid));
+  snprintf(buff, sizeof(buff), "ps -o pcpu= %ld", static_cast<long>(pid));
 
   FILE* fp = popen(buff, "r");
   if (!fp) {

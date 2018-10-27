@@ -72,7 +72,7 @@ Error EncodeZlibT(const CHAR* input, size_t input_length, STR2* output, int comp
   }
 
   // Compress the input, and put compressed data in output.
-  _stream.next_in = (Bytef*)input;
+  _stream.next_in = (Bytef*)(input);
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   // Initialize the output size.
@@ -116,12 +116,12 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
     return make_error("ZLIB decompress internal error");
   }
 
-  _stream.next_in = (Bytef*)input;
+  _stream.next_in = (Bytef*)(input);
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   char* output = new char[output_len];
 
-  _stream.next_out = (Bytef*)output;
+  _stream.next_out = reinterpret_cast<Bytef*>(output);
   _stream.avail_out = static_cast<unsigned int>(output_len);
 
   bool done = false;
@@ -144,7 +144,7 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
         output = tmp;
 
         // Set more output.
-        _stream.next_out = (Bytef*)(output + old_sz);
+        _stream.next_out = reinterpret_cast<Bytef*>(output + old_sz);
         _stream.avail_out = static_cast<unsigned int>(output_len - old_sz);
         break;
       }
@@ -157,7 +157,7 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, STR2* out) {
   }
 
   // If we encoded decompressed block size, we should have no bytes left
-  DCHECK(_stream.avail_out == 0);
+  DCHECK_EQ(_stream.avail_out, 0);
   int decompress_size = static_cast<int>(output_len - _stream.avail_out);
   *out = STR2(output, output + decompress_size);
   delete[] output;

@@ -130,7 +130,7 @@ const uint64_t crc64_tab[256] = {
     UINT64_C(0x29b7d047efec8728),
 };
 
-const std::string alphabet64("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+const char alphabet64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 const char pad = '=';
 const char np = static_cast<char>(std::string::npos);
 char table64vals[] = {62, np, np, np, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, np, np, np, np, np,

@@ -244,7 +244,7 @@ void PlatformThread::SetAffinity(PlatformThreadHandle* thread_handle, lcpu_count
   CPU_ZERO(&cpu_set);
   CPU_SET(lCpuCount, &cpu_set);
   int res = pthread_setaffinity_np(thread_handle->handle_, sizeof(cpu_set_t), &cpu_set);
-  DCHECK(res == 0);
+  DCHECK_EQ(res, 0);
 #endif
 }
 

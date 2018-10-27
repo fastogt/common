@@ -36,6 +36,7 @@
 #include <memory>
 
 #include <common/file_system/types.h>
+#include <common/patterns/singleton_pattern.h>
 #include <common/sprintf.h>
 
 #ifdef OS_MACOSX
@@ -43,67 +44,90 @@
 #include <mach/mach.h>
 #endif
 
-namespace {
-std::string g_project_name = "Unknown";
-std::unique_ptr<std::ofstream> g_logger_file_helper = std::unique_ptr<std::ofstream>(new std::ofstream);
-std::ostream* g_logger = &std::cout;
-}  // namespace
-
 namespace common {
 namespace logging {
 
 namespace {
-LOG_LEVEL g_level_log = LOG_LEVEL_NOTICE;
-std::string PrepareHeader(const char* file, int line, LOG_LEVEL level) {
-  // We use fprintf() instead of cerr because we want this to work at static
-  // initialization time.
 
-  char buf[80];
-  struct timespec spec;
-#ifdef OS_MACOSX
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
-  spec.tv_sec = mts.tv_sec;
-  spec.tv_nsec = mts.tv_nsec;
-#else
-  clock_gettime(CLOCK_REALTIME, &spec);
-#endif
-  long ms = spec.tv_nsec / 1.0e6;  // Convert nanoseconds to milliseconds
-  struct tm info;
-  localtime_r(&spec.tv_sec, &info);
-  strftime(buf, sizeof(buf), "%H:%M:%S", &info);
+class LoggerInternal {
+  friend class patterns::LazySingleton<LoggerInternal>;
+  LoggerInternal() : project_name_("Unknown"), log_level_(LOG_LEVEL_NOTICE) {}
 
-  if (file) {
-    return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, g_project_name, log_level_to_text(level));
+ public:
+  LOG_LEVEL LogLevel() const { return log_level_; }
+  void SetLogLevel(LOG_LEVEL log_level) { log_level_ = log_level; }
+
+  std::string ProjectName() const { return project_name_; }
+  void SetProjectName(const std::string& project_name) { project_name_ = project_name; }
+
+  bool IsLogOn(LOG_LEVEL level) {
+    if (level > log_level_) {
+      return false;
+    }
+
+    return true;
   }
 
-  return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, g_project_name, log_level_to_text(level));
-}
+  std::string PrepareHeader(const char* file, int line, LOG_LEVEL level) {
+    // We use fprintf() instead of cerr because we want this to work at static
+    // initialization time.
 
+    char buf[80];
+    struct timespec spec;
+#ifdef OS_MACOSX
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    spec.tv_sec = mts.tv_sec;
+    spec.tv_nsec = mts.tv_nsec;
+#else
+    clock_gettime(CLOCK_REALTIME, &spec);
+#endif
+    long ms = spec.tv_nsec / 1.0e6;  // Convert nanoseconds to milliseconds
+    struct tm info;
+    localtime_r(&spec.tv_sec, &info);
+    strftime(buf, sizeof(buf), "%H:%M:%S", &info);
+
+    if (file) {
+      return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, project_name_, log_level_to_text(level));
+    }
+
+    return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, project_name_, log_level_to_text(level));
+  }
+
+  static LoggerInternal* GetInstance() { return &patterns::LazySingleton<LoggerInternal>::GetInstance(); }
+
+ private:
+  std::string project_name_;
+  LOG_LEVEL log_level_;
+};
+
+std::unique_ptr<std::ofstream> kLoggerFileHelper = std::unique_ptr<std::ofstream>(new std::ofstream);
+std::ostream* kLogger = &std::cout;
 }  // namespace
 
 void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level) {
-  g_level_log = level;
-  g_project_name = project_name;
+  SET_CURRENT_LOG_LEVEL(level);
+  SET_LOGGER_PROJECT_NAME(project_name);
 }
 
 void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level) {
   INIT_LOGGER(project_name, level);
   const std::string stabled_path = file_system::prepare_path(file_path);
 
-  if (g_logger_file_helper->is_open()) {
-    g_logger_file_helper->close();
+  if (kLoggerFileHelper->is_open()) {
+    kLoggerFileHelper->close();
   }
 
-  g_logger_file_helper->open(stabled_path, std::ofstream::out | std::ofstream::app);
-  if (g_logger_file_helper->is_open()) {
-    SET_LOGER_STREAM(g_logger_file_helper.get());
-  } else {
-    WARNING_LOG() << "Can't open file: " << stabled_path << " , error: " << strerror(errno);
+  kLoggerFileHelper->open(stabled_path, std::ofstream::out | std::ofstream::app);
+  if (kLoggerFileHelper->is_open()) {
+    SET_LOGER_STREAM(kLoggerFileHelper.get());
+    return;
   }
+
+  WARNING_LOG() << "Can't open file: " << stabled_path << ", error: " << strerror(errno);
 }
 
 void SET_LOGER_STREAM(std::ostream* logger) {
@@ -111,31 +135,36 @@ void SET_LOGER_STREAM(std::ostream* logger) {
     return;
   }
 
-  g_logger = logger;
+  kLogger = logger;
 }
 
 bool LOG_IS_ON(LOG_LEVEL level) {
-  if (level > g_level_log) {
-    return false;
-  }
-  return true;
+  return LoggerInternal::GetInstance()->IsLogOn(level);
 }
 
 LOG_LEVEL CURRENT_LOG_LEVEL() {
-  return g_level_log;
+  return LoggerInternal::GetInstance()->LogLevel();
 }
 
 void SET_CURRENT_LOG_LEVEL(LOG_LEVEL level) {
-  g_level_log = level;
+  LoggerInternal::GetInstance()->SetLogLevel(level);
+}
+
+void SET_LOGGER_PROJECT_NAME(const std::string& project_name) {
+  LoggerInternal::GetInstance()->SetProjectName(project_name);
+}
+
+std::string LOGGER_PROJECT_NAME() {
+  return LoggerInternal::GetInstance()->ProjectName();
 }
 
 LogMessage::LogMessage(LOG_LEVEL level, bool new_line) : file_(), line_(), level_(level), new_line_(new_line) {
-  stream_ << PrepareHeader(nullptr, 0, level);
+  stream_ << LoggerInternal::GetInstance()->PrepareHeader(nullptr, 0, level);
 }
 
 LogMessage::LogMessage(const char* file, int line, LOG_LEVEL level, bool new_line)
     : file_(file), line_(line), level_(level), new_line_(new_line), stream_() {
-  stream_ << PrepareHeader(file, line, level);
+  stream_ << LoggerInternal::GetInstance()->PrepareHeader(file, line, level);
 }
 
 LogMessage::~LogMessage() {
@@ -143,8 +172,8 @@ LogMessage::~LogMessage() {
     stream_ << "\n";
   }
 
-  *g_logger << stream_.str();
-  g_logger->flush();
+  *kLogger << stream_.str();
+  kLogger->flush();
   if (level_ <= logging::LOG_LEVEL_CRIT) {
 #ifdef NDEBUG
     immediate_exit();
