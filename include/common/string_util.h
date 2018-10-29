@@ -34,6 +34,7 @@
 #include <vector>
 
 #include <common/string_piece.h>  // for StringPiece, StringPiece16
+#include <common/types.h>
 
 namespace common {
 
@@ -317,10 +318,13 @@ bool LowerCaseEqualsASCII(const char16* a_begin, const char16* a_end, const char
 // Performs a case-sensitive string compare. The behavior is undefined if both
 // strings are not ASCII.
 bool EqualsASCII(const string16& a, const StringPiece& b);
-
 bool EqualsASCII(const std::string& a, const std::string& b, bool case_sensitive);
+bool EqualsASCII(const std::vector<unsigned char>& a, const std::vector<unsigned char>& b, bool case_sensitive);
+bool EqualsASCII(const std::vector<char>& a, const std::vector<char>& b, bool case_sensitive);
 
 bool FullEqualsASCII(const std::string& a, const std::string& b, bool case_sensitive);
+bool FullEqualsASCII(const std::vector<unsigned char>& a, const std::vector<unsigned char>& b, bool case_sensitive);
+bool FullEqualsASCII(const std::vector<char>& a, const std::vector<char>& b, bool case_sensitive);
 
 // Returns true if str starts with search, or false otherwise.
 bool StartsWithASCII(const std::string& str, const std::string& search, bool case_sensitive);
@@ -439,10 +443,8 @@ size_t Tokenize(const string16& str, const string16& delimiters, std::vector<str
 size_t Tokenize(const std::string& str, const std::string& delimiters, std::vector<std::string>* tokens);
 size_t Tokenize(const StringPiece& str, const StringPiece& delimiters, std::vector<StringPiece>* tokens);
 
-template <typename CharT>
-inline size_t Tokenize(const std::vector<CharT>& str,
-                       const std::vector<CharT>& delimiters,
-                       std::vector<std::vector<CharT>>* tokens) {
+template <typename CharT, typename T>
+inline size_t Tokenize(const std::vector<CharT>& str, const std::vector<CharT>& delimiters, std::vector<T>* tokens) {
   if (!tokens) {
     return 0;
   }
@@ -465,7 +467,9 @@ inline size_t Tokenize(const std::vector<CharT>& str,
     }
 
     if (found || is_last) {  // if founded or last symbol
-      tokens->push_back(chunk);
+      if (chunk.empty()) {
+        tokens->push_back(chunk);
+      }
       chunk.clear();
     }
   }
@@ -487,9 +491,8 @@ string16 JoinString(const std::vector<string16>& parts, StringPiece16 separator)
 std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separator);
 string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator);
 
-std::vector<char> JoinString(const std::vector<std::vector<char>>& parts, std::vector<char> separator);
-std::vector<unsigned char> JoinString(const std::vector<std::vector<unsigned char>>& parts,
-                                      std::vector<unsigned char> separator);
+char_buffer_t JoinString(const std::vector<char_buffer_t>& parts, char_buffer_t separator);
+buffer_t JoinString(const std::vector<buffer_t>& parts, buffer_t separator);
 
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
@@ -519,6 +522,8 @@ string16 ReplaceStringPlaceholders(const string16& format_string, const string16
 // ? matches 0 or 1 character, while * matches 0 or more characters.
 bool MatchPattern(const StringPiece& string, const StringPiece& pattern);
 bool MatchPattern(const string16& string, const string16& pattern);
+bool MatchPattern(const buffer_t& string, const buffer_t& pattern);
+bool MatchPattern(const char_buffer_t& string, const char_buffer_t& pattern);
 
 // Hack to convert any char-like type to its unsigned counterpart.
 // For example, it will convert char, signed char and unsigned char to unsigned

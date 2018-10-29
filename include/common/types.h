@@ -40,8 +40,69 @@ namespace common {
 enum tribool { FAIL = 0, SUCCESS = 1, INDETERMINATE = -1 };
 
 typedef uint8_t byte_t;
-typedef std::vector<byte_t> byte_array_t;
+
+template <typename T>
+class ByteArray : public std::vector<T> {
+ public:
+  typedef std::vector<T> base_class;
+  typedef ByteArray<T> self_type;
+  typedef typename ByteArray::value_type value_type;
+  typedef typename ByteArray::iterator iterator;
+  typedef typename ByteArray::const_iterator const_iterator;
+
+  ByteArray() : base_class() {}
+  template <typename it>
+  ByteArray(it begin, it end) : base_class(begin, end) {}
+  ByteArray(std::initializer_list<T> t) : base_class(t) {}
+
+  template <typename U>
+  ByteArray(const std::vector<U>& rhs) : base_class(rhs) {}
+
+  ByteArray(const self_type&) = default;
+  ByteArray& operator=(const self_type&) = default;
+
+  inline void append(unsigned char t) { base_class::push_back(t); }
+
+  inline void append(char t) { base_class::push_back(t); }
+
+  template <typename ch>
+  inline void append(const std::vector<ch>& obj) {
+    for (size_t i = 0; i < obj.size(); ++i) {
+      append(obj[i]);
+    }
+  }
+
+  template <typename ch>
+  inline void append(const std::basic_string<ch>& obj) {
+    for (size_t i = 0; i < obj.size(); ++i) {
+      append(obj[i]);
+    }
+  }
+
+  template <typename ch>
+  ByteArray& operator+=(ch rhs) {
+    append(rhs);
+    return *this;
+  }
+
+  template <typename ch>
+  ByteArray& operator+=(const std::basic_string<ch>& rhs) {
+    append(rhs);
+    return *this;
+  }
+
+  template <typename ch>
+  ByteArray& operator+=(const std::vector<ch>& rhs) {
+    append(rhs);
+    return *this;
+  }
+};
+
+typedef ByteArray<byte_t> byte_array_t;
 typedef byte_array_t buffer_t;
+
+typedef ByteArray<char> char_byte_array_t;
+typedef char_byte_array_t char_buffer_t;
 
 typedef int64_t time64_t;  // millisecond
 typedef time_t utctime_t;  // seconds
@@ -59,12 +120,16 @@ class ClonableBase {
   virtual ~ClonableBase() {}
 };
 
-std::ostream& operator<<(std::ostream& out, const buffer_t& buff);
-
 }  // namespace common
+
+std::ostream& operator<<(std::ostream& out, const common::buffer_t& buff);
+std::ostream& operator<<(std::ostream& out, const common::char_buffer_t& buff);
 
 #define MAKE_BUFFER_SIZE(STR, SIZE) common::buffer_t(STR, STR + SIZE)
 #define MAKE_BUFFER(STR) MAKE_BUFFER_SIZE(STR, sizeof(STR) - 1)
+
+#define MAKE_CHAR_BUFFER_SIZE(STR, SIZE) common::char_buffer_t(STR, STR + SIZE)
+#define MAKE_CHAR_BUFFER(STR) MAKE_BUFFER_SIZE(STR, sizeof(STR) - 1)
 
 #define MAKE_STRING_SIZE(STR, SIZE) std::string(STR, STR + SIZE)
 #define MAKE_STRING(STR) MAKE_STRING_SIZE(STR, sizeof(STR) - 1)

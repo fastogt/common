@@ -35,11 +35,18 @@ namespace common {
 
 IMetaClassInfo::~IMetaClassInfo() {}
 
-std::ostream& operator<<(std::ostream& out, const buffer_t& buff) {
+}  // namespace common
+
+std::ostream& operator<<(std::ostream& out, const common::char_buffer_t& buff) {
   for (size_t i = 0; i < buff.size(); ++i) {
     out << buff[i];
   }
   return out;
 }
 
-}  // namespace common
+std::ostream& operator<<(std::ostream& out, const common::buffer_t& buff) {
+  for (size_t i = 0; i < buff.size(); ++i) {
+    out << buff[i];
+  }
+  return out;
+}

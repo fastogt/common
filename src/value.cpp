@@ -91,12 +91,16 @@ FundamentalValue* Value::CreateDoubleValue(double in_value) {
 
 // static
 StringValue* Value::CreateEmptyStringValue() {
-  return CreateStringValue(std::string());
+  return CreateStringValue(string_t());
 }
 
 // static
-StringValue* Value::CreateStringValue(const std::string& in_value) {
+StringValue* Value::CreateStringValue(const string_t& in_value) {
   return new StringValue(in_value);
+}
+
+StringValue* Value::CreateStringValueFromBasicString(const std::string& in_value) {
+  return new StringValue(string_t(in_value.begin(), in_value.end()));
 }
 
 // static
@@ -170,7 +174,7 @@ bool Value::GetAsDouble(double* out_value) const {
   return false;
 }
 
-bool Value::GetAsString(std::string* out_value) const {
+bool Value::GetAsString(string_t* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -414,11 +418,11 @@ bool FundamentalValue::Equals(const Value* other) const {
 
 ///////////////////// StringValue ////////////////////
 
-StringValue::StringValue(const std::string& in_value) : Value(TYPE_STRING), value_(in_value) {}
+StringValue::StringValue(const string_t& in_value) : Value(TYPE_STRING), value_(in_value) {}
 
 StringValue::~StringValue() {}
 
-bool StringValue::GetAsString(std::string* out_value) const {
+bool StringValue::GetAsString(string_t* out_value) const {
   if (out_value) {
     *out_value = value_;
   }
@@ -435,7 +439,7 @@ bool StringValue::Equals(const Value* other) const {
     return false;
   }
 
-  std::string lhs, rhs;
+  string_t lhs, rhs;
   return GetAsString(&lhs) && other->GetAsString(&rhs) && lhs == rhs;
 }
 
@@ -559,7 +563,7 @@ bool ArrayValue::GetDouble(size_t index, double* out_value) const {
   return value->GetAsDouble(out_value);
 }
 
-bool ArrayValue::GetString(size_t index, std::string* out_value) const {
+bool ArrayValue::GetString(size_t index, string_t* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -645,13 +649,23 @@ void ArrayValue::AppendDouble(double in_value) {
   Append(CreateDoubleValue(in_value));
 }
 
-void ArrayValue::AppendString(const std::string& in_value) {
+void ArrayValue::AppendString(const string_t& in_value) {
   Append(CreateStringValue(in_value));
 }
 
-void ArrayValue::AppendStrings(const std::vector<std::string>& in_values) {
-  for (std::vector<std::string>::const_iterator it = in_values.begin(); it != in_values.end(); ++it) {
+void ArrayValue::AppendStrings(const std::vector<string_t>& in_values) {
+  for (std::vector<string_t>::const_iterator it = in_values.begin(); it != in_values.end(); ++it) {
     AppendString(*it);
+  }
+}
+
+void ArrayValue::AppendBasicString(const std::string& in_value) {
+  Append(CreateStringValueFromBasicString(in_value));
+}
+
+void ArrayValue::AppendBasicStrings(const std::vector<std::string>& in_values) {
+  for (size_t i = 0; i < in_values.size(); ++i) {
+    AppendBasicString(in_values[i]);
   }
 }
 
@@ -774,15 +788,27 @@ void ByteArrayValue::AppendDouble(double in_value) {
   }
 }
 
-void ByteArrayValue::AppendString(const std::string& in_value) {
+void ByteArrayValue::AppendString(const string_t& in_value) {
   for (size_t i = 0; i < in_value.size(); ++i) {
-    array_.push_back(static_cast<byte_t>(in_value[i]));
+    array_.push_back(in_value[i]);
   }
 }
 
-void ByteArrayValue::AppendStrings(const std::vector<std::string>& in_values) {
+void ByteArrayValue::AppendStrings(const std::vector<string_t>& in_values) {
   for (size_t i = 0; i < in_values.size(); ++i) {
     AppendString(in_values[i]);
+  }
+}
+
+void ByteArrayValue::AppendBasicString(const std::string& in_value) {
+  for (size_t i = 0; i < in_value.size(); ++i) {
+    array_.push_back(in_value[i]);
+  }
+}
+
+void ByteArrayValue::AppendBasicStrings(const std::vector<std::string>& in_values) {
+  for (size_t i = 0; i < in_values.size(); ++i) {
+    AppendBasicString(in_values[i]);
   }
 }
 
@@ -820,7 +846,7 @@ void SetValue::Clear() {
   set_.clear();
 }
 
-void SetValue::Insert(const std::string& in_value) {
+void SetValue::Insert(const string_t& in_value) {
   Insert(CreateStringValue(in_value));
 }
 
@@ -907,7 +933,7 @@ bool ZSetValue::Insert(Value* key, Value* value) {
   return true;
 }
 
-void ZSetValue::Insert(const std::string& key, const std::string& value) {
+void ZSetValue::Insert(const string_t& key, const string_t& value) {
   Insert(Value::CreateStringValue(key), Value::CreateStringValue(value));
 }
 
@@ -990,7 +1016,7 @@ bool HashValue::Insert(Value* key, Value* value) {
   return true;
 }
 
-void HashValue::Insert(const std::string& key, const std::string& value) {
+void HashValue::Insert(const string_t& key, const string_t& value) {
   Insert(Value::CreateStringValue(key), Value::CreateStringValue(value));
 }
 

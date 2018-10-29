@@ -49,6 +49,7 @@ class ZSetValue;
 
 class Value {
  public:
+  typedef char_buffer_t string_t;  // std::string not my case, don't wanna 0 terminated strings
   enum Type : uint8_t {
     TYPE_NULL = 0,
     TYPE_BOOLEAN,
@@ -84,7 +85,8 @@ class Value {
   static FundamentalValue* CreateDoubleValue(double in_value);
 
   static StringValue* CreateEmptyStringValue();
-  static StringValue* CreateStringValue(const std::string& in_value);
+  static StringValue* CreateStringValue(const string_t& in_value);
+  static StringValue* CreateStringValueFromBasicString(const std::string& in_value);
   static ArrayValue* CreateArrayValue();
   static ByteArrayValue* CreateByteArrayValue(const byte_array_t& array);
   static SetValue* CreateSetValue();
@@ -109,7 +111,7 @@ class Value {
   virtual bool GetAsLongLongInteger(long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsULongLongInteger(unsigned long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsString(std::string* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsList(const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsByteArray(byte_array_t* out_value) const WARN_UNUSED_RESULT;
@@ -174,15 +176,15 @@ class FundamentalValue : public Value {
 
 class StringValue : public Value {
  public:
-  explicit StringValue(const std::string& in_value);
+  explicit StringValue(const string_t& in_value);
   virtual ~StringValue() override;
 
-  virtual bool GetAsString(std::string* out_value) const override WARN_UNUSED_RESULT;
+  virtual bool GetAsString(string_t* out_value) const override WARN_UNUSED_RESULT;
   virtual StringValue* DeepCopy() const override;
   virtual bool Equals(const Value* other) const override;
 
  private:
-  std::string value_;
+  string_t value_;
   DISALLOW_COPY_AND_ASSIGN(StringValue);
 };
 
@@ -216,7 +218,7 @@ class ArrayValue : public Value {
   bool GetLongLongInteger(size_t index, long long* out_value) const WARN_UNUSED_RESULT;
   bool GetULongLongInteger(size_t index, unsigned long long* out_value) const WARN_UNUSED_RESULT;
   bool GetDouble(size_t index, double* out_value) const WARN_UNUSED_RESULT;
-  bool GetString(size_t index, std::string* out_value) const WARN_UNUSED_RESULT;
+  bool GetString(size_t index, string_t* out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, ArrayValue** out_value) WARN_UNUSED_RESULT;
 
@@ -232,8 +234,10 @@ class ArrayValue : public Value {
   void AppendBoolean(bool in_value);
   void AppendInteger(int in_value);
   void AppendDouble(double in_value);
-  void AppendString(const std::string& in_value);
-  void AppendStrings(const std::vector<std::string>& in_values);
+  void AppendString(const string_t& in_value);
+  void AppendStrings(const std::vector<string_t>& in_values);
+  void AppendBasicString(const std::string& in_value);
+  void AppendBasicStrings(const std::vector<std::string>& in_values);
 
   bool AppendIfNotPresent(Value* in_value);
 
@@ -281,8 +285,10 @@ class ByteArrayValue : public Value {
   void AppendBoolean(bool in_value);
   void AppendInteger(int in_value);
   void AppendDouble(double in_value);
-  void AppendString(const std::string& in_value);
-  void AppendStrings(const std::vector<std::string>& in_values);
+  void AppendString(const string_t& in_value);
+  void AppendStrings(const std::vector<string_t>& in_values);
+  void AppendBasicString(const std::string& in_value);
+  void AppendBasicStrings(const std::vector<std::string>& in_values);
 
   // Iteration.
   iterator begin() { return array_.begin(); }
@@ -319,7 +325,7 @@ class SetValue : public Value {
 
   // Insert a Value to the set.
   bool Insert(Value* in_value);
-  void Insert(const std::string& in_value);
+  void Insert(const string_t& in_value);
 
   // Iteration.
   iterator begin() { return set_.begin(); }
@@ -358,7 +364,7 @@ class ZSetValue : public Value {
 
   // Insert a Value to the map.
   bool Insert(Value* key, Value* value);
-  void Insert(const std::string& key, const std::string& value);
+  void Insert(const string_t& key, const string_t& value);
 
   // Iteration.
   iterator begin() { return map_.begin(); }
@@ -399,7 +405,7 @@ class HashValue : public Value {
 
   // Insert a Value to the map.
   bool Insert(Value* key, Value* value);
-  void Insert(const std::string& key, const std::string& value);
+  void Insert(const string_t& key, const string_t& value);
 
   // Iteration.
   iterator begin() { return hash_.begin(); }

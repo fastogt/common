@@ -45,7 +45,10 @@ std::string ConvertToString(const QString& from);
 bool ConvertFromString(const std::string& value, QString* out);
 
 buffer_t ConvertToBytes(const QString& from);
-bool ConvertFromBytes(const buffer_t& value, QString* out);
+char_buffer_t ConvertToCharBytes(const QString& from);
+
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& value, QString* out);
 
 QString EscapedText(const QString& str);
 

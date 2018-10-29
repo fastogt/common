@@ -338,12 +338,12 @@ bool DoString16ToInt(const StringPiece16& input, VALUE* output) {
   return IteratorRangeToNumber<StringPiece16ToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
-template <typename VALUE, int BASE>
-class BytesToNumberTraits : public BaseIteratorRangeToNumberTraits<buffer_t::const_iterator, VALUE, BASE> {};
+template <typename BUFFER, typename VALUE, int BASE>
+class BytesToNumberTraits : public BaseIteratorRangeToNumberTraits<typename BUFFER::const_iterator, VALUE, BASE> {};
 
-template <typename VALUE>
-bool DoBytesToInt(const buffer_t& input, VALUE* output) {
-  return IteratorRangeToNumber<BytesToNumberTraits<VALUE, 10>>::Invoke(input.begin(), input.end(), output);
+template <typename BUFFER, typename VALUE>
+bool DoBytesToInt(const BUFFER& input, VALUE* output) {
+  return IteratorRangeToNumber<BytesToNumberTraits<BUFFER, VALUE, 10>>::Invoke(input.begin(), input.end(), output);
 }
 
 template <typename STR>
@@ -628,6 +628,106 @@ bool do_uunicode_encode(const T& input, bool is_lower, U* out) {
   return true;
 }
 
+template <typename Buffer>
+Buffer ConvertToBytesT(bool value) {
+  if (value) {
+    return {'t', 'r', 'u', 'e'};
+  }
+  return {'f', 'a', 'l', 's', 'e'};
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(char value) {
+  return IntToStringT<Buffer, char, unsigned char, true>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(unsigned char value) {
+  return IntToStringT<Buffer, char, unsigned char, false>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(short value) {
+  return IntToStringT<Buffer, short, unsigned short, true>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(unsigned short value) {
+  return IntToStringT<Buffer, short, unsigned short, false>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(int value) {
+  return IntToStringT<Buffer, int, unsigned int, true>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(unsigned int value) {
+  return IntToStringT<Buffer, int, unsigned int, false>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(long value) {
+  return IntToStringT<Buffer, long, unsigned long, true>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(unsigned long value) {
+  return IntToStringT<Buffer, long, unsigned long, false>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(long long value) {
+  return IntToStringT<Buffer, long long, unsigned long long, true>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(unsigned long long value) {
+  return IntToStringT<Buffer, long long, unsigned long long, false>::IntToString(value);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(float value, int prec) {
+  char buffer[16];
+  int res = 0;
+  if (prec == 0) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.0f", value);
+  } else if (prec == 1) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.1f", value);
+  } else if (prec == 2) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.2f", value);
+  } else if (prec == 3) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.3f", value);
+  } else if (prec == 4) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.4f", value);
+  } else {
+    res = SNPrintf(buffer, sizeof(buffer), "%f", value);
+  }
+
+  return Buffer(buffer, buffer + res);
+}
+
+template <typename Buffer>
+Buffer ConvertToBytesT(double value, int prec) {
+  char buffer[32];
+  int res = 0;
+  if (prec == 0) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.0lf", value);
+  } else if (prec == 1) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.1lf", value);
+  } else if (prec == 2) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.2lf", value);
+  } else if (prec == 3) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.3lf", value);
+  } else if (prec == 4) {
+    res = SNPrintf(buffer, sizeof(buffer), "%.4lf", value);
+  } else {
+    res = SNPrintf(buffer, sizeof(buffer), "%lf", value);
+  }
+
+  return Buffer(buffer, buffer + res);
+}
+
 }  // namespace
 
 std::string EscapedText(const std::string& str) {
@@ -658,7 +758,8 @@ string16 ConvertToString16(const StringPiece& from) {
 #endif
 }
 
-string16 ConvertToString16(const buffer_t& from) {
+template <typename ch>
+string16 ConvertToString16(const ByteArray<ch>& from) {
   std::string str = ConvertToString(from);
   return ConvertToString16(str);
 }
@@ -750,7 +851,8 @@ bool ConvertFromString16(const string16& from, std::string* out) {
   return true;
 }
 
-bool ConvertFromString16(const string16& from, buffer_t* out) {
+template <typename ch>
+bool ConvertFromString16(const string16& from, ByteArray<ch>* out) {
   if (!out) {
     return false;
   }
@@ -761,7 +863,7 @@ bool ConvertFromString16(const string16& from, buffer_t* out) {
     return false;
   }
 
-  *out = buffer_t(ascii.begin(), ascii.end());
+  *out = ByteArray<ch>(ascii.begin(), ascii.end());
   return true;
 }
 
@@ -976,8 +1078,9 @@ std::string ConvertToString(const char* from) {
   return from;
 }
 
-std::string ConvertToString(const buffer_t& from) {
-  return std::string(reinterpret_cast<const char*>(from.data()), from.size());
+template <typename ch>
+std::string ConvertToString(const ByteArray<ch>& from) {
+  return std::string(from.begin(), from.end());
 }
 
 std::string ConvertToString(const string16& from) {
@@ -1089,16 +1192,6 @@ std::string ConvertToString(double value, int prec) {
   return buffer;
 }
 
-bool ConvertFromString(const std::string& from, buffer_t* out) {
-  if (!out) {
-    return false;
-  }
-
-  const char* cstr = from.c_str();
-  *out = buffer_t(cstr, cstr + from.size());
-  return true;
-}
-
 bool ConvertFromString(const std::string& from, string16* out) {
   if (!out) {
     return false;
@@ -1119,6 +1212,17 @@ bool ConvertFromString(const std::string& from, std::wstring* out) {
   return true;
 }
 #endif
+
+template <typename ch>
+bool ConvertFromString(const std::string& from, ByteArray<ch>* out) {
+  if (!out || from.empty()) {
+    return false;
+  }
+
+  const char* cstr = from.c_str();
+  *out = ByteArray<ch>(cstr, cstr + from.size());
+  return true;
+}
 
 bool ConvertFromString(const std::string& from, bool* out) {
   if (!out) {
@@ -1319,144 +1423,199 @@ bool ConvertFromString(const std::string& from, StringPiece* out) {
 
 // buffer_t
 
-buffer_t ConvertToBytes(const std::string& from) {
-  buffer_t buff;
+template <typename Buffer>
+Buffer ConvertToBytesT(const std::string& from) {
+  Buffer buff;
   if (!ConvertFromString(from, &buff)) {
-    return buffer_t();
+    return Buffer();
   }
 
   return buff;
 }
 
-buffer_t ConvertToBytes(const string16& from) {
-  buffer_t buff;
+template <typename Buffer>
+Buffer ConvertToBytesT(const string16& from) {
+  Buffer buff;
   if (!ConvertFromString16(from, &buff)) {
-    return buffer_t();
+    return Buffer();
   }
 
   return buff;
+}
+
+buffer_t ConvertToBytes(const std::string& from) {
+  return ConvertToBytesT<buffer_t>(from);
+}
+
+buffer_t ConvertToBytes(const string16& from) {
+  return ConvertToBytesT<buffer_t>(from);
 }
 
 buffer_t ConvertToBytes(const buffer_t& from) {
   return from;
 }
 
+buffer_t ConvertToBytes(const char_buffer_t& from) {
+  return buffer_t(from.begin(), from.end());
+}
+
 buffer_t ConvertToBytes(bool value) {
-  return value ? MAKE_BUFFER("true") : MAKE_BUFFER("false");
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(char value) {
-  return IntToStringT<buffer_t, char, unsigned char, true>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(unsigned char value) {
-  return IntToStringT<buffer_t, char, unsigned char, false>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(short value) {
-  return IntToStringT<buffer_t, short, unsigned short, true>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(unsigned short value) {
-  return IntToStringT<buffer_t, short, unsigned short, false>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(int value) {
-  return IntToStringT<buffer_t, int, unsigned int, true>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(unsigned int value) {
-  return IntToStringT<buffer_t, int, unsigned int, false>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(long value) {
-  return IntToStringT<buffer_t, long, unsigned long, true>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(unsigned long value) {
-  return IntToStringT<buffer_t, long, unsigned long, false>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(long long value) {
-  return IntToStringT<buffer_t, long long, unsigned long long, true>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(unsigned long long value) {
-  return IntToStringT<buffer_t, long long, unsigned long long, false>::IntToString(value);
+  return ConvertToBytesT<buffer_t>(value);
 }
 
 buffer_t ConvertToBytes(float value, int prec) {
-  char buffer[16];
-  int res = 0;
-  if (prec == 0) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.0f", value);
-  } else if (prec == 1) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.1f", value);
-  } else if (prec == 2) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.2f", value);
-  } else if (prec == 3) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.3f", value);
-  } else if (prec == 4) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.4f", value);
-  } else {
-    res = SNPrintf(buffer, sizeof(buffer), "%f", value);
-  }
-
-  return buffer_t(buffer, buffer + res);
+  return ConvertToBytesT<buffer_t>(value, prec);
 }
 
 buffer_t ConvertToBytes(double value, int prec) {
-  char buffer[32];
-  int res = 0;
-  if (prec == 0) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.0lf", value);
-  } else if (prec == 1) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.1lf", value);
-  } else if (prec == 2) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.2lf", value);
-  } else if (prec == 3) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.3lf", value);
-  } else if (prec == 4) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.4lf", value);
-  } else {
-    res = SNPrintf(buffer, sizeof(buffer), "%lf", value);
-  }
-
-  return buffer_t(buffer, buffer + res);
+  return ConvertToBytesT<buffer_t>(value, prec);
 }
 
-bool ConvertFromBytes(const buffer_t& from, string16* out) {
+char_buffer_t ConvertToCharBytes(const std::string& from) {
+  return ConvertToBytesT<char_buffer_t>(from);
+}
+
+char_buffer_t ConvertToCharBytes(const string16& from) {
+  return ConvertToBytesT<char_buffer_t>(from);
+}
+
+char_buffer_t ConvertToCharBytes(const buffer_t& from) {
+  return char_buffer_t(from.begin(), from.end());
+}
+
+char_buffer_t ConvertToCharBytes(const char_buffer_t& from) {
+  return from;
+}
+
+char_buffer_t ConvertToCharBytes(bool value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(char value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(unsigned char value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(short value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(unsigned short value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(int value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(unsigned int value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(long value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(unsigned long value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(long long value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(unsigned long long value) {
+  return ConvertToBytesT<char_buffer_t>(value);
+}
+
+char_buffer_t ConvertToCharBytes(float value, int prec) {
+  return ConvertToBytesT<char_buffer_t>(value, prec);
+}
+
+char_buffer_t ConvertToCharBytes(double value, int prec) {
+  return ConvertToBytesT<char_buffer_t>(value, prec);
+}
+
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, string16* out) {
   if (!out) {
     return false;
   }
 
-  const unsigned char* cstr = from.data();
+  const ch* cstr = from.data();
   *out = string16(cstr, cstr + from.size());
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, std::string* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, std::string* out) {
   if (!out) {
     return false;
   }
 
-  const unsigned char* cstr = from.data();
+  const ch* cstr = from.data();
   *out = std::string(cstr, cstr + from.size());
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, bool* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, bool* out) {
   if (!out) {
     return false;
   }
 
-  buffer_t copy = from;
+  ByteArray<ch> copy = from;
   std::transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
-  *out = copy == MAKE_BUFFER("true");
+  bool res = copy == ByteArray<ch>{'t', 'r', 'u', 'e'};
+  *out = res;
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, char* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, char* out) {
   if (!out) {
     return false;
   }
@@ -1471,7 +1630,8 @@ bool ConvertFromBytes(const buffer_t& from, char* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, unsigned char* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, unsigned char* out) {
   if (!out) {
     return false;
   }
@@ -1486,7 +1646,8 @@ bool ConvertFromBytes(const buffer_t& from, unsigned char* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, short* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, short* out) {
   if (!out) {
     return false;
   }
@@ -1501,7 +1662,8 @@ bool ConvertFromBytes(const buffer_t& from, short* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, unsigned short* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, unsigned short* out) {
   if (!out) {
     return false;
   }
@@ -1516,7 +1678,8 @@ bool ConvertFromBytes(const buffer_t& from, unsigned short* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, int* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, int* out) {
   if (!out) {
     return false;
   }
@@ -1531,7 +1694,8 @@ bool ConvertFromBytes(const buffer_t& from, int* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, unsigned int* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, unsigned int* out) {
   if (!out) {
     return false;
   }
@@ -1546,7 +1710,8 @@ bool ConvertFromBytes(const buffer_t& from, unsigned int* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, long* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, long* out) {
   if (!out) {
     return false;
   }
@@ -1561,7 +1726,8 @@ bool ConvertFromBytes(const buffer_t& from, long* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, unsigned long* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, unsigned long* out) {
   if (!out) {
     return false;
   }
@@ -1576,7 +1742,8 @@ bool ConvertFromBytes(const buffer_t& from, unsigned long* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, long long* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, long long* out) {
   if (!out) {
     return false;
   }
@@ -1591,7 +1758,8 @@ bool ConvertFromBytes(const buffer_t& from, long long* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, unsigned long long* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, unsigned long long* out) {
   if (!out) {
     return false;
   }
@@ -1606,7 +1774,8 @@ bool ConvertFromBytes(const buffer_t& from, unsigned long long* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, float* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, float* out) {
   if (!out) {
     return false;
   }
@@ -1615,7 +1784,8 @@ bool ConvertFromBytes(const buffer_t& from, float* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, double* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, double* out) {
   if (!out) {
     return false;
   }
@@ -1624,7 +1794,8 @@ bool ConvertFromBytes(const buffer_t& from, double* out) {
   return true;
 }
 
-bool ConvertFromBytes(const buffer_t& from, buffer_t* out) {
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& from, ByteArray<ch>* out) {
   if (!out) {
     return false;
   }
@@ -1662,11 +1833,19 @@ bool encode(const buffer_t& input, bool is_lower, buffer_t* out) {
   return do_xhex_encode(input, is_lower, out);
 }
 
+bool encode(const std::vector<char>& input, bool is_lower, std::vector<char>* out) {
+  return do_xhex_encode(input, is_lower, out);
+}
+
 bool encode(const StringPiece& input, bool is_lower, std::string* out) {
   return do_xhex_encode(input, is_lower, out);
 }
 
 bool decode(const buffer_t& input, buffer_t* out) {
+  return do_xhex_decode(input, out);
+}
+
+bool decode(const std::vector<char>& input, std::vector<char>* out) {
   return do_xhex_decode(input, out);
 }
 
@@ -1767,5 +1946,51 @@ uint32_t ConvertVersionNumberFromString(const std::string& version) {
 
   return PROJECT_VERSION_GENERATE_FULL(major, minor, patch, tweak);
 }
+
+// explicit instance
+
+template string16 ConvertToString16(const ByteArray<char>& from);
+template string16 ConvertToString16(const ByteArray<unsigned char>& from);
+
+template std::string ConvertToString(const ByteArray<char>& from);
+template std::string ConvertToString(const ByteArray<unsigned char>& from);
+
+template bool ConvertFromString(const std::string& from, ByteArray<char>* out);
+template bool ConvertFromString(const std::string& from, ByteArray<unsigned char>* out);
+
+template bool ConvertFromBytes(const ByteArray<char>& from, string16* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, std::string* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, bool* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, char* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, unsigned char* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, short* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, unsigned short* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, int* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, unsigned int* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, long* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, unsigned long* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, long long* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, unsigned long long* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, float* out);
+template bool ConvertFromBytes(const ByteArray<char>& from, double* out);
+
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, string16* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, std::string* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, bool* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, char* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned char* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, short* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned short* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, int* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned int* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, long* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned long* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, long long* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned long long* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, float* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, double* out);
+
+template bool ConvertFromBytes(const ByteArray<char>& from, ByteArray<char>* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& from, ByteArray<unsigned char>* out);
 
 }  // namespace common

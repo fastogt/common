@@ -71,7 +71,13 @@ buffer_t ConvertToBytes(const QString& from) {
   return MAKE_BUFFER_SIZE(sUtf8.constData(), sUtf8.size());
 }
 
-bool ConvertFromBytes(const buffer_t& value, QString* out) {
+char_buffer_t ConvertToCharBytes(const QString& from) {
+  QByteArray sUtf8 = from.toUtf8();
+  return MAKE_CHAR_BUFFER_SIZE(sUtf8.constData(), sUtf8.size());
+}
+
+template <typename ch>
+bool ConvertFromBytes(const ByteArray<ch>& value, QString* out) {
   if (!out) {
     return false;
   }
@@ -86,5 +92,8 @@ QString EscapedText(const QString& str) {
   }
   return str;
 }
+
+template bool ConvertFromBytes(const ByteArray<char>& value, QString* out);
+template bool ConvertFromBytes(const ByteArray<unsigned char>& value, QString* out);
 
 }  // namespace common
