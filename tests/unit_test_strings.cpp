@@ -172,9 +172,18 @@ TEST(string, utils) {
 
   const std::string test_data_lower = common::StringToLowerASCII(test_data_up);
   ASSERT_EQ(test_data_low, test_data_lower);
-  ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_up, false));
+
   ASSERT_FALSE(common::FullEqualsASCII(test_data_low, test_data_up, true));
+  ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_up, false));
+
   ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_lower, true));
+  ASSERT_TRUE(common::FullEqualsASCII(test_data_low, test_data_lower, false));
+
+  ASSERT_FALSE(common::StartsWithASCII(test_data_low, test_data_up, true));
+  ASSERT_TRUE(common::StartsWithASCII(test_data_low, test_data_up, false));
+
+  ASSERT_TRUE(common::StartsWithASCII(test_data_low, test_data_lower, true));
+  ASSERT_TRUE(common::StartsWithASCII(test_data_low, test_data_lower, false));
 }
 
 TEST(string, StringPiece) {

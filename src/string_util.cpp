@@ -399,18 +399,19 @@ bool StartsWithASCII(const std::string& str, const std::string& search, bool cas
 
 template <typename STR>
 bool StartsWithT(const STR& str, const STR& search, bool case_sensitive) {
+  if (search.size() > str.size()) {
+    return false;
+  }
+
   if (case_sensitive) {
     for (size_t i = 0; i < search.size(); ++i) {
-      if (tolower(str[i]) != tolower(search[i])) {
+      if (str[i] != search[i]) {
         return false;
       }
     }
     return true;
   }
 
-  if (search.size() > str.size()) {
-    return false;
-  }
   return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
 }
 
@@ -433,12 +434,7 @@ bool FullEqualsASCIIT(const STR& str, const STR& search, bool case_sensitive) {
   }
 
   if (case_sensitive) {
-    for (size_t i = 0; i < search.size(); ++i) {
-      if (tolower(str[i]) != tolower(search[i])) {
-        return false;
-      }
-    }
-    return true;
+    return str == search;
   }
 
   return std::equal(search.begin(), search.end(), str.begin(), CaseInsensitiveCompare<typename STR::value_type>());
