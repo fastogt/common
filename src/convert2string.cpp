@@ -764,10 +764,6 @@ string16 ConvertToString16(const ByteArray<ch>& from) {
   return ConvertToString16(str);
 }
 
-string16 ConvertToString16(const string16& from) {
-  return from;
-}
-
 string16 ConvertToString16(const StringPiece16& from) {
   return from.as_string();
 }
@@ -1054,15 +1050,6 @@ bool ConvertFromString16(const string16& from, double* out) {
   return ConvertFromString(ascii, out);
 }
 
-bool ConvertFromString16(const string16& from, string16* out) {
-  if (!out) {
-    return false;
-  }
-
-  *out = from;
-  return true;
-}
-
 bool ConvertFromString16(const string16& from, StringPiece16* out) {
   if (!out) {
     return false;
@@ -1100,10 +1087,6 @@ std::string ConvertToString(const StringPiece16& from) {
   }
 
   return ascii;
-}
-
-std::string ConvertToString(const std::string& from) {
-  return from;
 }
 
 std::string ConvertToString(const StringPiece& from) {
@@ -1403,15 +1386,6 @@ bool ConvertFromString(const std::string& from, double* out) {
   return true;
 }
 
-bool ConvertFromString(const std::string& from, std::string* out) {
-  if (!out) {
-    return false;
-  }
-
-  *out = from;
-  return true;
-}
-
 bool ConvertFromString(const std::string& from, StringPiece* out) {
   if (!out) {
     return false;
@@ -1449,10 +1423,6 @@ buffer_t ConvertToBytes(const std::string& from) {
 
 buffer_t ConvertToBytes(const string16& from) {
   return ConvertToBytesT<buffer_t>(from);
-}
-
-buffer_t ConvertToBytes(const buffer_t& from) {
-  return from;
 }
 
 buffer_t ConvertToBytes(const char_buffer_t& from) {
@@ -1521,10 +1491,6 @@ char_buffer_t ConvertToCharBytes(const string16& from) {
 
 char_buffer_t ConvertToCharBytes(const buffer_t& from) {
   return char_buffer_t(from.begin(), from.end());
-}
-
-char_buffer_t ConvertToCharBytes(const char_buffer_t& from) {
-  return from;
 }
 
 char_buffer_t ConvertToCharBytes(bool value) {
@@ -1794,16 +1760,6 @@ bool ConvertFromBytes(const ByteArray<ch>& from, double* out) {
   return true;
 }
 
-template <typename ch>
-bool ConvertFromBytes(const ByteArray<ch>& from, ByteArray<ch>* out) {
-  if (!out) {
-    return false;
-  }
-
-  *out = from;
-  return true;
-}
-
 //
 
 namespace utils {
@@ -1989,8 +1945,5 @@ template bool ConvertFromBytes(const ByteArray<unsigned char>& from, long long* 
 template bool ConvertFromBytes(const ByteArray<unsigned char>& from, unsigned long long* out);
 template bool ConvertFromBytes(const ByteArray<unsigned char>& from, float* out);
 template bool ConvertFromBytes(const ByteArray<unsigned char>& from, double* out);
-
-template bool ConvertFromBytes(const ByteArray<char>& from, ByteArray<char>* out);
-template bool ConvertFromBytes(const ByteArray<unsigned char>& from, ByteArray<unsigned char>* out);
 
 }  // namespace common

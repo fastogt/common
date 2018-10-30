@@ -41,7 +41,6 @@ string16 ConvertToString16(const std::string& from);
 string16 ConvertToString16(const StringPiece& from);
 template <typename ch>
 string16 ConvertToString16(const ByteArray<ch>& from);
-string16 ConvertToString16(const string16& from);
 string16 ConvertToString16(const StringPiece16& from);
 
 string16 ConvertToString16(bool value);
@@ -65,7 +64,6 @@ template <typename ch>
 std::string ConvertToString(const ByteArray<ch>& from);
 std::string ConvertToString(const string16& from);
 std::string ConvertToString(const StringPiece16& from);
-std::string ConvertToString(const std::string& from);
 std::string ConvertToString(const StringPiece& from);
 
 std::string ConvertToString(bool value);
@@ -86,7 +84,6 @@ std::string ConvertToString(double value, int prec = 2);
 
 buffer_t ConvertToBytes(const std::string& from);
 buffer_t ConvertToBytes(const string16& from);
-buffer_t ConvertToBytes(const buffer_t& from);
 buffer_t ConvertToBytes(const char_buffer_t& from);
 buffer_t ConvertToBytes(bool value);
 buffer_t ConvertToBytes(char value);
@@ -105,7 +102,6 @@ buffer_t ConvertToBytes(double value, int prec = 2);
 char_buffer_t ConvertToCharBytes(const std::string& from);
 char_buffer_t ConvertToCharBytes(const string16& from);
 char_buffer_t ConvertToCharBytes(const buffer_t& from);
-char_buffer_t ConvertToCharBytes(const char_buffer_t& from);
 char_buffer_t ConvertToCharBytes(bool value);
 char_buffer_t ConvertToCharBytes(char value);
 char_buffer_t ConvertToCharBytes(unsigned char value);
@@ -137,7 +133,6 @@ bool ConvertFromString16(const string16& from, long long* out) WARN_UNUSED_RESUL
 bool ConvertFromString16(const string16& from, unsigned long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, double* out) WARN_UNUSED_RESULT;
-bool ConvertFromString16(const string16& from, string16* out) WARN_UNUSED_RESULT;
 bool ConvertFromString16(const string16& from, StringPiece16* out) WARN_UNUSED_RESULT;
 
 bool ConvertFromString(const std::string& from, StringPiece16* out) WARN_UNUSED_RESULT;
@@ -162,7 +157,6 @@ bool ConvertFromString(const std::string& from, long long* out) WARN_UNUSED_RESU
 bool ConvertFromString(const std::string& from, unsigned long long* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, float* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, double* out) WARN_UNUSED_RESULT;
-bool ConvertFromString(const std::string& from, std::string* out) WARN_UNUSED_RESULT;
 bool ConvertFromString(const std::string& from, StringPiece* out) WARN_UNUSED_RESULT;
 
 template <typename ch>
@@ -195,9 +189,6 @@ template <typename ch>
 bool ConvertFromBytes(const ByteArray<ch>& from, float* out) WARN_UNUSED_RESULT;
 template <typename ch>
 bool ConvertFromBytes(const ByteArray<ch>& from, double* out) WARN_UNUSED_RESULT;
-
-template <typename ch>
-bool ConvertFromBytes(const ByteArray<ch>& from, ByteArray<ch>* out) WARN_UNUSED_RESULT;
 
 namespace utils {
 namespace hex {

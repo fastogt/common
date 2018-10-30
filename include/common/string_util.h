@@ -467,7 +467,7 @@ inline size_t Tokenize(const std::vector<CharT>& str, const std::vector<CharT>& 
     }
 
     if (found || is_last) {  // if founded or last symbol
-      if (chunk.empty()) {
+      if (!chunk.empty()) {
         tokens->push_back(chunk);
       }
       chunk.clear();

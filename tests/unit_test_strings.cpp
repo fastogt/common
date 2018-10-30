@@ -143,9 +143,15 @@ TEST(string, utils) {
   size_t cr = common::Tokenize(" ", " ", &splited);
   ASSERT_EQ(cr, 0);
 
+  cr = common::Tokenize("GET NAME", "\n", &splited);
+  ASSERT_EQ(cr, 1);
+
   std::vector<common::buffer_t> bsplited;
   cr = common::Tokenize(MAKE_BUFFER(" "), MAKE_BUFFER(" "), &bsplited);
   ASSERT_EQ(cr, 0);
+
+  cr = common::Tokenize(MAKE_BUFFER("GET NAME"), MAKE_BUFFER("\n"), &bsplited);
+  ASSERT_EQ(cr, 1);
 
   const std::string test_data_low = "alex,palec,malec";
   const std::string test_data_up = "ALEX,PALEC,MALEC";
@@ -534,21 +540,6 @@ TEST(ConvertFromString, int64) {
   ASSERT_FALSE(common::ConvertFromString("99999999999999999999999999999", &val));
   ASSERT_FALSE(common::ConvertFromString("-99999999999999999999999999999", &val));
   ASSERT_FALSE(common::ConvertFromString("abc42", &val));
-}
-
-TEST(ConvertFromString, string) {
-  std::string val;
-  std::string* ptr = nullptr;
-  ASSERT_FALSE(common::ConvertFromString("1", ptr));
-
-  ASSERT_TRUE(common::ConvertFromString("", &val));
-  ASSERT_EQ(val, "");
-
-  ASSERT_TRUE(common::ConvertFromString(std::string(), &val));
-  ASSERT_EQ(val, std::string());
-
-  ASSERT_TRUE(common::ConvertFromString("abc\n ", &val));
-  ASSERT_EQ(val, "abc\n ");
 }
 
 TEST(ConvertFromString, float) {
