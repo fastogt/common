@@ -387,6 +387,18 @@ bool ANSIFile::Write(const buffer_t& data) {
   return res == data.size();
 }
 
+bool ANSIFile::Write(const char_buffer_t& data) {
+  DCHECK(IsValid());
+
+  if (!file_ || data.empty()) {
+    DNOTREACHED();
+    return false;
+  }
+
+  size_t res = fwrite(data.data(), sizeof(byte_t), data.size(), file_);
+  return res == data.size();
+}
+
 bool ANSIFile::Write(const std::string& data) {
   DCHECK(IsValid());
 

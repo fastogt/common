@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <common/error.h>  // for ErrnoError, Error
 #include <common/file_system/path.h>
 #include <common/sprintf.h>
@@ -81,16 +83,17 @@ class File {
   ErrnoError Truncate(off_t pos) WARN_UNUSED_RESULT;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(File);
   DescriptorHolder* holder_;
   path_type file_path_;
+
+  DISALLOW_COPY_AND_ASSIGN(File);
 };
 
 class ANSIFile {
  public:
   typedef ascii_string_path path_type;
 
-  explicit ANSIFile();
+  ANSIFile();
   ~ANSIFile();
 
   ErrnoError Open(const path_type::value_type& file_path, const char* mode) WARN_UNUSED_RESULT;
@@ -107,6 +110,7 @@ class ANSIFile {
   bool ReadLine(std::string* out_data);
 
   bool Write(const buffer_t& data);
+  bool Write(const char_buffer_t& data);
   bool Write(const std::string& data);
   bool Write(const string16& data);
   template <typename... Args>
@@ -127,9 +131,10 @@ class ANSIFile {
   bool IsEOF() const;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ANSIFile);
   path_type path_;
   FILE* file_;
+
+  DISALLOW_COPY_AND_ASSIGN(ANSIFile);
 };
 
 }  // namespace file_system
