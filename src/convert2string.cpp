@@ -1570,8 +1570,7 @@ bool ConvertFromBytes(const ByteArray<ch>& from, std::string* out) {
     return false;
   }
 
-  const ch* cstr = from.data();
-  *out = std::string(cstr, cstr + from.size());
+  *out = from.as_string();
   return true;
 }
 

@@ -33,6 +33,7 @@
 #include <time.h>
 
 #include <iosfwd>
+#include <string>
 #include <vector>  // for vector
 
 namespace common {
@@ -95,6 +96,12 @@ class ByteArray : public std::vector<T> {
   ByteArray& operator+=(const std::vector<ch>& rhs) {
     append(rhs);
     return *this;
+  }
+
+  std::string as_string() const {
+    // std::string doesn't like to take a NULL pointer even with a 0 size.
+    return base_class::empty() ? std::string()
+                               : std::string(reinterpret_cast<const char*>(base_class::data()), base_class::size());
   }
 };
 
