@@ -1417,6 +1417,10 @@ Buffer ConvertToBytesT(const string16& from) {
   return buff;
 }
 
+buffer_t ConvertToBytes(const char* from) {
+  return MAKE_BUFFER_SIZE(from, strlen(from));
+}
+
 buffer_t ConvertToBytes(const std::string& from) {
   return ConvertToBytesT<buffer_t>(from);
 }
@@ -1479,6 +1483,10 @@ buffer_t ConvertToBytes(float value, int prec) {
 
 buffer_t ConvertToBytes(double value, int prec) {
   return ConvertToBytesT<buffer_t>(value, prec);
+}
+
+char_buffer_t ConvertToCharBytes(const char* from) {
+  return MAKE_CHAR_BUFFER_SIZE(from, strlen(from));
 }
 
 char_buffer_t ConvertToCharBytes(const std::string& from) {

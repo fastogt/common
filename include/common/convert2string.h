@@ -82,6 +82,7 @@ std::string ConvertToString(double value, int prec = 2);
 
 // buffer_t, char_buffer_t
 
+buffer_t ConvertToBytes(const char* from);
 buffer_t ConvertToBytes(const std::string& from);
 buffer_t ConvertToBytes(const string16& from);
 buffer_t ConvertToBytes(const char_buffer_t& from);
@@ -99,6 +100,7 @@ buffer_t ConvertToBytes(unsigned long long value);
 buffer_t ConvertToBytes(float value, int prec = 2);
 buffer_t ConvertToBytes(double value, int prec = 2);
 
+char_buffer_t ConvertToCharBytes(const char* from);
 char_buffer_t ConvertToCharBytes(const std::string& from);
 char_buffer_t ConvertToCharBytes(const string16& from);
 char_buffer_t ConvertToCharBytes(const buffer_t& from);
