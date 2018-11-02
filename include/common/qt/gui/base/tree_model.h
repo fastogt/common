@@ -41,11 +41,11 @@ class TreeModel : public QAbstractItemModel {
   Q_OBJECT
  public:
   explicit TreeModel(QObject* parent = Q_NULLPTR);
-  virtual ~TreeModel() override;
+  ~TreeModel() override;
 
-  virtual int rowCount(const QModelIndex& parent) const override;
-  virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override;
-  virtual QModelIndex parent(const QModelIndex& index) const override;
+  int rowCount(const QModelIndex& parent) const override;
+  QModelIndex index(int row, int column, const QModelIndex& parent) const override;
+  QModelIndex parent(const QModelIndex& index) const override;
 
   TreeItem* root() const;
   void setRoot(TreeItem* root);
@@ -56,7 +56,8 @@ class TreeModel : public QAbstractItemModel {
   virtual void updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
   bool findItem(void* user_data, QModelIndex* index);  // if user_data != nullptr
- protected:
+
+ private:
   TreeItem* root_;
 };
 

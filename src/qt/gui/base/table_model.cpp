@@ -41,7 +41,9 @@ namespace gui {
 
 TableModel::TableModel(QObject* parent) : QAbstractTableModel(parent) {}
 
-TableModel::~TableModel() {}
+TableModel::~TableModel() {
+  clearData();
+}
 
 int TableModel::rowCount(const QModelIndex& parent) const {
   UNUSED(parent);
@@ -98,6 +100,13 @@ void TableModel::removeItem(TableItem* child) {
 
 void TableModel::updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
   emit dataChanged(topLeft, bottomRight);
+}
+
+void TableModel::clearData() {
+  for (size_t i = 0; i < data_.size(); ++i) {
+    delete data_[i];
+  }
+  data_.clear();
 }
 
 }  // namespace gui

@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <QAbstractTableModel>
 
 namespace common {
@@ -41,16 +43,18 @@ class TableModel : public QAbstractTableModel {
   Q_OBJECT
  public:
   explicit TableModel(QObject* parent = Q_NULLPTR);
-  virtual ~TableModel() override;
+  ~TableModel() override;
 
-  virtual int rowCount(const QModelIndex& parent) const override;
-  virtual QModelIndex index(int row, int column, const QModelIndex& parent) const override;
+  int rowCount(const QModelIndex& parent) const override;
+  QModelIndex index(int row, int column, const QModelIndex& parent) const override;
 
   virtual void insertItem(TableItem* child);
   virtual void removeItem(TableItem* child);
   virtual void updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
  protected:
+  void clearData();
+
   std::vector<TableItem*> data_;
 };
 
