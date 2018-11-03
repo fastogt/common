@@ -36,6 +36,8 @@
 #include <common/string16.h>
 #include <common/types.h>
 
+// utf8
+
 namespace common {
 
 string16 ConvertToString16(const QString& from);
@@ -49,7 +51,5 @@ char_buffer_t ConvertToCharBytes(const QString& from);
 
 template <typename ch>
 bool ConvertFromBytes(const ByteArray<ch>& value, QString* out);
-
-QString EscapedText(const QString& str);
 
 }  // namespace common

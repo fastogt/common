@@ -35,11 +35,15 @@ namespace common {
 
 class CompressZlibEDcoder : public IEDcoder {
  public:
-  CompressZlibEDcoder();
+  enum ZlibDeflates : uint8_t { ZLIB_DEFLATE = 0, GZIP_DEFLATE = 16 };
+  CompressZlibEDcoder(bool sized = true, ZlibDeflates def = ZLIB_DEFLATE);
 
  private:
   virtual Error DoEncode(const StringPiece& data, std::string* out) override;
   virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+
+  const bool sized_;
+  const ZlibDeflates deflate_;
 };
 
 }  // namespace common

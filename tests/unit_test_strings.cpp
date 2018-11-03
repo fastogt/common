@@ -232,6 +232,11 @@ TEST(string, Base64Compress) {
   err = common::compress::DecodeBase64(encoded_base64, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
+
+  common::buffer_t dec;
+  err = common::compress::DecodeBase64(
+      MAKE_BUFFER("eNqryslMUsgsVkhUKChKLSmpVEjPz09RSM7PBXKLizPz8xQSc9LzizJLMnIBYDYQeQ=="), &dec);
+  ASSERT_FALSE(err);
 }
 
 #ifdef HAVE_ZLIB
@@ -244,14 +249,67 @@ TEST(string, ZlibCompress) {
                       \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
                       \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
                       \"type\" : \"1\"},\"type\" : \"relay\"}");
-  common::buffer_t encoded_zlib;
-  common::Error err = common::compress::EncodeZlib(json, &encoded_zlib);
+  common::buffer_t encoded_gzip;
+  common::Error err = common::compress::EncodeZlib(json, true, 16, &encoded_gzip);
   ASSERT_FALSE(err);
 
   common::buffer_t decoded;
-  err = common::compress::DecodeZlib(encoded_zlib, &decoded);
+  err = common::compress::DecodeZlib(encoded_gzip, true, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
+
+  common::buffer_t encoded_zlib;
+  err = common::compress::EncodeZlib(json, true, 0, &encoded_zlib);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeZlib(encoded_zlib, true, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(json, decoded);
+
+  // gzip
+  const std::string origin_gzip = "gzip is a pretty good compression algorithm";
+
+  std::string encoded_gzip_str;
+  err = common::compress::EncodeZlib(origin_gzip, false, 16, &encoded_gzip_str);
+  ASSERT_FALSE(err);
+
+  const common::buffer_t gzip_enc_python = {
+      0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03, 0x4b, 0xaf, 0xca, 0x2c, 0x50, 0xc8,
+      0x2c, 0x56, 0x48, 0x54, 0x28, 0x28, 0x4a, 0x2d, 0x29, 0xa9, 0x54, 0x48, 0xcf, 0xcf, 0x4f, 0x51,
+      0x48, 0xce, 0xcf, 0x05, 0x72, 0x8b, 0x8b, 0x33, 0xf3, 0xf3, 0x14, 0x12, 0x73, 0xd2, 0xf3, 0x8b,
+      0x32, 0x4b, 0x32, 0x72, 0x01, 0x94, 0x23, 0x72, 0x68, 0x2b, 0x00, 0x00, 0x00};
+  ASSERT_TRUE(gzip_enc_python.size() == 61);
+
+  common::buffer_t dec_gzip;
+  err = common::compress::DecodeZlib(gzip_enc_python, false, &dec_gzip);
+  ASSERT_FALSE(err);
+
+  std::string dec_gzip_out;
+  err = common::compress::DecodeZlib(encoded_gzip_str, false, &dec_gzip_out);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(dec_gzip_out, origin_gzip);
+
+  // zlib
+  const std::string origin_zlib = "zlib is a pretty good compression algorithm";
+
+  std::string encoded_zlib_str;
+  err = common::compress::EncodeZlib(origin_zlib, false, 0, &encoded_zlib_str);
+  ASSERT_FALSE(err);
+
+  const common::buffer_t zlib_enc_python = {
+      0x78, 0xda, 0xab, 0xca, 0xc9, 0x4c, 0x52, 0xc8, 0x2c, 0x56, 0x48, 0x54, 0x28, 0x28, 0x4a, 0x2d, 0x29,
+      0xa9, 0x54, 0x48, 0xcf, 0xcf, 0x4f, 0x51, 0x48, 0xce, 0xcf, 0x05, 0x72, 0x8b, 0x8b, 0x33, 0xf3, 0xf3,
+      0x14, 0x12, 0x73, 0xd2, 0xf3, 0x8b, 0x32, 0x4b, 0x32, 0x72, 0x01, 0x60, 0x36, 0x10, 0x79};
+  ASSERT_TRUE(zlib_enc_python.size() == 49);
+
+  common::buffer_t dec_zlib;
+  err = common::compress::DecodeZlib(zlib_enc_python, false, &dec_zlib);
+  ASSERT_FALSE(err);
+
+  std::string dec_zlib_out;
+  err = common::compress::DecodeZlib(encoded_zlib_str, false, &dec_zlib_out);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(dec_zlib_out, origin_zlib);
 }
 #endif
 

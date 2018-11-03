@@ -104,7 +104,7 @@ TEST(base64, enc_dec) {
 #ifdef HAVE_ZLIB
 TEST(zlib, enc_dec) {
   const std::string raw_data = "alex aalex talex balexalex aalex talex balex";
-  common::CompressZlibEDcoder zl;
+  common::CompressZlibEDcoder zl(false);
   std::string enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);

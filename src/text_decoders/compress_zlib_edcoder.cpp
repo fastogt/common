@@ -33,11 +33,12 @@
 
 namespace common {
 
-CompressZlibEDcoder::CompressZlibEDcoder() : IEDcoder(ED_ZLIB) {}
+CompressZlibEDcoder::CompressZlibEDcoder(bool sized, ZlibDeflates def)
+    : IEDcoder(ED_ZLIB), sized_(sized), deflate_(def) {}
 
 Error CompressZlibEDcoder::DoEncode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_ZLIB
-  return compress::EncodeZlib(data, out);
+  return compress::EncodeZlib(data, sized_, deflate_, out);
 #else
   UNUSED(data);
   UNUSED(out);
@@ -47,7 +48,7 @@ Error CompressZlibEDcoder::DoEncode(const StringPiece& data, std::string* out) {
 
 Error CompressZlibEDcoder::DoDecode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_ZLIB
-  return compress::DecodeZlib(data, out);
+  return compress::DecodeZlib(data, sized_, out);
 #else
   UNUSED(data);
   UNUSED(out);

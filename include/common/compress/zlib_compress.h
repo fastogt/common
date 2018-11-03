@@ -39,13 +39,19 @@
 namespace common {
 namespace compress {
 
-Error EncodeZlib(const buffer_t& data, buffer_t* out, int compression_level = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
-Error DecodeZlib(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeZlib(const buffer_t& data,
+                 bool sized,
+                 uint8_t def,
+                 buffer_t* out,
+                 int compression_level = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
+Error DecodeZlib(const buffer_t& data, bool sized, buffer_t* out) WARN_UNUSED_RESULT;
 
 Error EncodeZlib(const StringPiece& data,
+                 bool sized,
+                 uint8_t def,
                  std::string* out,
                  int compression_level = Z_BEST_COMPRESSION) WARN_UNUSED_RESULT;
-Error DecodeZlib(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeZlib(const StringPiece& data, bool sized, std::string* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

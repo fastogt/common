@@ -41,7 +41,7 @@ class HexEDcoder : public IEDcoder {
   virtual Error DoEncode(const StringPiece& data, std::string* out) override;
   virtual Error DoDecode(const StringPiece& data, std::string* out) override;
 
-  bool is_lower_;
+  const bool is_lower_;
 };
 
 }  // namespace common

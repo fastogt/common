@@ -67,13 +67,13 @@ bool ConvertFromString(const std::string& value, QString* out) {
 }
 
 buffer_t ConvertToBytes(const QString& from) {
-  QByteArray sUtf8 = from.toUtf8();
-  return MAKE_BUFFER_SIZE(sUtf8.constData(), sUtf8.size());
+  QByteArray utf8 = from.toUtf8();
+  return MAKE_BUFFER_SIZE(utf8.constData(), utf8.size());
 }
 
 char_buffer_t ConvertToCharBytes(const QString& from) {
-  QByteArray sUtf8 = from.toUtf8();
-  return MAKE_CHAR_BUFFER_SIZE(sUtf8.constData(), sUtf8.size());
+  QByteArray utf8 = from.toUtf8();
+  return MAKE_CHAR_BUFFER_SIZE(utf8.constData(), utf8.size());
 }
 
 template <typename ch>
@@ -84,13 +84,6 @@ bool ConvertFromBytes(const ByteArray<ch>& value, QString* out) {
 
   *out = QString::fromUtf8(reinterpret_cast<const char*>(value.data()), value.size());
   return true;
-}
-
-QString EscapedText(const QString& str) {
-  if (!str.isEmpty() && str[str.length() - 1] != '\n') {
-    return str + "\n";
-  }
-  return str;
 }
 
 template bool ConvertFromBytes(const ByteArray<char>& value, QString* out);
