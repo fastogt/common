@@ -33,11 +33,11 @@
 
 namespace common {
 
-CompressLZ4EDcoder::CompressLZ4EDcoder() : IEDcoder(ED_LZ4) {}
+CompressLZ4EDcoder::CompressLZ4EDcoder(bool sized) : IEDcoder(ED_LZ4), sized_(sized) {}
 
 Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_LZ4
-  return compress::EncodeLZ4(data, out);
+  return compress::EncodeLZ4(data, sized_, out);
 #else
   UNUSED(data);
   UNUSED(out);
@@ -47,7 +47,7 @@ Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, std::string* out) {
 
 Error CompressLZ4EDcoder::DoDecode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_LZ4
-  return compress::DecodeLZ4(data, out);
+  return compress::DecodeLZ4(data, sized_, out);
 #else
   UNUSED(data);
   UNUSED(out);

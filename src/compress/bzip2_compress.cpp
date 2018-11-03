@@ -41,14 +41,24 @@
 namespace common {
 namespace {
 template <typename CHAR, typename STR2>
-Error EncodeBZip2T(const CHAR* input, size_t input_length, STR2* output) {
+Error EncodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* output) {
   if (!input || !output || input_length > std::numeric_limits<uint32_t>::max()) {
     // Can't compress more than 4GB
     return make_error_inval();
   }
 
-  size_t output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
-  output->resize(output_header_len + input_length);
+  size_t output_header_len;
+  uint32_t output_len = 0;
+  if (sized) {
+    output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
+  } else {
+    output_header_len = 0;
+  }
+
+  // Resize output to be the plain data length.
+  // This may not be big enough if the compression actually expands data.
+  output_len = output_header_len + input_length;
+  output->resize(output_len);
 
   bz_stream _stream;
   memset(&_stream, 0, sizeof(bz_stream));
@@ -69,30 +79,58 @@ Error EncodeBZip2T(const CHAR* input, size_t input_length, STR2* output) {
   _stream.avail_out = static_cast<unsigned int>(input_length);
   _stream.next_out = reinterpret_cast<char*>(&(*output)[output_header_len]);
 
-  st = BZ2_bzCompress(&_stream, BZ_FINISH);
-  if (st == BZ_STREAM_END) {
-    output->resize(output->size() - _stream.avail_out);
-    BZ2_bzCompressEnd(&_stream);
-    return Error();
+  bool done = false;
+  while (!done) {
+    st = BZ2_bzCompress(&_stream, BZ_FINISH);
+    switch (st) {
+      case BZ_STREAM_END:
+        done = true;
+        break;
+      case BZ_OK: {
+        // No output space. Increase the output space by 20%.
+        // We should never run out of output space if
+
+        size_t old_sz = output_len;
+        uint32_t output_len_delta = output_len / 5;
+        output_len += output_len_delta < 10 ? 10 : output_len_delta;
+
+        output->resize(output_len);
+
+        // Set more output.
+        _stream.next_out = reinterpret_cast<char*>(&(*output)[old_sz]);
+        _stream.avail_out = static_cast<unsigned int>(output_len - old_sz);
+        break;
+      }
+      default:
+        delete[] output;
+        BZ2_bzCompressEnd(&_stream);
+        return make_error("ZLIB compress internal error");
+    }
   }
   // The only return value we really care about is BZ_STREAM_END.
   // BZ_FINISH_OK means insufficient output space. This means the compression
   // is bigger than decompressed size. Just fail the compression in that case.
 
+  size_t compressed_size = output_len - _stream.avail_out;
+  output->resize(compressed_size + output_header_len);
   BZ2_bzCompressEnd(&_stream);
-  return make_error("BZip2 compress internal error");
+  return Error();
 }
 
 template <typename CHAR, typename STR2>
-Error DecodeBZip2T(const CHAR* input, size_t input_length, STR2* out) {
+Error DecodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out) {
   if (!input || !out) {
     return make_error_inval();
   }
 
   uint32_t output_len = 0;
-  // new encoding, using varint32 to store size information
-  if (!compress::GetDecompressedSizeInfo(&input, &input_length, &output_len)) {
-    return make_error_inval();
+  if (sized) {
+    // new encoding, using varint32 to store size information
+    if (!compress::GetDecompressedSizeInfo(&input, &input_length, &output_len)) {
+      return make_error_inval();
+    }
+  } else {
+    output_len = input_length;
   }
 
   bz_stream _stream;
@@ -141,9 +179,11 @@ Error DecodeBZip2T(const CHAR* input, size_t input_length, STR2* out) {
     }
   }
 
-  // If we encoded decompressed block size, we should have no bytes left
-  DCHECK_EQ(_stream.avail_out, 0);
-  int decompress_size = static_cast<int>(output_len - _stream.avail_out);
+  if (sized) {
+    // If we encoded decompressed block size, we should have no bytes left
+    DCHECK_EQ(_stream.avail_out, 0);
+  }
+  uint32_t decompress_size = output_len - _stream.avail_out;
   *out = STR2(output, output + decompress_size);
   delete[] output;
   BZ2_bzDecompressEnd(&_stream);
@@ -153,20 +193,20 @@ Error DecodeBZip2T(const CHAR* input, size_t input_length, STR2* out) {
 
 namespace compress {
 
-Error EncodeBZip2(const buffer_t& data, buffer_t* out) {
-  return EncodeBZip2T(data.data(), data.size(), out);
+Error EncodeBZip2(const buffer_t& data, bool sized, buffer_t* out) {
+  return EncodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeBZip2(const buffer_t& data, buffer_t* out) {
-  return DecodeBZip2T(data.data(), data.size(), out);
+Error DecodeBZip2(const buffer_t& data, bool sized, buffer_t* out) {
+  return DecodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error EncodeBZip2(const StringPiece& data, std::string* out) {
-  return EncodeBZip2T(data.data(), data.size(), out);
+Error EncodeBZip2(const StringPiece& data, bool sized, std::string* out) {
+  return EncodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeBZip2(const StringPiece& data, std::string* out) {
-  return DecodeBZip2T(data.data(), data.size(), out);
+Error DecodeBZip2(const StringPiece& data, bool sized, std::string* out) {
+  return DecodeBZip2T(data.data(), data.size(), sized, out);
 }
 
 }  // namespace compress

@@ -32,7 +32,7 @@
 namespace common {
 
 const std::array<const char*, ENCODER_DECODER_NUM_TYPES> edecoder_types = {
-    {"Base64", "GZip", "BZip2", "LZ4", "Snappy", "Hex", "XHex", "Unicode", "UUnicode", "MsgPack", "HtmlEscape"}};
+    {"Base64", "Zlib", "BZip2", "LZ4", "Snappy", "Hex", "XHex", "Unicode", "UUnicode", "MsgPack", "HtmlEscape"}};
 
 std::string ConvertToString(EDType ed_type) {
   if (ed_type >= 0 && ed_type < edecoder_types.size()) {

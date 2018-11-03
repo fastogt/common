@@ -33,11 +33,11 @@
 
 namespace common {
 
-CompressBZip2EDcoder::CompressBZip2EDcoder() : IEDcoder(ED_ZLIB) {}
+CompressBZip2EDcoder::CompressBZip2EDcoder(bool sized) : IEDcoder(ED_ZLIB), sized_(sized) {}
 
 Error CompressBZip2EDcoder::DoEncode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_BZIP2
-  return compress::EncodeBZip2(data, out);
+  return compress::EncodeBZip2(data, sized_, out);
 #else
   UNUSED(data);
   UNUSED(out);
@@ -47,7 +47,7 @@ Error CompressBZip2EDcoder::DoEncode(const StringPiece& data, std::string* out) 
 
 Error CompressBZip2EDcoder::DoDecode(const StringPiece& data, std::string* out) {
 #ifdef HAVE_BZIP2
-  return compress::DecodeBZip2(data, out);
+  return compress::DecodeBZip2(data, sized_, out);
 #else
   UNUSED(data);
   UNUSED(out);

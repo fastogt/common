@@ -37,11 +37,11 @@
 namespace common {
 namespace compress {
 
-Error EncodeLZ4(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeLZ4(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeLZ4(const buffer_t& data, bool sized, buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeLZ4(const buffer_t& data, bool sized, buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeLZ4(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeLZ4(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeLZ4(const StringPiece& data, bool sized, std::string* out) WARN_UNUSED_RESULT;
+Error DecodeLZ4(const StringPiece& data, bool sized, std::string* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

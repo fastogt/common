@@ -40,14 +40,20 @@
 namespace common {
 namespace {
 template <typename CHAR, typename STR2>
-Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
+Error EncodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* output) {
   if (!input || !output || input_length > std::numeric_limits<uint32_t>::max()) {
     // Can't compress more than 4GB
     return make_error_inval();
   }
 
   int stabled_input_size = static_cast<int>(input_length);
-  size_t output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
+  size_t output_header_len;
+  if (sized) {
+    output_header_len = compress::PutDecompressedSizeInfo(output, static_cast<uint32_t>(input_length));
+  } else {
+    output_header_len = 0;
+  }
+
   int compress_bound = LZ4_compressBound(stabled_input_size);
   output->resize(static_cast<size_t>(output_header_len + compress_bound));
 
@@ -75,15 +81,19 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, STR2* output) {
 }
 
 template <typename CHAR, typename STR2>
-Error DecodeLZ4T(const CHAR* input, size_t input_length, STR2* out) {
+Error DecodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* out) {
   if (!input || !out) {
     return make_error_inval();
   }
 
   uint32_t output_len = 0;
-  // new encoding, using varint32 to store size information
-  if (!compress::GetDecompressedSizeInfo(&input, &input_length, &output_len)) {
-    return make_error_inval();
+  if (sized) {
+    // new encoding, using varint32 to store size information
+    if (!compress::GetDecompressedSizeInfo(&input, &input_length, &output_len)) {
+      return make_error_inval();
+    }
+  } else {
+    output_len = input_length * 8;  // may be help
   }
 
   CHAR* output = new CHAR[output_len];
@@ -104,7 +114,9 @@ Error DecodeLZ4T(const CHAR* input, size_t input_length, STR2* out) {
     return make_error("LZ4 decompress_size internal error");
   }
 
-  DCHECK(decompress_size == static_cast<int>(output_len));
+  if (sized) {
+    DCHECK(decompress_size == static_cast<int>(output_len));
+  }
   *out = STR2(output, output + decompress_size);
   delete[] output;
   return Error();
@@ -113,20 +125,20 @@ Error DecodeLZ4T(const CHAR* input, size_t input_length, STR2* out) {
 
 namespace compress {
 
-Error EncodeLZ4(const buffer_t& data, buffer_t* out) {
-  return EncodeLZ4T(data.data(), data.size(), out);
+Error EncodeLZ4(const buffer_t& data, bool sized, buffer_t* out) {
+  return EncodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeLZ4(const buffer_t& data, buffer_t* out) {
-  return DecodeLZ4T(data.data(), data.size(), out);
+Error DecodeLZ4(const buffer_t& data, bool sized, buffer_t* out) {
+  return DecodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error EncodeLZ4(const StringPiece& data, std::string* out) {
-  return EncodeLZ4T(data.data(), data.size(), out);
+Error EncodeLZ4(const StringPiece& data, bool sized, std::string* out) {
+  return EncodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeLZ4(const StringPiece& data, std::string* out) {
-  return DecodeLZ4T(data.data(), data.size(), out);
+Error DecodeLZ4(const StringPiece& data, bool sized, std::string* out) {
+  return DecodeLZ4T(data.data(), data.size(), sized, out);
 }
 
 }  // namespace compress

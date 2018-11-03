@@ -35,11 +35,13 @@ namespace common {
 
 class CompressBZip2EDcoder : public IEDcoder {
  public:
-  CompressBZip2EDcoder();
+  CompressBZip2EDcoder(bool sized = false);
 
  private:
   virtual Error DoEncode(const StringPiece& data, std::string* out) override;
   virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+
+  const bool sized_;
 };
 
 }  // namespace common
