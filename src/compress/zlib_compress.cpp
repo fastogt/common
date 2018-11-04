@@ -85,7 +85,7 @@ Error EncodeZlibT(const CHAR* input,
   }
 
   // Compress the input, and put compressed data in output.
-  _stream.next_in = (Bytef*)(input);
+  _stream.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(input));
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   // Initialize the output size.
@@ -155,7 +155,7 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, bool sized, STR2* out)
     return make_error("ZLIB decompress internal error");
   }
 
-  _stream.next_in = (Bytef*)(input);
+  _stream.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(input));
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   char* output = new char[output_len];

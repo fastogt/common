@@ -58,9 +58,17 @@ Error DecodeSnappyT(const CHAR* input, size_t input_length, STR2* out) {
     return make_error_inval();
   }
 
+  const char* stabled_input = reinterpret_cast<const char*>(input);
   std::string lout;
-  size_t writed_bytes = snappy::Uncompress(reinterpret_cast<const char*>(input), input_length, &lout);
-  if (writed_bytes == 0) {
+  bool is_ok = snappy::Uncompress(stabled_input, input_length, &lout);
+  if (!is_ok) {
+    size_t uncompressed_len;
+    bool get_un = snappy::GetUncompressedLength(stabled_input, input_length, &uncompressed_len);
+    if (get_un) {
+      size_t diff = input_length - uncompressed_len;
+      *out = STR2(stabled_input + diff, stabled_input + input_length);
+      return Error();
+    }
     return make_error_inval();
   }
 

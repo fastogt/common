@@ -72,7 +72,7 @@ Error EncodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
   }
 
   // Compress the input, and put compressed data in output.
-  _stream.next_in = (char*)(input);
+  _stream.next_in = const_cast<char*>(reinterpret_cast<const char*>(input));
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   // Initialize the output size.
@@ -102,7 +102,6 @@ Error EncodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
         break;
       }
       default:
-        delete[] output;
         BZ2_bzCompressEnd(&_stream);
         return make_error("ZLIB compress internal error");
     }
@@ -141,7 +140,7 @@ Error DecodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
     return make_error("BZip2 decompress internal error");
   }
 
-  _stream.next_in = (char*)(input);
+  _stream.next_in = const_cast<char*>(reinterpret_cast<const char*>(input));
   _stream.avail_in = static_cast<unsigned int>(input_length);
 
   char* output = new char[output_len];
