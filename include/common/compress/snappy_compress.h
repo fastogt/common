@@ -37,11 +37,11 @@
 namespace common {
 namespace compress {
 
-Error EncodeSnappy(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeSnappy(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeSnappy(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeSnappy(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeSnappy(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeSnappy(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeSnappy(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeSnappy(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

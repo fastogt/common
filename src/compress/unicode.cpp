@@ -34,7 +34,7 @@
 namespace common {
 namespace compress {
 
-Error EncodeUnicode(const StringPiece16& data, bool is_lower, std::string* out) {
+Error EncodeUnicode(const StringPiece16& data, bool is_lower, char_buffer_t* out) {
   if (!utils::unicode::encode(data, is_lower, out)) {
     return make_error_inval();
   }

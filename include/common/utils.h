@@ -29,6 +29,10 @@
 
 #pragma once
 
+#include <functional>
+#include <string>
+#include <utility>
+
 #include <common/string_piece.h>
 #include <common/types.h>  // for buffer_t, byte_t
 
@@ -101,16 +105,21 @@ struct RuntimeCmp<std::pair<T, U>> : public std::binary_function<const std::pair
 }  // namespace compare
 
 namespace base64 {
-buffer_t encode64(const buffer_t& input);
-std::string encode64(const StringPiece& input);
+bool encode64(const StringPiece& input, char_buffer_t* out);
+bool decode64(const StringPiece& input, char_buffer_t* out);
+bool encode64(const char_buffer_t& input, char_buffer_t* out);
+bool decode64(const char_buffer_t& input, char_buffer_t* out);
 
-buffer_t decode64(const buffer_t& input);
-std::string decode64(const StringPiece& input);
+//
+bool encode64(const StringPiece& input, std::string* out);
+bool encode64(const char_buffer_t& input, std::string* out);
 }  // namespace base64
 
 namespace html {
-std::string encode(const StringPiece& input);
-std::string decode(const StringPiece& input);
+bool encode(const StringPiece& input, char_buffer_t* out);
+bool decode(const StringPiece& input, char_buffer_t* out);
+bool encode(const char_buffer_t& input, char_buffer_t* out);
+bool decode(const char_buffer_t& input, char_buffer_t* out);
 }  // namespace html
 
 char* strdupornull(const std::string& src);

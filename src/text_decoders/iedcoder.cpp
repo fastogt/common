@@ -62,7 +62,7 @@ IEDcoder::~IEDcoder() {}
 
 IEDcoder::IEDcoder(EDType type) : type_(type) {}
 
-Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
+Error IEDcoder::Encode(const StringPiece& data, char_buffer_t* out) {
   if (!out || data.empty()) {
     return make_error_inval();
   }
@@ -70,7 +70,22 @@ Error IEDcoder::Encode(const StringPiece& data, std::string* out) {
   return DoEncode(data, out);
 }
 
-Error IEDcoder::Decode(const StringPiece& data, std::string* out) {
+Error IEDcoder::Decode(const StringPiece& data, char_buffer_t* out) {
+  if (!out || data.empty()) {
+    return make_error_inval();
+  }
+
+  return DoDecode(data, out);
+}
+
+Error IEDcoder::Encode(const char_buffer_t& data, char_buffer_t* out) {
+  if (!out || data.empty()) {
+    return make_error_inval();
+  }
+
+  return DoEncode(data, out);
+}
+Error IEDcoder::Decode(const char_buffer_t& data, char_buffer_t* out) {
   if (!out || data.empty()) {
     return make_error_inval();
   }

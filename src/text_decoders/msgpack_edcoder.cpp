@@ -59,7 +59,7 @@ bool stream_reader(cmp_ctx_t* ctx, void* data, size_t limit) {
 }
 
 size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
-  std::string* out = static_cast<std::string*>(ctx->buf);
+  common::char_buffer_t* out = static_cast<common::char_buffer_t*>(ctx->buf);
   out->append(static_cast<const char*>(data), count);
   return count;
 }
@@ -68,15 +68,11 @@ size_t stream_writer(cmp_ctx_t* ctx, const void* data, size_t count) {
 
 namespace common {
 
-MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(ED_MSG_PACK) {}
-
-Error MsgPackEDcoder::DoEncode(const StringPiece& data, std::string* out) {
-  if (!out || data.empty()) {
-    return make_error_inval();
-  }
-
+namespace {
+template <typename T>
+Error DoEncodeImpl(const T& data, char_buffer_t* out) {
   cmp_ctx_t cmp;
-  std::string lout;
+  char_buffer_t lout;
   cmp_init(&cmp, &lout, nullptr, nullptr, stream_writer);
   bool res = cmp_write_str(&cmp, data.data(), data.size());
   if (!res) {
@@ -86,10 +82,8 @@ Error MsgPackEDcoder::DoEncode(const StringPiece& data, std::string* out) {
   return Error();
 }
 
-Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
-  if (!out || data.empty()) {
-    return make_error_inval();
-  }
+template <typename T>
+Error DoDecodeImpl(const T& data, char_buffer_t* out) {
   cmp_ctx_t cmp;
   char* copy = static_cast<char*>(calloc(data.size() + 1, sizeof(char)));
   if (!copy) {
@@ -100,8 +94,7 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
 
   cmp_init(&cmp, copy, stream_reader, nullptr, nullptr);
 
-  std::string lout;
-
+  char_buffer_t lout;
   while (1) {
     cmp_object_t obj;
 
@@ -135,8 +128,7 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
           free(copy);
           return make_error(cmp_strerror(&cmp));
         }
-        sbuf[obj.as.str_size] = 0;
-        lout += sbuf;
+        lout.append(sbuf, obj.as.str_size);
         break;
       case CMP_TYPE_BIN8:
       case CMP_TYPE_BIN16:
@@ -149,13 +141,13 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
         lout += std::string(sbuf, obj.as.bin_size);
         break;
       case CMP_TYPE_NIL:
-        lout += "NULL";
+        lout.append(MAKE_CHAR_BUFFER("NULL"));
         break;
       case CMP_TYPE_BOOLEAN:
         if (obj.as.boolean) {
-          lout += "true";
+          lout.append(MAKE_CHAR_BUFFER("true"));
         } else {
-          lout += "false";
+          lout.append(MAKE_CHAR_BUFFER("false"));
         }
         break;
       case CMP_TYPE_EXT8:
@@ -186,14 +178,14 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
           }
 
           char buff[32] = {0};
-          SNPrintf(buff, sizeof(buff), "%u/%u/%u", year, month, day);
-          lout += buff;
+          int sz = SNPrintf(buff, sizeof(buff), "%u/%u/%u", year, month, day);
+          lout.append(buff, sz);
         } else {
           while (obj.as.ext.size--) {
             read_bytes(sbuf, sizeof(uint8_t), copy);
             char buff[32] = {0};
-            SNPrintf(buff, sizeof(buff), "%02x ", sbuf[0]);
-            lout += buff;
+            int sz = SNPrintf(buff, sizeof(buff), "%02x ", sbuf[0]);
+            lout.append(buff, sz);
           }
         }
         break;
@@ -211,8 +203,8 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
         break;
       case CMP_TYPE_UINT64: {
         char buff[32] = {0};
-        SNPrintf(buff, sizeof(buff), "%" PRIu64 "", obj.as.u64);
-        lout += buff;
+        int sz = SNPrintf(buff, sizeof(buff), "%" PRIu64 "", obj.as.u64);
+        lout.append(buff, sz);
         break;
       }
       case CMP_TYPE_NEGATIVE_FIXNUM:
@@ -227,8 +219,8 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
         break;
       case CMP_TYPE_SINT64: {
         char buff[32] = {0};
-        SNPrintf(buff, sizeof(buff), "%" PRId64 "", obj.as.s64);
-        lout += buff;
+        int sz = SNPrintf(buff, sizeof(buff), "%" PRId64 "", obj.as.s64);
+        lout.append(buff, sz);
         break;
       }
       default: { return make_error(MemSPrintf("Unrecognized object type %u\n", obj.type)); }
@@ -238,6 +230,25 @@ Error MsgPackEDcoder::DoDecode(const StringPiece& data, std::string* out) {
   *out = lout;
   free(copy);
   return Error();
+}
+}  // namespace
+
+MsgPackEDcoder::MsgPackEDcoder() : IEDcoder(ED_MSG_PACK) {}
+
+Error MsgPackEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
+  return DoEncodeImpl(data, out);
+}
+
+Error MsgPackEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+  return DoDecodeImpl(data, out);
+}
+
+Error MsgPackEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+  return DoEncodeImpl(data, out);
+}
+
+Error MsgPackEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
+  return DoDecodeImpl(data, out);
 }
 
 }  // namespace common

@@ -226,6 +226,58 @@ R do_decode64(const T& input) {
   return decoded;
 }
 
+template <typename R, typename T>
+R do_html_encode(const T& input) {
+  R buffer;
+  buffer.reserve(input.size());
+  for (size_t pos = 0; pos != input.size(); ++pos) {
+    char c = input[pos];
+    switch (c) {
+      case '&':
+        buffer.append(std::string("&amp;"));
+        break;
+      case '\"':
+        buffer.append(std::string("&quot;"));
+        break;
+      case '\'':
+        buffer.append(std::string("&apos;"));
+        break;
+      case '<':
+        buffer.append(std::string("&lt;"));
+        break;
+      case '>':
+        buffer.append(std::string("&gt;"));
+        break;
+      default:
+        buffer += c;
+        break;
+    }
+  }
+
+  return buffer;
+}
+
+template <typename T>
+common::char_buffer_t do_html_decode(const T& input) {
+  std::string str(input.begin(), input.end());
+  static const std::string subs[] = {"& #34;", "&quot;", "& #39;", "&apos;", "& #38;", "&amp;", "& #60;", "&lt;",
+                                     "& #62;", "&gt;",   "&34;",   "&39;",   "&38;",   "&60;",  "&62;"};
+
+  static const std::string reps[] = {"\"", "\"", "'", "'", "&", "&", "<", "<", ">", ">", "\"", "'", "&", "<", ">"};
+
+  size_t found;
+  for (int j = 0; j < 15; ++j) {
+    do {
+      found = str.find(subs[j]);
+      if (found != std::string::npos) {
+        str.replace(found, subs[j].length(), reps[j]);
+      }
+    } while (found != std::string::npos);
+  }
+
+  return MAKE_CHAR_BUFFER_SIZE(str.data(), str.size());
+}
+
 }  // namespace
 
 namespace common {
@@ -249,73 +301,98 @@ uint64_t crc64(uint64_t crc, const buffer_t& data) {
 
 namespace base64 {
 
-std::string encode64(const StringPiece& input) {
-  return do_encode64<std::string>(input);
+bool encode64(const char_buffer_t& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_encode64<char_buffer_t>(input);
+  return true;
 }
 
-std::string decode64(const StringPiece& input) {
-  return do_decode64<std::string>(input);
+bool decode64(const char_buffer_t& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_decode64<char_buffer_t>(input);
+  return true;
 }
 
-buffer_t encode64(const buffer_t& input) {
-  return do_encode64<buffer_t>(input);
+bool encode64(const StringPiece& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_encode64<char_buffer_t>(input);
+  return true;
 }
 
-buffer_t decode64(const buffer_t& input) {
-  return do_decode64<buffer_t>(input);
+bool decode64(const StringPiece& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_decode64<char_buffer_t>(input);
+  return true;
+}
+
+bool encode64(const StringPiece& input, std::string* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_encode64<std::string>(input);
+  return true;
+}
+
+bool encode64(const char_buffer_t& input, std::string* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_encode64<std::string>(input);
+  return true;
 }
 
 }  // namespace base64
 
 namespace html {
 
-std::string encode(const StringPiece& input) {
-  std::string buffer;
-  buffer.reserve(input.size());
-  for (size_t pos = 0; pos != input.size(); ++pos) {
-    char c = input[pos];
-    switch (c) {
-      case '&':
-        buffer.append("&amp;");
-        break;
-      case '\"':
-        buffer.append("&quot;");
-        break;
-      case '\'':
-        buffer.append("&apos;");
-        break;
-      case '<':
-        buffer.append("&lt;");
-        break;
-      case '>':
-        buffer.append("&gt;");
-        break;
-      default:
-        buffer += c;
-        break;
-    }
+bool encode(const StringPiece& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
   }
-  return buffer;
+
+  *out = do_html_encode<char_buffer_t>(input);
+  return true;
 }
 
-std::string decode(const StringPiece& input) {
-  std::string str(input.begin(), input.end());
-  std::string subs[] = {"& #34;", "&quot;", "& #39;", "&apos;", "& #38;", "&amp;", "& #60;", "&lt;",
-                        "& #62;", "&gt;",   "&34;",   "&39;",   "&38;",   "&60;",  "&62;"};
-
-  std::string reps[] = {"\"", "\"", "'", "'", "&", "&", "<", "<", ">", ">", "\"", "'", "&", "<", ">"};
-
-  size_t found;
-  for (int j = 0; j < 15; ++j) {
-    do {
-      found = str.find(subs[j]);
-      if (found != std::string::npos) {
-        str.replace(found, subs[j].length(), reps[j]);
-      }
-    } while (found != std::string::npos);
+bool decode(const StringPiece& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
   }
 
-  return str;
+  *out = do_html_decode(input);
+  return true;
+}
+
+bool encode(const char_buffer_t& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_html_encode<char_buffer_t>(input);
+  return true;
+}
+
+bool decode(const char_buffer_t& input, char_buffer_t* out) {
+  if (input.empty() || !out) {
+    return false;
+  }
+
+  *out = do_html_decode(input);
+  return true;
 }
 
 }  // namespace html

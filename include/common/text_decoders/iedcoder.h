@@ -30,9 +30,11 @@
 #pragma once
 
 #include <array>
+#include <string>
 
 #include <common/error.h>  // for Error
 #include <common/string_piece.h>
+#include <common/types.h>
 
 namespace common {
 
@@ -54,8 +56,11 @@ extern const std::array<const char*, ENCODER_DECODER_NUM_TYPES> edecoder_types;
 
 class IEDcoder {
  public:
-  Error Encode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
-  Error Decode(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+  Error Encode(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+  Error Decode(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+  Error Encode(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+  Error Decode(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+
   EDType GetType() const;
 
   virtual ~IEDcoder();
@@ -64,8 +69,10 @@ class IEDcoder {
   explicit IEDcoder(EDType type);
 
  private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) = 0;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) = 0;
+  virtual Error DoEncode(const StringPiece& data, char_buffer_t* out) = 0;
+  virtual Error DoDecode(const StringPiece& data, char_buffer_t* out) = 0;
+  virtual Error DoEncode(const char_buffer_t& data, char_buffer_t* out) = 0;
+  virtual Error DoDecode(const char_buffer_t& data, char_buffer_t* out) = 0;
 
   const EDType type_;
 };

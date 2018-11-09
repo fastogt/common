@@ -1,3 +1,32 @@
+/*  Copyright (C) 2014-2017 FastoGT. All right reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of FastoGT. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <gtest/gtest.h>
 
 #include <common/text_decoders/base64_edcoder.h>
@@ -15,87 +44,87 @@
 /*TEST(msg_pack, in_enc_dec) {
   const std::string raw_data = "alex aalex talex 123 balex";
   common::MsgPackEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Decode(raw_data, &enc_data);
   ASSERT_TRUE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Encode(enc_data, &dec_data);
   ASSERT_TRUE(err);
 }*/
 
 TEST(msg_pack, enc_dec) {
-  const std::string raw_data = "alex aalex talex 123 balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex 123 balex");
   common::MsgPackEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
 TEST(html, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::HtmlEscEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
 TEST(hex, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::HexEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
 TEST(xhex, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::HexEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Decode(raw_data, &enc_data);
   ASSERT_TRUE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Encode(enc_data, &dec_data);
   ASSERT_TRUE(err);
 }
 
 TEST(unicode, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::UnicodeEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
 }
 
 TEST(base64, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::Base64EDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
@@ -103,13 +132,13 @@ TEST(base64, enc_dec) {
 
 #ifdef HAVE_ZLIB
 TEST(zlib, enc_dec) {
-  const std::string raw_data = "alex aalex talex balexalex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balexalex aalex talex balex");
   common::CompressZlibEDcoder zl(false);
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
@@ -118,13 +147,14 @@ TEST(zlib, enc_dec) {
 
 #ifdef HAVE_BZIP2
 TEST(bzip2, enc_dec) {
-  const std::string raw_data = "alex aalex talex balexalex aalex talex balexalex aalex talex balex";
+  const common::char_buffer_t raw_data =
+      MAKE_CHAR_BUFFER("alex aalex talex balexalex aalex talex balexalex aalex talex balex");
   common::CompressBZip2EDcoder bz;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = bz.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = bz.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
@@ -133,13 +163,13 @@ TEST(bzip2, enc_dec) {
 
 #ifdef HAVE_LZ4
 TEST(lz4, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::CompressLZ4EDcoder lz4;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = lz4.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = lz4.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);
@@ -148,13 +178,13 @@ TEST(lz4, enc_dec) {
 
 #ifdef HAVE_SNAPPY
 TEST(snappy, enc_dec) {
-  const std::string raw_data = "alex aalex talex balex";
+  const common::char_buffer_t raw_data = MAKE_CHAR_BUFFER("alex aalex talex balex");
   common::CompressSnappyEDcoder zl;
-  std::string enc_data;
+  common::char_buffer_t enc_data;
   common::Error err = zl.Encode(raw_data, &enc_data);
   ASSERT_FALSE(err);
 
-  std::string dec_data;
+  common::char_buffer_t dec_data;
   err = zl.Decode(enc_data, &dec_data);
   ASSERT_FALSE(err);
   ASSERT_EQ(raw_data, dec_data);

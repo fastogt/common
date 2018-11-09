@@ -37,19 +37,35 @@ namespace common {
 
 UUnicodeEDcoder::UUnicodeEDcoder(bool is_lower) : IEDcoder(ED_UUNICODE), is_lower_(is_lower) {}
 
-Error UUnicodeEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error UUnicodeEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
   string16 sdata = ConvertToString16(data);
   return compress::EncodeUUnicode(sdata, is_lower_, out);
 }
 
-Error UUnicodeEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error UUnicodeEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
   string16 sdata;
   Error err = compress::DecodeUUnicode(data, &sdata);
   if (err) {
     return err;
   }
 
-  *out = ConvertToString(sdata);
+  *out = ConvertToCharBytes(sdata);
+  return Error();
+}
+
+Error UUnicodeEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+  string16 sdata = ConvertToString16(data);
+  return compress::EncodeUUnicode(sdata, is_lower_, out);
+}
+
+Error UUnicodeEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
+  string16 sdata;
+  Error err = compress::DecodeUUnicode(StringPiece(data.data(), data.size()), &sdata);
+  if (err) {
+    return err;
+  }
+
+  *out = ConvertToCharBytes(sdata);
   return Error();
 }
 

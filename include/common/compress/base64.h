@@ -36,11 +36,11 @@
 namespace common {
 namespace compress {
 
-Error EncodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeBase64(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeBase64(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBase64(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeBase64(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeBase64(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeBase64(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBase64(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

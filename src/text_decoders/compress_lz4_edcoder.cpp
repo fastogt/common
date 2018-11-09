@@ -35,7 +35,7 @@ namespace common {
 
 CompressLZ4EDcoder::CompressLZ4EDcoder(bool sized) : IEDcoder(ED_LZ4), sized_(sized) {}
 
-Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
 #ifdef HAVE_LZ4
   return compress::EncodeLZ4(data, sized_, out);
 #else
@@ -45,7 +45,27 @@ Error CompressLZ4EDcoder::DoEncode(const StringPiece& data, std::string* out) {
 #endif
 }
 
-Error CompressLZ4EDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error CompressLZ4EDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+#ifdef HAVE_LZ4
+  return compress::DecodeLZ4(data, sized_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB decode not supported");
+#endif
+}
+
+Error CompressLZ4EDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+#ifdef HAVE_LZ4
+  return compress::EncodeLZ4(data, sized_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB encode not supported");
+#endif
+}
+
+Error CompressLZ4EDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
 #ifdef HAVE_LZ4
   return compress::DecodeLZ4(data, sized_, out);
 #else

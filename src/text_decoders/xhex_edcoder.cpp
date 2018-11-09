@@ -35,11 +35,19 @@ namespace common {
 
 XHexEDcoder::XHexEDcoder(bool is_lower) : IEDcoder(ED_XHEX), is_lower_(is_lower) {}
 
-Error XHexEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error XHexEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
   return compress::EncodeXHex(data, is_lower_, out);
 }
 
-Error XHexEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error XHexEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+  return compress::DecodeXHex(data, out);
+}
+
+Error XHexEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+  return compress::EncodeXHex(data, is_lower_, out);
+}
+
+Error XHexEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
   return compress::DecodeXHex(data, out);
 }
 

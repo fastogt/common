@@ -37,11 +37,11 @@
 namespace common {
 namespace compress {
 
-Error EncodeBZip2(const buffer_t& data, bool sized, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeBZip2(const buffer_t& data, bool sized, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeBZip2(const StringPiece& data, bool sized, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBZip2(const StringPiece& data, bool sized, char_buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeBZip2(const StringPiece& data, bool sized, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeBZip2(const StringPiece& data, bool sized, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeBZip2(const char_buffer_t& data, bool sized, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeBZip2(const char_buffer_t& data, bool sized, char_buffer_t* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

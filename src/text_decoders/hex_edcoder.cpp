@@ -35,11 +35,19 @@ namespace common {
 
 HexEDcoder::HexEDcoder(bool is_lower) : IEDcoder(ED_HEX), is_lower_(is_lower) {}
 
-Error HexEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error HexEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
   return compress::EncodeHex(data, is_lower_, out);
 }
 
-Error HexEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error HexEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+  return compress::DecodeHex(data, out);
+}
+
+Error HexEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+  return compress::EncodeHex(data, is_lower_, out);
+}
+
+Error HexEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
   return compress::DecodeHex(data, out);
 }
 

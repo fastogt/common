@@ -34,7 +34,7 @@
 namespace common {
 namespace compress {
 
-Error EncodeXHex(const StringPiece& data, bool is_lower, std::string* out) {
+Error EncodeXHex(const StringPiece& data, bool is_lower, char_buffer_t* out) {
   if (!utils::xhex::encode(data, is_lower, out)) {
     return make_error_inval();
   }
@@ -42,15 +42,7 @@ Error EncodeXHex(const StringPiece& data, bool is_lower, std::string* out) {
   return Error();
 }
 
-Error EncodeXHex(const buffer_t& data, bool is_lower, buffer_t* out) {
-  if (utils::xhex::encode(data, is_lower, out)) {
-    return make_error_inval();
-  }
-
-  return Error();
-}
-
-Error DecodeXHex(const buffer_t& data, buffer_t* out) {
+Error DecodeXHex(const StringPiece& data, char_buffer_t* out) {
   if (!utils::xhex::decode(data, out)) {
     return make_error_inval();
   }
@@ -58,7 +50,15 @@ Error DecodeXHex(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
-Error DecodeXHex(const StringPiece& data, std::string* out) {
+Error EncodeXHex(const char_buffer_t& data, bool is_lower, char_buffer_t* out) {
+  if (!utils::xhex::encode(data, is_lower, out)) {
+    return make_error_inval();
+  }
+
+  return Error();
+}
+
+Error DecodeXHex(const char_buffer_t& data, char_buffer_t* out) {
   if (!utils::xhex::decode(data, out)) {
     return make_error_inval();
   }

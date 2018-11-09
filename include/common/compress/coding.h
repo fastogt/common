@@ -36,8 +36,7 @@
 namespace common {
 namespace compress {
 
-size_t PutDecompressedSizeInfo(std::string* output, uint32_t length);
-size_t PutDecompressedSizeInfo(buffer_t* output, uint32_t length);
+size_t PutDecompressedSizeInfo(char_buffer_t* output, uint32_t length);
 
 bool GetDecompressedSizeInfo(const char** input_data, size_t* input_length, uint32_t* output_len);
 bool GetDecompressedSizeInfo(const unsigned char** input_data, size_t* input_length, uint32_t* output_len);

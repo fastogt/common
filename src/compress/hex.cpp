@@ -34,7 +34,7 @@
 namespace common {
 namespace compress {
 
-Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) {
+Error EncodeHex(const StringPiece& data, bool is_lower, char_buffer_t* out) {
   if (!utils::hex::encode(data, is_lower, out)) {
     return make_error_inval();
   }
@@ -42,15 +42,7 @@ Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) {
   return Error();
 }
 
-Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) {
-  if (!utils::hex::encode(data, is_lower, out)) {
-    return make_error_inval();
-  }
-
-  return Error();
-}
-
-Error DecodeHex(const buffer_t& data, buffer_t* out) {
+Error DecodeHex(const StringPiece& data, char_buffer_t* out) {
   if (!utils::hex::decode(data, out)) {
     return make_error_inval();
   }
@@ -58,7 +50,15 @@ Error DecodeHex(const buffer_t& data, buffer_t* out) {
   return Error();
 }
 
-Error DecodeHex(const StringPiece& data, std::string* out) {
+Error EncodeHex(const char_buffer_t& data, bool is_lower, char_buffer_t* out) {
+  if (!utils::hex::encode(data, is_lower, out)) {
+    return make_error_inval();
+  }
+
+  return Error();
+}
+
+Error DecodeHex(const char_buffer_t& data, char_buffer_t* out) {
   if (!utils::hex::decode(data, out)) {
     return make_error_inval();
   }

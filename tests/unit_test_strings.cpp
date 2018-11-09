@@ -197,7 +197,7 @@ TEST(string, StringPiece) {
 }
 
 TEST(string, HexCompress) {
-  const common::buffer_t json = MAKE_BUFFER(
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
       "{\"back_end_credentials\" : {\"creds\" :\
       { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
       \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
@@ -205,18 +205,18 @@ TEST(string, HexCompress) {
       \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
       \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
       \"type\" : \"1\"},\"type\" : \"relay\"}");
-  common::buffer_t encoded_hex;
+  common::char_buffer_t encoded_hex;
   common::Error err = common::compress::EncodeHex(json, false, &encoded_hex);
   ASSERT_FALSE(err);
 
-  common::buffer_t decoded;
+  common::char_buffer_t decoded;
   err = common::compress::DecodeHex(encoded_hex, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
 
 TEST(string, Base64Compress) {
-  const common::buffer_t json = MAKE_BUFFER(
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
       "{\"back_end_credentials\" : {\"creds\" :\
                   { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
                   \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
@@ -224,24 +224,32 @@ TEST(string, Base64Compress) {
                   \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
                   \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
                   \"type\" : \"1\"},\"type\" : \"relay\"}");
-  common::buffer_t encoded_base64;
-  common::Error err = common::compress::EncodeBase64(json, &encoded_base64);
+  common::char_buffer_t encoded;
+  common::Error err = common::compress::EncodeBase64(json, &encoded);
   ASSERT_FALSE(err);
 
-  common::buffer_t decoded;
-  err = common::compress::DecodeBase64(encoded_base64, &decoded);
+  common::char_buffer_t decoded;
+  err = common::compress::DecodeBase64(encoded, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 
-  common::buffer_t dec;
+  common::char_buffer_t dec;
   err = common::compress::DecodeBase64(
-      MAKE_BUFFER("eNqryslMUsgsVkhUKChKLSmpVEjPz09RSM7PBXKLizPz8xQSc9LzizJLMnIBYDYQeQ=="), &dec);
+      MAKE_CHAR_BUFFER("eNqryslMUsgsVkhUKChKLSmpVEjPz09RSM7PBXKLizPz8xQSc9LzizJLMnIBYDYQeQ=="), &dec);
   ASSERT_FALSE(err);
+
+  const common::char_buffer_t bytes = {-11, 22, 0, 33, 55, 14};
+  err = common::compress::EncodeBase64(bytes, &encoded);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeBase64(encoded, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(bytes, decoded);
 }
 
 #ifdef HAVE_ZLIB
 TEST(string, ZlibCompress) {
-  const common::buffer_t json = MAKE_BUFFER(
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
       "{\"back_end_credentials\" : {\"creds\" :\
                       { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
                       \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
@@ -249,16 +257,16 @@ TEST(string, ZlibCompress) {
                       \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
                       \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
                       \"type\" : \"1\"},\"type\" : \"relay\"}");
-  common::buffer_t encoded_gzip;
+  common::char_buffer_t encoded_gzip;
   common::Error err = common::compress::EncodeZlib(json, true, 16, &encoded_gzip);
   ASSERT_FALSE(err);
 
-  common::buffer_t decoded;
+  common::char_buffer_t decoded;
   err = common::compress::DecodeZlib(encoded_gzip, true, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 
-  common::buffer_t encoded_zlib;
+  common::char_buffer_t encoded_zlib;
   err = common::compress::EncodeZlib(json, true, 0, &encoded_zlib);
   ASSERT_FALSE(err);
 
@@ -267,9 +275,9 @@ TEST(string, ZlibCompress) {
   ASSERT_EQ(json, decoded);
 
   // gzip
-  const std::string origin_gzip = "gzip is a pretty good compression algorithm";
+  const common::char_buffer_t origin_gzip = MAKE_CHAR_BUFFER("gzip is a pretty good compression algorithm");
 
-  std::string encoded_gzip_str;
+  common::char_buffer_t encoded_gzip_str;
   err = common::compress::EncodeZlib(origin_gzip, false, 16, &encoded_gzip_str);
   ASSERT_FALSE(err);
 
@@ -280,19 +288,19 @@ TEST(string, ZlibCompress) {
       0x32, 0x4b, 0x32, 0x72, 0x01, 0x94, 0x23, 0x72, 0x68, 0x2b, 0x00, 0x00, 0x00};
   ASSERT_TRUE(gzip_enc_python.size() == 61);
 
-  common::buffer_t dec_gzip;
-  err = common::compress::DecodeZlib(gzip_enc_python, false, &dec_gzip);
+  common::char_buffer_t dec_gzip;
+  err = common::compress::DecodeZlib(common::ConvertToCharBytes(gzip_enc_python), false, &dec_gzip);
   ASSERT_FALSE(err);
 
-  std::string dec_gzip_out;
+  common::char_buffer_t dec_gzip_out;
   err = common::compress::DecodeZlib(encoded_gzip_str, false, &dec_gzip_out);
   ASSERT_FALSE(err);
   ASSERT_EQ(dec_gzip_out, origin_gzip);
 
   // zlib
-  const std::string origin_zlib = "zlib is a pretty good compression algorithm";
+  const common::char_buffer_t origin_zlib = MAKE_CHAR_BUFFER("zlib is a pretty good compression algorithm");
 
-  std::string encoded_zlib_str;
+  common::char_buffer_t encoded_zlib_str;
   err = common::compress::EncodeZlib(origin_zlib, false, 0, &encoded_zlib_str);
   ASSERT_FALSE(err);
 
@@ -302,11 +310,11 @@ TEST(string, ZlibCompress) {
       0x14, 0x12, 0x73, 0xd2, 0xf3, 0x8b, 0x32, 0x4b, 0x32, 0x72, 0x01, 0x60, 0x36, 0x10, 0x79};
   ASSERT_TRUE(zlib_enc_python.size() == 49);
 
-  common::buffer_t dec_zlib;
-  err = common::compress::DecodeZlib(zlib_enc_python, false, &dec_zlib);
+  common::char_buffer_t dec_zlib;
+  err = common::compress::DecodeZlib(common::ConvertToCharBytes(zlib_enc_python), false, &dec_zlib);
   ASSERT_FALSE(err);
 
-  std::string dec_zlib_out;
+  common::char_buffer_t dec_zlib_out;
   err = common::compress::DecodeZlib(encoded_zlib_str, false, &dec_zlib_out);
   ASSERT_FALSE(err);
   ASSERT_EQ(dec_zlib_out, origin_zlib);
@@ -315,19 +323,19 @@ TEST(string, ZlibCompress) {
 
 #ifdef HAVE_SNAPPY
 TEST(string, SnappyCompress) {
-  const std::string json =
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
       "{\"back_end_credentials\" : {\"creds\" :\
                       { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
                       \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
                       \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
                       \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
                       \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
-                      \"type\" : \"1\"},\"type\" : \"relay\"}";
-  std::string encoded_snappy;
+                      \"type\" : \"1\"},\"type\" : \"relay\"}");
+  common::char_buffer_t encoded_snappy;
   common::Error err = common::compress::EncodeSnappy(json, &encoded_snappy);
   ASSERT_FALSE(err);
 
-  std::string decoded;
+  common::char_buffer_t decoded;
   err = common::compress::DecodeSnappy(encoded_snappy, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
@@ -336,7 +344,7 @@ TEST(string, SnappyCompress) {
 
 TEST(Utils, hex) {
   const std::string invalid_hex = "C";
-  std::string invalid_dec;
+  common::char_buffer_t invalid_dec;
   bool is_ok = common::utils::hex::decode(invalid_hex, &invalid_dec);
   ASSERT_FALSE(is_ok);
 
@@ -348,46 +356,46 @@ TEST(Utils, hex) {
   is_ok = common::utils::hex::decode(empty_hex, &invalid_dec);
   ASSERT_FALSE(is_ok);
 
-  const common::buffer_t hex = MAKE_BUFFER("CDFF");
-  common::buffer_t dec;
+  const common::char_buffer_t hex = MAKE_CHAR_BUFFER("CDFF");
+  common::char_buffer_t dec;
   is_ok = common::utils::hex::decode(hex, &dec);
   ASSERT_TRUE(is_ok);
 
   ASSERT_EQ(dec.size(), 2);
-  ASSERT_EQ(dec[0], 0xCD);
-  ASSERT_EQ(dec[1], 0xFF);
+  ASSERT_EQ((unsigned char)dec[0], 0xCD);
+  ASSERT_EQ((unsigned char)dec[1], 0xFF);
 
-  common::buffer_t enc;
+  common::char_buffer_t enc;
   is_ok = common::utils::hex::encode(dec, false, &enc);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(hex, enc);
 
-  const common::buffer_t hex2 = MAKE_BUFFER("11ff");
+  const common::char_buffer_t hex2 = MAKE_CHAR_BUFFER("11ff");
   is_ok = common::utils::hex::decode(hex2, &dec);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(dec.size(), 2);
-  ASSERT_EQ(dec[0], 0x11);
-  ASSERT_EQ(dec[1], 0xFF);
+  ASSERT_EQ((unsigned char)dec[0], 0x11);
+  ASSERT_EQ((unsigned char)dec[1], 0xFF);
 
   common::utils::hex::encode(dec, true, &enc);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(hex2, enc);
 
-  const common::buffer_t seq = MAKE_BUFFER("1234567890");
+  const std::string seq = "1234567890";
   const common::buffer_t dec_seq = {18, 52, 86, 120, 144};
-  common::buffer_t dec2;
+  common::char_buffer_t dec2;
   is_ok = common::utils::hex::decode(seq, &dec2);
   ASSERT_TRUE(is_ok);
-  ASSERT_EQ(dec_seq, dec2);
+  ASSERT_EQ(common::ConvertToCharBytes(dec_seq), dec2);
 
-  common::buffer_t enc2;
+  std::string enc2;
   is_ok = common::utils::hex::encode(dec2, false, &enc2);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(seq, enc2);
 
   const common::buffer_t dec_seq_x = {103, 101, 116, 32, 39, 00, 171, 32, 39};
-  const common::buffer_t dec_seq_x2 = MAKE_BUFFER("get '\x00\xAB\x20'");
-  ASSERT_EQ(dec_seq_x, dec_seq_x2);
+  const common::char_buffer_t dec_seq_x2 = MAKE_CHAR_BUFFER("get '\x00\xAB\x20'");
+  ASSERT_EQ(common::ConvertToCharBytes(dec_seq_x), dec_seq_x2);
 
   const std::string bin_data_x = std::string("get '\x00\xAB\x20'", 9);
   const std::string bin_data_x_fail = R"(get '\x00\xAB\x20')";
@@ -400,20 +408,20 @@ TEST(Utils, hex) {
   ASSERT_TRUE(common::ConvertFromString(dec_seq_x_str, &dec_seq_x3));
   ASSERT_EQ(dec_seq_x, dec_seq_x3);
 
-  common::buffer_t enc_bin_x;
-  is_ok = common::utils::hex::encode(dec_seq_x, true, &enc_bin_x);
+  common::char_buffer_t enc_bin_x;
+  is_ok = common::utils::hex::encode(common::ConvertToCharBytes(dec_seq_x), true, &enc_bin_x);
   ASSERT_TRUE(is_ok);
-  common::buffer_t dec_bin_x;
+  common::char_buffer_t dec_bin_x;
   is_ok = common::utils::hex::decode(enc_bin_x, &dec_bin_x);
-  ASSERT_EQ(dec_seq_x, dec_bin_x);
+  ASSERT_EQ(common::ConvertToCharBytes(dec_seq_x), dec_bin_x);
 
-  std::string enc_bin_x2;
+  common::char_buffer_t enc_bin_x2;
   is_ok = common::utils::hex::encode(bin_data_x, true, &enc_bin_x2);
   ASSERT_TRUE(is_ok);
-  std::string dec_bin_x2;
+  common::char_buffer_t dec_bin_x2;
   is_ok = common::utils::hex::decode(enc_bin_x2, &dec_bin_x2);
   ASSERT_TRUE(is_ok);
-  ASSERT_EQ(bin_data_x, dec_bin_x2);
+  ASSERT_EQ(bin_data_x, common::ConvertToString(dec_bin_x2));
 }
 
 TEST(ConvertFromString, boolean) {
@@ -733,13 +741,13 @@ TEST(ConvertToString, hex) {
   common::string16 utf = common::UTF8ToUTF16("你好");
   ASSERT_EQ(utf.size(), 2);
 
-  std::string unicoded;
+  common::char_buffer_t unicoded;
   is_ok = common::utils::unicode::encode(utf, true, &unicoded);
   ASSERT_TRUE(is_ok);
-  ASSERT_EQ("4f60597d", unicoded);
+  ASSERT_EQ(MAKE_CHAR_BUFFER("4f60597d"), unicoded);
 
   common::string16 decoded32;
-  is_ok = common::utils::unicode::decode(unicoded, &decoded32);
+  is_ok = common::utils::unicode::decode(common::ConvertToString(unicoded), &decoded32);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(decoded32, utf);
 }

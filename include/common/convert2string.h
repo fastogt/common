@@ -29,6 +29,9 @@
 
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <common/string_piece.h>
 #include <common/types.h>
 
@@ -195,36 +198,42 @@ bool ConvertFromBytes(const ByteArray<ch>& from, double* out) WARN_UNUSED_RESULT
 namespace utils {
 namespace hex {
 
-bool encode(const buffer_t& input, bool is_lower, buffer_t* out);
-bool encode(const StringPiece& input, bool is_lower, std::string* out);
+bool encode(const StringPiece& input, bool is_lower, char_buffer_t* out);
+bool decode(const StringPiece& input, char_buffer_t* out);
 
-bool decode(const buffer_t& input, buffer_t* out);
-bool decode(const StringPiece& input, std::string* out);
+bool encode(const char_buffer_t& input, bool is_lower, char_buffer_t* out);
+bool decode(const char_buffer_t& input, char_buffer_t* out);
+
+//
+bool encode(const StringPiece& input, bool is_lower, std::string* out);
+bool encode(const char_buffer_t& input, bool is_lower, std::string* out);
 
 }  // namespace hex
 
 namespace xhex {
 
-bool encode(const buffer_t& input, bool is_lower, buffer_t* out);
-bool encode(const std::vector<char>& input, bool is_lower, std::vector<char>* out);
-bool encode(const StringPiece& input, bool is_lower, std::string* out);
+bool encode(const StringPiece& input, bool is_lower, char_buffer_t* out);
+bool decode(const StringPiece& input, char_buffer_t* out);
 
-bool decode(const buffer_t& input, buffer_t* out);
-bool decode(const std::vector<char>& input, std::vector<char>* out);
-bool decode(const StringPiece& input, std::string* out);
+bool encode(const char_buffer_t& input, bool is_lower, char_buffer_t* out);
+bool decode(const char_buffer_t& input, char_buffer_t* out);
+
+//
+bool encode(const StringPiece& input, bool is_lower, std::string* out);
+bool encode(const char_buffer_t& input, bool is_lower, std::string* out);
 
 }  // namespace xhex
 
 namespace unicode {
 
-bool encode(const StringPiece16& input, bool is_lower, std::string* out);
+bool encode(const StringPiece16& input, bool is_lower, char_buffer_t* out);
 bool decode(const StringPiece& input, string16* out);
 
 }  // namespace unicode
 
 namespace uunicode {
 
-bool encode(const StringPiece16& input, bool is_lower, std::string* out);
+bool encode(const StringPiece16& input, bool is_lower, char_buffer_t* out);
 bool decode(const StringPiece& input, string16* out);
 
 }  // namespace uunicode

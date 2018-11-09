@@ -38,11 +38,11 @@
 namespace common {
 namespace compress {
 
-Error EncodeHex(const buffer_t& data, bool is_lower, buffer_t* out) WARN_UNUSED_RESULT;
-Error DecodeHex(const buffer_t& data, buffer_t* out) WARN_UNUSED_RESULT;
+Error EncodeHex(const StringPiece& data, bool is_lower, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeHex(const StringPiece& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
-Error EncodeHex(const StringPiece& data, bool is_lower, std::string* out) WARN_UNUSED_RESULT;
-Error DecodeHex(const StringPiece& data, std::string* out) WARN_UNUSED_RESULT;
+Error EncodeHex(const char_buffer_t& data, bool is_lower, char_buffer_t* out) WARN_UNUSED_RESULT;
+Error DecodeHex(const char_buffer_t& data, char_buffer_t* out) WARN_UNUSED_RESULT;
 
 }  // namespace compress
 }  // namespace common

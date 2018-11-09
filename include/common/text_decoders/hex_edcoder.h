@@ -35,11 +35,13 @@ namespace common {
 
 class HexEDcoder : public IEDcoder {
  public:
-  HexEDcoder(bool is_lower = true);
+  explicit HexEDcoder(bool is_lower = true);
 
  private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+  Error DoEncode(const StringPiece& data, char_buffer_t* out) override;
+  Error DoDecode(const StringPiece& data, char_buffer_t* out) override;
+  Error DoEncode(const char_buffer_t& data, char_buffer_t* out) override;
+  Error DoDecode(const char_buffer_t& data, char_buffer_t* out) override;
 
   const bool is_lower_;
 };

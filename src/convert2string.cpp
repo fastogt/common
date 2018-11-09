@@ -1772,54 +1772,62 @@ bool ConvertFromBytes(const ByteArray<ch>& from, double* out) {
 namespace utils {
 namespace hex {
 
-bool encode(const buffer_t& input, bool is_lower, buffer_t* out) {
+bool encode(const char_buffer_t& input, bool is_lower, char_buffer_t* out) {
   return do_hex_encode(input, is_lower, out);
+}
+
+bool encode(const StringPiece& input, bool is_lower, char_buffer_t* out) {
+  return do_hex_encode(input, is_lower, out);
+}
+
+bool decode(const char_buffer_t& input, char_buffer_t* out) {
+  return do_hex_decode(input, out);
+}
+
+bool decode(const StringPiece& input, char_buffer_t* out) {
+  return do_hex_decode(input, out);
 }
 
 bool encode(const StringPiece& input, bool is_lower, std::string* out) {
   return do_hex_encode(input, is_lower, out);
 }
 
-bool decode(const buffer_t& input, buffer_t* out) {
-  return do_hex_decode(input, out);
-}
-
-bool decode(const StringPiece& input, std::string* out) {
-  return do_hex_decode(input, out);
+bool encode(const char_buffer_t& input, bool is_lower, std::string* out) {
+  return do_hex_encode(input, is_lower, out);
 }
 
 }  // namespace hex
 
 namespace xhex {
 
-bool encode(const buffer_t& input, bool is_lower, buffer_t* out) {
+bool encode(const StringPiece& input, bool is_lower, char_buffer_t* out) {
   return do_xhex_encode(input, is_lower, out);
 }
 
-bool encode(const std::vector<char>& input, bool is_lower, std::vector<char>* out) {
+bool decode(const StringPiece& input, char_buffer_t* out) {
+  return do_xhex_decode(input, out);
+}
+
+bool encode(const char_buffer_t& input, bool is_lower, char_buffer_t* out) {
   return do_xhex_encode(input, is_lower, out);
+}
+
+bool decode(const char_buffer_t& input, char_buffer_t* out) {
+  return do_xhex_decode(input, out);
 }
 
 bool encode(const StringPiece& input, bool is_lower, std::string* out) {
   return do_xhex_encode(input, is_lower, out);
 }
 
-bool decode(const buffer_t& input, buffer_t* out) {
-  return do_xhex_decode(input, out);
-}
-
-bool decode(const std::vector<char>& input, std::vector<char>* out) {
-  return do_xhex_decode(input, out);
-}
-
-bool decode(const StringPiece& input, std::string* out) {
-  return do_xhex_decode(input, out);
+bool encode(const char_buffer_t& input, bool is_lower, std::string* out) {
+  return do_xhex_encode(input, is_lower, out);
 }
 
 }  // namespace xhex
 
 namespace unicode {
-bool encode(const StringPiece16& input, bool is_lower, std::string* out) {
+bool encode(const StringPiece16& input, bool is_lower, char_buffer_t* out) {
   return do_unicode_encode(input, is_lower, out);
 }
 
@@ -1829,7 +1837,7 @@ bool decode(const StringPiece& input, string16* out) {
 }  // namespace unicode
 
 namespace uunicode {
-bool encode(const StringPiece16& input, bool is_lower, std::string* out) {
+bool encode(const StringPiece16& input, bool is_lower, char_buffer_t* out) {
   return do_uunicode_encode(input, is_lower, out);
 }
 

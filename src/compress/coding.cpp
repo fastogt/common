@@ -92,14 +92,7 @@ const CHART* GetVarint32Ptr(const CHART* p, const CHART* limit, uint32_t* value)
 namespace common {
 namespace compress {
 
-size_t PutDecompressedSizeInfo(std::string* output, uint32_t length) {
-  char buf[5];
-  char* ptr = EncodeVarint32(buf, length);
-  output->append(buf, static_cast<size_t>(ptr - buf));
-  return output->size();
-}
-
-size_t PutDecompressedSizeInfo(buffer_t* output, uint32_t length) {
+size_t PutDecompressedSizeInfo(char_buffer_t* output, uint32_t length) {
   char buf[5];
   char* ptr = EncodeVarint32(buf, length);
   std::string str(buf, static_cast<size_t>(ptr - buf));

@@ -208,19 +208,19 @@ Error DecodeZlibT(const CHAR* input, size_t input_length, bool sized, STR2* out)
 }
 }  // namespace
 
-Error EncodeZlib(const buffer_t& data, bool sized, uint8_t def, buffer_t* out, int compression_level) {
+Error EncodeZlib(const StringPiece& data, bool sized, uint8_t def, char_buffer_t* out, int compression_level) {
   return EncodeZlibT(data.data(), data.size(), sized, def, out, compression_level);
 }
 
-Error DecodeZlib(const buffer_t& data, bool sized, buffer_t* out) {
+Error DecodeZlib(const StringPiece& data, bool sized, char_buffer_t* out) {
   return DecodeZlibT(data.data(), data.size(), sized, out);
 }
 
-Error EncodeZlib(const StringPiece& data, bool sized, uint8_t def, std::string* out, int compression_level) {
+Error EncodeZlib(const char_buffer_t& data, bool sized, uint8_t def, char_buffer_t* out, int compression_level) {
   return EncodeZlibT(data.data(), data.size(), sized, def, out, compression_level);
 }
 
-Error DecodeZlib(const StringPiece& data, bool sized, std::string* out) {
+Error DecodeZlib(const char_buffer_t& data, bool sized, char_buffer_t* out) {
   return DecodeZlibT(data.data(), data.size(), sized, out);
 }
 

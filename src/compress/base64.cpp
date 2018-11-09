@@ -34,39 +34,43 @@
 namespace common {
 namespace compress {
 
-Error EncodeBase64(const buffer_t& data, buffer_t* out) {
-  if (data.empty() || !out) {
+Error EncodeBase64(const StringPiece& data, char_buffer_t* out) {
+  char_buffer_t lout;
+  if (!utils::base64::encode64(data, &lout)) {
     return make_error_inval();
   }
 
-  *out = utils::base64::encode64(data);
+  *out = lout;
   return Error();
 }
 
-Error DecodeBase64(const buffer_t& data, buffer_t* out) {
-  if (data.empty() || !out) {
+Error DecodeBase64(const StringPiece& data, char_buffer_t* out) {
+  char_buffer_t lout;
+  if (!utils::base64::decode64(data, &lout)) {
     return make_error_inval();
   }
 
-  *out = utils::base64::decode64(data);
+  *out = lout;
   return Error();
 }
 
-Error EncodeBase64(const StringPiece& data, std::string* out) {
-  if (data.empty() || !out) {
+Error EncodeBase64(const char_buffer_t& data, char_buffer_t* out) {
+  char_buffer_t lout;
+  if (!utils::base64::encode64(data, &lout)) {
     return make_error_inval();
   }
 
-  *out = utils::base64::encode64(data);
+  *out = lout;
   return Error();
 }
 
-Error DecodeBase64(const StringPiece& data, std::string* out) {
-  if (data.empty() || !out) {
+Error DecodeBase64(const char_buffer_t& data, char_buffer_t* out) {
+  char_buffer_t lout;
+  if (!utils::base64::decode64(data, &lout)) {
     return make_error_inval();
   }
 
-  *out = utils::base64::decode64(data);
+  *out = lout;
   return Error();
 }
 

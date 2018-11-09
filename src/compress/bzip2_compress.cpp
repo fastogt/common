@@ -192,19 +192,19 @@ Error DecodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
 
 namespace compress {
 
-Error EncodeBZip2(const buffer_t& data, bool sized, buffer_t* out) {
+Error EncodeBZip2(const StringPiece& data, bool sized, char_buffer_t* out) {
   return EncodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeBZip2(const buffer_t& data, bool sized, buffer_t* out) {
+Error DecodeBZip2(const StringPiece& data, bool sized, char_buffer_t* out) {
   return DecodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error EncodeBZip2(const StringPiece& data, bool sized, std::string* out) {
+Error EncodeBZip2(const char_buffer_t& data, bool sized, char_buffer_t* out) {
   return EncodeBZip2T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeBZip2(const StringPiece& data, bool sized, std::string* out) {
+Error DecodeBZip2(const char_buffer_t& data, bool sized, char_buffer_t* out) {
   return DecodeBZip2T(data.data(), data.size(), sized, out);
 }
 

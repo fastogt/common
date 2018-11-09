@@ -35,7 +35,7 @@ namespace common {
 
 CompressBZip2EDcoder::CompressBZip2EDcoder(bool sized) : IEDcoder(ED_ZLIB), sized_(sized) {}
 
-Error CompressBZip2EDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error CompressBZip2EDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
 #ifdef HAVE_BZIP2
   return compress::EncodeBZip2(data, sized_, out);
 #else
@@ -45,7 +45,27 @@ Error CompressBZip2EDcoder::DoEncode(const StringPiece& data, std::string* out) 
 #endif
 }
 
-Error CompressBZip2EDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error CompressBZip2EDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+#ifdef HAVE_BZIP2
+  return compress::DecodeBZip2(data, sized_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_BZIP2 decode not supported");
+#endif
+}
+
+Error CompressBZip2EDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+#ifdef HAVE_BZIP2
+  return compress::EncodeBZip2(data, sized_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_BZIP2 encode not supported");
+#endif
+}
+
+Error CompressBZip2EDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
 #ifdef HAVE_BZIP2
   return compress::DecodeBZip2(data, sized_, out);
 #else

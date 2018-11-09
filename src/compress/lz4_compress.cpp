@@ -105,19 +105,19 @@ Error DecodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* out) 
 
 namespace compress {
 
-Error EncodeLZ4(const buffer_t& data, bool sized, buffer_t* out) {
+Error EncodeLZ4(const StringPiece& data, bool sized, char_buffer_t* out) {
   return EncodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeLZ4(const buffer_t& data, bool sized, buffer_t* out) {
+Error DecodeLZ4(const StringPiece& data, bool sized, char_buffer_t* out) {
   return DecodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error EncodeLZ4(const StringPiece& data, bool sized, std::string* out) {
+Error EncodeLZ4(const char_buffer_t& data, bool sized, char_buffer_t* out) {
   return EncodeLZ4T(data.data(), data.size(), sized, out);
 }
 
-Error DecodeLZ4(const StringPiece& data, bool sized, std::string* out) {
+Error DecodeLZ4(const char_buffer_t& data, bool sized, char_buffer_t* out) {
   return DecodeLZ4T(data.data(), data.size(), sized, out);
 }
 

@@ -36,7 +36,7 @@ namespace common {
 CompressZlibEDcoder::CompressZlibEDcoder(bool sized, ZlibDeflates def)
     : IEDcoder(ED_ZLIB), sized_(sized), deflate_(def) {}
 
-Error CompressZlibEDcoder::DoEncode(const StringPiece& data, std::string* out) {
+Error CompressZlibEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
 #ifdef HAVE_ZLIB
   return compress::EncodeZlib(data, sized_, deflate_, out);
 #else
@@ -46,7 +46,27 @@ Error CompressZlibEDcoder::DoEncode(const StringPiece& data, std::string* out) {
 #endif
 }
 
-Error CompressZlibEDcoder::DoDecode(const StringPiece& data, std::string* out) {
+Error CompressZlibEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
+#ifdef HAVE_ZLIB
+  return compress::DecodeZlib(data, sized_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB decode not supported");
+#endif
+}
+
+Error CompressZlibEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
+#ifdef HAVE_ZLIB
+  return compress::EncodeZlib(data, sized_, deflate_, out);
+#else
+  UNUSED(data);
+  UNUSED(out);
+  return make_error("ED_ZLIB encode not supported");
+#endif
+}
+
+Error CompressZlibEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
 #ifdef HAVE_ZLIB
   return compress::DecodeZlib(data, sized_, out);
 #else

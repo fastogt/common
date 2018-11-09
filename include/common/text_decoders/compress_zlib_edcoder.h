@@ -36,11 +36,13 @@ namespace common {
 class CompressZlibEDcoder : public IEDcoder {
  public:
   enum ZlibDeflates : uint8_t { ZLIB_DEFLATE = 0, GZIP_DEFLATE = 16 };
-  CompressZlibEDcoder(bool sized = false, ZlibDeflates def = ZLIB_DEFLATE);
+  explicit CompressZlibEDcoder(bool sized = false, ZlibDeflates def = ZLIB_DEFLATE);
 
  private:
-  virtual Error DoEncode(const StringPiece& data, std::string* out) override;
-  virtual Error DoDecode(const StringPiece& data, std::string* out) override;
+  Error DoEncode(const StringPiece& data, char_buffer_t* out) override;
+  Error DoDecode(const StringPiece& data, char_buffer_t* out) override;
+  Error DoEncode(const char_buffer_t& data, char_buffer_t* out) override;
+  Error DoDecode(const char_buffer_t& data, char_buffer_t* out) override;
 
   const bool sized_;
   const ZlibDeflates deflate_;

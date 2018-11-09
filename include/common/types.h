@@ -56,8 +56,7 @@ class ByteArray : public std::vector<T> {
   ByteArray(it begin, it end) : base_class(begin, end) {}
   ByteArray(std::initializer_list<T> t) : base_class(t) {}
 
-  template <typename U>
-  ByteArray(const std::vector<U>& rhs) : base_class(rhs) {}
+  ByteArray(const base_class& rhs) : base_class(rhs) {}
 
   ByteArray(const self_type&) = default;
   ByteArray& operator=(const self_type&) = default;
@@ -65,6 +64,18 @@ class ByteArray : public std::vector<T> {
   inline void append(unsigned char t) { base_class::push_back(t); }
 
   inline void append(char t) { base_class::push_back(t); }
+
+  inline void append(const unsigned char* obj, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+      append(obj[i]);
+    }
+  }
+
+  inline void append(const char* obj, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+      append(obj[i]);
+    }
+  }
 
   template <typename ch>
   inline void append(const std::vector<ch>& obj) {
@@ -136,7 +147,7 @@ std::ostream& operator<<(std::ostream& out, const common::char_buffer_t& buff);
 #define MAKE_BUFFER(STR) MAKE_BUFFER_SIZE(STR, sizeof(STR) - 1)
 
 #define MAKE_CHAR_BUFFER_SIZE(STR, SIZE) common::char_buffer_t(STR, STR + SIZE)
-#define MAKE_CHAR_BUFFER(STR) MAKE_BUFFER_SIZE(STR, sizeof(STR) - 1)
+#define MAKE_CHAR_BUFFER(STR) MAKE_CHAR_BUFFER_SIZE(STR, sizeof(STR) - 1)
 
 #define MAKE_STRING_SIZE(STR, SIZE) std::string(STR, STR + SIZE)
 #define MAKE_STRING(STR) MAKE_STRING_SIZE(STR, sizeof(STR) - 1)

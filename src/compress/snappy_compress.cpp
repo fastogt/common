@@ -79,19 +79,19 @@ Error DecodeSnappyT(const CHAR* input, size_t input_length, STR2* out) {
 
 namespace compress {
 
-Error EncodeSnappy(const buffer_t& data, buffer_t* out) {
+Error EncodeSnappy(const StringPiece& data, char_buffer_t* out) {
   return EncodeSnappyT(data.data(), data.size(), out);
 }
 
-Error DecodeSnappy(const buffer_t& data, buffer_t* out) {
+Error DecodeSnappy(const StringPiece& data, char_buffer_t* out) {
   return DecodeSnappyT(data.data(), data.size(), out);
 }
 
-Error EncodeSnappy(const StringPiece& data, std::string* out) {
+Error EncodeSnappy(const char_buffer_t& data, char_buffer_t* out) {
   return EncodeSnappyT(data.data(), data.size(), out);
 }
 
-Error DecodeSnappy(const StringPiece& data, std::string* out) {
+Error DecodeSnappy(const char_buffer_t& data, char_buffer_t* out) {
   return DecodeSnappyT(data.data(), data.size(), out);
 }
 
