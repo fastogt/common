@@ -31,10 +31,10 @@
 
 #include <stdarg.h>  // for va_list, va_end, va_start
 
+#include <string>
 #include <vector>
 
 #include <common/string_piece.h>  // for StringPiece, StringPiece16
-#include <common/types.h>
 
 namespace common {
 
@@ -491,9 +491,6 @@ string16 JoinString(const std::vector<string16>& parts, StringPiece16 separator)
 std::string JoinString(const std::vector<StringPiece>& parts, StringPiece separator);
 string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separator);
 
-char_buffer_t JoinString(const std::vector<char_buffer_t>& parts, char_buffer_t separator);
-buffer_t JoinString(const std::vector<buffer_t>& parts, buffer_t separator);
-
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
 // decide between the string and StringPiece overloads).
@@ -522,8 +519,6 @@ string16 ReplaceStringPlaceholders(const string16& format_string, const string16
 // ? matches 0 or 1 character, while * matches 0 or more characters.
 bool MatchPattern(const StringPiece& string, const StringPiece& pattern);
 bool MatchPattern(const string16& string, const string16& pattern);
-bool MatchPattern(const buffer_t& string, const buffer_t& pattern);
-bool MatchPattern(const char_buffer_t& string, const char_buffer_t& pattern);
 
 // Hack to convert any char-like type to its unsigned counterpart.
 // For example, it will convert char, signed char and unsigned char to unsigned

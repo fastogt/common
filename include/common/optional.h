@@ -34,6 +34,7 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 #include <common/macros.h>
 
@@ -211,7 +212,7 @@ class Optional {
     // TODO(mlamouri): add the following assert when possible:
     // static_assert(std::is_copy_constructible<T>::value,
     //               "T must be copy constructible");
-    static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+    COMPILE_ASSERT((std::is_convertible<U, T>::value), "U must be convertible to T");
     return storage_.is_null_ ? static_cast<T>(std::forward<U>(default_value)) : value();
   }
   template <class U>
@@ -219,7 +220,7 @@ class Optional {
     // TODO(mlamouri): add the following assert when possible:
     // static_assert(std::is_move_constructible<T>::value,
     //               "T must be move constructible");
-    static_assert(std::is_convertible<U, T>::value, "U must be convertible to T");
+    COMPILE_ASSERT((std::is_convertible<U, T>::value), "U must be convertible to T");
     return storage_.is_null_ ? static_cast<T>(std::forward<U>(default_value)) : std::move(value());
   }
   void swap(Optional& other) {

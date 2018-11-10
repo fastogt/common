@@ -256,8 +256,7 @@ void immediate_exit();
 #define COMPILE_ASSERT(expr, msg) static_assert(expr, msg)
 
 #define SIZEOF_DATA_MUST_BE(str, size) \
-  COMPILE_ASSERT(sizeof(str) == size, "sizeof " STRINGIZE(str) " must be " STRINGIZE(size) " byte" \
-                                                                                           "!")
+  COMPILE_ASSERT(sizeof(str) == size, "sizeof " STRINGIZE(str) " must be " STRINGIZE(size) " byte!")
 
 // Used to explicitly mark the return value of a function as unused. If you are
 // really sure you don't want to do anything with the return value of a function

@@ -47,9 +47,9 @@ class ByteArray : public std::vector<T> {
  public:
   typedef std::vector<T> base_class;
   typedef ByteArray<T> self_type;
-  typedef typename ByteArray::value_type value_type;
-  typedef typename ByteArray::iterator iterator;
-  typedef typename ByteArray::const_iterator const_iterator;
+  typedef typename base_class::value_type value_type;
+  typedef typename base_class::iterator iterator;
+  typedef typename base_class::const_iterator const_iterator;
 
   ByteArray() : base_class() {}
   template <typename it>

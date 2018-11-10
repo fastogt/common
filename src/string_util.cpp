@@ -651,14 +651,6 @@ string16 JoinString(const std::vector<StringPiece16>& parts, StringPiece16 separ
   return JoinStringT(parts, separator);
 }
 
-common::char_buffer_t JoinString(const std::vector<char_buffer_t>& parts, char_buffer_t separator) {
-  return JoinStringTEX(parts, separator);
-}
-
-common::buffer_t JoinString(const std::vector<common::buffer_t>& parts, common::buffer_t separator) {
-  return JoinStringTEX(parts, separator);
-}
-
 std::string JoinString(std::initializer_list<StringPiece> parts, StringPiece separator) {
   return JoinStringT(parts, separator);
 }
@@ -905,18 +897,6 @@ bool MatchPattern(const StringPiece& eval, const StringPiece& pattern) {
 bool MatchPattern(const string16& eval, const string16& pattern) {
   return MatchPatternT(eval.c_str(), eval.c_str() + eval.size(), pattern.c_str(), pattern.c_str() + pattern.size(), 0,
                        NextCharUTF16());
-}
-
-bool MatchPattern(const buffer_t& eval, const buffer_t& pattern) {
-  return MatchPatternT(reinterpret_cast<const char*>(eval.data()),
-                       reinterpret_cast<const char*>(eval.data()) + eval.size(),
-                       reinterpret_cast<const char*>(pattern.data()),
-                       reinterpret_cast<const char*>(pattern.data()) + pattern.size(), 0, NextCharUTF8());
-}
-
-bool MatchPattern(const char_buffer_t& eval, const char_buffer_t& pattern) {
-  return MatchPatternT(eval.data(), eval.data() + eval.size(), pattern.data(), pattern.data() + pattern.size(), 0,
-                       NextCharUTF8());
 }
 
 // The following code is compatible with the OpenBSD lcpy interface.  See:
