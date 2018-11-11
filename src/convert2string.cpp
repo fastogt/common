@@ -29,6 +29,8 @@
 
 #include <common/convert2string.h>
 
+#include <math.h>
+
 #include <algorithm>
 #include <limits>
 
@@ -688,44 +690,14 @@ Buffer ConvertToBytesT(unsigned long long value) {
 
 template <typename Buffer>
 Buffer ConvertToBytesT(float value, int prec) {
-  char buffer[16];
-  int res = 0;
-  if (prec == 0) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.0f", value);
-  } else if (prec == 1) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.1f", value);
-  } else if (prec == 2) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.2f", value);
-  } else if (prec == 3) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.3f", value);
-  } else if (prec == 4) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.4f", value);
-  } else {
-    res = SNPrintf(buffer, sizeof(buffer), "%f", value);
-  }
-
-  return Buffer(buffer, buffer + res);
+  const std::string str = ConvertToString(value, prec);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(double value, int prec) {
-  char buffer[32];
-  int res = 0;
-  if (prec == 0) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.0lf", value);
-  } else if (prec == 1) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.1lf", value);
-  } else if (prec == 2) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.2lf", value);
-  } else if (prec == 3) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.3lf", value);
-  } else if (prec == 4) {
-    res = SNPrintf(buffer, sizeof(buffer), "%.4lf", value);
-  } else {
-    res = SNPrintf(buffer, sizeof(buffer), "%lf", value);
-  }
-
-  return Buffer(buffer, buffer + res);
+  const std::string str = ConvertToString(value, prec);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 }  // namespace
@@ -1138,6 +1110,13 @@ std::string ConvertToString(unsigned long long value) {
 }
 
 std::string ConvertToString(float value, int prec) {
+  if (value == std::numeric_limits<float>::infinity()) {
+    return PPLUS_INF;
+  }
+  if (value == std::numeric_limits<float>::infinity()) {
+    return MINUS_INF;
+  }
+
   char buffer[16];
   if (prec == 0) {
     SNPrintf(buffer, sizeof(buffer), "%.0f", value);
@@ -1157,6 +1136,13 @@ std::string ConvertToString(float value, int prec) {
 }
 
 std::string ConvertToString(double value, int prec) {
+  if (value == std::numeric_limits<double>::infinity()) {
+    return PPLUS_INF;
+  }
+  if (value == std::numeric_limits<double>::infinity()) {
+    return MINUS_INF;
+  }
+
   char buffer[32];
   if (prec == 0) {
     SNPrintf(buffer, sizeof(buffer), "%.0lf", value);
@@ -1373,7 +1359,23 @@ bool ConvertFromString(const std::string& from, float* out) {
     return false;
   }
 
-  *out = atof(from.c_str());
+  if (from == PLUS_INF || from == PPLUS_INF) {
+    *out = std::numeric_limits<float>::infinity();
+    return true;
+  }
+
+  if (from == MINUS_INF) {
+    *out = -std::numeric_limits<float>::infinity();
+    return true;
+  }
+
+  char* endptr;
+  errno = 0;
+  float d = strtod(from.c_str(), &endptr);
+  if (from.c_str() == endptr || (errno == ERANGE && d == HUGE_VAL) || (errno == ERANGE && d == 0.0)) {
+    return false;
+  }
+  *out = d;
   return true;
 }
 
@@ -1382,7 +1384,23 @@ bool ConvertFromString(const std::string& from, double* out) {
     return false;
   }
 
-  *out = atof(from.c_str());
+  if (from == PLUS_INF || from == PPLUS_INF) {
+    *out = std::numeric_limits<double>::infinity();
+    return true;
+  }
+
+  if (from == MINUS_INF) {
+    *out = -std::numeric_limits<double>::infinity();
+    return true;
+  }
+
+  char* endptr;
+  errno = 0;
+  double d = strtod(from.c_str(), &endptr);
+  if (from.c_str() == endptr || (errno == ERANGE && d == HUGE_VAL) || (errno == ERANGE && d == 0.0)) {
+    return false;
+  }
+  *out = d;
   return true;
 }
 
@@ -1749,22 +1767,12 @@ bool ConvertFromBytes(const ByteArray<ch>& from, unsigned long long* out) {
 
 template <typename ch>
 bool ConvertFromBytes(const ByteArray<ch>& from, float* out) {
-  if (!out) {
-    return false;
-  }
-
-  *out = atof(reinterpret_cast<const char*>(from.data()));
-  return true;
+  return ConvertFromString(ConvertToString(from), out);  // more readable
 }
 
 template <typename ch>
 bool ConvertFromBytes(const ByteArray<ch>& from, double* out) {
-  if (!out) {
-    return false;
-  }
-
-  *out = atof(reinterpret_cast<const char*>(from.data()));
-  return true;
+  return ConvertFromString(ConvertToString(from), out);  // more readable
 }
 
 //

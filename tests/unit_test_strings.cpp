@@ -651,6 +651,13 @@ TEST(ConvertFromString, double) {
 
   ASSERT_TRUE(common::ConvertFromString("0.0000000000000001", &val));
   ASSERT_DOUBLE_EQ(val, 0.0000000000000001);
+
+  ASSERT_TRUE(common::ConvertFromBytes(MAKE_BUFFER(PPLUS_INF), &val));
+  ASSERT_EQ(val, std::numeric_limits<double>::infinity());
+  ASSERT_EQ(common::ConvertToCharBytes(val), MAKE_CHAR_BUFFER(PPLUS_INF));
+  ASSERT_TRUE(common::ConvertFromBytes(MAKE_BUFFER(MINUS_INF), &val));
+  ASSERT_EQ(val, -std::numeric_limits<double>::infinity());
+  ASSERT_EQ(common::ConvertToCharBytes(val), MAKE_CHAR_BUFFER(MINUS_INF));
 }
 
 TEST(ConvertToString, boolean) {
