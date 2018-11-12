@@ -59,10 +59,10 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* outpu
 
   const char* stabled_input = reinterpret_cast<const char*>(input);
   char* stabled_output = reinterpret_cast<char*>(&(*output)[output_header_len]);
-#if LZ4_VERSION_NUMBER >= 10700 // r129+
+#if LZ4_VERSION_NUMBER >= 10700  // r129+
   int outlen = LZ4_compress_default(stabled_input, stabled_output, stabled_input_size, compress_bound);
 #else
-  int outlen = LZ4_compress(stabled_input, stabled_output, stabled_input_size, compress_bound);
+  int outlen = LZ4_compress(stabled_input, stabled_output, stabled_input_size);
 #endif
 
   if (outlen == 0) {
