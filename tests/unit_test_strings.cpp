@@ -242,6 +242,9 @@ TEST(string, Base64Compress) {
   err = common::compress::EncodeBase64(bytes, &encoded);
   ASSERT_FALSE(err);
 
+  err = common::compress::DecodeBase64({-11, 22, 0, 33, 55, 14}, &decoded);
+  ASSERT_TRUE(err);
+
   err = common::compress::DecodeBase64(encoded, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(bytes, decoded);

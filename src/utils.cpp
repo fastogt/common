@@ -35,6 +35,8 @@
 #include <sys/stat.h>  // for umask
 #include <unistd.h>    // for fork, close, getpid, setsid, sysconf, _SC_...
 
+#include "third-party/modp_b64/modp_b64.h"
+
 #ifndef UINT64_C
 #define UINT64_C(val) val##ULL
 #endif
@@ -130,100 +132,33 @@ const uint64_t crc64_tab[256] = {
     UINT64_C(0x29b7d047efec8728),
 };
 
-const char alphabet64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-const char pad = '=';
-const char np = static_cast<char>(std::string::npos);
-char table64vals[] = {62, np, np, np, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, np, np, np, np, np,
-                      np, np, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17,
-                      18, 19, 20, 21, 22, 23, 24, 25, np, np, np, np, np, np, 26, 27, 28, 29, 30, 31,
-                      32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
+template <typename R, typename T>
+void do_encode64(const T& input, R* output) {
+  R temp;
+  temp.resize(modp_b64_encode_len(input.size()));  // makes room for null byte
 
-char table64(unsigned char c) {
-  return (c < 43 || c > 122) ? np : table64vals[c - 43];
+  // modp_b64_encode_len() returns at least 1, so temp[0] is safe to use.
+  size_t output_size = modp_b64_encode(&(temp[0]), input.data(), input.size());
+
+  temp.resize(output_size);  // strips off null byte
+  output->swap(temp);
 }
 
 template <typename R, typename T>
-R do_encode64(const T& input) {
-  typedef typename T::value_type value_type;
-  R encoded;
-  value_type c;
-  const typename T::size_type length = input.size();
+bool do_decode64(const T& input, R* output) {
+  R temp;
+  temp.resize(modp_b64_decode_len(input.size()));
 
-  encoded.reserve(length * 2);
-
-  for (typename T::size_type i = 0; i < length; ++i) {
-    c = static_cast<value_type>((input[i] >> 2) & 0x3f);
-    encoded.push_back(alphabet64[c]);
-    c = static_cast<value_type>((input[i] << 4) & 0x3f);
-
-    if (++i < length) {
-      c = static_cast<value_type>(c | static_cast<value_type>((input[i] >> 4) & 0x0f));
-    }
-
-    encoded.push_back(alphabet64[c]);
-
-    if (i < length) {
-      c = static_cast<value_type>((input[i] << 2) & 0x3c);
-      if (++i < length) {
-        c = static_cast<value_type>(c | static_cast<value_type>((input[i] >> 6) & 0x03));
-      }
-
-      encoded.push_back(alphabet64[c]);
-    } else {
-      ++i;
-      encoded.push_back(pad);
-    }
-
-    if (i < length) {
-      c = static_cast<value_type>(input[i] & 0x3f);
-      encoded.push_back(alphabet64[c]);
-    } else {
-      encoded.push_back(pad);
-    }
+  // does not null terminate result since result is binary data!
+  size_t input_size = input.size();
+  ssize_t output_size = modp_b64_decode(&(temp[0]), input.data(), input_size);
+  if (output_size == MODP_B64_ERROR) {
+    return false;
   }
 
-  return encoded;
-}
-
-template <typename R, typename T>
-R do_decode64(const T& input) {
-  typedef typename T::value_type value_type;
-  value_type c, d;
-  const typename T::size_type length = input.size();
-  R decoded;
-
-  decoded.reserve(length);
-
-  for (typename T::size_type i = 0; i < length; ++i) {
-    c = table64(input[i]);
-    ++i;
-    d = table64(input[i]);
-    c = static_cast<value_type>((c << 2) | ((d >> 4) & 0x3));
-    decoded.push_back(c);
-    if (++i < length) {
-      c = input[i];
-      if (pad == c) {
-        break;
-      }
-
-      c = table64(input[i]);
-      d = static_cast<value_type>(((d << 4) & 0xf0) | ((c >> 2) & 0xf));
-      decoded.push_back(d);
-    }
-
-    if (++i < length) {
-      d = input[i];
-      if (pad == d) {
-        break;
-      }
-
-      d = table64(input[i]);
-      c = static_cast<value_type>(((c << 6) & 0xc0) | d);
-      decoded.push_back(c);
-    }
-  }
-
-  return decoded;
+  temp.resize(output_size);
+  output->swap(temp);
+  return true;
 }
 
 template <typename R, typename T>
@@ -306,7 +241,7 @@ bool encode64(const char_buffer_t& input, char_buffer_t* out) {
     return false;
   }
 
-  *out = do_encode64<char_buffer_t>(input);
+  do_encode64(input, out);
   return true;
 }
 
@@ -315,8 +250,7 @@ bool decode64(const char_buffer_t& input, char_buffer_t* out) {
     return false;
   }
 
-  *out = do_decode64<char_buffer_t>(input);
-  return true;
+  return do_decode64(input, out);
 }
 
 bool encode64(const StringPiece& input, char_buffer_t* out) {
@@ -324,7 +258,7 @@ bool encode64(const StringPiece& input, char_buffer_t* out) {
     return false;
   }
 
-  *out = do_encode64<char_buffer_t>(input);
+  do_encode64(input, out);
   return true;
 }
 
@@ -333,8 +267,7 @@ bool decode64(const StringPiece& input, char_buffer_t* out) {
     return false;
   }
 
-  *out = do_decode64<char_buffer_t>(input);
-  return true;
+  return do_decode64(input, out);
 }
 
 bool encode64(const StringPiece& input, std::string* out) {
@@ -342,7 +275,7 @@ bool encode64(const StringPiece& input, std::string* out) {
     return false;
   }
 
-  *out = do_encode64<std::string>(input);
+  do_encode64(input, out);
   return true;
 }
 
@@ -351,7 +284,7 @@ bool encode64(const char_buffer_t& input, std::string* out) {
     return false;
   }
 
-  *out = do_encode64<std::string>(input);
+  do_encode64(input, out);
   return true;
 }
 
