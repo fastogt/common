@@ -43,7 +43,7 @@ class ErrorBase {
   typedef trait trait_type;
   typedef void payload_type;
 
-  ErrorBase(error_code_type error_code) : error_code_(error_code), user_data_(nullptr) {}
+  explicit ErrorBase(error_code_type error_code) : error_code_(error_code), user_data_(nullptr) {}
   std::string GetDescription() const { return trait_type::GetTextFromErrorCode(error_code_); }
   error_code_type GetErrorCode() const { return error_code_; }
 
@@ -61,11 +61,13 @@ enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2, COMMON
 struct CommonErrorTraits {
   static std::string GetTextFromErrorCode(CommonErrorCode error);
 };
+
 class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
  public:
   typedef ErrorBase<CommonErrorCode, CommonErrorTraits> base_class;
-  ErrorValue(CommonErrorCode error_code) : base_class(error_code), text_error_description_() {}
-  ErrorValue(const std::string& description) : base_class(COMMON_TEXT_ERROR), text_error_description_(description) {}
+  explicit ErrorValue(CommonErrorCode error_code) : base_class(error_code), text_error_description_() {}
+  explicit ErrorValue(const std::string& description)
+      : base_class(COMMON_TEXT_ERROR), text_error_description_(description) {}
 
   bool IsTextError() const { return GetErrorCode() == COMMON_TEXT_ERROR; }
 
@@ -93,7 +95,7 @@ struct ErrnoTraits {
 class ErrnoErrorValue : public ErrorBase<int, ErrnoTraits> {
  public:
   typedef ErrorBase<int, ErrnoTraits> base_class;
-  ErrnoErrorValue(int error_code) : base_class(error_code), text_error_description_() {}
+  explicit ErrnoErrorValue(int error_code) : base_class(error_code), text_error_description_() {}
   ErrnoErrorValue(const std::string& description, int error_code)
       : base_class(error_code), text_error_description_(description) {}
 

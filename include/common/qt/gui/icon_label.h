@@ -57,8 +57,6 @@ class IconLabel : public QWidget {
   void setElideMode(Qt::TextElideMode);
 
  private:
-  void init(const QIcon& icon, const QSize& icon_size, const QString& text);
-
   QLabel* icon_;
   QLabel* text_;
   Qt::TextElideMode el_mode_;

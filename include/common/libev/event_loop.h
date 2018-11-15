@@ -100,7 +100,7 @@ class LibEvLoop {
   bool IsRunning() const;  // can be called only in LoopThread
 
  protected:
-  LibEvLoop(struct ev_loop* loop);
+  explicit LibEvLoop(struct ev_loop* loop);
 
  private:
   void Start();

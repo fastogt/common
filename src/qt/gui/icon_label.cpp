@@ -37,25 +37,19 @@ namespace common {
 namespace qt {
 namespace gui {
 
-IconLabel::IconLabel(QWidget* parent) : QWidget(parent), icon_(nullptr), text_(nullptr), el_mode_(Qt::ElideNone) {
-  init(QIcon(), QSize(), QString());
-}
+IconLabel::IconLabel(QWidget* parent) : IconLabel(QIcon(), QSize(), QString(), parent) {}
 
 IconLabel::IconLabel(const QIcon& icon, const QSize& icon_size, const QString& text, QWidget* parent)
     : QWidget(parent), icon_(nullptr), text_(nullptr), el_mode_(Qt::ElideNone) {
-  init(icon, icon_size, text);
-}
-
-void IconLabel::init(const QIcon& icon, const QSize& icon_size, const QString& text) {
-  QHBoxLayout* mainL = new QHBoxLayout;
+  QHBoxLayout* main_layout = new QHBoxLayout;
   icon_ = new QLabel;
   text_ = new QLabel;
-  mainL->addWidget(icon_);
-  mainL->addWidget(text_);
+  main_layout->addWidget(icon_);
+  main_layout->addWidget(text_);
 
   setText(text);
   setIcon(icon, icon_size);
-  setLayout(mainL);
+  setLayout(main_layout);
 }
 
 void IconLabel::setWordWrap(bool on) {
