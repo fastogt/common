@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <string>
 
 #include <common/error.h>
 #include <common/sprintf.h>
@@ -78,7 +79,7 @@ Error ParseCommand(const std::string& command, cmd_id_t* cmd_id, cmd_seq_t* seq_
 template <cmd_id_t cmd_id>
 class InnerCmd {
  public:
-  InnerCmd(cmd_seq_t id, const std::string& cmd) : id_(id), cmd_(cmd) {}
+  InnerCmd(const cmd_seq_t& id, const std::string& cmd) : id_(id), cmd_(cmd) {}
 
   static cmd_id_t GetType() { return cmd_id; }
 

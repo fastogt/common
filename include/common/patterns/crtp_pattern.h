@@ -45,7 +45,7 @@ class object_counter {
  protected:
   object_counter() { ++object_counter<T, count_t>::count_; }
 
-  object_counter(const object_counter<T>&) { ++object_counter<T, count_t>::count_; }
+  explicit object_counter(const object_counter<T>&) { ++object_counter<T, count_t>::count_; }
 
   object_counter& operator=(const object_counter&) {
     ++object_counter<T, count_t>::count_;
