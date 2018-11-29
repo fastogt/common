@@ -44,7 +44,7 @@ namespace {
 // The argument `table' must be an array that is large enough to hold all
 // the possible values of an unsigned char.  Thus it should be be declared
 // as follows:
-//   bool table[UCHAR_MAX + 1]
+// bool table[UCHAR_MAX + 1]
 inline void BuildLookupTable(const StringPiece& characters_wanted, bool* table) {
   const size_t length = characters_wanted.length();
   const char* const data = characters_wanted.data();

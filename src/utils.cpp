@@ -156,7 +156,7 @@ bool do_decode64(const T& input, R* output) {
     return false;
   }
 
-  temp.resize(output_size);
+  temp.resize(static_cast<size_t>(output_size));
   output->swap(temp);
   return true;
 }
