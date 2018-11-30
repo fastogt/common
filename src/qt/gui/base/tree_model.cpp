@@ -87,14 +87,14 @@ TreeModel::~TreeModel() {
 }
 
 int TreeModel::rowCount(const QModelIndex& parent) const {
-  const TreeItem* parentItem = nullptr;
+  const TreeItem* parent_item = nullptr;
   if (parent.isValid()) {
-    parentItem = static_cast<TreeItem*>(parent.internalPointer());
+    parent_item = static_cast<TreeItem*>(parent.internalPointer());
   } else {
-    parentItem = root_;
+    parent_item = root_;
   }
 
-  return parentItem ? static_cast<int>(parentItem->childrenCount()) : 0;
+  return parent_item ? static_cast<int>(parent_item->childrenCount()) : 0;
 }
 
 QModelIndex TreeModel::index(int row, int column, const QModelIndex& parent) const {
@@ -124,17 +124,17 @@ QModelIndex TreeModel::parent(const QModelIndex& index) const {
     return QModelIndex();
   }
 
-  TreeItem* childItem = static_cast<TreeItem*>(index.internalPointer());
-  if (!childItem) {
+  TreeItem* child_item = static_cast<TreeItem*>(index.internalPointer());
+  if (!child_item) {
     return QModelIndex();
   }
 
-  TreeItem* parentItem = childItem->parent();
-  if (parentItem && parentItem != root_) {
-    TreeItem* grandParent = parentItem->parent();
-    if (grandParent) {
-      int row = grandParent->indexOf(parentItem);
-      return createIndex(row, 0, parentItem);
+  TreeItem* parent_item = child_item->parent();
+  if (parent_item && parent_item != root_) {
+    TreeItem* grand_parent = parent_item->parent();
+    if (grand_parent) {
+      int row = grand_parent->indexOf(parent_item);
+      return createIndex(row, 0, parent_item);
     }
   }
 
@@ -166,7 +166,7 @@ void TreeModel::insertItem(const QModelIndex& parent, TreeItem* child) {
     return;
   }
 
-  int child_count = item->childrenCount();
+  int child_count = static_cast<int>(item->childrenCount());
   beginInsertRows(parent, child_count, child_count);
   item->addChildren(child);
   endInsertRows();
@@ -201,21 +201,20 @@ void TreeModel::removeAllItems(const QModelIndex& parent) {
   }
 
   if (!item) {
+    if (!parent.internalPointer()) {
+      return;
+    }
     item = static_cast<TreeItem*>(parent.internalPointer());
   }
 
-  if (!item) {
-    return;
-  }
-
-  int child_count = item->childrenCount();
+  int child_count = static_cast<int>(item->childrenCount());
   beginRemoveRows(parent, 0, child_count);
   item->clear();
   endRemoveRows();
 }
 
-void TreeModel::updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-  emit dataChanged(topLeft, bottomRight);
+void TreeModel::updateItem(const QModelIndex& top_left, const QModelIndex& bottom_right) {
+  emit dataChanged(top_left, bottom_right);
 }
 
 bool TreeModel::findItem(void* user_data, QModelIndex* index) {

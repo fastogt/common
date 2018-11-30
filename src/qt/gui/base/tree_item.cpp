@@ -51,7 +51,8 @@ void TreeItem::addChildren(TreeItem* child) {
 }
 
 void TreeItem::removeChildren(TreeItem* child) {
-  childrens_.erase(std::remove(childrens_.begin(), childrens_.end(), child));
+  const auto it = std::remove(childrens_.begin(), childrens_.end(), child);
+  childrens_.erase(it);
 }
 
 size_t TreeItem::childrenCount() const {
@@ -67,10 +68,12 @@ TreeItem* TreeItem::child(size_t pos) const {
 }
 
 int TreeItem::indexOf(TreeItem* item) const {
-  for (size_t i = 0; i < childrens_.size(); ++i) {
-    if (item == childrens_[i]) {
-      return static_cast<int>(i);
+  int i = 0;
+  for (TreeItem* current_item : childrens_) {
+    if (item == current_item) {
+      return i;
     }
+    i++;
   }
   return -1;
 }
@@ -84,8 +87,8 @@ void* TreeItem::userData() const {
 }
 
 void TreeItem::clear() {
-  for (size_t i = 0; i < childrens_.size(); ++i) {
-    delete childrens_[i];
+  for (TreeItem* item : childrens_) {
+    delete item;
   }
 
   childrens_.clear();

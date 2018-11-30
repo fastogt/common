@@ -53,7 +53,7 @@ class TreeModel : public QAbstractItemModel {
   virtual void insertItem(const QModelIndex& parent, TreeItem* child);
   virtual void removeItem(const QModelIndex& parent, TreeItem* child);
   virtual void removeAllItems(const QModelIndex& parent);
-  virtual void updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+  virtual void updateItem(const QModelIndex& top_left, const QModelIndex& bottom_right);
 
   bool findItem(void* user_data, QModelIndex* index);  // if user_data != nullptr
 
