@@ -45,6 +45,14 @@ TEST(hash, md5) {
   bool is_ok = common::utils::hex::encode(MAKE_CHAR_BUFFER_SIZE(md5_result, MD5_HASH_LENGHT), true, &hexed);
   ASSERT_TRUE(is_ok);
   ASSERT_EQ(hexed, "098f6bcd4621d373cade4e832627b4f6");
+
+  const common::buffer_t test2 = MAKE_BUFFER("q;{sNM@Nq@*GG\6`");
+  common::hash::MD5_Init(&ctx);
+  common::hash::MD5_Update(&ctx, test2.data(), test2.size());
+  common::hash::MD5_Final(&ctx, md5_result);
+  is_ok = common::utils::hex::encode(MAKE_CHAR_BUFFER_SIZE(md5_result, MD5_HASH_LENGHT), true, &hexed);
+  ASSERT_TRUE(is_ok);
+  ASSERT_EQ(hexed, "596bfb58af00a1900a2a738fec648577");  // "8c22fc4554ed971072e3a5ac2a3a615c"
 }
 
 TEST(hash, sha1) {
