@@ -334,6 +334,7 @@ ErrnoError connect_raw(const char* host,
   if (!rp) { /* No address succeeded */
     int err = errno;
     CHECK(err) << "Errno(" << err << ") should be not zero!";
+    freeaddrinfo(result); /* No longer needed */
     return make_error_perror("getaddrinfo", err);
   }
 
@@ -343,7 +344,6 @@ ErrnoError connect_raw(const char* host,
   out_info->set_port(port);
 
   freeaddrinfo(result); /* No longer needed */
-
   return ErrnoError();
 }
 

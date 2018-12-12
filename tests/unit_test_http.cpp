@@ -536,8 +536,10 @@ class SocketTls : public common::net::ISocket {
     }
 
     SSL* ssl = SSL_new(ctx);
+    SSL_CTX_free(ctx);
+    ctx = nullptr;
     if (!ssl) {
-      SSL_clear(ssl);
+      SSL_free(ssl);
       hs.Disconnect();
       return common::make_errno_error_inval();
     }
@@ -547,7 +549,7 @@ class SocketTls : public common::net::ISocket {
     if (e < 0) {
       int err = SSL_get_error(ssl, e);
       char* str = ERR_error_string(err, nullptr);
-      SSL_clear(ssl);
+      SSL_free(ssl);
       hs.Disconnect();
       return common::make_errno_error(str, EINTR);
     }
@@ -592,7 +594,7 @@ class SocketTls : public common::net::ISocket {
 
   common::ErrnoError CloseImpl() override {
     if (ssl_) {
-      SSL_clear(ssl_);
+      SSL_free(ssl_);
       ssl_ = nullptr;
     }
 

@@ -1210,6 +1210,7 @@ int hd_inflate_commit_indname(http2_inflater* inflater, http2_nv* nv_out, int* t
 
     if (new_ent) {
       emit_indexed_header(nv_out, token_out, new_ent);
+      delete inflater->ent_keep;
       inflater->ent_keep = new_ent;
       return 0;
     }
@@ -1360,6 +1361,7 @@ http2_inflater::http2_inflater()
 
 http2_inflater::~http2_inflater() {
   delete ent_keep;
+  ent_keep = nullptr;
 }
 
 ssize_t http2_inflater::http2_inflate_hd(http2_nv* nv_out,
@@ -1389,6 +1391,7 @@ ssize_t http2_inflater::http2_inflate_hd2(http2_nv* nv_out,
   }
 
   if (ent_keep) {
+    delete ent_keep;
     ent_keep = nullptr;
   }
 
