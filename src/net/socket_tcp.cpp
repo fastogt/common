@@ -27,18 +27,18 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/net/socket_tcp.h>
-
 #ifdef OS_WIN
 #include <winsock2.h>
 #else
 #include <netinet/in.h>
 #endif
 
+#undef SetPort
+
+#include <common/net/socket_tcp.h>
+
 #include <errno.h>
 #include <string.h>
-
-#undef SetPort
 
 #ifdef COMPILER_MSVC
 #include <io.h>
@@ -74,7 +74,7 @@ void TcpSocketHolder::SetFd(socket_descr_t fd) {
   info_.set_fd(fd);
 }
 
-SocketTcp::SocketTcp(const HostAndPort& host) : TcpSocketHolder(INVALID_DESCRIPTOR), host_(host) {}
+SocketTcp::SocketTcp(const HostAndPort& host) : TcpSocketHolder(INVALID_SOCKET_VALUE), host_(host) {}
 
 HostAndPort SocketTcp::GetHost() const {
   return host_;
@@ -151,7 +151,8 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
 
     struct sockaddr* saddr = reinterpret_cast<struct sockaddr*>(&addr2);
     HostAndPort new_hs = hs;
-    new_hs.SetPort(ntohs(get_in_port(saddr)));
+    const auto port = ntohs(get_in_port(saddr));
+    new_hs.SetPort(port);
 
     SetInfo(lbinfo);
     SetHost(new_hs);
