@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <common/error.h>
 #include <common/libev/io_base.h>
 #include <common/libev/types.h>
@@ -43,8 +45,8 @@ class IoClient : public IoBase<IoClient> {
   friend class IoLoop;
   typedef IoBase<IoClient> base_class;
 
-  IoClient(IoLoop* server, flags_t flags = EV_READ);
-  virtual ~IoClient() override;
+  explicit IoClient(IoLoop* server, flags_t flags = EV_READ);
+  ~IoClient() override;
 
   ErrnoError Close() WARN_UNUSED_RESULT;
 
@@ -53,16 +55,10 @@ class IoClient : public IoBase<IoClient> {
   flags_t GetFlags() const;
   void SetFlags(flags_t flags);
 
-  virtual const char* ClassName() const override;
+  const char* ClassName() const override;
 
-  virtual ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  virtual ErrnoError Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
-
-  virtual ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  virtual ErrnoError Read(unsigned char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
-  virtual ErrnoError Read(char* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
@@ -70,10 +66,10 @@ class IoClient : public IoBase<IoClient> {
  private:
   virtual ErrnoError DoClose() = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(IoClient);
   IoLoop* server_;
   LibevIO* read_write_io_;
   flags_t flags_;
+  DISALLOW_COPY_AND_ASSIGN(IoClient);
 };
 
 }  // namespace libev

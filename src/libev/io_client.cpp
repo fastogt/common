@@ -72,30 +72,5 @@ const char* IoClient::ClassName() const {
   return "IoClient";
 }
 
-ErrnoError IoClient::Write(const buffer_t& data, size_t* nwrite_out) {
-  return Write(data.data(), data.size(), nwrite_out);
-}
-
-ErrnoError IoClient::Write(const std::string& data, size_t* nwrite_out) {
-  return Write(data.data(), data.size(), nwrite_out);
-}
-
-ErrnoError IoClient::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
-  return Read(out_data->data(), max_size, nread_out);
-}
-
-ErrnoError IoClient::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
-  char* buff = new char[max_size];
-  ErrnoError err = Read(buff, max_size, nread_out);
-  if (err) {
-    delete[] buff;
-    return err;
-  }
-
-  *out_data = std::string(buff, *nread_out);
-  delete[] buff;
-  return err;
-}
-
 }  // namespace libev
 }  // namespace common

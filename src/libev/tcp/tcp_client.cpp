@@ -29,25 +29,25 @@
 
 #include <common/libev/tcp/tcp_client.h>
 
+#include <common/net/socket_tcp.h>
+
 namespace common {
 namespace libev {
 namespace tcp {
 
 TcpClient::TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags)
-    : IoClient(server, flags), sock_(info) {}
+    : IoClient(server, flags), sock_(new net::TcpSocketHolder(info)) {}
 
-TcpClient::~TcpClient() {}
-
-net::socket_info TcpClient::GetInfo() const {
-  return sock_.GetInfo();
+TcpClient::~TcpClient() {
+  destroy(&sock_);
 }
 
 descriptor_t TcpClient::GetFd() const {
-  return sock_.GetFd();
+  return sock_->GetFd();
 }
 
 ErrnoError TcpClient::SetBlocking(bool block) {
-  return sock_.SetBlocking(block);
+  return sock_->SetBlocking(block);
 }
 
 ErrnoError TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
@@ -60,7 +60,7 @@ ErrnoError TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
 
   while (total < size) {
     size_t n;
-    ErrnoError err = sock_.Write(data, size, &n);
+    ErrnoError err = sock_->Write(data, size, &n);
     if (err) {
       return err;
     }
@@ -72,7 +72,7 @@ ErrnoError TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
   return ErrnoError();
 }
 
-ErrnoError TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError TcpClient::Read(void* out_data, size_t max_size, size_t* nread_out) {
   if (!out_data || !max_size || !nread_out) {
     return make_errno_error_inval();
   }
@@ -82,30 +82,7 @@ ErrnoError TcpClient::Read(char* out_data, size_t max_size, size_t* nread_out) {
 
   while (total < max_size) {
     size_t n;
-    ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
-    if (err) {
-      *nread_out = total;  // return number actually readed here eagain
-      return err;
-    }
-    total += n;
-    bytes_left -= n;
-  }
-
-  *nread_out = total;  // return number actually readed here
-  return ErrnoError();
-}
-
-ErrnoError TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nread_out) {
-  if (!out_data || !max_size || !nread_out) {
-    return make_errno_error_inval();
-  }
-
-  size_t total = 0;              // how many bytes we've readed
-  size_t bytes_left = max_size;  // how many we have left to read
-
-  while (total < max_size) {
-    size_t n;
-    ErrnoError err = sock_.Read(out_data + total, bytes_left, &n);
+    ErrnoError err = sock_->Read(static_cast<char*>(out_data) + total, bytes_left, &n);
     if (err) {
       *nread_out = total;  // return number actually readed here eagain
       return err;
@@ -119,7 +96,7 @@ ErrnoError TcpClient::Read(unsigned char* out_data, size_t max_size, size_t* nre
 }
 
 ErrnoError TcpClient::DoClose() {
-  return sock_.Close();
+  return sock_->Close();
 }
 
 }  // namespace tcp

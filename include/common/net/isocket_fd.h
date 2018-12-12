@@ -29,68 +29,32 @@
 
 #pragma once
 
-#include <common/net/isocket_fd.h>
-#include <common/net/types.h>
+#include <common/net/isocket.h>
+#include <common/net/socket_info.h>
 
 namespace common {
 namespace net {
 
-class TcpSocketHolder : public ISocketFd {
+class ISocketFd : public ISocket {
  public:
-  explicit TcpSocketHolder(const socket_info& info);
-  explicit TcpSocketHolder(socket_descr_t fd);
+  virtual socket_descr_t GetFd() const = 0;
+  virtual void SetFd(socket_descr_t fd) = 0;
 
-  ~TcpSocketHolder() override;
+  ErrnoError SetBlocking(bool block) WARN_UNUSED_RESULT;
 
-  socket_info GetInfo() const;
-  void SetInfo(const socket_info& info);
+#ifdef OS_POSIX
+  ErrnoError WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) WARN_UNUSED_RESULT;
+#endif
 
-  socket_descr_t GetFd() const override;
-  void SetFd(socket_descr_t fd) override;
+  ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT;
+
+  bool IsValid() const override;
 
  private:
-  socket_info info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TcpSocketHolder);
-};
-
-class SocketTcp : public TcpSocketHolder {
- public:
-  explicit SocketTcp(const HostAndPort& host);
-
-  HostAndPort GetHost() const;
-  void SetHost(const HostAndPort& host);
-
-  ~SocketTcp() override;
-
- private:
-  HostAndPort host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SocketTcp);
-};
-
-class ClientSocketTcp : public SocketTcp {
- public:
-  explicit ClientSocketTcp(const HostAndPort& host);
-
-  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
-  ErrnoError Disconnect() WARN_UNUSED_RESULT;
-  bool IsConnected() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
-};
-
-class ServerSocketTcp : public SocketTcp {
- public:
-  explicit ServerSocketTcp(const HostAndPort& host);
-
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
-  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
+  ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+  ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  ErrnoError CloseImpl() override WARN_UNUSED_RESULT;
 };
 
 }  // namespace net

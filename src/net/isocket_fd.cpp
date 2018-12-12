@@ -27,71 +27,64 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
 #include <common/net/isocket_fd.h>
-#include <common/net/types.h>
+
+#include <common/net/net.h>
 
 namespace common {
 namespace net {
 
-class TcpSocketHolder : public ISocketFd {
- public:
-  explicit TcpSocketHolder(const socket_info& info);
-  explicit TcpSocketHolder(socket_descr_t fd);
+bool ISocketFd::IsValid() const {
+  return GetFd() != INVALID_SOCKET_VALUE;
+}
 
-  ~TcpSocketHolder() override;
+ErrnoError ISocketFd::SetBlocking(bool block) {
+  DCHECK(IsValid());
+  return set_blocking_socket(GetFd(), block);
+}
 
-  socket_info GetInfo() const;
-  void SetInfo(const socket_info& info);
+#ifdef OS_POSIX
+ErrnoError ISocketFd::WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return write_ev_to_socket(GetFd(), iovec, count, nwrite_out);
+}
 
-  socket_descr_t GetFd() const override;
-  void SetFd(socket_descr_t fd) override;
+ErrnoError ISocketFd::ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return read_ev_to_socket(GetFd(), iovec, count, nwrite_out);
+}
+#endif
 
- private:
-  socket_info info_;
+ErrnoError ISocketFd::WriteImpl(const void* data, size_t size, size_t* nwrite_out) {
+  return write_to_socket(GetFd(), data, size, nwrite_out);
+}
 
-  DISALLOW_COPY_AND_ASSIGN(TcpSocketHolder);
-};
+ErrnoError ISocketFd::ReadImpl(void* out_data, size_t max_size, size_t* nread_out) {
+  return read_from_socket(GetFd(), out_data, max_size, nread_out);
+}
 
-class SocketTcp : public TcpSocketHolder {
- public:
-  explicit SocketTcp(const HostAndPort& host);
+ErrnoError ISocketFd::SendFile(descriptor_t file_fd, size_t file_size) {
+  DCHECK(IsValid());
 
-  HostAndPort GetHost() const;
-  void SetHost(const HostAndPort& host);
+  const socket_descr_t fd = GetFd();
+  if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_SOCKET_VALUE) {
+    return make_error_perror("SendFile", EINVAL);
+  }
 
-  ~SocketTcp() override;
+  return send_file_to_fd(fd, file_fd, 0, file_size);
+}
 
- private:
-  HostAndPort host_;
+ErrnoError ISocketFd::CloseImpl() {
+  const socket_descr_t fd = GetFd();
+  ErrnoError err = close(fd);
+  if (err) {
+    DNOTREACHED() << "Close fd error: " << err->GetDescription();
+    return err;
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(SocketTcp);
-};
-
-class ClientSocketTcp : public SocketTcp {
- public:
-  explicit ClientSocketTcp(const HostAndPort& host);
-
-  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
-  ErrnoError Disconnect() WARN_UNUSED_RESULT;
-  bool IsConnected() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
-};
-
-class ServerSocketTcp : public SocketTcp {
- public:
-  explicit ServerSocketTcp(const HostAndPort& host);
-
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
-  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
-};
+  SetFd(INVALID_DESCRIPTOR);
+  return ErrnoError();
+}
 
 }  // namespace net
 }  // namespace common

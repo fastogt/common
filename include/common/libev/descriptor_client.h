@@ -38,20 +38,18 @@ namespace libev {
 class DescriptorClient : public IoClient {
  public:
   DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
-  virtual ~DescriptorClient() override;
+  ~DescriptorClient() override;
 
-  virtual const char* ClassName() const override;
+  const char* ClassName() const override;
 
-  virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-
-  virtual ErrnoError Read(unsigned char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
-  virtual ErrnoError Read(char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
 
  protected:
-  virtual descriptor_t GetFd() const override;
+  descriptor_t GetFd() const override;
 
  private:
-  virtual ErrnoError DoClose() override;
+  ErrnoError DoClose() override;
 
   file_system::DescriptorHolder desc_;
 };

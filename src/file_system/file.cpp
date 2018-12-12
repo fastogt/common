@@ -57,31 +57,6 @@ bool File::IsOpen() const {
   return IsValid();
 }
 
-ErrnoError File::Write(const buffer_t& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-
-  if (!holder_) {
-    return make_error_perror("File::Write", EINVAL);
-  }
-
-  return holder_->Write(data, nwrite_out);
-}
-
-descriptor_t File::GetFd() const {
-  DCHECK(IsValid());
-  return holder_ && holder_->GetFd();
-}
-
-ErrnoError File::Write(const std::string& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-
-  if (!holder_) {
-    return make_error_perror("File::Write", EINVAL);
-  }
-
-  return holder_->Write(data, nwrite_out);
-}
-
 ErrnoError File::Write(const void* data, size_t size, size_t* nwrite_out) {
   DCHECK(IsValid());
 
@@ -92,24 +67,14 @@ ErrnoError File::Write(const void* data, size_t size, size_t* nwrite_out) {
   return holder_->Write(data, size, nwrite_out);
 }
 
-ErrnoError File::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError File::WriteBuffer(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
 
   if (!holder_) {
-    return make_error_perror("File::Read", EINVAL);
+    return make_error_perror("File::Write", EINVAL);
   }
 
-  return holder_->Read(out_data, max_size, nread_out);
-}
-
-ErrnoError File::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
-  DCHECK(IsValid());
-
-  if (!holder_) {
-    return make_error_perror("File::Read", EINVAL);
-  }
-
-  return holder_->Read(out_data, max_size, nread_out);
+  return holder_->WriteBuffer(data, nwrite_out);
 }
 
 ErrnoError File::Read(void* out, size_t len, size_t* nread_out) {

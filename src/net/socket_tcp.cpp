@@ -27,6 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/net/socket_tcp.h>
+
 #ifdef OS_WIN
 #include <winsock2.h>
 #else
@@ -37,8 +39,6 @@
 #include <string.h>
 
 #undef SetPort
-
-#include <common/net/socket_tcp.h>
 
 #ifdef COMPILER_MSVC
 #include <io.h>
@@ -51,95 +51,37 @@ struct addrinfo;
 namespace common {
 namespace net {
 
-SocketHolder::SocketHolder(const socket_info& info) : info_(info) {}
+TcpSocketHolder::TcpSocketHolder(const socket_info& info) : info_(info) {}
 
-SocketHolder::~SocketHolder() {}
+TcpSocketHolder::~TcpSocketHolder() {}
 
-SocketHolder::SocketHolder(socket_descr_t fd) : info_(fd) {}
+TcpSocketHolder::TcpSocketHolder(socket_descr_t fd) : info_(fd) {}
 
-#ifdef OS_POSIX
-ErrnoError SocketHolder::WriteEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
-}
-
-ErrnoError SocketHolder::ReadEv(const struct iovec* iovec, int count, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return read_ev_to_socket(info_.fd(), iovec, count, nwrite_out);
-}
-#endif
-
-socket_info SocketHolder::GetInfo() const {
+socket_info TcpSocketHolder::GetInfo() const {
   return info_;
 }
 
-socket_descr_t SocketHolder::GetFd() const {
+void TcpSocketHolder::SetInfo(const socket_info& info) {
+  DCHECK(!IsValid());
+  info_ = info;
+}
+
+socket_descr_t TcpSocketHolder::GetFd() const {
   return info_.fd();
 }
 
-bool SocketHolder::IsValid() const {
-  return info_.is_valid();
+void TcpSocketHolder::SetFd(socket_descr_t fd) {
+  info_.set_fd(fd);
 }
 
-ErrnoError SocketHolder::SetBlocking(bool block) {
-  return set_blocking_socket(info_.fd(), block);
-}
-
-ErrnoError SocketHolder::Write(const buffer_t& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_to_socket(info_.fd(), data.data(), data.size(), nwrite_out);
-}
-
-ErrnoError SocketHolder::Write(const std::string& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_to_socket(info_.fd(), data.data(), data.size(), nwrite_out);
-}
-
-ErrnoError SocketHolder::Write(const void* data, size_t size, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_to_socket(info_.fd(), data, size, nwrite_out);
-}
-
-ErrnoError SocketHolder::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
-  DCHECK(IsValid());
-  return read_from_socket(info_.fd(), out_data->data(), max_size, nread_out);
-}
-
-ErrnoError SocketHolder::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
-  DCHECK(IsValid());
-  char* buff = new char[max_size];
-  ErrnoError err = read_from_socket(info_.fd(), buff, max_size, nread_out);
-  if (err) {
-    delete[] buff;
-    return err;
-  }
-
-  *out_data = std::string(buff, *nread_out);
-  delete[] buff;
-  return err;
-}
-
-ErrnoError SocketHolder::Read(void* out_data, size_t max_size, size_t* nread_out) {
-  DCHECK(IsValid());
-  return read_from_socket(info_.fd(), out_data, max_size, nread_out);
-}
-
-ErrnoError SocketHolder::Close() {
-  const socket_descr_t fd = info_.fd();
-  ErrnoError err = close(fd);
-  if (err) {
-    DNOTREACHED();
-    return err;
-  }
-
-  info_.set_fd(INVALID_DESCRIPTOR);
-  return ErrnoError();
-}
-
-SocketTcp::SocketTcp(const HostAndPort& host) : SocketHolder(INVALID_DESCRIPTOR), host_(host) {}
+SocketTcp::SocketTcp(const HostAndPort& host) : TcpSocketHolder(INVALID_DESCRIPTOR), host_(host) {}
 
 HostAndPort SocketTcp::GetHost() const {
   return host_;
+}
+
+void SocketTcp::SetHost(const HostAndPort& host) {
+  host_ = host;
 }
 
 SocketTcp::~SocketTcp() {}
@@ -147,7 +89,14 @@ SocketTcp::~SocketTcp() {}
 ClientSocketTcp::ClientSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
 
 ErrnoError ClientSocketTcp::Connect(struct timeval* tv) {
-  return net::connect(host_, ST_SOCK_STREAM, tv, &info_);
+  socket_info inf;
+  ErrnoError err = net::connect(GetHost(), ST_SOCK_STREAM, tv, &inf);
+  if (err) {
+    return err;
+  }
+
+  SetInfo(inf);
+  return ErrnoError();
 }
 
 ErrnoError ClientSocketTcp::Disconnect() {
@@ -155,17 +104,7 @@ ErrnoError ClientSocketTcp::Disconnect() {
 }
 
 bool ClientSocketTcp::IsConnected() const {
-  const socket_descr_t fd = info_.fd();
-  return fd != INVALID_SOCKET_VALUE;
-}
-
-ErrnoError ClientSocketTcp::SendFile(descriptor_t file_fd, size_t file_size) {
-  const socket_descr_t fd = info_.fd();
-  if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("SendFile", EINVAL);
-  }
-
-  return send_file_to_fd(fd, file_fd, 0, file_size);
+  return IsValid();
 }
 
 ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
@@ -177,16 +116,17 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
     return err;
   }
 
+  const HostAndPort hs = GetHost();
   sockaddr_t addr;
   memset(&addr, 0, sizeof(sockaddr_t));
 #ifdef IPV6_ENABLED
   addr.sin6_family = IP_DOMAIN;
-  addr.sin6_port = htons(host_.GetPort());
+  addr.sin6_port = htons(hs.GetPort());
   addr.sin6_addr = in6addr_any;
   bool is_random_port = addr.sin6_port == 0;
 #else
   addr.sin_family = IP_DOMAIN;
-  addr.sin_port = htons(host_.GetPort());
+  addr.sin_port = htons(hs.GetPort());
   addr.sin_addr.s_addr = INADDR_ANY;
   bool is_random_port = addr.sin_port == 0;
 #endif
@@ -195,34 +135,48 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   addrinfo* ainf = linfo.addr_info();
 
   if (is_random_port) {  // random port
+    socket_info lbinfo;
     err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
-               &info_);  // init sockaddr
+               &lbinfo);  // init sockaddr
     if (err) {
       return err;
     }
 
     sockaddr_t addr2;
     memset(&addr2, 0, sizeof(sockaddr_t));
-    err = getsockname(fd, reinterpret_cast<struct sockaddr*>(&addr2), sizeof(sockaddr_t), &info_);  // init sockaddr
+    err = getsockname(fd, reinterpret_cast<struct sockaddr*>(&addr2), sizeof(sockaddr_t), &lbinfo);  // init sockaddr
     if (err) {
       return err;
     }
 
     struct sockaddr* saddr = reinterpret_cast<struct sockaddr*>(&addr2);
-    host_.SetPort(ntohs(get_in_port(saddr)));
+    HostAndPort new_hs = hs;
+    new_hs.SetPort(ntohs(get_in_port(saddr)));
+
+    SetInfo(lbinfo);
+    SetHost(new_hs);
     return ErrnoError();
   }
 
-  return bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
-              &info_);  // init sockaddr
+  socket_info lbinfo;
+  err = bind(fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(sockaddr_t), ainf, reuseaddr,
+             &lbinfo);  // init sockaddr
+  if (err) {
+    return err;
+  }
+
+  SetInfo(lbinfo);
+  return common::ErrnoError();
 }
 
 ErrnoError ServerSocketTcp::Listen(int backlog) {
-  return listen(info_, backlog);
+  DCHECK(IsValid());
+  return listen(GetInfo(), backlog);
 }
 
 ErrnoError ServerSocketTcp::Accept(socket_info* info) {
-  return accept(info_, info);
+  DCHECK(IsValid());
+  return accept(GetInfo(), info);
 }
 
 }  // namespace net

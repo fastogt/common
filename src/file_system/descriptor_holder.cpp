@@ -47,38 +47,14 @@ descriptor_t DescriptorHolder::GetFd() const {
   return fd_;
 }
 
-ErrnoError DescriptorHolder::Write(const buffer_t& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_to_descriptor(fd_, data.data(), data.size(), nwrite_out);
-}
-
-ErrnoError DescriptorHolder::Write(const std::string& data, size_t* nwrite_out) {
-  DCHECK(IsValid());
-  return write_to_descriptor(fd_, data.data(), data.size(), nwrite_out);
-}
-
 ErrnoError DescriptorHolder::Write(const void* data, size_t size, size_t* nwrite_out) {
   DCHECK(IsValid());
   return write_to_descriptor(fd_, data, size, nwrite_out);
 }
 
-ErrnoError DescriptorHolder::Read(buffer_t* out_data, size_t max_size, size_t* nread_out) {
+ErrnoError DescriptorHolder::WriteBuffer(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
-  return read_from_descriptor(fd_, out_data->data(), max_size, nread_out);
-}
-
-ErrnoError DescriptorHolder::Read(std::string* out_data, size_t max_size, size_t* nread_out) {
-  DCHECK(IsValid());
-  char* buff = new char[max_size];
-  ErrnoError err = read_from_descriptor(fd_, buff, max_size, nread_out);
-  if (err) {
-    delete[] buff;
-    return err;
-  }
-
-  *out_data = std::string(buff, *nread_out);
-  delete[] buff;
-  return err;
+  return write_to_descriptor(fd_, data.data(), data.size(), nwrite_out);
 }
 
 ErrnoError DescriptorHolder::Read(void* out_data, size_t max_size, size_t* nread_out) {

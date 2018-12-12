@@ -31,6 +31,7 @@
 
 #include <common/libev/io_loop.h>         // for IoLoop
 #include <common/libev/tcp/tcp_client.h>  // for TcpClient
+#include <common/net/socket_tcp.h>
 
 namespace common {
 namespace libev {
@@ -39,7 +40,7 @@ namespace tcp {
 class TcpServer : public IoLoop {
  public:
   explicit TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer = nullptr);
-  virtual ~TcpServer() override;
+  ~TcpServer() override;
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
@@ -50,14 +51,14 @@ class TcpServer : public IoLoop {
   static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
 
  private:
-  virtual TcpClient* CreateClient(const net::socket_info& info) override;
+  TcpClient* CreateClient(const net::socket_info& info) override;
 #if LIBEV_CHILD_ENABLE
-  virtual IoChild* CreateChild() override;
+  IoChild* CreateChild() override;
 #endif
-  virtual void PreLooped(LibEvLoop* loop) override;
-  virtual void PostLooped(LibEvLoop* loop) override;
+  void PreLooped(LibEvLoop* loop) override;
+  void PostLooped(LibEvLoop* loop) override;
 
-  virtual void Stopped(LibEvLoop* loop) override;
+  void Stopped(LibEvLoop* loop) override;
 
   static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
 

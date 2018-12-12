@@ -166,6 +166,19 @@ bool HttpRequest::FindHeaderByValue(const std::string& value, bool case_sensitiv
   return false;
 }
 
+HttpRequest MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers) {
+  http::HttpRequest req(http::HM_HEAD, path, protocol, headers, std::string());
+  return req;
+}
+
+HttpRequest MakeGetRequest(const uri::Upath& path,
+                           http_protocol protocol,
+                           const headers_t& headers,
+                           const std::string& body) {
+  http::HttpRequest req(http::HM_GET, path, protocol, headers, body);
+  return req;
+}
+
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
   if (request.empty() || !req_out) {
     return std::make_pair(HS_FORBIDDEN, make_error_inval());
@@ -286,8 +299,12 @@ bool HttpResponse::IsEmptyBody() const {
   return body_.empty();
 }
 
-Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
-  if (response.empty() || !res_out) {
+std::string HttpResponse::GetBody() const {
+  return body_;
+}
+
+Error parse_http_responce(const std::string& response, HttpResponse* res_out, size_t* not_parsed) {
+  if (response.empty() || !res_out || !not_parsed) {
     return make_error_inval();
   }
 
@@ -351,14 +368,20 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out) {
     start = pos + 2;
   }
 
+  *not_parsed = 0;
   HttpResponse lres(lprotocol, static_cast<http_status>(lstatus), lheaders, std::string());
   if (len != start && line_count != 0) {
     const char* responce_str = response.c_str() + start;
     http::header_t cont;
     if (lres.FindHeaderByKey("Content-Length", false, &cont)) {
       size_t body_len = 0;
-      if (ConvertFromString(cont.value, &body_len) && body_len + start == len) {
-        lres.SetBody(std::string(responce_str, body_len));
+      if (ConvertFromString(cont.value, &body_len)) {
+        size_t lnot_parsed = len - start;
+        if (lnot_parsed == body_len) {  // full
+          lres.SetBody(std::string(responce_str, body_len));
+        } else {
+          *not_parsed = lnot_parsed;
+        }
       }
     }
   }

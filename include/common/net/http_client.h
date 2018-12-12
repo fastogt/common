@@ -30,29 +30,44 @@
 #pragma once
 
 #include <common/http/http.h>
-#include <common/net/socket_tcp.h>
+#include <common/net/isocket.h>
+#include <common/net/types.h>
 
 namespace common {
 namespace net {
 
-class HttpClient {
+class IHttpClient {
  public:
-  explicit HttpClient(const HostAndPort& host);
+  virtual ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT = 0;
+  virtual bool IsConnected() const = 0;
+  virtual ErrnoError Disconnect() WARN_UNUSED_RESULT = 0;
+  virtual HostAndPort GetHost() const = 0;
 
-  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
-  ErrnoError Disconnect() WARN_UNUSED_RESULT;
+  Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;
+  Error Head(const uri::Upath& path) WARN_UNUSED_RESULT;
 
-  virtual Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;
-  virtual Error Head(const uri::Upath& path) WARN_UNUSED_RESULT;
-
-  virtual Error ReadResponce(http::HttpResponse* responce) WARN_UNUSED_RESULT;
-  virtual ~HttpClient();
+  Error ReadResponce(http::HttpResponse* responce) WARN_UNUSED_RESULT;
+  virtual ~IHttpClient();
 
  protected:
-  virtual Error SendRequest(const http::HttpRequest& request_headers) WARN_UNUSED_RESULT;
+  explicit IHttpClient(net::ISocket* sock);
+  net::ISocket* GetSocket() const;
 
  private:
-  ClientSocketTcp sock_;
+  Error SendRequest(const http::HttpRequest& request_headers) WARN_UNUSED_RESULT;
+
+  net::ISocket* sock_;
+  common::Optional<http::HttpRequest> last_request_;
+};
+
+class HttpClient : public IHttpClient {
+ public:
+  explicit HttpClient(const HostAndPort& host);
+  ErrnoError Connect(struct timeval* tv = nullptr) override;
+  bool IsConnected() const override;
+  ErrnoError Disconnect() override;
+
+  HostAndPort GetHost() const override;
 };
 
 }  // namespace net

@@ -30,7 +30,7 @@
 #pragma once
 
 #include <common/libev/io_client.h>  // for IoClient
-#include <common/net/socket_tcp.h>
+#include <common/net/isocket_fd.h>
 
 namespace common {
 namespace libev {
@@ -39,24 +39,20 @@ namespace tcp {
 class TcpClient : public IoClient {
  public:
   TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
-  virtual ~TcpClient() override;
-
-  net::socket_info GetInfo() const;
+  ~TcpClient() override;
 
   ErrnoError SetBlocking(bool block) WARN_UNUSED_RESULT;
 
-  virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-
-  virtual ErrnoError Read(unsigned char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
-  virtual ErrnoError Read(char* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
 
  protected:
-  virtual descriptor_t GetFd() const override;
+  descriptor_t GetFd() const override;
 
  private:
-  virtual ErrnoError DoClose() override;
+  ErrnoError DoClose() override;
 
-  net::SocketHolder sock_;
+  net::ISocketFd* sock_;
 };
 
 }  // namespace tcp

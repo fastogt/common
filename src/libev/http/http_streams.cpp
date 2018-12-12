@@ -31,6 +31,8 @@
 
 #include <common/portable_endian.h>
 
+#include <common/net/socket_tcp.h>
+
 namespace common {
 namespace libev {
 namespace http {
@@ -43,7 +45,8 @@ IStream::stream_id_t IStream::GetSid() const {
   return init_frame_.stream_id();
 }
 
-IStream::IStream(const net::socket_info& info, const http2::frame_base& frame) : sock_(info), init_frame_(frame) {}
+IStream::IStream(net::socket_descr_t fd, const http2::frame_base& frame)
+    : sock_(new net::TcpSocketHolder(fd)), init_frame_(frame) {}
 
 bool IStream::ProcessFrame(const http2::frame_base& frame) {
   if (!frame.IsValid()) {
@@ -56,8 +59,7 @@ bool IStream::ProcessFrame(const http2::frame_base& frame) {
 
 ErrnoError IStream::SendData(const buffer_t& buff) {
   size_t nwrite = 0;
-  ErrnoError err = sock_.Write(buff.data(), buff.size(), &nwrite);
-  return err;
+  return sock_->Write(buff.data(), buff.size(), &nwrite);
 }
 
 ErrnoError IStream::SendFrame(const http2::frame_base& frame) {
@@ -73,7 +75,7 @@ ErrnoError IStream::SendCloseFrame() {
   return SendFrame(rst);
 }
 
-IStream* IStream::CreateStream(const net::socket_info& info, const http2::frame_base& frame) {
+IStream* IStream::CreateStream(net::socket_descr_t fd, const http2::frame_base& frame) {
   if (!frame.IsValid()) {
     NOTREACHED();
     return nullptr;
@@ -83,18 +85,18 @@ IStream* IStream::CreateStream(const net::socket_info& info, const http2::frame_
 
   switch (type) {
     case http2::HTTP2_DATA:
-      return new HTTP2DataStream(info, frame);
+      return new HTTP2DataStream(fd, frame);
     case http2::HTTP2_HEADERS:
-      return new HTTP2HeadersStream(info, frame);
+      return new HTTP2HeadersStream(fd, frame);
     case http2::HTTP2_PRIORITY: {
-      IStream* res = new HTTP2PriorityStream(info, frame);
+      IStream* res = new HTTP2PriorityStream(fd, frame);
       return res;
     }
     case http2::HTTP2_RST_STREAM:
       NOTREACHED();
       return nullptr;
     case http2::HTTP2_SETTINGS:
-      return new HTTP2SettingsStream(info, frame);
+      return new HTTP2SettingsStream(fd, frame);
     case http2::HTTP2_PUSH_PROMISE:
       NOTREACHED();
       return nullptr;
@@ -117,9 +119,11 @@ IStream* IStream::CreateStream(const net::socket_info& info, const http2::frame_
   }
 }
 
-IStream::~IStream() {}
+IStream::~IStream() {
+  destroy(&sock_);
+}
 
-HTTP2DataStream::HTTP2DataStream(const net::socket_info& info, const http2::frame_base& frame) : IStream(info, frame) {
+HTTP2DataStream::HTTP2DataStream(net::socket_descr_t fd, const http2::frame_base& frame) : IStream(fd, frame) {
   CHECK(http2::HTTP2_DATA == frame.type());
 }
 
@@ -128,8 +132,7 @@ bool HTTP2DataStream::ProcessFrameImpl(const http2::frame_base& frame) {
   return true;
 }
 
-HTTP2PriorityStream::HTTP2PriorityStream(const net::socket_info& info, const http2::frame_base& frame)
-    : IStream(info, frame) {
+HTTP2PriorityStream::HTTP2PriorityStream(net::socket_descr_t fd, const http2::frame_base& frame) : IStream(fd, frame) {
   CHECK(http2::HTTP2_PRIORITY == frame.type());
 }
 
@@ -141,8 +144,8 @@ bool HTTP2PriorityStream::ProcessFrameImpl(const http2::frame_base& frame) {
   return true;
 }
 
-HTTP2SettingsStream::HTTP2SettingsStream(const net::socket_info& info, const http2::frame_base& frame)
-    : IStream(info, frame), negotiated_(false) {
+HTTP2SettingsStream::HTTP2SettingsStream(net::socket_descr_t fd, const http2::frame_base& frame)
+    : IStream(fd, frame), negotiated_(false) {
   CHECK(http2::HTTP2_SETTINGS == frame.type());
 }
 
@@ -162,8 +165,7 @@ bool HTTP2SettingsStream::ProcessFrameImpl(const http2::frame_base& frame) {
   return true;
 }
 
-HTTP2HeadersStream::HTTP2HeadersStream(const net::socket_info& info, const http2::frame_base& frame)
-    : IStream(info, frame) {
+HTTP2HeadersStream::HTTP2HeadersStream(net::socket_descr_t fd, const http2::frame_base& frame) : IStream(fd, frame) {
   CHECK(http2::HTTP2_HEADERS == frame.type());
 }
 

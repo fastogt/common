@@ -152,6 +152,12 @@ class HttpRequest {
   std::string body_;
 };
 
+HttpRequest MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers);
+HttpRequest MakeGetRequest(const uri::Upath& path,
+                           http_protocol protocol,
+                           const headers_t& headers,
+                           const std::string& body = std::string());
+
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) WARN_UNUSED_RESULT;
 
 class HttpResponse {
@@ -163,6 +169,7 @@ class HttpResponse {
 
   void SetBody(const std::string& body);
   bool IsEmptyBody() const;
+  std::string GetBody() const;
 
  private:
   http_protocol protocol_;
@@ -171,7 +178,7 @@ class HttpResponse {
   std::string body_;
 };
 
-Error parse_http_responce(const std::string& response, HttpResponse* res_out) WARN_UNUSED_RESULT;
+Error parse_http_responce(const std::string& response, HttpResponse* res_out, size_t* not_parsed) WARN_UNUSED_RESULT;
 
 }  // namespace http
 

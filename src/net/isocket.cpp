@@ -27,71 +27,61 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include <common/net/isocket_fd.h>
-#include <common/net/types.h>
+#include <common/net/isocket.h>
 
 namespace common {
 namespace net {
 
-class TcpSocketHolder : public ISocketFd {
- public:
-  explicit TcpSocketHolder(const socket_info& info);
-  explicit TcpSocketHolder(socket_descr_t fd);
+ErrnoError ISocket::Write(const void* data, size_t size, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  if (!data || size == 0 || !nwrite_out) {
+    return common::make_errno_error_inval();
+  }
 
-  ~TcpSocketHolder() override;
+  return WriteImpl(data, size, nwrite_out);
+}
 
-  socket_info GetInfo() const;
-  void SetInfo(const socket_info& info);
+ErrnoError ISocket::WriteBuffer(const std::string& data, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  if (data.empty() || !nwrite_out) {
+    return common::make_errno_error_inval();
+  }
 
-  socket_descr_t GetFd() const override;
-  void SetFd(socket_descr_t fd) override;
+  return WriteImpl(data.data(), data.size(), nwrite_out);
+}
 
- private:
-  socket_info info_;
+ErrnoError ISocket::Read(void* out_data, size_t max_size, size_t* nread_out) {
+  DCHECK(IsValid());
+  if (!out_data || max_size == 0 || !nread_out) {
+    return common::make_errno_error_inval();
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(TcpSocketHolder);
-};
+  return ReadImpl(out_data, max_size, nread_out);
+}
 
-class SocketTcp : public TcpSocketHolder {
- public:
-  explicit SocketTcp(const HostAndPort& host);
+ErrnoError ISocket::ReadToBuffer(char_buffer_t* out_data, size_t max_size) {
+  DCHECK(IsValid());
+  if (!out_data || max_size == 0) {
+    return common::make_errno_error_inval();
+  }
 
-  HostAndPort GetHost() const;
-  void SetHost(const HostAndPort& host);
+  out_data->resize(max_size);
+  size_t nread_out;
+  ErrnoError err = ReadImpl(out_data->data(), max_size, &nread_out);
+  if (err) {
+    return err;
+  }
 
-  ~SocketTcp() override;
+  out_data->resize(nread_out);
+  return ErrnoError();
+}
 
- private:
-  HostAndPort host_;
+ErrnoError ISocket::Close() {
+  DCHECK(IsValid());
+  return CloseImpl();
+}
 
-  DISALLOW_COPY_AND_ASSIGN(SocketTcp);
-};
-
-class ClientSocketTcp : public SocketTcp {
- public:
-  explicit ClientSocketTcp(const HostAndPort& host);
-
-  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
-  ErrnoError Disconnect() WARN_UNUSED_RESULT;
-  bool IsConnected() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
-};
-
-class ServerSocketTcp : public SocketTcp {
- public:
-  explicit ServerSocketTcp(const HostAndPort& host);
-
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
-  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
-};
+ISocket::~ISocket() {}
 
 }  // namespace net
 }  // namespace common

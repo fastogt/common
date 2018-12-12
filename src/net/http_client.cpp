@@ -29,82 +29,136 @@
 
 #include <common/net/http_client.h>
 
+#include <string.h>
+
+#include <common/net/socket_tcp.h>
+
 #include <common/convert2string.h>
 
 namespace common {
 namespace net {
 
-HttpClient::HttpClient(const HostAndPort& host) : sock_(host) {}
-
-ErrnoError HttpClient::Connect(struct timeval* tv) {
-  return sock_.Connect(tv);
-}
-
-ErrnoError HttpClient::Disconnect() {
-  return sock_.Disconnect();
-}
-
-Error HttpClient::Get(const uri::Upath& path) {
-  HostAndPort hs = sock_.GetHost();
+Error IHttpClient::Get(const uri::Upath& path) {
+  const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", hs.GetHost());
-  http::HttpRequest req(http::HM_GET, path, http::HP_1_0, {header}, std::string());
+  http::HttpRequest req = http::MakeGetRequest(path, http::HP_1_0, {header});
   return SendRequest(req);
 }
 
-Error HttpClient::Head(const uri::Upath& path) {
-  HostAndPort hs = sock_.GetHost();
+Error IHttpClient::Head(const uri::Upath& path) {
+  const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", hs.GetHost());
-  http::HttpRequest req(http::HM_HEAD, path, http::HP_1_0, {header}, std::string());
+  http::HttpRequest req = http::MakeHeadRequest(path, http::HP_1_0, {header});
   return SendRequest(req);
 }
 
-Error HttpClient::SendRequest(const http::HttpRequest& request_headers) {
+Error IHttpClient::SendRequest(const http::HttpRequest& request_headers) {
   std::string request_str = ConvertToString(request_headers);
 
   size_t nwrite;
-  ErrnoError err = sock_.Write(request_str, &nwrite);
+  ErrnoError err = sock_->Write(request_str.data(), request_str.size(), &nwrite);
   if (err) {
+    last_request_ = common::Optional<http::HttpRequest>();
     return make_error_from_errno(err);
   }
 
+  last_request_ = request_headers;
   return Error();
 }
 
-Error HttpClient::ReadResponce(http::HttpResponse* responce) {
-  if (!responce) {
+Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
+  if (!responce || !last_request_) {
     return make_error_inval();
   }
 
   static const size_t kHeaderBufInitialSize = 4 * 1024;  // 4K
-  std::string data;
-  size_t nread;
-  ErrnoError err = sock_.Read(&data, kHeaderBufInitialSize, &nread);
+  char* data_head = new char[kHeaderBufInitialSize];
+  size_t nread_head;
+  ErrnoError err = sock_->Read(data_head, kHeaderBufInitialSize, &nread_head);
   if (err) {
+    delete[] data_head;
     return make_error_from_errno(err);
   }
 
-  Error parse_error = http::parse_http_responce(data, responce);
+  size_t not_parsed;
+  Error parse_error = http::parse_http_responce(std::string(data_head, nread_head), responce, &not_parsed);
   if (parse_error) {
+    delete[] data_head;
     return parse_error;
   }
 
-  if (responce->IsEmptyBody()) {
-    http::header_t cont;
-    if (responce->FindHeaderByKey("Content-Length", false, &cont)) {
-      size_t body_len = 0;
-      if (ConvertFromString(cont.value, &body_len)) {
-        err = sock_.Read(&data, body_len, &nread);
-        if (!err) {
-          responce->SetBody(data);
-        }
-      }
-    }
+  if (!responce->IsEmptyBody() || last_request_->GetMethod() == http::HM_HEAD) {  // head without body
+    delete[] data_head;
+    return Error();
   }
 
-  return Error();
+  http::header_t cont;
+  if (!responce->FindHeaderByKey("Content-Length", false, &cont)) {  // try to get body
+    delete[] data_head;
+    return Error();
+  }
+
+  size_t body_len = 0;
+  if (!(ConvertFromString(cont.value, &body_len) && body_len)) {
+    delete[] data_head;
+    return Error();
+  }
+
+  char* data = new char[body_len];
+  const size_t rest = body_len - not_parsed;
+  if (not_parsed) {
+    const char* body_str = data_head + nread_head - not_parsed;
+    memcpy(data, body_str, not_parsed);
+  }
+  size_t nread;
+  err = sock_->Read(data + not_parsed, rest, &nread);  // read rest
+  if (!err && nread == rest) {
+    std::string body(data, body_len);
+    responce->SetBody(body);
+    delete[] data_head;
+    delete[] data;
+    return Error();
+  }
+
+  delete[] data_head;
+  delete[] data;
+  return make_error("Invalid body read");
 }
 
-HttpClient::~HttpClient() {}
+IHttpClient::~IHttpClient() {
+  delete sock_;
+  sock_ = nullptr;
+}
+
+IHttpClient::IHttpClient(net::ISocket* sock) : sock_(sock) {
+  CHECK(sock) << "Socket must be passed!";
+}
+
+net::ISocket* IHttpClient::GetSocket() const {
+  return sock_;
+}
+
+HttpClient::HttpClient(const HostAndPort& host) : IHttpClient(new net::ClientSocketTcp(host)) {}
+
+ErrnoError HttpClient::Connect(struct timeval* tv) {
+  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  return sock->Connect(tv);
+}
+
+bool HttpClient::IsConnected() const {
+  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  return sock->IsConnected();
+}
+
+ErrnoError HttpClient::Disconnect() {
+  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  return sock->Disconnect();
+}
+
+HostAndPort HttpClient::GetHost() const {
+  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  return sock->GetHost();
+}
 
 }  // namespace net
 }  // namespace common

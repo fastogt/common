@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <common/error.h>  // for ErrnoError, Error
 #include <common/types.h>
 
@@ -43,13 +45,10 @@ class DescriptorHolder {
   bool IsValid() const;
   descriptor_t GetFd() const;
 
-  ErrnoError Write(const buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
-  ErrnoError Write(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
-
-  ErrnoError Read(buffer_t* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
-  ErrnoError Read(std::string* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+  ErrnoError WriteBuffer(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+
   ErrnoError Close() WARN_UNUSED_RESULT;
 
   ErrnoError Lock() WARN_UNUSED_RESULT;
@@ -60,8 +59,8 @@ class DescriptorHolder {
   ErrnoError Truncate(off_t pos) WARN_UNUSED_RESULT;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DescriptorHolder);
   descriptor_t fd_;
+  DISALLOW_COPY_AND_ASSIGN(DescriptorHolder);
 };
 
 }  // namespace file_system

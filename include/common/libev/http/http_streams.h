@@ -32,7 +32,8 @@
 #include <memory>
 
 #include <common/http/http2.h>
-#include <common/net/socket_tcp.h>
+#include <common/net/isocket.h>
+#include <common/net/socket_info.h>
 
 namespace common {
 namespace libev {
@@ -52,16 +53,16 @@ class IStream {
 
   virtual ~IStream();
 
-  static IStream* CreateStream(const net::socket_info& info, const http2::frame_base& frame);
+  static IStream* CreateStream(net::socket_descr_t fd, const http2::frame_base& frame);
 
  protected:
-  IStream(const net::socket_info& info, const http2::frame_base& frame);
+  IStream(net::socket_descr_t fd, const http2::frame_base& frame);
 
   virtual bool ProcessFrameImpl(const http2::frame_base& frame) = 0;
 
  private:
   ErrnoError SendData(const buffer_t& buff);
-  net::SocketHolder sock_;
+  net::ISocket* sock_;
   const http2::frame_base init_frame_;
 };
 
@@ -69,32 +70,32 @@ typedef std::shared_ptr<IStream> StreamSPtr;
 
 class HTTP2DataStream : public IStream {
  public:
-  HTTP2DataStream(const net::socket_info& info, const http2::frame_base& frame);
+  HTTP2DataStream(net::socket_descr_t fd, const http2::frame_base& frame);
 
  private:
-  virtual bool ProcessFrameImpl(const http2::frame_base& frame) override;
+  bool ProcessFrameImpl(const http2::frame_base& frame) override;
 };
 
 typedef std::shared_ptr<HTTP2DataStream> HTTP2DataStreamSPtr;
 
 class HTTP2PriorityStream : public IStream {
  public:
-  HTTP2PriorityStream(const net::socket_info& info, const http2::frame_base& frame);
+  HTTP2PriorityStream(net::socket_descr_t fd, const http2::frame_base& frame);
   ~HTTP2PriorityStream();
 
  private:
-  virtual bool ProcessFrameImpl(const http2::frame_base& frame) override;
+  bool ProcessFrameImpl(const http2::frame_base& frame) override;
 };
 
 typedef std::shared_ptr<HTTP2PriorityStream> HTTP2PriorityStreamSPtr;
 
 class HTTP2SettingsStream : public IStream {
  public:
-  HTTP2SettingsStream(const net::socket_info& info, const http2::frame_base& frame);
+  HTTP2SettingsStream(net::socket_descr_t fd, const http2::frame_base& frame);
   bool IsNegotiated() const;
 
  private:
-  virtual bool ProcessFrameImpl(const http2::frame_base& frame) override;
+  bool ProcessFrameImpl(const http2::frame_base& frame) override;
   bool negotiated_;
 };
 
@@ -102,10 +103,10 @@ typedef std::shared_ptr<HTTP2SettingsStream> HTTP2SettingsStreamSPtr;
 
 class HTTP2HeadersStream : public IStream {
  public:
-  HTTP2HeadersStream(const net::socket_info& info, const http2::frame_base& frame);
+  HTTP2HeadersStream(net::socket_descr_t fd, const http2::frame_base& frame);
 
  private:
-  virtual bool ProcessFrameImpl(const http2::frame_base& frame) override;
+  bool ProcessFrameImpl(const http2::frame_base& frame) override;
 };
 
 typedef std::shared_ptr<HTTP2HeadersStream> HTTP2HeadersStreamSPtr;

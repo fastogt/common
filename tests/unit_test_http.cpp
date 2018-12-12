@@ -1,3 +1,32 @@
+/*  Copyright (C) 2014-2018 FastoGT. All right reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of FastoGT. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <gtest/gtest.h>
 
 #include <common/http/http2.h>
@@ -19,7 +48,7 @@ TEST(Http, parse_GET) {
   std::pair<http::http_status, Error> err = http::parse_http_request(request, &r1);
   ASSERT_EQ(r1.GetMethod(), http::HM_GET);
   ASSERT_EQ(r1.GetPath().GetPath(), "path/file.html");
-  ASSERT_TRUE(r1.GetHeaders().size() == 2);
+  ASSERT_EQ(r1.GetHeaders().size(), 2);
   ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
 
@@ -34,7 +63,7 @@ TEST(Http, parse_GET) {
   err = http::parse_http_request(request2, &r2);
   ASSERT_EQ(r2.GetMethod(), http::HM_GET);
   ASSERT_EQ(r2.GetPath().GetPath(), "hello.htm");
-  ASSERT_TRUE(r2.GetHeaders().size() == 5);
+  ASSERT_EQ(r2.GetHeaders().size(), 5);
   ASSERT_TRUE(r2.GetBody().empty());
   ASSERT_FALSE(err.second);
 
@@ -50,7 +79,7 @@ TEST(Http, parse_GET) {
   ASSERT_EQ(r4.GetMethod(), http::HM_GET);
   ASSERT_EQ(r4.GetPath().GetPath(), "hello.htm");
   // ASSERT_EQ(r4.path().Query(), "home=Cosby&favorite flavor=flies");
-  ASSERT_TRUE(r4.GetHeaders().size() == 5);
+  ASSERT_EQ(r4.GetHeaders().size(), 5);
   ASSERT_TRUE(r4.GetBody().empty());
   ASSERT_FALSE(err.second);
 
@@ -69,8 +98,8 @@ TEST(Http, parse_GET) {
   ASSERT_FALSE(err.second);
   ASSERT_EQ(r5.GetMethod(), http::HM_GET);
   ASSERT_EQ(r5.GetPath().GetPath(), "[object LocalMediaStream]");
-  ASSERT_TRUE(r5.GetProtocol() == http::HP_1_1);
-  ASSERT_TRUE(r5.GetHeaders().size() == 7);
+  ASSERT_EQ(r5.GetProtocol(), http::HP_1_1);
+  ASSERT_EQ(r5.GetHeaders().size(), 7);
   ASSERT_TRUE(r5.GetBody().empty());
 }
 
@@ -86,7 +115,7 @@ TEST(Http, parse_HEAD) {
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.GetMethod(), http::HM_HEAD);
   ASSERT_EQ(r3.GetPath().GetPath(), "hello.htm");
-  ASSERT_TRUE(r3.GetHeaders().size() == 5);
+  ASSERT_EQ(r3.GetHeaders().size(), 5);
   ASSERT_TRUE(r3.GetBody().empty());
   ASSERT_FALSE(err.second);
 }
@@ -104,9 +133,9 @@ TEST(Http, parse_POST) {
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.GetMethod(), http::HM_POST);
   ASSERT_EQ(r3.GetPath().GetPath(), "hello.htm");
-  ASSERT_TRUE(r3.GetHeaders().size() == 5);
+  ASSERT_EQ(r3.GetHeaders().size(), 5);
   ASSERT_EQ(r3.GetBody(), "home=Cosby&favorite flavor=flies");
-  ASSERT_TRUE(r3.GetBody().size() == 32);
+  ASSERT_EQ(r3.GetBody().size(), 32);
   ASSERT_FALSE(err.second);
 }
 
@@ -117,24 +146,24 @@ void checkFrameData(const http2::frame_base& frame,
                     uint32_t stream_id,
                     const byte_t* rawdata,
                     uint32_t rawdata_size) {
-  ASSERT_TRUE(frame.type() == type);
-  ASSERT_TRUE(frame.flags() == flags);
-  ASSERT_TRUE(frame.payload_size() == len);
-  ASSERT_TRUE(frame.stream_id() == stream_id);
+  ASSERT_EQ(frame.type(), type);
+  ASSERT_EQ(frame.flags(), flags);
+  ASSERT_EQ(frame.payload_size(), len);
+  ASSERT_EQ(frame.stream_id(), stream_id);
 
   http2::frame_hdr h0local(type, flags, stream_id, len);
-  ASSERT_TRUE(frame.type() == h0local.type());
-  ASSERT_TRUE(frame.flags() == h0local.flags());
-  ASSERT_TRUE(frame.payload_size() == h0local.length());
-  ASSERT_TRUE(frame.stream_id() == h0local.stream_id());
+  ASSERT_EQ(frame.type(), h0local.type());
+  ASSERT_EQ(frame.flags(), h0local.flags());
+  ASSERT_EQ(frame.payload_size(), h0local.length());
+  ASSERT_EQ(frame.stream_id(), h0local.stream_id());
 
   const uint32_t payload_size = rawdata_size - FRAME_HEADER_SIZE;
   const byte_t* payload = rawdata + FRAME_HEADER_SIZE;
-  ASSERT_TRUE(frame.payload_size() == payload_size);
-  ASSERT_TRUE(memcmp(frame.c_payload(), payload, payload_size) == 0);
+  ASSERT_EQ(frame.payload_size(), payload_size);
+  ASSERT_EQ(memcmp(frame.c_payload(), payload, payload_size), 0);
   buffer_t rbuffer = frame.raw_data();
   const byte_t* rdata = &rbuffer[0];
-  ASSERT_TRUE(memcmp(rdata, rawdata, rawdata_size) == 0);
+  ASSERT_EQ(memcmp(rdata, rawdata, rawdata_size), 0);
 }
 
 TEST(Http2, parse_frames) {
@@ -155,10 +184,10 @@ TEST(Http2, parse_frames) {
   const http2::frame_base emptySettings = http2::frame_base::create_frame(emfh, NULL);
   ASSERT_TRUE(emptySettings.IsValid());
 
-  ASSERT_TRUE(emptySettings.payload_size() == 0);
+  ASSERT_EQ(emptySettings.payload_size(), 0);
   ASSERT_TRUE(emptySettings.payload().empty());
-  ASSERT_TRUE(emfh.flags() == http2::HTTP2_FLAG_ACK);
-  ASSERT_TRUE(emptySettings.raw_data().size() == FRAME_HEADER_SIZE);
+  ASSERT_EQ(emfh.flags(), http2::HTTP2_FLAG_ACK);
+  ASSERT_EQ(emptySettings.raw_data().size(), FRAME_HEADER_SIZE);
 
   const http2::frame_hdr invalidlenfh(http2::HTTP2_SETTINGS, http2::HTTP2_FLAG_ACK, 0, 1);
   ASSERT_FALSE(invalidlenfh.IsValid());
@@ -205,7 +234,7 @@ TEST(Http2, parse_frames) {
   len += sizeof(raw_frame6);
 
   http2::frames_t frames = http2::parse_frames((const char*)raw_frames, len);
-  ASSERT_TRUE(frames.size() == 7);
+  ASSERT_EQ(frames.size(), 7);
 
   // settings frame //
   checkFrameData(frames[0], http2::HTTP2_SETTINGS, 0, 12, 0, raw_frame0, sizeof(raw_frame0));
@@ -234,21 +263,21 @@ TEST(Http2, frame_settings) {
   };
 
   http2::frames_t frames = http2::parse_frames((const char*)raw_settings_frame, sizeof(raw_settings_frame));
-  ASSERT_TRUE(frames.size() == 1);
+  ASSERT_EQ(frames.size(), 1);
 
   http2::frame_settings* set = (http2::frame_settings*)(&frames[0]);
-  ASSERT_TRUE(set->type() == 0x04);
-  ASSERT_TRUE(set->flags() == 0x00);
-  ASSERT_TRUE(set->stream_id() == 0x00);
-  ASSERT_TRUE(set->payload_size() == 0x0C);
+  ASSERT_EQ(set->type(), 0x04);
+  ASSERT_EQ(set->flags(), 0x00);
+  ASSERT_EQ(set->stream_id(), 0x00);
+  ASSERT_EQ(set->payload_size(), 0x0C);
 
-  ASSERT_TRUE(set->niv() == 2);
+  ASSERT_EQ(set->niv(), 2);
   const http2::http2_settings_entry* setev = set->iv();
-  ASSERT_TRUE(setev->settings_id() == 0x03);
-  ASSERT_TRUE(setev->value() == 0x64);
+  ASSERT_EQ(setev->settings_id(), 0x03);
+  ASSERT_EQ(setev->value(), 0x64);
   const http2::http2_settings_entry* setev2 = set->iv() + 1;
-  ASSERT_TRUE(setev2->settings_id() == 0x04);
-  ASSERT_TRUE(setev2->value() == 0xFFFF);
+  ASSERT_EQ(setev2->settings_id(), 0x04);
+  ASSERT_EQ(setev2->value(), 0xFFFF);
 }
 
 TEST(Http2, frame_priority) {
@@ -281,57 +310,57 @@ TEST(Http2, frame_priority) {
   };
 
   http2::frames_t frames = http2::parse_frames((const char*)raw_priority_frames, sizeof(raw_priority_frames));
-  ASSERT_TRUE(frames.size() == 5);
+  ASSERT_EQ(frames.size(), 5);
 
   http2::frame_priority* pri1 = (http2::frame_priority*)(&frames[0]);
-  ASSERT_TRUE(pri1->type() == 0x02);
-  ASSERT_TRUE(pri1->flags() == 0x00);
-  ASSERT_TRUE(pri1->stream_id() == 0x03);
-  ASSERT_TRUE(pri1->payload_size() == 0x05);
+  ASSERT_EQ(pri1->type(), 0x02);
+  ASSERT_EQ(pri1->flags(), 0x00);
+  ASSERT_EQ(pri1->stream_id(), 0x03);
+  ASSERT_EQ(pri1->payload_size(), 0x05);
 
   const http2::http2_priority_spec* prior1 = pri1->priority();
-  ASSERT_TRUE(prior1->stream_id() == 0x00);
-  ASSERT_TRUE(prior1->weight() == 0xC8 + 1);
+  ASSERT_EQ(prior1->stream_id(), 0x00);
+  ASSERT_EQ(prior1->weight(), 0xC8 + 1);
 
   http2::frame_priority* pri2 = (http2::frame_priority*)(&frames[1]);
-  ASSERT_TRUE(pri2->type() == 0x02);
-  ASSERT_TRUE(pri2->flags() == 0x00);
-  ASSERT_TRUE(pri2->stream_id() == 0x05);
-  ASSERT_TRUE(pri2->payload_size() == 0x05);
+  ASSERT_EQ(pri2->type(), 0x02);
+  ASSERT_EQ(pri2->flags(), 0x00);
+  ASSERT_EQ(pri2->stream_id(), 0x05);
+  ASSERT_EQ(pri2->payload_size(), 0x05);
 
   const http2::http2_priority_spec* prior2 = pri2->priority();
-  ASSERT_TRUE(prior2->stream_id() == 0x00);
-  ASSERT_TRUE(prior2->weight() == 0x64 + 1);
+  ASSERT_EQ(prior2->stream_id(), 0x00);
+  ASSERT_EQ(prior2->weight(), 0x64 + 1);
 
   const http2::frame_priority* pri3 = (http2::frame_priority*)(&frames[2]);
-  ASSERT_TRUE(pri3->type() == 0x02);
-  ASSERT_TRUE(pri3->flags() == 0x00);
-  ASSERT_TRUE(pri3->stream_id() == 0x07);
-  ASSERT_TRUE(pri3->payload_size() == 0x05);
+  ASSERT_EQ(pri3->type(), 0x02);
+  ASSERT_EQ(pri3->flags(), 0x00);
+  ASSERT_EQ(pri3->stream_id(), 0x07);
+  ASSERT_EQ(pri3->payload_size(), 0x05);
 
   const http2::http2_priority_spec* prior3 = pri3->priority();
-  ASSERT_TRUE(prior3->stream_id() == 0x00);
-  ASSERT_TRUE(prior3->weight() == 0x0 + 1);
+  ASSERT_EQ(prior3->stream_id(), 0x00);
+  ASSERT_EQ(prior3->weight(), 0x0 + 1);
 
   http2::frame_priority* pri4 = (http2::frame_priority*)(&frames[3]);
-  ASSERT_TRUE(pri4->type() == 0x02);
-  ASSERT_TRUE(pri4->flags() == 0x00);
-  ASSERT_TRUE(pri4->stream_id() == 0x09);
-  ASSERT_TRUE(pri4->payload_size() == 0x05);
+  ASSERT_EQ(pri4->type(), 0x02);
+  ASSERT_EQ(pri4->flags(), 0x00);
+  ASSERT_EQ(pri4->stream_id(), 0x09);
+  ASSERT_EQ(pri4->payload_size(), 0x05);
 
   const http2::http2_priority_spec* prior4 = pri4->priority();
-  ASSERT_TRUE(prior4->stream_id() == 0x07);
-  ASSERT_TRUE(prior4->weight() == 0x00 + 1);
+  ASSERT_EQ(prior4->stream_id(), 0x07);
+  ASSERT_EQ(prior4->weight(), 0x00 + 1);
 
   const http2::frame_priority* pri5 = (http2::frame_priority*)(&frames[4]);
-  ASSERT_TRUE(pri5->type() == 0x02);
-  ASSERT_TRUE(pri5->flags() == 0x00);
-  ASSERT_TRUE(pri5->stream_id() == 0x0B);
-  ASSERT_TRUE(pri5->payload_size() == 0x05);
+  ASSERT_EQ(pri5->type(), 0x02);
+  ASSERT_EQ(pri5->flags(), 0x00);
+  ASSERT_EQ(pri5->stream_id(), 0x0B);
+  ASSERT_EQ(pri5->payload_size(), 0x05);
 
   const http2::http2_priority_spec* prior5 = pri5->priority();
-  ASSERT_TRUE(prior5->stream_id() == 0x03);
-  ASSERT_TRUE(prior5->weight() == 0x00 + 1);
+  ASSERT_EQ(prior5->stream_id(), 0x03);
+  ASSERT_EQ(prior5->weight(), 0x00 + 1);
   // priority frame //
 }
 
@@ -346,27 +375,27 @@ TEST(Http2, frame_headers) {
                                     0x69, 0xD2, 0x9A, 0xC4, 0xC0, 0x57, 0x65, 0x76, 0xD6, 0xBF, 0x83, 0x8F};
 
   http2::frames_t framesh0 = http2::parse_frames((const char*)headers_frame0, sizeof(headers_frame0));
-  ASSERT_TRUE(framesh0.size() == 1);
+  ASSERT_EQ(framesh0.size(), 1);
 
   http2::frame_headers* head0 = (http2::frame_headers*)(&framesh0[0]);
-  ASSERT_TRUE(head0->type() == 0x01);
-  ASSERT_TRUE(head0->flags() == 0x25);
-  ASSERT_TRUE(head0->stream_id() == 0x0D);
-  ASSERT_TRUE(head0->payload_size() == 0x29);
+  ASSERT_EQ(head0->type(), 0x01);
+  ASSERT_EQ(head0->flags(), 0x25);
+  ASSERT_EQ(head0->stream_id(), 0x0D);
+  ASSERT_EQ(head0->payload_size(), 0x29);
 
   uint8_t padlen0 = head0->padlen();
-  ASSERT_TRUE(padlen0 == 0);
+  ASSERT_EQ(padlen0, 0);
   const http2::http2_priority_spec* priorh0 = head0->priority();
-  ASSERT_TRUE(priorh0->stream_id() == 0x0B);
-  ASSERT_TRUE(priorh0->weight() == 0x0F + 1);
+  ASSERT_EQ(priorh0->stream_id(), 0x0B);
+  ASSERT_EQ(priorh0->weight(), 0x0F + 1);
 
   std::vector<http2::http2_nv> nva0 = head0->nva();
-  ASSERT_TRUE(nva0.size() == 7);
+  ASSERT_EQ(nva0.size(), 7);
   http::HttpRequest r0;
   std::pair<http::http_status, Error> err0 = http2::parse_http_request(*head0, &r0);
   ASSERT_EQ(r0.GetMethod(), http::HM_GET);
   ASSERT_EQ(r0.GetPath().GetPath(), "/");
-  ASSERT_TRUE(r0.GetHeaders().size() == 3);
+  ASSERT_EQ(r0.GetHeaders().size(), 3);
   ASSERT_TRUE(r0.GetBody().empty());
   ASSERT_FALSE(err0.second);
 
@@ -379,27 +408,27 @@ TEST(Http2, frame_headers) {
                                    0x69, 0xD2, 0x9A, 0xC4, 0xC0, 0x57, 0x65, 0x76, 0xD6, 0xBF, 0x83, 0x8F};
 
   http2::frames_t framesh1 = http2::parse_frames((const char*)headers_frame, sizeof(headers_frame));
-  ASSERT_TRUE(framesh1.size() == 1);
+  ASSERT_EQ(framesh1.size(), 1);
 
   http2::frame_headers* head1 = (http2::frame_headers*)(&framesh1[0]);
-  ASSERT_TRUE(head1->type() == 0x01);
-  ASSERT_TRUE(head1->flags() == 0x25);
-  ASSERT_TRUE(head1->stream_id() == 0x0D);
-  ASSERT_TRUE(head1->payload_size() == 0x29);
+  ASSERT_EQ(head1->type(), 0x01);
+  ASSERT_EQ(head1->flags(), 0x25);
+  ASSERT_EQ(head1->stream_id(), 0x0D);
+  ASSERT_EQ(head1->payload_size(), 0x29);
 
   uint8_t padlen = head1->padlen();
-  ASSERT_TRUE(padlen == 0);
+  ASSERT_EQ(padlen, 0);
   const http2::http2_priority_spec* priorh1 = head1->priority();
-  ASSERT_TRUE(priorh1->stream_id() == 0x0B);
-  ASSERT_TRUE(priorh1->weight() == 0x0F + 1);
+  ASSERT_EQ(priorh1->stream_id(), 0x0B);
+  ASSERT_EQ(priorh1->weight(), 0x0F + 1);
 
   std::vector<http2::http2_nv> nva1 = head1->nva();
-  ASSERT_TRUE(nva1.size() == 7);
+  ASSERT_EQ(nva1.size(), 7);
   http::HttpRequest r1;
   std::pair<http::http_status, Error> err = http2::parse_http_request(*head1, &r1);
   ASSERT_EQ(r1.GetMethod(), http::HM_GET);
   ASSERT_EQ(r1.GetPath().GetPath(), "/");
-  ASSERT_TRUE(r1.GetHeaders().size() == 3);
+  ASSERT_EQ(r1.GetHeaders().size(), 3);
   ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
   // headers frame//
@@ -417,38 +446,22 @@ TEST(Http2, frame_goaway) {
 
   // goaway frame//
   http2::frames_t frames1 = http2::parse_frames((const char*)away_frame, sizeof(away_frame));
-  ASSERT_TRUE(frames1.size() == 1);
+  ASSERT_EQ(frames1.size(), 1);
 
   http2::frame_goaway* goaway = (http2::frame_goaway*)(&frames1[0]);
-  ASSERT_TRUE(goaway->type() == 0x07);
-  ASSERT_TRUE(goaway->flags() == 0x00);
-  ASSERT_TRUE(goaway->stream_id() == 0x00);
-  ASSERT_TRUE(goaway->payload_size() == 0x19);
+  ASSERT_EQ(goaway->type(), 0x07);
+  ASSERT_EQ(goaway->flags(), 0x00);
+  ASSERT_EQ(goaway->stream_id(), 0x00);
+  ASSERT_EQ(goaway->payload_size(), 0x19);
 
-  ASSERT_TRUE(goaway->last_stream_id() == 0x00);
-  ASSERT_TRUE(goaway->error_code() == http2::HTTP2_PROTOCOL_ERROR);
+  ASSERT_EQ(goaway->last_stream_id(), 0x00);
+  ASSERT_EQ(goaway->error_code(), http2::HTTP2_PROTOCOL_ERROR);
   uint32_t oplen = goaway->opaque_data_len();
   uint8_t* opd = goaway->opaque_data();
   const uint8_t* opd2 = goaway->c_payload() + sizeof(uint32_t) * 2;
-  ASSERT_TRUE(sizeof(uint32_t) * 2 == goaway->payload_size() - oplen);
-  ASSERT_TRUE(memcmp(opd, opd2, oplen) == 0);
+  ASSERT_EQ(sizeof(uint32_t) * 2, goaway->payload_size() - oplen);
+  ASSERT_EQ(memcmp(opd, opd2, oplen), 0);
   // goaway frame///
-}
-
-TEST(http_client, get) {
-  net::HostAndPort example("example.com", 80);
-  uri::Upath root;
-  net::HttpClient cl(example);
-  ErrnoError err = cl.Connect();
-  ASSERT_FALSE(err);
-  Error err2 = cl.Get(root);
-  ASSERT_FALSE(err2);
-  http::HttpResponse resp;
-  err2 = cl.ReadResponce(&resp);
-  ASSERT_FALSE(err2);
-  ASSERT_FALSE(resp.IsEmptyBody());
-  err = cl.Disconnect();
-  ASSERT_FALSE(err);
 }
 
 TEST(http_client, head) {
@@ -466,3 +479,167 @@ TEST(http_client, head) {
   err = cl.Disconnect();
   ASSERT_FALSE(err);
 }
+
+TEST(http_client, get) {
+  net::HostAndPort example("example.com", 80);
+  uri::Upath root;
+  net::HttpClient cl(example);
+  ErrnoError err = cl.Connect();
+  ASSERT_FALSE(err);
+  Error err2 = cl.Get(root);
+  ASSERT_FALSE(err2);
+  http::HttpResponse resp;
+  err2 = cl.ReadResponce(&resp);
+  ASSERT_FALSE(err2);
+  ASSERT_FALSE(resp.IsEmptyBody());
+  ASSERT_EQ(resp.GetBody().size(), 1270);
+  err = cl.Disconnect();
+  ASSERT_FALSE(err);
+}
+
+#if defined(HAVE_OPENSSL)
+
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
+#include <common/net/socket_tcp.h>
+
+class SocketTls : public common::net::ISocket {
+ public:
+  explicit SocketTls(const common::net::HostAndPort& host) : hs_(host), ssl_(nullptr) {
+    SSL_library_init();
+    SSLeay_add_ssl_algorithms();
+    SSL_load_error_strings();
+  }
+
+  common::ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT {
+    common::net::ClientSocketTcp hs(hs_.GetHost());
+    common::ErrnoError err = hs.Connect(tv);
+    if (err) {
+      return err;
+    }
+
+    const SSL_METHOD* method = TLS_client_method();
+    if (!method) {
+      hs.Disconnect();
+      return common::make_errno_error_inval();
+    }
+
+    SSL_CTX* ctx = SSL_CTX_new(method);
+    if (!ctx) {
+      hs.Disconnect();
+      return common::make_errno_error_inval();
+    }
+
+    SSL* ssl = SSL_new(ctx);
+    if (!ssl) {
+      SSL_clear(ssl);
+      hs.Disconnect();
+      return common::make_errno_error_inval();
+    }
+
+    SSL_set_fd(ssl, hs.GetFd());
+    int e = SSL_connect(ssl);
+    if (e < 0) {
+      int err = SSL_get_error(ssl, e);
+      char* str = ERR_error_string(err, nullptr);
+      SSL_clear(ssl);
+      hs.Disconnect();
+      return common::make_errno_error(str, EINTR);
+    }
+
+    hs_.SetInfo(hs.GetInfo());
+    ssl_ = ssl;
+    return common::ErrnoError();
+  }
+
+  common::ErrnoError Disconnect() WARN_UNUSED_RESULT { return Close(); }
+
+  bool IsConnected() const { return hs_.IsConnected(); }
+
+  common::net::HostAndPort GetHost() const { return hs_.GetHost(); }
+
+  bool IsValid() const override { return hs_.IsValid(); }
+
+ private:
+  common::ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override {
+    int len = SSL_write(ssl_, data, size);
+    if (len < 0) {
+      int err = SSL_get_error(ssl_, len);
+      char* str = ERR_error_string(err, nullptr);
+      return common::make_errno_error(str, EINTR);
+    }
+
+    *nwrite_out = len;
+    return common::ErrnoError();
+  }
+
+  common::ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override {
+    int len = SSL_read(ssl_, out_data, max_size);
+    if (len < 0) {
+      int err = SSL_get_error(ssl_, len);
+      char* str = ERR_error_string(err, nullptr);
+      return common::make_errno_error(str, EINTR);
+    }
+
+    *nread_out = len;
+    return common::ErrnoError();
+  }
+
+  common::ErrnoError CloseImpl() override {
+    if (ssl_) {
+      SSL_clear(ssl_);
+      ssl_ = nullptr;
+    }
+
+    return hs_.Close();
+  }
+
+  common::net::ClientSocketTcp hs_;
+  SSL* ssl_;
+};
+
+class HttpsClient : public common::net::IHttpClient {
+ public:
+  typedef common::net::IHttpClient base_class;
+  explicit HttpsClient(const common::net::HostAndPort& host) : base_class(new SocketTls(host)) {}
+
+  common::ErrnoError Connect(struct timeval* tv = nullptr) override {
+    SocketTls* sock = static_cast<SocketTls*>(GetSocket());
+    return sock->Connect(tv);
+  }
+
+  bool IsConnected() const override {
+    SocketTls* sock = static_cast<SocketTls*>(GetSocket());
+    return sock->IsConnected();
+  }
+
+  common::ErrnoError Disconnect() override {
+    SocketTls* sock = static_cast<SocketTls*>(GetSocket());
+    return sock->Disconnect();
+  }
+
+  common::net::HostAndPort GetHost() const override {
+    SocketTls* sock = static_cast<SocketTls*>(GetSocket());
+    return sock->GetHost();
+  }
+};
+
+TEST(https_client, get) {
+  net::HostAndPort example("example.com", 443);
+  uri::Upath root;
+  HttpsClient cl(example);
+  ErrnoError err = cl.Connect();
+  ASSERT_FALSE(err);
+  Error err2 = cl.Get(root);
+  ASSERT_FALSE(err2);
+  http::HttpResponse resp;
+  err2 = cl.ReadResponce(&resp);
+  ASSERT_FALSE(err2);
+  ASSERT_FALSE(resp.IsEmptyBody());
+  ASSERT_EQ(resp.GetBody().size(), 1270);
+  err = cl.Disconnect();
+  ASSERT_FALSE(err);
+}
+
+#endif

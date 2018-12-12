@@ -92,6 +92,14 @@ namespace http {
 
 Http2Client::Http2Client(libev::IoLoop* server, const net::socket_info& info) : HttpClient(server, info), streams_() {}
 
+ErrnoError Http2Client::Get(const uri::Url& url, bool is_keep_alive) {
+  return SendRequest(common::http::HM_GET, url, common::http::HP_2_0, nullptr, is_keep_alive);
+}
+
+ErrnoError Http2Client::Head(const uri::Url& url, bool is_keep_alive) {
+  return SendRequest(common::http::HM_HEAD, url, common::http::HP_2_0, nullptr, is_keep_alive);
+}
+
 const char* Http2Client::ClassName() const {
   return "Http2Client";
 }
@@ -231,6 +239,60 @@ ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
   return HttpClient::SendHeaders(protocol, status, extra_header, mime_type, length, mod, is_keep_alive, info);
 }
 
+ErrnoError Http2Client::SendRequest(common::http::http_method method,
+                                    const uri::Url& url,
+                                    common::http::http_protocol protocol,
+                                    const char* extra_header,
+                                    bool is_keep_alive) {
+  if (IsHttp2() && protocol == common::http::HP_2_0) {
+    StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
+    if (!header_stream) {
+      ErrnoError err = DEBUG_MSG_PERROR("FindStreamByType", EAGAIN, logging::LOG_LEVEL_ERR);
+      return err;
+    }
+
+    http2::http2_nvs_t nvs;
+
+    const std::string method_str = ConvertToString(method);
+
+    http2::http2_nv nvstatus;
+    nvstatus.name = MAKE_BUFFER(":method");
+    nvstatus.value = ConvertToBytes(method_str);
+    nvs.push_back(nvstatus);
+
+    uri::Upath path = url.GetPath();
+    http2::http2_nv nvpath;
+    nvpath.name = MAKE_BUFFER(":path");
+    nvpath.value = ConvertToBytes(path.GetHpath());
+    nvs.push_back(nvpath);
+
+    http2::http2_nv nvhost;
+    nvhost.name = MAKE_BUFFER(":host");
+    nvhost.value = ConvertToBytes(url.GetHost());
+    nvs.push_back(nvhost);
+
+    char timebuf[100];
+    time_t now = time(nullptr);
+    strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
+    http2::http2_nv nvdate;
+    nvdate.name = MAKE_BUFFER("date");
+    nvdate.value = ConvertToBytes(std::string(timebuf));
+    nvs.push_back(nvdate);
+
+    http2::http2_deflater hd;
+    buffer_t buff;
+    hd.http2_deflate_hd_bufs(buff, nvs);
+
+    http2::frame_hdr hdr =
+        http2::frame_headers::create_frame_header(http2::HTTP2_FLAG_END_HEADERS, header_stream->GetSid(), buff.size());
+    http2::frame_headers fhdr(hdr, buff);
+
+    return header_stream->SendFrame(fhdr);
+  }
+
+  return HttpClient::SendRequest(method, url, protocol, extra_header, is_keep_alive);
+}
+
 StreamSPtr Http2Client::FindStreamByStreamID(IStream::stream_id_t stream_id) const {
   for (size_t i = 0; i < streams_.size(); ++i) {
     StreamSPtr stream = streams_[i];
@@ -265,12 +327,12 @@ bool Http2Client::IsSettingNegotiated() const {
 }
 
 void Http2Client::ProcessFrames(const http2::frames_t& frames) {
-  net::socket_info inf = GetInfo();
+  const net::socket_descr_t fd = GetFd();
   for (size_t i = 0; i < frames.size(); ++i) {
     http2::frame_base frame = frames[i];
     StreamSPtr stream = FindStreamByStreamID(frame.stream_id());
     if (!stream) {
-      IStream* nstream = IStream::CreateStream(inf, frame);
+      IStream* nstream = IStream::CreateStream(fd, frame);
       stream = StreamSPtr(nstream);
       streams_.push_back(stream);
     }

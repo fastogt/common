@@ -35,6 +35,8 @@
 
 #include <common/http/http.h>
 
+#include <common/uri/url.h>
+
 #include <common/libev/http/http_server_info.h>
 #include <common/libev/tcp/tcp_client.h>
 
@@ -45,6 +47,9 @@ namespace http {
 class HttpClient : public libev::tcp::TcpClient {
  public:
   HttpClient(libev::IoLoop* server, const net::socket_info& info);
+
+  virtual ErrnoError Get(const uri::Url& url, bool is_keep_alive) WARN_UNUSED_RESULT;
+  virtual ErrnoError Head(const uri::Url& url, bool is_keep_alive) WARN_UNUSED_RESULT;
 
   ErrnoError SendOk(common::http::http_protocol protocol,
                     const char* extra_header,
@@ -66,8 +71,13 @@ class HttpClient : public libev::tcp::TcpClient {
                                  time_t* mod,
                                  bool is_keep_alive,
                                  const HttpServerInfo& info) WARN_UNUSED_RESULT;
+  virtual ErrnoError SendRequest(common::http::http_method method,
+                                 const uri::Url& url,
+                                 common::http::http_protocol protocol,
+                                 const char* extra_header,
+                                 bool is_keep_alive) WARN_UNUSED_RESULT;
 
-  virtual const char* ClassName() const override;
+  const char* ClassName() const override;
 
   void SetIsAuthenticated(bool auth);
   bool IsAuthenticated() const;
