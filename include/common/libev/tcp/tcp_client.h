@@ -41,6 +41,8 @@ class TcpClient : public IoClient {
   TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
   ~TcpClient() override;
 
+  net::socket_info GetInfo() const;
+
   ErrnoError SetBlocking(bool block) WARN_UNUSED_RESULT;
 
   ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;

@@ -519,7 +519,11 @@ class SocketTls : public common::net::ISocket {
       return err;
     }
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+    const SSL_METHOD* method = TLSv1_2_client_method();
+#else
     const SSL_METHOD* method = TLS_client_method();
+#endif
     if (!method) {
       hs.Disconnect();
       return common::make_errno_error_inval();
