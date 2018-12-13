@@ -320,6 +320,11 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out, si
   uint16_t lstatus = 0;
   while ((pos = response.find("\r\n", start)) != std::string::npos) {
     std::string line = response.substr(start, pos - start);
+    if (line.empty()) {
+      start = pos + 2;
+      break;
+    }
+
     if (line_count == 0) {
       if (line.size() < 4) {
         return make_error_inval();
