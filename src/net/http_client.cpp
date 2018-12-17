@@ -87,7 +87,13 @@ Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
     return parse_error;
   }
 
-  if (!responce->IsEmptyBody() || last_request_->GetMethod() == http::HM_HEAD) {  // head without body
+  if (last_request_->GetMethod() == http::HM_HEAD) {  // head without body
+    delete[] data_head;
+    return Error();
+  }
+
+  if (!responce->IsEmptyBody()) {
+    CHECK_EQ(not_parsed, 0);
     delete[] data_head;
     return Error();
   }

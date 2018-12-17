@@ -67,6 +67,7 @@ class File {
   descriptor_t GetFd() const;
 
   ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError Write(const char* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError WriteBuffer(const std::string& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError WriteBuffer(const char_buffer_t& data, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError Read(void* out, size_t len, size_t* nread_out) WARN_UNUSED_RESULT;

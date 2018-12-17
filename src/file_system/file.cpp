@@ -67,6 +67,16 @@ ErrnoError File::Write(const void* data, size_t size, size_t* nwrite_out) {
   return holder_->Write(data, size, nwrite_out);
 }
 
+ErrnoError File::Write(const char* data, size_t size, size_t* nwrite_out) {
+  DCHECK(IsValid());
+
+  if (!holder_) {
+    return make_error_perror("File::Write", EINVAL);
+  }
+
+  return holder_->Write(data, size, nwrite_out);
+}
+
 ErrnoError File::WriteBuffer(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
 

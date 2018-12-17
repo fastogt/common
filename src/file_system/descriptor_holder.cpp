@@ -52,6 +52,11 @@ ErrnoError DescriptorHolder::Write(const void* data, size_t size, size_t* nwrite
   return write_to_descriptor(fd_, data, size, nwrite_out);
 }
 
+ErrnoError DescriptorHolder::Write(const char* data, size_t size, size_t* nwrite_out) {
+  DCHECK(IsValid());
+  return write_to_descriptor(fd_, data, size, nwrite_out);
+}
+
 ErrnoError DescriptorHolder::WriteBuffer(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
   return write_to_descriptor(fd_, data.data(), data.size(), nwrite_out);
