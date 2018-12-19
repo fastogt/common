@@ -47,6 +47,7 @@ Error EncodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
     return make_error_inval();
   }
 
+  output->clear();
   size_t output_header_len;
   uint32_t output_len = 0;
   if (sized) {
@@ -129,7 +130,7 @@ Error DecodeBZip2T(const CHAR* input, size_t input_length, bool sized, STR2* out
       return make_error_inval();
     }
   } else {
-    output_len = input_length;
+    output_len = input_length * 8;  // may be help
   }
 
   bz_stream _stream;

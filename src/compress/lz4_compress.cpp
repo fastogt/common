@@ -46,6 +46,7 @@ Error EncodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* outpu
     return make_error_inval();
   }
 
+  output->clear();
   int stabled_input_size = static_cast<int>(input_length);
   size_t output_header_len;
   if (sized) {
@@ -85,7 +86,7 @@ Error DecodeLZ4T(const CHAR* input, size_t input_length, bool sized, STR2* out) 
       return make_error_inval();
     }
   } else {
-    output_len = (input_length << 8) - input_length - 2526;  // may be help
+    output_len = input_length * 8;  // may be help
   }
 
   CHAR* output = new CHAR[output_len];

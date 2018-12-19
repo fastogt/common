@@ -37,7 +37,9 @@
 #include <common/utf_string_conversions.h>
 
 #include <common/compress/base64.h>
+#include <common/compress/bzip2_compress.h>
 #include <common/compress/hex.h>
+#include <common/compress/lz4_compress.h>
 #include <common/compress/snappy_compress.h>
 #include <common/compress/zlib_compress.h>
 
@@ -340,6 +342,77 @@ TEST(string, SnappyCompress) {
 
   common::char_buffer_t decoded;
   err = common::compress::DecodeSnappy(encoded_snappy, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(json, decoded);
+}
+#endif
+
+#ifdef HAVE_LZ4
+TEST(string, LZ4Compress) {
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
+      "{\"back_end_credentials\" : {\"creds\" :\
+                      { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+                      \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+                      \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+                      \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+                      \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+                      \"type\" : \"1\"},\"type\" : \"relay\"}");
+  common::char_buffer_t encoded_lz4;
+  common::Error err = common::compress::EncodeLZ4(json, false, &encoded_lz4);
+  ASSERT_FALSE(err);
+
+  common::char_buffer_t decoded;
+  err = common::compress::DecodeLZ4(encoded_lz4, false, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(json, decoded);
+
+  err = common::compress::EncodeLZ4(json, true, &encoded_lz4);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeLZ4(encoded_lz4, true, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(json, decoded);
+
+  const common::char_buffer_t pest = MAKE_CHAR_BUFFER("pest");
+  err = common::compress::EncodeLZ4(pest, false, &encoded_lz4);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeLZ4(encoded_lz4, false, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(pest, decoded);
+
+  err = common::compress::EncodeLZ4(pest, true, &encoded_lz4);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeLZ4(encoded_lz4, true, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(pest, decoded);
+}
+#endif
+
+#ifdef HAVE_BZIP2
+TEST(string, BZIP2Compress) {
+  const common::char_buffer_t json = MAKE_CHAR_BUFFER(
+      "{\"back_end_credentials\" : {\"creds\" :\
+                      { \"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\"type\" : \"1\"},\
+                      \"id\" : \"relay_76\",\"input\" : {\"urls\" : [ {\"id\" : 222,\"uri\" : \"http://example.com\"} ]},\
+                      \"output\" : {\"urls\" : [ {\"id\" : 71,\"uri\" : \"http://example.com\",\"hls_type\" : \"push\", \
+                      \"http_root\" : \"/home/sasha/timeshift/26\"} ]},\
+                      \"stats_credentials\" : {\"creds\" : {\"host\" : \"127.0.0.1:6379\",\"unix_socket\" : \"/var/run/redis/redis.sock\"},\
+                      \"type\" : \"1\"},\"type\" : \"relay\"}");
+  common::char_buffer_t encoded_bzip2;
+  common::Error err = common::compress::EncodeBZip2(json, false, &encoded_bzip2);
+  ASSERT_FALSE(err);
+
+  common::char_buffer_t decoded;
+  err = common::compress::DecodeBZip2(encoded_bzip2, false, &decoded);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(json, decoded);
+
+  err = common::compress::EncodeBZip2(json, true, &encoded_bzip2);
+  ASSERT_FALSE(err);
+
+  err = common::compress::DecodeBZip2(encoded_bzip2, true, &decoded);
   ASSERT_FALSE(err);
   ASSERT_EQ(json, decoded);
 }
