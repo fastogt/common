@@ -50,7 +50,7 @@ class TableModel : public QAbstractTableModel {
 
   virtual void insertItem(TableItem* child);
   virtual void removeItem(TableItem* child);
-  virtual void updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+  virtual void updateItem(const QModelIndex& top_left, const QModelIndex& bottom_right);
 
  protected:
   void clearData();

@@ -214,6 +214,8 @@ void TreeModel::removeAllItems(const QModelIndex& parent) {
 }
 
 void TreeModel::updateItem(const QModelIndex& top_left, const QModelIndex& bottom_right) {
+  DCHECK(top_left.isValid());
+  DCHECK(bottom_right.isValid());
   emit dataChanged(top_left, bottom_right);
 }
 

@@ -98,8 +98,10 @@ void TableModel::removeItem(TableItem* child) {
   endRemoveRows();
 }
 
-void TableModel::updateItem(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-  emit dataChanged(topLeft, bottomRight);
+void TableModel::updateItem(const QModelIndex& top_left, const QModelIndex& bottom_right) {
+  DCHECK(top_left.isValid());
+  DCHECK(bottom_right.isValid());
+  emit dataChanged(top_left, bottom_right);
 }
 
 void TableModel::clearData() {
