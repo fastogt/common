@@ -35,7 +35,7 @@ namespace json_rpc {
 
 JsonRPCResponce::JsonRPCResponce() : id(invalid_json_rpc_id), message(), error() {}
 
-JsonRPCResponce MakeError(json_rpc_id jid, json_rpc_error error) {
+JsonRPCResponce JsonRPCResponce::MakeError(json_rpc_id jid, JsonRPCError error) {
   JsonRPCResponce resp;
   resp.id = jid;
   resp.error = error;
@@ -43,7 +43,7 @@ JsonRPCResponce MakeError(json_rpc_id jid, json_rpc_error error) {
   return resp;
 }
 
-JsonRPCResponce MakeMessage(json_rpc_id jid, json_rpc_message msg) {
+JsonRPCResponce JsonRPCResponce::MakeMessage(json_rpc_id jid, JsonRPCMessage msg) {
   JsonRPCResponce resp;
   resp.id = jid;
   resp.message = msg;

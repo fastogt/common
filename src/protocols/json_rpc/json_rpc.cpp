@@ -274,6 +274,37 @@ Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
   return err;
 }
 
+Error ParseJsonRPC(const std::string& data, JsonRPCRequest** result_req, JsonRPCResponce** result_resp) {
+  if (data.empty() || !result_req || !result_resp) {
+    return make_error_inval();
+  }
+
+  const char* data_ptr = data.c_str();
+  json_object* jdata = json_tokener_parse(data_ptr);
+  if (!jdata) {
+    return make_error_inval();
+  }
+
+  JsonRPCRequest lresult_req;
+  Error err = GetJsonRPCRequest(jdata, &lresult_req);
+  if (!err) {
+    *result_req = new JsonRPCRequest(lresult_req);
+    json_object_put(jdata);
+    return Error();
+  }
+
+  JsonRPCResponce lresult_resp;
+  err = GetJsonRPCResponce(jdata, &lresult_resp);
+  if (!err) {
+    *result_resp = new JsonRPCResponce(lresult_resp);
+    json_object_put(jdata);
+    return Error();
+  }
+
+  json_object_put(jdata);
+  return err;
+}
+
 }  // namespace json_rpc
 }  // namespace protocols
 }  // namespace common
