@@ -35,6 +35,28 @@ namespace json_rpc {
 
 JsonRPCResponce::JsonRPCResponce() : id(invalid_json_rpc_id), message(), error() {}
 
+JsonRPCResponce JsonRPCResponce::MakeErrorInvalidJson() {
+  JsonRPCError err;
+  err.code = JSON_RPC_PARSE_ERROR;
+  err.message = "Parse error";
+  JsonRPCResponce resp;
+  resp.id = null_json_rpc_id;
+  resp.error = err;
+  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponce should be valid.";
+  return resp;
+}
+
+JsonRPCResponce JsonRPCResponce::MakeErrorInvalidRequest() {
+  JsonRPCError err;
+  err.code = JSON_RPC_INVALID_REQUEST;
+  err.message = "Invalid Request";
+  JsonRPCResponce resp;
+  resp.id = null_json_rpc_id;
+  resp.error = err;
+  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponce should be valid.";
+  return resp;
+}
+
 JsonRPCResponce JsonRPCResponce::MakeError(json_rpc_id jid, JsonRPCError error) {
   JsonRPCResponce resp;
   resp.id = jid;

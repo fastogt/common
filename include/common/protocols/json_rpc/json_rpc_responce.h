@@ -40,8 +40,8 @@ namespace json_rpc {
 
 // Json RPC error
 enum JsonRPCErrorCode : int {
-  JSON_RPC_PARSE_ERROR = -32700,       // Parse error
-  JSON_RPC_INVALID_REQUEST = -32600,   // Invalid Request
+  JSON_RPC_PARSE_ERROR = -32700,       // Parse error (invalid json)
+  JSON_RPC_INVALID_REQUEST = -32600,   // Invalid Request (invalid id)
   JSON_RPC_METHOD_NOT_FOUND = -32601,  // Method not found
   JSON_RPC_INVALID_PARAMS = -32602,    // Invalid params
   JSON_RPC_INTERNAL_ERROR = -32603,    // Internal error
@@ -65,6 +65,8 @@ typedef Optional<JsonRPCError> json_rpc_error;
 struct JsonRPCResponce {
   JsonRPCResponce();
 
+  static JsonRPCResponce MakeErrorInvalidJson();
+  static JsonRPCResponce MakeErrorInvalidRequest();
   static JsonRPCResponce MakeError(json_rpc_id jid, JsonRPCError error);
   static JsonRPCResponce MakeMessage(json_rpc_id jid, JsonRPCMessage msg);
 

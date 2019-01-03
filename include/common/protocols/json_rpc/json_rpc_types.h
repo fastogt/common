@@ -36,7 +36,7 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
-typedef std::string json_rpc_id;  // null or digits
+typedef std::string json_rpc_id;  // null or digits or string
 extern const json_rpc_id invalid_json_rpc_id;
 extern const json_rpc_id null_json_rpc_id;
 

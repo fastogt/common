@@ -60,17 +60,15 @@ Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
     return make_error_inval();
   }
 
+  JsonRPCRequest res;
   json_object* jid = nullptr;
   json_bool jid_exists = json_object_object_get_ex(rpc, JSONRPC_ID_FIELD, &jid);
-  if (!jid_exists) {
-    return make_error_inval();
-  }
-
-  JsonRPCRequest res;
-  if (json_object_get_type(jid) == json_type_null) {
-    res.id = null_json_rpc_id;
-  } else {
-    res.id = json_object_get_string(jid);
+  if (jid_exists) {
+    if (json_object_get_type(jid) == json_type_null) {
+      res.id = null_json_rpc_id;
+    } else {
+      res.id = json_object_get_string(jid);
+    }
   }
 
   json_object* jmethod = nullptr;

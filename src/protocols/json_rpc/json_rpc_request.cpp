@@ -35,13 +35,17 @@ namespace json_rpc {
 
 const json_rpc_method invalid_json_rpc_method = json_rpc_method();
 
-JsonRPCRequest::JsonRPCRequest() : id(invalid_json_rpc_id), method(invalid_json_rpc_method), params() {}
+JsonRPCRequest::JsonRPCRequest() : id(), method(invalid_json_rpc_method), params() {}
+
+JsonRPCRequest JsonRPCRequest::MakeNotification(json_rpc_method method, json_rpc_request_params params) {
+  JsonRPCRequest req;
+  req.method = method;
+  req.params = params;
+  CHECK(req.IsValid() && req.id.empty()) << "JsonRPCRequest should be valid.";
+  return req;
+}
 
 bool JsonRPCRequest::IsValid() const {
-  if (id == invalid_json_rpc_id) {
-    return false;
-  }
-
   if (method == invalid_json_rpc_method) {
     return false;
   }
