@@ -49,6 +49,7 @@ struct JsonRPCRequest {
   static JsonRPCRequest MakeNotification(json_rpc_method method, json_rpc_request_params params);
 
   bool IsValid() const;
+  bool IsNotification() const;
   bool Equals(const JsonRPCRequest& req) const;
 
   json_rpc_id id;

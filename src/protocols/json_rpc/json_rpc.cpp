@@ -229,9 +229,14 @@ Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** 
     json_object_object_add(jerror, JSONRPC_ERROR_CODE_FIELD, json_object_new_int(ec));
     json_object_object_add(command_json, JSONRPC_ERROR_FIELD, jerror);
   } else if (responce.IsMessage()) {
-    std::string message_str = responce.message->result;
-    const char* message_ptr = message_str.c_str();
-    json_object_object_add(command_json, JSONRPC_RESULT_FIELD, json_object_new_string(message_ptr));
+    std::string data = responce.message->result;
+    const char* data_ptr = data.empty() ? nullptr : data.c_str();
+    json_object* jparams = data_ptr ? json_tokener_parse(data_ptr) : nullptr;
+    if (jparams) {
+      json_object_object_add(command_json, JSONRPC_RESULT_FIELD, jparams);
+    } else {
+      json_object_object_add(command_json, JSONRPC_RESULT_FIELD, data_ptr ? json_object_new_string(data_ptr) : nullptr);
+    }
   } else {
     NOTREACHED();
   }
