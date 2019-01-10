@@ -41,7 +41,7 @@ JsonRPCRequest JsonRPCRequest::MakeNotification(json_rpc_method method, json_rpc
   JsonRPCRequest req;
   req.method = method;
   req.params = params;
-  CHECK(req.IsValid() && req.id.empty()) << "JsonRPCRequest should be valid.";
+  CHECK(req.IsValid() && req.IsNotification()) << "JsonRPCRequest should be valid.";
   return req;
 }
 
@@ -54,7 +54,7 @@ bool JsonRPCRequest::IsValid() const {
 }
 
 bool JsonRPCRequest::IsNotification() const {
-  return id.empty();
+  return !id;
 }
 
 bool JsonRPCRequest::Equals(const JsonRPCRequest& req) const {

@@ -33,8 +33,7 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
-const json_rpc_id invalid_json_rpc_id = json_rpc_id();
-const json_rpc_id null_json_rpc_id = "null";
+const json_rpc_id null_json_rpc_id = std::string("null");
 
 }  // namespace json_rpc
 }  // namespace protocols

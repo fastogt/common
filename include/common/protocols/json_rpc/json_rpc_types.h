@@ -32,12 +32,13 @@
 #include <memory>
 #include <string>
 
+#include <common/optional.h>
+
 namespace common {
 namespace protocols {
 namespace json_rpc {
 
-typedef std::string json_rpc_id;  // null or digits or string
-extern const json_rpc_id invalid_json_rpc_id;
+typedef Optional<std::string> json_rpc_id;  // null or digits or string
 extern const json_rpc_id null_json_rpc_id;
 
 }  // namespace json_rpc

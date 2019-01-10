@@ -33,7 +33,7 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
-JsonRPCResponce::JsonRPCResponce() : id(invalid_json_rpc_id), message(), error() {}
+JsonRPCResponce::JsonRPCResponce() : id(), message(), error() {}
 
 JsonRPCResponce JsonRPCResponce::MakeErrorInvalidJson() {
   JsonRPCError err;
@@ -74,7 +74,7 @@ JsonRPCResponce JsonRPCResponce::MakeMessage(json_rpc_id jid, JsonRPCMessage msg
 }
 
 bool JsonRPCResponce::IsError() const {
-  if (id == invalid_json_rpc_id) {
+  if (!id) {
     return false;
   }
 
@@ -90,7 +90,7 @@ bool JsonRPCResponce::IsError() const {
 }
 
 bool JsonRPCResponce::IsMessage() const {
-  if (id == invalid_json_rpc_id) {
+  if (!id) {
     return false;
   }
 
@@ -106,7 +106,7 @@ bool JsonRPCResponce::IsMessage() const {
 }
 
 bool JsonRPCResponce::IsValid() const {
-  if (id == invalid_json_rpc_id) {
+  if (!id) {
     return false;
   }
 

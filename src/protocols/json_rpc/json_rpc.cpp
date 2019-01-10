@@ -67,7 +67,7 @@ Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
     if (json_object_get_type(jid) == json_type_null) {
       res.id = null_json_rpc_id;
     } else {
-      res.id = json_object_get_string(jid);
+      res.id = std::string(json_object_get_string(jid));
     }
   }
 
@@ -111,7 +111,7 @@ Error GetJsonRPCResponce(json_object* rpc, JsonRPCResponce* result) {
   if (json_object_get_type(jid) == json_type_null) {
     res.id = null_json_rpc_id;
   } else {
-    res.id = json_object_get_string(jid);
+    res.id = std::string(json_object_get_string(jid));
   }
 
   json_object* jerror = nullptr;
@@ -161,8 +161,10 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out
   json_object* command_json = json_object_new_object();
   json_object_object_add(command_json, JSONRPC_FIELD, json_object_new_string(JSONRPC_VERSION));
   json_object_object_add(command_json, JSONRPC_METHOD_FIELD, json_object_new_string(method_ptr));
-  const char* jid_ptr = request.id.c_str();
-  json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
+  if (request.id) {
+    const char* jid_ptr = request.id->c_str();
+    json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
+  }
   if (request.params) {
     std::string data = *request.params;
     const char* data_ptr = data.empty() ? nullptr : data.c_str();
@@ -216,7 +218,7 @@ Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** 
   }
 
   json_rpc_id jid = responce.id;
-  const char* jid_ptr = jid.c_str();
+  const char* jid_ptr = jid->c_str();
   json_object* command_json = json_object_new_object();
   json_object_object_add(command_json, JSONRPC_FIELD, json_object_new_string(JSONRPC_VERSION));
   json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
