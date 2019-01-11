@@ -45,7 +45,8 @@ typedef Optional<std::string> json_rpc_request_params;
 struct JsonRPCRequest {
   JsonRPCRequest();
 
-  static JsonRPCRequest MakeNotification(json_rpc_method method, json_rpc_request_params params);
+  static JsonRPCRequest MakeNotification(json_rpc_method method,
+                                         json_rpc_request_params params = json_rpc_request_params());
 
   bool IsValid() const;
   bool IsNotification() const;

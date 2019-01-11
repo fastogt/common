@@ -1,3 +1,32 @@
+/*  Copyright (C) 2014-2018 FastoGT. All right reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of FastoGT. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <gtest/gtest.h>
 
 #include <json-c/json_object.h>
@@ -58,9 +87,25 @@ void make_parse_commands(const std::string& method, const std::string& id, const
   ASSERT_EQ(req2.params, params);
 }
 
+TEST(json_rpc_request, notification) {
+  using namespace common::protocols::json_rpc;
+  JsonRPCRequest req = JsonRPCRequest::MakeNotification(METHOD);
+  ASSERT_TRUE(req.IsNotification());
+  ASSERT_TRUE(req.IsValid());
+  ASSERT_FALSE(req.id);
+  std::string req_str;
+  common::Error err = MakeJsonRPCRequest(req, &req_str);
+  ASSERT_FALSE(err);
+
+  JsonRPCRequest req2;
+  err = ParseJsonRPCRequest(req_str, &req2);
+  ASSERT_FALSE(err);
+  ASSERT_EQ(req, req2);
+}
+
 TEST(json_rpc_request, make_parse_commands) {
   using namespace common::protocols::json_rpc;
-  make_parse_commands("test", null_json_rpc_id, "hello");
+  make_parse_commands("test", *null_json_rpc_id, "hello");
   make_parse_commands("test1", "123", std::string());
   make_parse_commands("test2", "1235", "[ 1, 2, 3 ]");
   make_parse_commands("test3", "12355", "2");
@@ -76,7 +121,7 @@ TEST(json_rpc_responce, parse_result_19) {
   ASSERT_FALSE(err);
   ASSERT_TRUE(result.IsMessage());
   ASSERT_FALSE(result.IsError());
-  ASSERT_EQ(STRINGIZE(RPC_ID), result.id);
+  ASSERT_EQ(STRINGIZE(RPC_ID), *result.id);
   auto mess = result.message;
   ASSERT_EQ(STR_19, mess->result);
   ASSERT_FALSE(result.error);
@@ -89,7 +134,7 @@ TEST(json_rpc_responce, parse_method_non_exist) {
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());
-  ASSERT_EQ(RPC_ID_STR, result.id);
+  ASSERT_EQ(RPC_ID_STR, *result.id);
   auto jerr = result.error;
   ASSERT_EQ(NOT_FOUND_STR, jerr->message);
   ASSERT_EQ(NOT_FOUND_ERROR_CODE, jerr->code);
@@ -103,7 +148,7 @@ TEST(json_rpc_responce, parse_method_invalid_request) {
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());
-  ASSERT_EQ(NULL_ID, result.id);
+  ASSERT_EQ(NULL_ID, *result.id);
   auto jerr = result.error;
   ASSERT_EQ(INVALID_REQUEST_STR, jerr->message);
   ASSERT_EQ(INVALID_REQUEST_ERROR_CODE, jerr->code);
@@ -117,7 +162,7 @@ TEST(json_rpc_responce, parse_error) {
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());
-  ASSERT_EQ(NULL_ID, result.id);
+  ASSERT_EQ(NULL_ID, *result.id);
   auto jerr = result.error;
   ASSERT_EQ(PARSE_ERROR_STR, jerr->message);
   ASSERT_EQ(PARSE_ERROR_CODE, jerr->code);
