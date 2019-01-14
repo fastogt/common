@@ -27,53 +27,53 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/protocols/json_rpc/json_rpc_responce.h>
+#include <common/protocols/json_rpc/json_rpc_response.h>
 
 namespace common {
 namespace protocols {
 namespace json_rpc {
 
-JsonRPCResponce::JsonRPCResponce() : id(), message(), error() {}
+JsonRPCResponse::JsonRPCResponse() : id(), message(), error() {}
 
-JsonRPCResponce JsonRPCResponce::MakeErrorInvalidJson() {
+JsonRPCResponse JsonRPCResponse::MakeErrorInvalidJson() {
   JsonRPCError err;
   err.code = JSON_RPC_PARSE_ERROR;
   err.message = "Parse error";
-  JsonRPCResponce resp;
+  JsonRPCResponse resp;
   resp.id = null_json_rpc_id;
   resp.error = err;
-  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponce should be valid.";
+  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponse should be valid.";
   return resp;
 }
 
-JsonRPCResponce JsonRPCResponce::MakeErrorInvalidRequest() {
+JsonRPCResponse JsonRPCResponse::MakeErrorInvalidRequest() {
   JsonRPCError err;
   err.code = JSON_RPC_INVALID_REQUEST;
   err.message = "Invalid Request";
-  JsonRPCResponce resp;
+  JsonRPCResponse resp;
   resp.id = null_json_rpc_id;
   resp.error = err;
-  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponce should be valid.";
+  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponse should be valid.";
   return resp;
 }
 
-JsonRPCResponce JsonRPCResponce::MakeError(json_rpc_id jid, JsonRPCError error) {
-  JsonRPCResponce resp;
+JsonRPCResponse JsonRPCResponse::MakeError(json_rpc_id jid, JsonRPCError error) {
+  JsonRPCResponse resp;
   resp.id = jid;
   resp.error = error;
-  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponce should be valid.";
+  CHECK(resp.IsValid() && resp.IsError()) << "JsonRPCResponse should be valid.";
   return resp;
 }
 
-JsonRPCResponce JsonRPCResponce::MakeMessage(json_rpc_id jid, JsonRPCMessage msg) {
-  JsonRPCResponce resp;
+JsonRPCResponse JsonRPCResponse::MakeMessage(json_rpc_id jid, JsonRPCMessage msg) {
+  JsonRPCResponse resp;
   resp.id = jid;
   resp.message = msg;
-  CHECK(resp.IsValid() && resp.IsMessage()) << "JsonRPCResponce should be valid.";
+  CHECK(resp.IsValid() && resp.IsMessage()) << "JsonRPCResponse should be valid.";
   return resp;
 }
 
-bool JsonRPCResponce::IsError() const {
+bool JsonRPCResponse::IsError() const {
   if (!id) {
     return false;
   }
@@ -89,7 +89,7 @@ bool JsonRPCResponce::IsError() const {
   return false;
 }
 
-bool JsonRPCResponce::IsMessage() const {
+bool JsonRPCResponse::IsMessage() const {
   if (!id) {
     return false;
   }
@@ -105,7 +105,7 @@ bool JsonRPCResponce::IsMessage() const {
   return false;
 }
 
-bool JsonRPCResponce::IsValid() const {
+bool JsonRPCResponse::IsValid() const {
   if (!id) {
     return false;
   }

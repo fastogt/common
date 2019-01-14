@@ -473,7 +473,7 @@ TEST(http_client, head) {
   Error err2 = cl.Head(root);
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
-  err2 = cl.ReadResponce(&resp);
+  err2 = cl.ReadResponse(&resp);
   ASSERT_FALSE(err2);
   ASSERT_TRUE(resp.IsEmptyBody());
   err = cl.Disconnect();
@@ -489,7 +489,7 @@ TEST(http_client, get) {
   Error err2 = cl.Get(root);
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
-  err2 = cl.ReadResponce(&resp);
+  err2 = cl.ReadResponse(&resp);
   ASSERT_FALSE(err2);
   ASSERT_FALSE(resp.IsEmptyBody());
   ASSERT_EQ(resp.GetBody().size(), 1270);
@@ -640,7 +640,7 @@ TEST(https_client, get) {
   Error err2 = cl.Get(root);
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
-  err2 = cl.ReadResponce(&resp);
+  err2 = cl.ReadResponse(&resp);
   ASSERT_FALSE(err2);
   ASSERT_FALSE(resp.IsEmptyBody());
   ASSERT_EQ(resp.GetBody().size(), 1270);

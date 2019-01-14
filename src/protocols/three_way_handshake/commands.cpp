@@ -36,7 +36,7 @@ namespace protocols {
 namespace three_way_handshake {
 
 std::string CmdIdToString(cmd_id_t id) {
-  static const std::string seq_names[] = {"REQUEST", "RESPONCE", "APPROVE"};
+  static const std::string seq_names[] = {"REQUEST", "response", "APPROVE"};
   if (id < SIZEOFMASS(seq_names)) {
     return seq_names[id];
   }

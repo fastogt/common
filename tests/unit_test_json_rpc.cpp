@@ -114,10 +114,10 @@ TEST(json_rpc_request, make_parse_commands) {
   make_parse_commands("test6", "1235571", "null");
 }
 
-TEST(json_rpc_responce, parse_result_19) {
+TEST(json_rpc_response, parse_result_19) {
   using namespace common::protocols::json_rpc;
-  JsonRPCResponce result;
-  common::Error err = ParseJsonRPCResponce(RESULT_19, &result);
+  JsonRPCResponse result;
+  common::Error err = ParseJsonRPCResponse(RESULT_19, &result);
   ASSERT_FALSE(err);
   ASSERT_TRUE(result.IsMessage());
   ASSERT_FALSE(result.IsError());
@@ -127,10 +127,10 @@ TEST(json_rpc_responce, parse_result_19) {
   ASSERT_FALSE(result.error);
 }
 
-TEST(json_rpc_responce, parse_method_non_exist) {
+TEST(json_rpc_response, parse_method_non_exist) {
   using namespace common::protocols::json_rpc;
-  JsonRPCResponce result;
-  common::Error err = ParseJsonRPCResponce(METHOD_NON_EXISTS, &result);
+  JsonRPCResponse result;
+  common::Error err = ParseJsonRPCResponse(METHOD_NON_EXISTS, &result);
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());
@@ -141,10 +141,10 @@ TEST(json_rpc_responce, parse_method_non_exist) {
   ASSERT_FALSE(result.message);
 }
 
-TEST(json_rpc_responce, parse_method_invalid_request) {
+TEST(json_rpc_response, parse_method_invalid_request) {
   using namespace common::protocols::json_rpc;
-  JsonRPCResponce result;
-  common::Error err = ParseJsonRPCResponce(INVALID_REQUEST, &result);
+  JsonRPCResponse result;
+  common::Error err = ParseJsonRPCResponse(INVALID_REQUEST, &result);
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());
@@ -155,10 +155,10 @@ TEST(json_rpc_responce, parse_method_invalid_request) {
   ASSERT_FALSE(result.message);
 }
 
-TEST(json_rpc_responce, parse_error) {
+TEST(json_rpc_response, parse_error) {
   using namespace common::protocols::json_rpc;
-  JsonRPCResponce result;
-  common::Error err = ParseJsonRPCResponce(PARSE_ERROR, &result);
+  JsonRPCResponse result;
+  common::Error err = ParseJsonRPCResponse(PARSE_ERROR, &result);
   ASSERT_FALSE(err);
   ASSERT_FALSE(result.IsMessage());
   ASSERT_TRUE(result.IsError());

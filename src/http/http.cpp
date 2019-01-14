@@ -303,7 +303,7 @@ std::string HttpResponse::GetBody() const {
   return body_;
 }
 
-Error parse_http_responce(const std::string& response, HttpResponse* res_out, size_t* not_parsed) {
+Error parse_http_response(const std::string& response, HttpResponse* res_out, size_t* not_parsed) {
   if (response.empty() || !res_out || !not_parsed) {
     return make_error_inval();
   }
@@ -376,14 +376,14 @@ Error parse_http_responce(const std::string& response, HttpResponse* res_out, si
   *not_parsed = 0;
   HttpResponse lres(lprotocol, static_cast<http_status>(lstatus), lheaders, std::string());
   if (len != start && line_count != 0) {
-    const char* responce_str = response.c_str() + start;
+    const char* response_str = response.c_str() + start;
     http::header_t cont;
     if (lres.FindHeaderByKey("Content-Length", false, &cont)) {
       size_t body_len = 0;
       if (ConvertFromString(cont.value, &body_len)) {
         size_t lnot_parsed = len - start;
         if (lnot_parsed == body_len) {  // full
-          lres.SetBody(std::string(responce_str, body_len));
+          lres.SetBody(std::string(response_str, body_len));
         } else {
           *not_parsed = lnot_parsed;
         }

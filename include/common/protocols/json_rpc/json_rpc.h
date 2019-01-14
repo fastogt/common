@@ -34,7 +34,7 @@
 #include <common/error.h>
 
 #include <common/protocols/json_rpc/json_rpc_request.h>
-#include <common/protocols/json_rpc/json_rpc_responce.h>
+#include <common/protocols/json_rpc/json_rpc_response.h>
 
 struct json_object;
 
@@ -47,16 +47,16 @@ namespace json_rpc {
 Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out_json) WARN_UNUSED_RESULT;
 Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) WARN_UNUSED_RESULT;
 
-Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) WARN_UNUSED_RESULT;
+Error ParseJsonRPCResponse(const std::string& data, JsonRPCResponse* result) WARN_UNUSED_RESULT;
 
-Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** out_json) WARN_UNUSED_RESULT;
-Error MakeJsonRPCResponce(const JsonRPCResponce& responce, std::string* out_json) WARN_UNUSED_RESULT;
+Error MakeJsonRPCResponse(const JsonRPCResponse& response, struct json_object** out_json) WARN_UNUSED_RESULT;
+Error MakeJsonRPCResponse(const JsonRPCResponse& response, std::string* out_json) WARN_UNUSED_RESULT;
 
 Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) WARN_UNUSED_RESULT;
 
 Error ParseJsonRPC(const std::string& data,
                    JsonRPCRequest** result_req,
-                   JsonRPCResponce** result_resp) WARN_UNUSED_RESULT;  // allocated memory
+                   JsonRPCResponse** result_resp) WARN_UNUSED_RESULT;  // allocated memory
 
 }  // namespace json_rpc
 }  // namespace protocols

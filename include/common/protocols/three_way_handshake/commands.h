@@ -52,13 +52,13 @@
 #define GENEATATE_FAIL_FMT(CMD, CMD_FMT) "%" CID_FMT " %s " FAIL_COMMAND " " CMD " " CMD_FMT END_OF_COMMAND
 
 #define REQUEST_COMMAND 0
-#define RESPONCE_COMMAND 1
+#define RESPONSE_COMMAND 1
 #define APPROVE_COMMAND 2
 
 // request
 // [uint8_t](0) [hex_string]seq [std::string]command
 
-// responce
+// response
 // [uint8_t](1) [hex_string]seq [OK|FAIL] [std::string]command args ...
 
 // approve
@@ -93,7 +93,7 @@ class InnerCmd {
 };
 
 typedef InnerCmd<REQUEST_COMMAND> cmd_request_t;    // SYN
-typedef InnerCmd<RESPONCE_COMMAND> cmd_responce_t;  // SYN-ACK
+typedef InnerCmd<RESPONSE_COMMAND> cmd_response_t;  // SYN-ACK
 typedef InnerCmd<APPROVE_COMMAND> cmd_approve_t;    // ACK
 
 template <typename... Args>
@@ -103,15 +103,15 @@ cmd_request_t MakeRequest(cmd_seq_t id, const char* cmd_fmt, Args... args) {
 }
 
 template <typename... Args>
-cmd_approve_t MakeApproveResponce(cmd_seq_t id, const char* cmd_fmt, Args... args) {
+cmd_approve_t MakeApproveResponse(cmd_seq_t id, const char* cmd_fmt, Args... args) {
   std::string buff = MemSPrintf(cmd_fmt, APPROVE_COMMAND, id, args...);
   return cmd_approve_t(id, buff);
 }
 
 template <typename... Args>
-cmd_responce_t MakeResponce(cmd_seq_t id, const char* cmd_fmt, Args... args) {
-  std::string buff = MemSPrintf(cmd_fmt, RESPONCE_COMMAND, id, args...);
-  return cmd_responce_t(id, buff);
+cmd_response_t MakeResponse(cmd_seq_t id, const char* cmd_fmt, Args... args) {
+  std::string buff = MemSPrintf(cmd_fmt, RESPONSE_COMMAND, id, args...);
+  return cmd_response_t(id, buff);
 }
 
 }  // namespace three_way_handshake

@@ -62,13 +62,13 @@ typedef Optional<JsonRPCMessage> json_rpc_message;
 typedef Optional<JsonRPCError> json_rpc_error;
 
 // should be message or error
-struct JsonRPCResponce {
-  JsonRPCResponce();
+struct JsonRPCResponse {
+  JsonRPCResponse();
 
-  static JsonRPCResponce MakeErrorInvalidJson();
-  static JsonRPCResponce MakeErrorInvalidRequest();
-  static JsonRPCResponce MakeError(json_rpc_id jid, JsonRPCError error);
-  static JsonRPCResponce MakeMessage(json_rpc_id jid, JsonRPCMessage msg);
+  static JsonRPCResponse MakeErrorInvalidJson();
+  static JsonRPCResponse MakeErrorInvalidRequest();
+  static JsonRPCResponse MakeError(json_rpc_id jid, JsonRPCError error);
+  static JsonRPCResponse MakeMessage(json_rpc_id jid, JsonRPCMessage msg);
 
   bool IsError() const;
   bool IsMessage() const;

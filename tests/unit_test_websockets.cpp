@@ -118,7 +118,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     CHECK(hclient);
     common::http::HttpResponse resp;
     size_t not_parsed;
-    common::Error err = common::http::parse_http_responce(std::string(buff, nread), &resp, &not_parsed);
+    common::Error err = common::http::parse_http_response(std::string(buff, nread), &resp, &not_parsed);
     ASSERT_FALSE(err);
   }
 

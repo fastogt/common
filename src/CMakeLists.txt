@@ -42,14 +42,14 @@ IF(JSON_ENABLED)
 
   SET(PROTOCOLS_HEADERS ${PROTOCOLS_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc.h
-    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_responce.h
+    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_response.h
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_request.h
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_types.h
   )
 
   SET(PROTOCOLS_SOURCES ${PROTOCOLS_SOURCES}
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc.cpp
-    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_responce.cpp
+    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_response.cpp
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_request.cpp
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_types.cpp
   )

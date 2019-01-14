@@ -178,7 +178,7 @@ class HttpResponse {
   std::string body_;
 };
 
-Error parse_http_responce(const std::string& response, HttpResponse* res_out, size_t* not_parsed) WARN_UNUSED_RESULT;
+Error parse_http_response(const std::string& response, HttpResponse* res_out, size_t* not_parsed) WARN_UNUSED_RESULT;
 
 }  // namespace http
 

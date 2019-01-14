@@ -92,7 +92,7 @@ Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
   return Error();
 }
 
-Error GetJsonRPCResponce(json_object* rpc, JsonRPCResponce* result) {
+Error GetJsonRPCResponse(json_object* rpc, JsonRPCResponse* result) {
   CHECK(rpc && result);
 
   json_object* jrpc = nullptr;
@@ -107,7 +107,7 @@ Error GetJsonRPCResponce(json_object* rpc, JsonRPCResponce* result) {
     return make_error_inval();
   }
 
-  JsonRPCResponce res;
+  JsonRPCResponse res;
   if (json_object_get_type(jid) == json_type_null) {
     res.id = null_json_rpc_id;
   } else {
@@ -196,7 +196,7 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) {
   return Error();
 }
 
-Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
+Error ParseJsonRPCResponse(const std::string& data, JsonRPCResponse* result) {
   if (data.empty() || !result) {
     return make_error_inval();
   }
@@ -207,31 +207,31 @@ Error ParseJsonRPCResponce(const std::string& data, JsonRPCResponce* result) {
     return make_error_inval();
   }
 
-  Error err = GetJsonRPCResponce(jdata, result);
+  Error err = GetJsonRPCResponse(jdata, result);
   json_object_put(jdata);
   return err;
 }
 
-Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** out_json) {
-  if (!responce.IsValid() || !out_json || *out_json) {
+Error MakeJsonRPCResponse(const JsonRPCResponse& response, struct json_object** out_json) {
+  if (!response.IsValid() || !out_json || *out_json) {
     return make_error_inval();
   }
 
-  json_rpc_id jid = responce.id;
+  json_rpc_id jid = response.id;
   const char* jid_ptr = jid->c_str();
   json_object* command_json = json_object_new_object();
   json_object_object_add(command_json, JSONRPC_FIELD, json_object_new_string(JSONRPC_VERSION));
   json_object_object_add(command_json, JSONRPC_ID_FIELD, json_object_new_string(jid_ptr));
-  if (responce.IsError()) {
+  if (response.IsError()) {
     json_object* jerror = json_object_new_object();
-    std::string error_str = responce.error->message;
-    JsonRPCErrorCode ec = responce.error->code;
+    std::string error_str = response.error->message;
+    JsonRPCErrorCode ec = response.error->code;
     const char* error_ptr = error_str.c_str();
     json_object_object_add(jerror, JSONRPC_ERROR_MESSAGE_FIELD, json_object_new_string(error_ptr));
     json_object_object_add(jerror, JSONRPC_ERROR_CODE_FIELD, json_object_new_int(ec));
     json_object_object_add(command_json, JSONRPC_ERROR_FIELD, jerror);
-  } else if (responce.IsMessage()) {
-    std::string data = responce.message->result;
+  } else if (response.IsMessage()) {
+    std::string data = response.message->result;
     const char* data_ptr = data.empty() ? nullptr : data.c_str();
     json_object* jparams = data_ptr ? json_tokener_parse(data_ptr) : nullptr;
     if (jparams) {
@@ -247,13 +247,13 @@ Error MakeJsonRPCResponce(const JsonRPCResponce& responce, struct json_object** 
   return Error();
 }
 
-Error MakeJsonRPCResponce(const JsonRPCResponce& responce, std::string* out_json) {
+Error MakeJsonRPCResponse(const JsonRPCResponse& response, std::string* out_json) {
   if (!out_json) {
     return make_error_inval();
   }
 
   struct json_object* jres = nullptr;
-  Error err = MakeJsonRPCResponce(responce, &jres);
+  Error err = MakeJsonRPCResponse(response, &jres);
   if (err) {
     return err;
   }
@@ -279,7 +279,7 @@ Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
   return err;
 }
 
-Error ParseJsonRPC(const std::string& data, JsonRPCRequest** result_req, JsonRPCResponce** result_resp) {
+Error ParseJsonRPC(const std::string& data, JsonRPCRequest** result_req, JsonRPCResponse** result_resp) {
   if (data.empty() || !result_req || !result_resp) {
     return make_error_inval();
   }
@@ -298,10 +298,10 @@ Error ParseJsonRPC(const std::string& data, JsonRPCRequest** result_req, JsonRPC
     return Error();
   }
 
-  JsonRPCResponce lresult_resp;
-  err = GetJsonRPCResponce(jdata, &lresult_resp);
+  JsonRPCResponse lresult_resp;
+  err = GetJsonRPCResponse(jdata, &lresult_resp);
   if (!err) {
-    *result_resp = new JsonRPCResponce(lresult_resp);
+    *result_resp = new JsonRPCResponse(lresult_resp);
     json_object_put(jdata);
     return Error();
   }

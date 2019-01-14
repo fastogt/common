@@ -46,7 +46,7 @@ class IHttpClient {
   Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;
   Error Head(const uri::Upath& path) WARN_UNUSED_RESULT;
 
-  Error ReadResponce(http::HttpResponse* responce) WARN_UNUSED_RESULT;
+  Error ReadResponse(http::HttpResponse* response) WARN_UNUSED_RESULT;
   virtual ~IHttpClient();
 
  protected:

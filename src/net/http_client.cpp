@@ -66,8 +66,8 @@ Error IHttpClient::SendRequest(const http::HttpRequest& request_headers) {
   return Error();
 }
 
-Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
-  if (!responce || !last_request_) {
+Error IHttpClient::ReadResponse(http::HttpResponse* response) {
+  if (!response || !last_request_) {
     return make_error_inval();
   }
 
@@ -81,7 +81,7 @@ Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
   }
 
   size_t not_parsed;
-  Error parse_error = http::parse_http_responce(std::string(data_head, nread_head), responce, &not_parsed);
+  Error parse_error = http::parse_http_response(std::string(data_head, nread_head), response, &not_parsed);
   if (parse_error) {
     delete[] data_head;
     return parse_error;
@@ -92,14 +92,14 @@ Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
     return Error();
   }
 
-  if (!responce->IsEmptyBody()) {
+  if (!response->IsEmptyBody()) {
     CHECK_EQ(not_parsed, 0);
     delete[] data_head;
     return Error();
   }
 
   http::header_t cont;
-  if (!responce->FindHeaderByKey("Content-Length", false, &cont)) {  // try to get body
+  if (!response->FindHeaderByKey("Content-Length", false, &cont)) {  // try to get body
     delete[] data_head;
     return Error();
   }
@@ -120,7 +120,7 @@ Error IHttpClient::ReadResponce(http::HttpResponse* responce) {
   err = sock_->Read(data + not_parsed, rest, &nread);  // read rest
   if (!err && nread == rest) {
     std::string body(data, body_len);
-    responce->SetBody(body);
+    response->SetBody(body);
     delete[] data_head;
     delete[] data;
     return Error();
