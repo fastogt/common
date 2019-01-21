@@ -83,6 +83,11 @@ TEST(string, convertTo) {
 
   ConvertToStringCheck(11.12, "11.12");
 
+  double res;
+  ASSERT_TRUE(common::ConvertFromString("0.1", &res));
+  ASSERT_EQ(0.1, res);
+  ASSERT_FALSE(common::ConvertFromString(" 0.1\n", &res));
+
   std::string openssl_str_verson = common::ConvertVersionNumberTo3DotString(OPENSSL_VERSION_NUMBER_EXAMPLE);
   ASSERT_EQ(openssl_str_verson, OPENSSL_VERSION_TEXT_EXAMPLE);
   uint32_t openssl_ver_number = common::ConvertVersionNumberFromString(OPENSSL_VERSION_TEXT_EXAMPLE);

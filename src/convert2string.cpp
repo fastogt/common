@@ -1369,10 +1369,9 @@ bool ConvertFromString(const std::string& from, float* out) {
     return true;
   }
 
-  char* endptr;
-  errno = 0;
-  float d = strtod(from.c_str(), &endptr);
-  if (from.c_str() == endptr || (errno == ERANGE && d == HUGE_VAL) || (errno == ERANGE && d == 0.0)) {
+  size_t end_number_pos;
+  float d = std::stof(from.c_str(), &end_number_pos);
+  if (end_number_pos != from.size()) {
     return false;
   }
   *out = d;
@@ -1394,10 +1393,9 @@ bool ConvertFromString(const std::string& from, double* out) {
     return true;
   }
 
-  char* endptr;
-  errno = 0;
-  double d = strtod(from.c_str(), &endptr);
-  if (from.c_str() == endptr || (errno == ERANGE && d == HUGE_VAL) || (errno == ERANGE && d == 0.0)) {
+  size_t end_number_pos;
+  double d = std::stod(from.c_str(), &end_number_pos);
+  if (end_number_pos != from.size()) {
     return false;
   }
   *out = d;

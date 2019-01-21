@@ -31,7 +31,7 @@
 
 #include <sys/utsname.h>
 
-#include <common/convert2string.h>
+#include <common/macros.h>
 
 namespace common {
 namespace system_info {
@@ -52,13 +52,7 @@ long GetProcessRss(pid_t pid) {
   if (!res) {
     return 0;
   }
-  long lres = 0;
-  bool ok = ConvertFromString(res, &lres);
-  if (ok) {
-    return lres;
-  }
-
-  return 0;
+  return std::stol(res);
 }
 
 double GetCpuLoad(pid_t pid) {
@@ -78,13 +72,7 @@ double GetCpuLoad(pid_t pid) {
     return 0.0;
   }
 
-  double ret = 0.0;
-  bool is_converted = ConvertFromString(res, &ret);
-  if (!is_converted) {
-    return 0.0;
-  }
-
-  return ret;
+  return std::stod(res);
 }
 
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
