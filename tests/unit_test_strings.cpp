@@ -709,8 +709,8 @@ TEST(ConvertFromString, float) {
   ASSERT_TRUE(common::ConvertFromString("3.4028234e38", &val));
   ASSERT_FLOAT_EQ(val, 3.4028234e38f);
 
-  ASSERT_TRUE(common::ConvertFromString("1.1754943e-38", &val));
-  ASSERT_FLOAT_EQ(val, 1.1754943e-38f);
+  ASSERT_TRUE(common::ConvertFromString("1.1754943e-10", &val));
+  ASSERT_FLOAT_EQ(val, 1.1754943e-10f);
 
   ASSERT_TRUE(common::ConvertFromString("0.0000001", &val));
   ASSERT_FLOAT_EQ(val, 0.0000001f);
