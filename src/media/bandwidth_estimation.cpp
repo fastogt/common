@@ -157,6 +157,8 @@ DesireBytesPerSec CalculateDesireH264BandwidthBytesPerSec(int width, int height,
         return DesireBytesPerSec(KBITS_TO_BYTES(400), KBITS_TO_BYTES(1000));
       } else if (width >= 426 && height >= 240) {  // 240p 600 Kbps
         return DesireBytesPerSec(KBITS_TO_BYTES(300), KBITS_TO_BYTES(700));
+      } else {
+        return DesireBytesPerSec(KBITS_TO_BYTES(300), KBITS_TO_BYTES(700));
       }
     } else {
       if (width >= 3840 && height >= 2160) {  // 2160p 60000 Kbps
@@ -172,6 +174,8 @@ DesireBytesPerSec CalculateDesireH264BandwidthBytesPerSec(int width, int height,
       } else if (width >= 640 && height >= 360) {  // 360p 1500 Kbps
         return DesireBytesPerSec(KBITS_TO_BYTES(600), KBITS_TO_BYTES(1500));
       } else if (width >= 426 && height >= 240) {  // 240p 900 Kbps
+        return DesireBytesPerSec(KBITS_TO_BYTES(400), KBITS_TO_BYTES(900));
+      } else {
         return DesireBytesPerSec(KBITS_TO_BYTES(400), KBITS_TO_BYTES(900));
       }
     }
@@ -192,6 +196,8 @@ DesireBytesPerSec CalculateDesireH264BandwidthBytesPerSec(int width, int height,
         return DesireBytesPerSec(KBITS_TO_BYTES(600), KBITS_TO_BYTES(2500));
       } else if (width >= 426 && height >= 240) {  // 240p 600 Kbps
         return DesireBytesPerSec(KBITS_TO_BYTES(300) * KOEF_BASE_TO_HIGHT, KBITS_TO_BYTES(700) * KOEF_BASE_TO_HIGHT);
+      } else {
+        return DesireBytesPerSec(KBITS_TO_BYTES(300) * KOEF_BASE_TO_HIGHT, KBITS_TO_BYTES(700) * KOEF_BASE_TO_HIGHT);
       }
     } else {
       if (width >= 3840 && height >= 2160) {  // 2160p 60000 Kbps
@@ -208,6 +214,8 @@ DesireBytesPerSec CalculateDesireH264BandwidthBytesPerSec(int width, int height,
       } else if (width >= 640 && height >= 360) {  // 360p 1500 Kbps
         return DesireBytesPerSec(KBITS_TO_BYTES(600) * KOEF_BASE_TO_HIGHT, KBITS_TO_BYTES(1500) * KOEF_BASE_TO_HIGHT);
       } else if (width >= 426 && height >= 240) {  // 240p 900 Kbps
+        return DesireBytesPerSec(KBITS_TO_BYTES(400) * KOEF_BASE_TO_HIGHT, KBITS_TO_BYTES(900) * KOEF_BASE_TO_HIGHT);
+      } else {
         return DesireBytesPerSec(KBITS_TO_BYTES(400) * KOEF_BASE_TO_HIGHT, KBITS_TO_BYTES(900) * KOEF_BASE_TO_HIGHT);
       }
     }
