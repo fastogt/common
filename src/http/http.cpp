@@ -179,6 +179,14 @@ HttpRequest MakeGetRequest(const uri::Upath& path,
   return req;
 }
 
+HttpRequest MakePostRequest(const uri::Upath& path,
+                            http_protocol protocol,
+                            const headers_t& headers,
+                            const std::string& body) {
+  http::HttpRequest req(http::HM_POST, path, protocol, headers, body);
+  return req;
+}
+
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
   if (request.empty() || !req_out) {
     return std::make_pair(HS_FORBIDDEN, make_error_inval());

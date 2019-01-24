@@ -157,6 +157,10 @@ HttpRequest MakeGetRequest(const uri::Upath& path,
                            http_protocol protocol,
                            const headers_t& headers,
                            const std::string& body = std::string());
+HttpRequest MakePostRequest(const uri::Upath& path,
+                            http_protocol protocol,
+                            const headers_t& headers,
+                            const std::string& body = std::string());
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) WARN_UNUSED_RESULT;
 

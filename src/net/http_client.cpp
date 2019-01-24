@@ -35,8 +35,48 @@
 
 #include <common/convert2string.h>
 
+#include <common/file_system/file.h>
+#include <common/file_system/file_system.h>
+
 namespace common {
 namespace net {
+
+Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_file_string_path& file_path) {
+  file_system::File file;
+  ErrnoError errn = file.Open(file_path, file_system::File::FLAG_OPEN | file_system::File::FLAG_READ);
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  off_t file_size;
+  const descriptor_t fd = file.GetFd();
+  errn = file_system::get_file_size_by_descriptor(fd, &file_size);
+  if (errn) {
+    file.Close();
+    return make_error_from_errno(errn);
+  }
+
+  const HostAndPort hs = GetHost();
+  http::HttpHeader header("Host", hs.GetHost());
+  http::HttpHeader type("Content-Type", "application/octet-stream");
+  http::HttpHeader disp("Content-Disposition", common::MemSPrintf("attachment, filename=\"%s\"", file_path.GetName()));
+  http::HttpHeader cont("Content-Length", common::ConvertToString(file_size));
+
+  http::HttpRequest req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont});
+  Error err = SendRequest(req);
+  if (err) {
+    file.Close();
+    return err;
+  }
+
+  errn = SendFile(fd, file_size);
+  if (errn) {
+    file.Close();
+    return make_error_from_errno(errn);
+  }
+
+  return common::Error();
+}
 
 Error IHttpClient::Get(const uri::Upath& path) {
   const HostAndPort hs = GetHost();
@@ -159,6 +199,11 @@ bool HttpClient::IsConnected() const {
 ErrnoError HttpClient::Disconnect() {
   net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
   return sock->Disconnect();
+}
+
+ErrnoError HttpClient::SendFile(descriptor_t file_fd, size_t file_size) {
+  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  return sock->SendFile(file_fd, file_size);
 }
 
 HostAndPort HttpClient::GetHost() const {

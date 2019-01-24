@@ -57,6 +57,10 @@ bool File::IsOpen() const {
   return IsValid();
 }
 
+descriptor_t File::GetFd() const {
+  return holder_->GetFd();
+}
+
 ErrnoError File::Write(const void* data, size_t size, size_t* nwrite_out) {
   DCHECK(IsValid());
 

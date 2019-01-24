@@ -504,13 +504,17 @@ TEST(http_client, get) {
 
 #include <common/net/socket_tcp.h>
 
-class SocketTls : public common::net::ISocket {
+class SocketTls : public common::net::ISocketFd {
  public:
   explicit SocketTls(const common::net::HostAndPort& host) : hs_(host), ssl_(nullptr) {
     SSL_library_init();
     SSLeay_add_ssl_algorithms();
     SSL_load_error_strings();
   }
+
+  common::net::socket_descr_t GetFd() const override { return hs_.GetFd(); }
+
+  void SetFd(common::net::socket_descr_t fd) override { hs_.SetFd(fd); }
 
   common::ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT {
     common::net::ClientSocketTcp hs(hs_.GetHost());
@@ -628,6 +632,11 @@ class HttpsClient : public common::net::IHttpClient {
   common::net::HostAndPort GetHost() const override {
     SocketTls* sock = static_cast<SocketTls*>(GetSocket());
     return sock->GetHost();
+  }
+
+  ErrnoError SendFile(descriptor_t file_fd, size_t file_size) override {
+    SocketTls* sock = static_cast<SocketTls*>(GetSocket());
+    return sock->SendFile(file_fd, file_size);
   }
 };
 

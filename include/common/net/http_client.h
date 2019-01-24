@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <common/file_system/path.h>
 #include <common/http/http.h>
 #include <common/net/isocket.h>
 #include <common/net/types.h>
@@ -42,7 +43,9 @@ class IHttpClient {
   virtual bool IsConnected() const = 0;
   virtual ErrnoError Disconnect() WARN_UNUSED_RESULT = 0;
   virtual HostAndPort GetHost() const = 0;
+  virtual ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT = 0;
 
+  Error PostFile(const uri::Upath& path, const file_system::ascii_file_string_path& file_path) WARN_UNUSED_RESULT;
   Error Get(const uri::Upath& path) WARN_UNUSED_RESULT;
   Error Head(const uri::Upath& path) WARN_UNUSED_RESULT;
 
@@ -66,6 +69,7 @@ class HttpClient : public IHttpClient {
   ErrnoError Connect(struct timeval* tv = nullptr) override;
   bool IsConnected() const override;
   ErrnoError Disconnect() override;
+  ErrnoError SendFile(descriptor_t file_fd, size_t file_size) override;
 
   HostAndPort GetHost() const override;
 };
