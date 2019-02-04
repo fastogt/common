@@ -17,6 +17,8 @@
 #include <json-c/json_object.h>
 #include <json-c/json_tokener.h>  // for json_tokener_parse
 
+#include <string>
+
 #include <common/serializer/iserializer.h>  // for ISerializer
 
 namespace common {
@@ -28,7 +30,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
   typedef ISerializer<struct json_object*> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
-  virtual Error SerializeToString(std::string* out) const override final WARN_UNUSED_RESULT {
+  Error SerializeToString(std::string* out) const final WARN_UNUSED_RESULT {
     serialize_type des = nullptr;
     Error err = base_class::Serialize(&des);
     if (err) {
@@ -40,8 +42,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
     return Error();
   }
 
-  virtual Error SerializeFromString(const std::string& data,
-                                    serialize_type* out) const override final WARN_UNUSED_RESULT {
+  Error SerializeFromString(const std::string& data, serialize_type* out) const final WARN_UNUSED_RESULT {
     const char* data_ptr = data.c_str();
     serialize_type res = json_tokener_parse(data_ptr);
     if (!res) {
@@ -50,6 +51,18 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
 
     *out = res;
     return Error();
+  }
+
+  Error DeSerializeFromString(const std::string& data) WARN_UNUSED_RESULT {
+    const char* data_ptr = data.c_str();
+    serialize_type res = json_tokener_parse(data_ptr);
+    if (!res) {
+      return make_error_inval();
+    }
+
+    Error err = DeSerialize(res);
+    json_object_put(res);
+    return err;
   }
 
   Error DeSerialize(const serialize_type& serialized) WARN_UNUSED_RESULT {
@@ -74,7 +87,7 @@ class JsonSerializer : public JsonSerializerBase<T> {
   virtual Error DoDeSerialize(json_object* serialized) = 0;
   virtual Error SerializeFields(json_object* out) const = 0;
 
-  virtual Error DoSerialize(serialize_type* out) const override final {
+  Error DoSerialize(serialize_type* out) const final {
     json_object* obj = json_object_new_object();
     Error err = SerializeFields(obj);
     if (err) {
@@ -97,7 +110,7 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
   virtual Error DoDeSerialize(json_object* serialized_array) = 0;
   virtual Error SerializeArray(json_object* out_array) const = 0;
 
-  virtual Error DoSerialize(serialize_type* out) const override final {
+  Error DoSerialize(serialize_type* out) const final {
     json_object* obj = json_object_new_array();
     Error err = SerializeArray(obj);
     if (err) {

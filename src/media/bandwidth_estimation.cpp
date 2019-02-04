@@ -267,7 +267,7 @@ bool ConvertFromString(const std::string& from, media::DesireBytesPerSec* out) {
     media::bandwidth_t lmin;
     bool ok = ConvertFromString(from.substr(0, del), &lmin);
     if (ok) {
-      res.max = lmin;
+      res.min = lmin;
     }
 
     media::bandwidth_t lmax;
