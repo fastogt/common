@@ -65,5 +65,23 @@ class DescriptorHolder {
   DISALLOW_COPY_AND_ASSIGN(DescriptorHolder);
 };
 
+template <typename Descriptor>
+class DescriptorGuard : public Descriptor {
+ public:
+  typedef Descriptor base_class;
+
+  template <typename... Args>
+  explicit DescriptorGuard(Args... args) : base_class(args...) {}
+
+  ~DescriptorGuard() {
+    common::ErrnoError err = base_class::Close();
+    DCHECK(!err) << "Close client error: " << err->GetDescription();
+  }
+
+ private:
+  using base_class::Close;
+  DISALLOW_COPY_AND_ASSIGN(DescriptorGuard);
+};
+
 }  // namespace file_system
 }  // namespace common

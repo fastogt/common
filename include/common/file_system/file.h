@@ -136,5 +136,23 @@ class ANSIFile {
   DISALLOW_COPY_AND_ASSIGN(ANSIFile);
 };
 
+template <typename File>
+class FileGuard : public File {
+ public:
+  typedef File base_class;
+
+  template <typename... Args>
+  explicit FileGuard(Args... args) : base_class(args...) {}
+
+  ~FileGuard() {
+    common::ErrnoError err = base_class::Close();
+    DCHECK(!err) << "Close client error: " << err->GetDescription();
+  }
+
+ private:
+  using base_class::Close;
+  DISALLOW_COPY_AND_ASSIGN(FileGuard);
+};
+
 }  // namespace file_system
 }  // namespace common
