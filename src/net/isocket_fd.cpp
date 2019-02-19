@@ -75,10 +75,8 @@ ErrnoError ISocketFd::SendFile(descriptor_t file_fd, size_t file_size) {
 }
 
 ErrnoError ISocketFd::CloseImpl() {
-  const socket_descr_t fd = GetFd();
-  ErrnoError err = close(fd);
+  ErrnoError err = close(GetFd());
   if (err) {
-    DNOTREACHED() << "Close fd error: " << err->GetDescription();
     return err;
   }
 

@@ -505,7 +505,7 @@ ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info
 
 ErrnoError close(socket_descr_t fd) {
   if (fd == INVALID_SOCKET_VALUE) {
-    return make_error_perror("close", EINVAL);
+    return ErrnoError();
   }
 
 #ifdef OS_WIN

@@ -55,5 +55,23 @@ class ISocket {
   virtual ErrnoError CloseImpl() WARN_UNUSED_RESULT = 0;
 };
 
+template <typename Socket>
+class SocketGuard : public Socket {
+ public:
+  typedef Socket base_class;
+
+  template <typename... Args>
+  explicit SocketGuard(Args... args) : base_class(args...) {}
+
+  ~SocketGuard() {
+    common::ErrnoError err = base_class::Close();
+    DCHECK(!err) << "Close client error: " << err->GetDescription();
+  }
+
+ private:
+  using base_class::Close;
+  DISALLOW_COPY_AND_ASSIGN(SocketGuard);
+};
+
 }  // namespace net
 }  // namespace common
