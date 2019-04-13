@@ -87,8 +87,9 @@ void LibevIO::io_callback(struct ev_loop* loop, struct ev_io* watcher, int reven
   UNUSED(revents);
 
   LibevIO* io = reinterpret_cast<LibevIO*>(watcher->data);
-  CHECK(io);
-  io->func_(io->loop_, io, revents);
+  if (io) {
+    io->func_(io->loop_, io, revents);
+  }
 }
 
 }  // namespace libev

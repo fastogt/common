@@ -157,8 +157,12 @@ ErrnoError TcpServer::Accept(net::socket_info* info) {
 
 void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
   TcpServer* pserver = reinterpret_cast<TcpServer*>(io->GetUserData());
-  CHECK(pserver && pserver->loop_ == loop);
+  if (!pserver) {
+    DNOTREACHED();
+    return;
+  }
 
+  CHECK(pserver->loop_ == loop);
   if (EV_ERROR & revents) {
     DNOTREACHED();
     return;

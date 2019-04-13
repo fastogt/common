@@ -53,6 +53,9 @@ socket_info::socket_info(const socket_info& other)
     : fd_(other.fd_), addr_(nullptr), host_(nullptr), port_(other.port_) {
   addr_ = copy_addrinfo(other.addr_);
   if (other.host_) {
+    if (host_) {
+      free(host_);
+    }
     host_ = strdup(other.host_);
   }
 }
@@ -67,15 +70,26 @@ socket_info& socket_info::operator=(const socket_info& other) {
 
   fd_ = other.fd_;
   addr_ = copy_addrinfo(other.addr_);
+  if (other.host_) {
+    if (host_) {
+      free(host_);
+    }
+    host_ = strdup(other.host_);
+  }
+  port_ = other.port_;
   return *this;
 }
 
-socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_(nullptr) {
+socket_info::socket_info(socket_info&& other) : fd_(INVALID_SOCKET_VALUE), addr_(nullptr), host_(nullptr), port_(0) {
   fd_ = other.fd_;
   addr_ = other.addr_;
+  host_ = other.host_;
+  port_ = other.port_;
 
   other.fd_ = INVALID_SOCKET_VALUE;
   other.addr_ = nullptr;
+  other.host_ = nullptr;
+  other.port_ = 0;
 }
 
 socket_info& socket_info::operator=(socket_info&& other) {
@@ -88,9 +102,13 @@ socket_info& socket_info::operator=(socket_info&& other) {
 
   fd_ = other.fd_;
   addr_ = other.addr_;
+  host_ = other.host_;
+  port_ = other.port_;
 
   other.fd_ = INVALID_SOCKET_VALUE;
   other.addr_ = nullptr;
+  other.host_ = nullptr;
+  other.port_ = 0;
 
   return *this;
 }

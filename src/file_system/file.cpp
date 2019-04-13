@@ -397,7 +397,7 @@ bool ANSIFile::Write(const std::string& data) {
   }
 
   size_t res = fwrite(data.c_str(), sizeof(byte_t), data.length(), file_);
-  return res == data.length();
+  return res == data.size();
 }
 
 bool ANSIFile::Write(const string16& data) {
@@ -409,7 +409,7 @@ bool ANSIFile::Write(const string16& data) {
   }
 
   size_t res = fwrite(data.c_str(), sizeof(string16::value_type), data.length(), file_);
-  return res == data.length();
+  return res == data.size();
 }
 
 ErrnoError ANSIFile::Truncate(off_t pos) {

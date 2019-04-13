@@ -78,8 +78,9 @@ void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, 
   UNUSED(revents);
 
   LibevChild* child = reinterpret_cast<LibevChild*>(watcher->data);
-  CHECK(child);
-  child->func_(child->loop_, child, watcher->rstatus, revents);
+  if (child) {
+    child->func_(child->loop_, child, watcher->rstatus, revents);
+  }
 }
 
 }  // namespace libev

@@ -83,7 +83,7 @@ IoClient* IoLoop::RegisterClient(const net::socket_info& info) {
 
 void IoLoop::UnRegisterClient(IoClient* client) {
   if (!client) {
-    DNOTREACHED();
+    NOTREACHED();
     return;
   }
 
@@ -106,7 +106,7 @@ void IoLoop::UnRegisterClient(IoClient* client) {
 
 void IoLoop::RegisterClient(IoClient* client) {
   if (!client) {
-    DNOTREACHED();
+    NOTREACHED();
     return;
   }
 
@@ -139,7 +139,7 @@ void IoLoop::RegisterClient(IoClient* client) {
 
 void IoLoop::CloseClient(IoClient* client) {
   if (!client) {
-    DNOTREACHED();
+    NOTREACHED();
     return;
   }
 
@@ -203,7 +203,12 @@ void IoLoop::RegisterChild(IoChild* child, pid_t pid) {
 
 void IoLoop::UnRegisterChild(IoChild* child) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
-  CHECK(child && child->GetServer() == this);
+  if (!child) {
+    NOTREACHED();
+    return;
+  }
+
+  CHECK(child->GetServer() == this);
   const std::string formated_name = child->GetFormatedName();
 
   LibevChild* child_ev = child->child_;
@@ -297,11 +302,6 @@ void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t re
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(loop_ == loop);
   CHECK(child && child->GetServer() == this);
-
-  if (EV_ERROR & revents) {
-    DNOTREACHED();
-    return;
-  }
 
   if (EV_ERROR & revents) {
     DNOTREACHED();

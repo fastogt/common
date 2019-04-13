@@ -71,8 +71,9 @@ void LibevTimer::timer_callback(struct ev_loop* loop, struct ev_timer* watcher, 
   UNUSED(revents);
 
   LibevTimer* timer = reinterpret_cast<LibevTimer*>(watcher->data);
-  CHECK(timer);
-  timer->func_(timer->loop_, timer, revents);
+  if (timer) {
+    timer->func_(timer->loop_, timer, revents);
+  }
 }
 
 }  // namespace libev

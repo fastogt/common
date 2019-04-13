@@ -75,8 +75,9 @@ void LibevAsync::async_callback(struct ev_loop* loop, struct ev_async* watcher, 
   UNUSED(revents);
 
   LibevAsync* async = reinterpret_cast<LibevAsync*>(watcher->data);
-  CHECK(async);
-  async->func_(async->loop_, async, revents);
+  if (async) {
+    async->func_(async->loop_, async, revents);
+  }
 }
 
 }  // namespace libev

@@ -91,11 +91,15 @@ class LibevBase : public patterns::id_counter<LibevBase<handle_t, id_t>, id_t> {
  public:
   typedef void* user_data_t;
   LibevBase() : handle_(static_cast<handle_t*>(calloc(1, sizeof(handle_t)))), user_data_(nullptr) {
-    handle_->data = this;
+    if (handle_) {
+      handle_->data = this;
+    }
   }
   ~LibevBase() {
-    free(handle_);
-    handle_ = nullptr;
+    if (handle_) {
+      free(handle_);
+      handle_ = nullptr;
+    }
   }
   handle_t* GetHandle() const { return handle_; }
   void SetUserData(user_data_t user_data) { user_data_ = user_data; }

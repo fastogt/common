@@ -93,8 +93,11 @@ char* uri_decode(const char* str, size_t len) {
 
   const char* pstr = str;
   char* buf = static_cast<char*>(malloc(len + 1));
-  char* pbuf = buf;
+  if (!buf) {
+    return nullptr;
+  }
 
+  char* pbuf = buf;
   while (*pstr) {
     if (*pstr == '%') {
       if (pstr[1] && pstr[2]) {

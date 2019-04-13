@@ -486,9 +486,9 @@ int hd_inflate_remove_bufs(http2_inflater* inflater, http2_nv* nv, int value_onl
   return 0;
 }
 
-uint32_t hd_inflate_read(http2_inflater* inflater, buffer_t& bufs, uint8_t* in, uint8_t* last) {
-  uint32_t len = std::min(static_cast<uint32_t>(last - in), inflater->left);
-  for (uint32_t i = 0; i < len; ++i) {
+int hd_inflate_read(http2_inflater* inflater, buffer_t& bufs, uint8_t* in, uint8_t* last) {
+  int len = std::min(static_cast<uint32_t>(last - in), inflater->left);
+  for (int i = 0; i < len; ++i) {
     bufs.push_back(in[i]);
   }
   inflater->left -= len;
@@ -1267,7 +1267,8 @@ ssize_t hd_inflate_read_huff(http2_inflater* inflater, buffer_t& bufs, uint8_t* 
 
 }  // namespace
 
-http2_deflater::http2_deflater() {
+http2_deflater::http2_deflater()
+    : ctx(), map(), deflate_hd_table_bufsize_max(0), min_hd_table_bufsize_max(0), notify_table_size_change(0) {
   memset(&map, 0, sizeof(http2_map));
   if (deflate_hd_table_bufsize_max < HTTP2_DEFAULT_MAX_BUFFER_SIZE) {
     notify_table_size_change = 1;
@@ -1284,7 +1285,7 @@ int http2_deflater::http2_deflate_hd_bufs(buffer_t& bufs, const http2_nvs_t& nv)
     return -1;
   }
 
-  int rv;
+  int rv = -1;
   for (uint32_t i = 0; i < nv.size(); ++i) {
     rv = deflate_nv(this, bufs, &nv[i]);
     if (rv != 0) {
@@ -1349,7 +1350,11 @@ http2_inflater::http2_inflater()
       nv_keep(nullptr),
       settings_hd_table_bufsize_max(HTTP2_DEFAULT_MAX_BUFFER_SIZE),
       opcode(HTTP2_OPCODE_NONE),
-      state(HTTP2_STATE_INFLATE_START) {
+      state(HTTP2_STATE_INFLATE_START),
+      huff_decode_ctx(),
+      huffman_encoded(0),
+      index_required(0),
+      no_index(0) {
   huffman_encoded = 0;
   index = 0;
   left = 0;
@@ -1756,7 +1761,7 @@ uint32_t http2_settings_entry::value() const {
   return be32toh(value_);
 }
 
-http2_priority_spec::http2_priority_spec() {
+http2_priority_spec::http2_priority_spec() : stream_id_(), weight_(0) {
   SIZEOF_DATA_MUST_BE(http2_priority_spec, 5);
 }
 
@@ -1764,7 +1769,7 @@ uint32_t http2_priority_spec::stream_id() const {
   return stream_id_.id();
 }
 
-http2_headers_spec::http2_headers_spec() {}
+http2_headers_spec::http2_headers_spec() : padlen_(0), pri_spec_() {}
 
 uint8_t http2_headers_spec::padlen() const {
   return padlen_;

@@ -90,8 +90,13 @@ bool GetMachineID(std::string* serial) {
   }
 
   char* ptr = static_cast<char*>(calloc(MACHINE_ID_BUFF_SIZE, sizeof(char)));
-  ssize_t res = fread(ptr, sizeof(char), MACHINE_ID_BUFF_SIZE, machine_id_file);
-  if (res == -1) {
+  if (!ptr) {
+    fclose(machine_id_file);
+    return false;
+  }
+
+  size_t res = fread(ptr, sizeof(char), MACHINE_ID_BUFF_SIZE, machine_id_file);
+  if (res == 0) {
     free(ptr);
     fclose(machine_id_file);
     return false;

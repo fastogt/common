@@ -102,7 +102,7 @@ void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
           result->push_back(*file);
         }
       }
-    } else if (recursive && is_dir) {
+    } else if (recursive) {
       const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
       auto dir = folder.MakeDirectoryStringPath(vt);
       if (dir) {

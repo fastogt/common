@@ -220,8 +220,10 @@ socket_t native_to_socket_type(int socktype) {
 }
 
 ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_t len, struct timeval* tv) {
-  DCHECK(sock != INVALID_SOCKET_VALUE);
-  DCHECK(addr);
+  if (!addr || sock == INVALID_SOCKET_VALUE) {
+    DNOTREACHED();
+    return make_errno_error_inval();
+  }
 
   if (!tv) {
     int res = ::connect(sock, addr, len);
