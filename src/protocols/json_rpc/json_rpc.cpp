@@ -196,6 +196,14 @@ Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) {
   return Error();
 }
 
+Error ParseJsonRPCResponse(struct json_object* data, JsonRPCResponse* result) {
+  if (!data || !result) {
+    return make_error_inval();
+  }
+
+  return GetJsonRPCResponse(data, result);
+}
+
 Error ParseJsonRPCResponse(const std::string& data, JsonRPCResponse* result) {
   if (data.empty() || !result) {
     return make_error_inval();
@@ -207,7 +215,7 @@ Error ParseJsonRPCResponse(const std::string& data, JsonRPCResponse* result) {
     return make_error_inval();
   }
 
-  Error err = GetJsonRPCResponse(jdata, result);
+  Error err = ParseJsonRPCResponse(jdata, result);
   json_object_put(jdata);
   return err;
 }
@@ -263,6 +271,14 @@ Error MakeJsonRPCResponse(const JsonRPCResponse& response, std::string* out_json
   return Error();
 }
 
+Error ParseJsonRPCRequest(struct json_object* data, JsonRPCRequest* result) {
+  if (!data || !result) {
+    return make_error_inval();
+  }
+
+  return GetJsonRPCRequest(data, result);
+}
+
 Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
   if (data.empty() || !result) {
     return make_error_inval();
@@ -274,7 +290,7 @@ Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) {
     return make_error_inval();
   }
 
-  Error err = GetJsonRPCRequest(jdata, result);
+  Error err = ParseJsonRPCRequest(jdata, result);
   json_object_put(jdata);
   return err;
 }

@@ -47,11 +47,13 @@ namespace json_rpc {
 Error MakeJsonRPCRequest(const JsonRPCRequest& request, struct json_object** out_json) WARN_UNUSED_RESULT;
 Error MakeJsonRPCRequest(const JsonRPCRequest& request, std::string* out_json) WARN_UNUSED_RESULT;
 
+Error ParseJsonRPCResponse(struct json_object* data, JsonRPCResponse* result) WARN_UNUSED_RESULT;
 Error ParseJsonRPCResponse(const std::string& data, JsonRPCResponse* result) WARN_UNUSED_RESULT;
 
 Error MakeJsonRPCResponse(const JsonRPCResponse& response, struct json_object** out_json) WARN_UNUSED_RESULT;
 Error MakeJsonRPCResponse(const JsonRPCResponse& response, std::string* out_json) WARN_UNUSED_RESULT;
 
+Error ParseJsonRPCRequest(struct json_object* data, JsonRPCRequest* result) WARN_UNUSED_RESULT;
 Error ParseJsonRPCRequest(const std::string& data, JsonRPCRequest* result) WARN_UNUSED_RESULT;
 
 Error ParseJsonRPC(const std::string& data,

@@ -52,11 +52,31 @@ enum JsonRPCErrorCode : int {
 struct JsonRPCError {
   std::string message;
   JsonRPCErrorCode code;
+
+  bool Equals(const JsonRPCError& err) const;
 };
+
+inline bool operator==(const JsonRPCError& left, const JsonRPCError& right) {
+  return left.Equals(right);
+}
+
+inline bool operator!=(const JsonRPCError& left, const JsonRPCError& right) {
+  return !(left == right);
+}
 
 struct JsonRPCMessage {
   std::string result;
+
+  bool Equals(const JsonRPCMessage& msg) const;
 };
+
+inline bool operator==(const JsonRPCMessage& left, const JsonRPCMessage& right) {
+  return left.Equals(right);
+}
+
+inline bool operator!=(const JsonRPCMessage& left, const JsonRPCMessage& right) {
+  return !(left == right);
+}
 
 typedef Optional<JsonRPCMessage> json_rpc_message;
 typedef Optional<JsonRPCError> json_rpc_error;
@@ -73,11 +93,20 @@ struct JsonRPCResponse {
   bool IsError() const;
   bool IsMessage() const;
   bool IsValid() const;
+  bool Equals(const JsonRPCResponse& resp) const;
 
   json_rpc_id id;
   json_rpc_message message;
   json_rpc_error error;
 };
+
+inline bool operator==(const JsonRPCResponse& left, const JsonRPCResponse& right) {
+  return left.Equals(right);
+}
+
+inline bool operator!=(const JsonRPCResponse& left, const JsonRPCResponse& right) {
+  return !(left == right);
+}
 
 }  // namespace json_rpc
 }  // namespace protocols

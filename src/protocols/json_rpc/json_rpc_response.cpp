@@ -33,6 +33,14 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
+bool JsonRPCError::Equals(const JsonRPCError& err) const {
+  return code == err.code && message == err.message;
+}
+
+bool JsonRPCMessage::Equals(const JsonRPCMessage& msg) const {
+  return result == msg.result;
+}
+
 JsonRPCResponse::JsonRPCResponse() : id(), message(), error() {}
 
 JsonRPCResponse JsonRPCResponse::MakeErrorInvalidJson() {
@@ -115,6 +123,10 @@ bool JsonRPCResponse::IsValid() const {
   }
 
   return true;
+}
+
+bool JsonRPCResponse::Equals(const JsonRPCResponse& resp) const {
+  return id == resp.id && message == resp.message && error == resp.error;
 }
 
 }  // namespace json_rpc
