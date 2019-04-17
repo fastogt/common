@@ -21,14 +21,6 @@ SET(APPLIATION_SOURCES
   ${CMAKE_SOURCE_DIR}/src/application/application.cpp
 )
 
-SET(PROTOCOLS_HEADERS
-  ${CMAKE_SOURCE_DIR}/include/common/protocols/three_way_handshake/commands.h
-)
-
-SET(PROTOCOLS_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/protocols/three_way_handshake/commands.cpp
-)
-
 SET(SERIALIZER_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
 )
