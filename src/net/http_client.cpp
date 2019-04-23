@@ -38,6 +38,8 @@
 #include <common/file_system/file.h>
 #include <common/file_system/file_system.h>
 
+#define USER_AGENT_VALUE PROJECT_COMPANYNAME "/" PROJECT_NAME "/" PROJECT_VERSION
+
 namespace common {
 namespace net {
 
@@ -57,12 +59,13 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
   }
 
   const HostAndPort hs = GetHost();
-  http::HttpHeader header("Host", hs.GetHost());
+  http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader type("Content-Type", "application/octet-stream");
   http::HttpHeader disp("Content-Disposition", common::MemSPrintf("attachment, filename=\"%s\"", file_path.GetName()));
   http::HttpHeader cont("Content-Length", common::ConvertToString(file_size));
+  http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
 
-  http::HttpRequest req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont});
+  http::HttpRequest req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont, user});
   Error err = SendRequest(req);
   if (err) {
     file.Close();
@@ -80,15 +83,17 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
 
 Error IHttpClient::Get(const uri::Upath& path) {
   const HostAndPort hs = GetHost();
-  http::HttpHeader header("Host", hs.GetHost());
-  http::HttpRequest req = http::MakeGetRequest(path, http::HP_1_0, {header});
+  http::HttpHeader header("Host", ConvertToString(hs));
+  http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
+  http::HttpRequest req = http::MakeGetRequest(path, http::HP_1_1, {header, user});
   return SendRequest(req);
 }
 
 Error IHttpClient::Head(const uri::Upath& path) {
   const HostAndPort hs = GetHost();
-  http::HttpHeader header("Host", hs.GetHost());
-  http::HttpRequest req = http::MakeHeadRequest(path, http::HP_1_0, {header});
+  http::HttpHeader header("Host", ConvertToString(hs));
+  http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
+  http::HttpRequest req = http::MakeHeadRequest(path, http::HP_1_1, {header, user});
   return SendRequest(req);
 }
 
