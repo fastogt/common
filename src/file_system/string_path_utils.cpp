@@ -43,17 +43,15 @@ namespace common {
 namespace file_system {
 namespace {
 template <typename CharT>
-bool realpath_without_exist(const std::basic_string<CharT>& relative_path, std::basic_string<CharT>* realpath) {
+bool realpath_without_exist(const std::basic_string<CharT>& path, std::basic_string<CharT>* realpath) {
   typedef std::basic_string<CharT> string_t;
-  string_t path = fixup_separator_in_path(relative_path);
   if (path.empty() || !realpath) {
     return false;
   }
 
-  string_t cpwd = pwd();
   std::vector<string_t> parts;
   std::vector<string_t> valid_parts;
-  size_t count_del = Tokenize(cpwd + path, get_separator_string<CharT>(), &parts);
+  size_t count_del = Tokenize(path, get_separator_string<CharT>(), &parts);
   for (size_t i = 0; i < count_del; ++i) {
     string_t part = parts[i];
     if (part == ".") {
@@ -77,12 +75,35 @@ bool realpath_without_exist(const std::basic_string<CharT>& relative_path, std::
   return true;
 }
 
+template <typename CharT>
+bool realpath_without_exist(const std::basic_string<CharT>& start_dir,
+                            const std::basic_string<CharT>& relative_path,
+                            std::basic_string<CharT>* realpath) {
+  typedef std::basic_string<CharT> string_t;
+  string_t path = fixup_separator_in_path(relative_path);
+  string_t stabled_dir = stable_dir_path(start_dir);
+  if (stabled_dir.empty() || path.empty() || !realpath) {
+    return false;
+  }
+
+  return realpath_without_exist(stabled_dir + path, realpath);
+}
+
 }  // namespace
+
+std::string remove_dots_from_path(const std::string& path) {
+  std::string real_path;
+  if (!realpath_without_exist(path, &real_path)) {
+    return std::string();
+  }
+
+  return prepare_path(real_path);
+}
 
 template <>
 std::string absolute_path_from_relative(const std::string& path) {
   std::string real_path;
-  if (!realpath_without_exist(path, &real_path)) {
+  if (!realpath_without_exist(pwd(), path, &real_path)) {
     return std::string();
   }
 

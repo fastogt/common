@@ -80,6 +80,9 @@ bool is_directory_exist(const CharT* path) {
   return is_directory_exist(std::basic_string<CharT, Traits>(path));
 }
 
+template <typename CharT, typename Traits = std::char_traits<CharT>>
+std::basic_string<CharT, Traits> remove_dots_from_path(const std::basic_string<CharT, Traits>& path);
+
 // Find the real name of path, by removing all ".", ".."
 template <typename CharT, typename Traits = std::char_traits<CharT>>
 std::basic_string<CharT, Traits> absolute_path_from_relative(const std::basic_string<CharT, Traits>& relative_path);
