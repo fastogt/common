@@ -83,26 +83,33 @@ bool is_directory_exist(const CharT* path) {
 template <typename CharT, typename Traits = std::char_traits<CharT>>
 std::basic_string<CharT, Traits> remove_dots_from_path(const std::basic_string<CharT, Traits>& path);
 
+#if defined(OS_MACOSX)
+std::string bundle_pwd();
+#endif
+std::string pwd();
+std::string app_pwd();
+
 // Find the real name of path, by removing all ".", ".."
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-std::basic_string<CharT, Traits> absolute_path_from_relative(const std::basic_string<CharT, Traits>& relative_path);
+std::basic_string<CharT, Traits> absolute_path_from_relative(const std::basic_string<CharT, Traits>& relative_path,
+                                                             const std::basic_string<CharT, Traits>& start_dir = pwd());
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-inline std::basic_string<CharT, Traits> absolute_path_from_relative(const CharT* path) {
-  return absolute_path_from_relative(std::basic_string<CharT, Traits>(path));
+inline std::basic_string<CharT, Traits> absolute_path_from_relative(
+    const CharT* path,
+    const std::basic_string<CharT, Traits>& start_dir = pwd()) {
+  return absolute_path_from_relative(std::basic_string<CharT, Traits>(path), start_dir);
 }
 
 // pwd + filename
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-std::basic_string<CharT, Traits> absolute_path_from_filename(const std::basic_string<CharT, Traits>& filename);
+std::basic_string<CharT, Traits> absolute_path_from_filename(const std::basic_string<CharT, Traits>& filename,
+                                                             const std::basic_string<CharT, Traits>& start_dir = pwd());
 template <typename CharT, typename Traits = std::char_traits<CharT>>
-inline std::basic_string<CharT, Traits> absolute_path_from_filename(const CharT* path) {
-  return absolute_path_from_filename(std::basic_string<CharT, Traits>(path));
+inline std::basic_string<CharT, Traits> absolute_path_from_filename(
+    const CharT* path,
+    const std::basic_string<CharT, Traits>& start_dir = pwd()) {
+  return absolute_path_from_filename(std::basic_string<CharT, Traits>(path), start_dir);
 }
-
-#ifdef OS_MACOSX
-std::string bundle_pwd();
-#endif
-std::string pwd();
 
 }  // namespace file_system
 }  // namespace common

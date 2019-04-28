@@ -101,9 +101,9 @@ std::string remove_dots_from_path(const std::string& path) {
 }
 
 template <>
-std::string absolute_path_from_relative(const std::string& path) {
+std::string absolute_path_from_relative(const std::string& path, const std::string& start_dir) {
   std::string real_path;
-  if (!realpath_without_exist(pwd(), path, &real_path)) {
+  if (!realpath_without_exist(start_dir, path, &real_path)) {
     return std::string();
   }
 
@@ -111,20 +111,19 @@ std::string absolute_path_from_relative(const std::string& path) {
 }
 
 template <>
-string16 absolute_path_from_relative(const string16& path) {
-  std::string rp = absolute_path_from_relative(ConvertToString(path));
+string16 absolute_path_from_relative(const string16& path, const string16& start_dir) {
+  std::string rp = absolute_path_from_relative(ConvertToString(path), ConvertToString(start_dir));
   return ConvertToString16(rp);
 }
 
 template <>
-std::string absolute_path_from_filename(const std::string& filename) {
-  std::string p = pwd();
-  return p + filename;
+std::string absolute_path_from_filename(const std::string& filename, const std::string& start_dir) {
+  return stable_dir_path(start_dir) + filename;
 }
 
 template <>
-string16 absolute_path_from_filename(const string16& filename) {
-  std::string rp = absolute_path_from_filename(ConvertToString(filename));
+string16 absolute_path_from_filename(const string16& filename, const string16& start_dir) {
+  std::string rp = absolute_path_from_filename(ConvertToString(filename), ConvertToString(start_dir));
   return ConvertToString16(rp);
 }
 
@@ -164,6 +163,14 @@ std::string pwd() {
   }
 
   return stable_dir_path(std::string(cwd));
+}
+
+std::string app_pwd() {
+#if defined(OS_MACOSX)
+  return bundle_pwd();
+#else
+  return pwd();
+#endif
 }
 
 }  // namespace file_system
