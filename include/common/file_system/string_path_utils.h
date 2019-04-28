@@ -100,16 +100,5 @@ inline std::basic_string<CharT, Traits> absolute_path_from_relative(
   return absolute_path_from_relative(std::basic_string<CharT, Traits>(path), start_dir);
 }
 
-// pwd + filename
-template <typename CharT, typename Traits = std::char_traits<CharT>>
-std::basic_string<CharT, Traits> absolute_path_from_filename(const std::basic_string<CharT, Traits>& filename,
-                                                             const std::basic_string<CharT, Traits>& start_dir = pwd());
-template <typename CharT, typename Traits = std::char_traits<CharT>>
-inline std::basic_string<CharT, Traits> absolute_path_from_filename(
-    const CharT* path,
-    const std::basic_string<CharT, Traits>& start_dir = pwd()) {
-  return absolute_path_from_filename(std::basic_string<CharT, Traits>(path), start_dir);
-}
-
 }  // namespace file_system
 }  // namespace common

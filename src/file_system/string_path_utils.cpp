@@ -117,17 +117,6 @@ string16 absolute_path_from_relative(const string16& path, const string16& start
 }
 
 template <>
-std::string absolute_path_from_filename(const std::string& filename, const std::string& start_dir) {
-  return stable_dir_path(start_dir) + filename;
-}
-
-template <>
-string16 absolute_path_from_filename(const string16& filename, const string16& start_dir) {
-  std::string rp = absolute_path_from_filename(ConvertToString(filename), ConvertToString(start_dir));
-  return ConvertToString16(rp);
-}
-
-template <>
 tribool is_directory(const std::string& path) {
   if (!is_valid_path(path)) {
     return INDETERMINATE;

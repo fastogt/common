@@ -1,3 +1,7 @@
+1.23.7 / April 28, 2019
+[Alexandr Topilski]
+- Fixed absolute path for mac bundle
+
 1.23.6 / April 25, 2019
 [Alexandr Topilski]
 - Fixed http post file
