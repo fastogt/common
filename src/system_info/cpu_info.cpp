@@ -33,7 +33,7 @@
 
 #include <common/sprintf.h>
 
-#include "cpuid/libcpuid/libcpuid/libcpuid.h"
+#include <libcpuid/libcpuid.h>
 
 namespace common {
 namespace {
