@@ -43,7 +43,7 @@ bool Point::Equals(const Point& pt) const {
   return x == pt.x && y == pt.y;
 }
 
-Size::Size() : width(0), height(0) {}
+Size::Size() : width(-1), height(-1) {}
 
 Size::Size(int width, int height) : width(width), height(height) {}
 
@@ -56,7 +56,7 @@ bool Size::Equals(const Size& sz) const {
 }
 
 bool IsValidSize(int width, int height) {
-  return width > 0 && height > 0;
+  return width >= 0 && height >= 0;
 }
 
 }  // namespace draw

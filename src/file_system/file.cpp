@@ -42,7 +42,7 @@ namespace file_system {
 File::File() : holder_(nullptr), file_path_() {}
 
 File::~File() {
-  delete holder_;
+  destroy(&holder_);
 }
 
 File::path_type File::GetPath() const {
@@ -118,6 +118,7 @@ ErrnoError File::Close() {
     return make_error_perror("File::Close", EINVAL);
   }
 
+  file_path_ = path_type();
   return holder_->Close();
 }
 
@@ -459,7 +460,13 @@ ErrnoError create_node(const std::string& path) {
   }
 
   File fl;
-  return fl.Open(path, File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_WRITE);
+  ErrnoError err = fl.Open(path, File::FLAG_OPEN | File::FLAG_CREATE | File::FLAG_WRITE);
+  if (err) {
+    return err;
+  }
+
+  ignore_result(fl.Close());
+  return ErrnoError();
 }
 
 }  // namespace file_system

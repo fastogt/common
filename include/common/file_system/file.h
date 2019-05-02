@@ -55,7 +55,7 @@ class File {
     FLAG_DELETE_ON_CLOSE = 1 << 7
   };
 
-  File();
+  File();  // IsValid fasle
   ~File();
 
   ErrnoError Open(const path_type::value_type& file_path, uint32_t flags) WARN_UNUSED_RESULT;
