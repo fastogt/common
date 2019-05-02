@@ -14,8 +14,8 @@ Contributions are always welcome! Just try to follow our coding style: [FastoGT 
 Build
 ========
 
-# Dependencies (Optional)
-
+Dependencies (Optional)
+-------
   * Zlib
   * BZip2
   * Snappy
