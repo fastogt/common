@@ -58,7 +58,7 @@
 
 #include <common/sprintf.h>
 
-#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD)
+#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD) || defined(OS_IOS)
 
 #define BUF_SIZE 8192
 
