@@ -51,7 +51,7 @@
 namespace common {
 namespace system {
 
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_IOS)
 ErrnoError Shutdown(shutdown_t type) {
   sync();
 #if POWEROFF_STRATEGY == REBOOT_CALL
