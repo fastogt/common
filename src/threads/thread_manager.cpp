@@ -29,21 +29,10 @@
 
 #include <common/threads/thread_manager.h>
 
-#include <common/system_info/cpu_info.h>  // for CpuInfo, CurrentCpuInfo
-
 namespace common {
 namespace threads {
 
-lcpu_count_t ThreadManager::LogicalCpusCount() const {
-  return info_.GetLogicalCpusCount();
-}
-
-lcpu_count_t ThreadManager::ThreadsOnCore() const {
-  return info_.GetThreadsOnCore();
-}
-
-ThreadManager::ThreadManager() : info_(system_info::CurrentCpuInfo()), key_(0), main_thread_(new Thread<int>) {
-  InitProcessPolicy(LogicalCpusCount());
+ThreadManager::ThreadManager() : key_(0), main_thread_(new Thread<int>) {
   PlatformThread::InitTlsKey(&key_);
 
   main_thread_->handle_ = PlatformThreadHandle(PlatformThread::GetCurrentHandle(), PlatformThread::GetCurrentId());
@@ -55,7 +44,6 @@ ThreadManager::~ThreadManager() {
   UnWrapThread(main_thread_);
   delete main_thread_;
   PlatformThread::ReleaseTlsKey(key_);
-  FreeProcessPolicy(LogicalCpusCount());
 }
 
 }  // namespace threads

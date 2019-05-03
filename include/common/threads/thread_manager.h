@@ -41,12 +41,6 @@
 #include <common/threads/thread.h>
 
 namespace common {
-namespace system_info {
-class CpuInfo;
-}
-}  // namespace common
-
-namespace common {
 namespace threads {
 
 class ThreadManager : public patterns::TSSingleton<ThreadManager> {
@@ -94,13 +88,9 @@ class ThreadManager : public patterns::TSSingleton<ThreadManager> {
   void UnWrapThread(Thread<RT>*) {}
 
  private:
-  lcpu_count_t LogicalCpusCount() const;
-  lcpu_count_t ThreadsOnCore() const;
-
   ThreadManager();
   ~ThreadManager();
 
-  const system_info::CpuInfo& info_;
   platform_tls_t key_;
   Thread<int>* const main_thread_;
 };

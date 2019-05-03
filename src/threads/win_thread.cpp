@@ -53,30 +53,6 @@ DWORD WINAPI ThreadFunc(LPVOID params) {
 const platform_handle_t invalid_handle = NULL;
 const platform_thread_id_t invalid_tid = 0;
 
-void InitProcessPolicy(lcpu_count_t lcpuCount) {
-  DCHECK(lcpuCount);
-  if (!lcpuCount) {
-    return;
-  }
-
-  HANDLE process = GetCurrentProcess();
-  DWORD_PTR processAffinityMask;
-  DWORD_PTR systemAffinityMask;
-
-  if (!GetProcessAffinityMask(process, &processAffinityMask, &systemAffinityMask)) {
-    return;
-  }
-
-  DWORD_PTR mask = (0x1 << lcpuCount) - 1;
-
-  BOOL res = SetProcessAffinityMask(process, mask);
-  DCHECK(res);
-}
-
-void FreeProcessPolicy(lcpu_count_t lCpuCount) {
-  UNUSED(lCpuCount);
-}
-
 bool PlatformThreadHandle::EqualsHandle(const PlatformThreadHandle& other) const {
   return handle_ == other.handle_;
 }
