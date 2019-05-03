@@ -31,7 +31,7 @@
 
 #include <common/macros.h>
 
-#if defined(OS_MACOSX)
+#if defined(OS_MACOSX) || defied(OS_IOS)
 #include <libkern/OSByteOrder.h>
 #define htobe16(x) OSSwapHostToBigInt16(x)
 #define htole16(x) OSSwapHostToLittleInt16(x)
