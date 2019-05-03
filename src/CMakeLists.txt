@@ -804,16 +804,18 @@ IF(DEVELOPER_ENABLE_TESTS)
     ${CMAKE_SOURCE_DIR}/tests/unit_test_hash.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_bounded_value.cpp
     ${CMAKE_SOURCE_DIR}/tests/unit_test_license.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unit_test_cpu.cpp
   )
+
+  IF(CPUID_FOUND)
+    SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_cpu.cpp)
+  ENDIF(CPUID_FOUND)
+
   IF(JSON_ENABLED)
     SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_json_rpc.cpp)
   ENDIF(JSON_ENABLED)
 
   IF(QT_ENABLED)
-    SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES}
-      ${CMAKE_SOURCE_DIR}/tests/unit_test_qt.cpp
-    )
+    SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES} ${CMAKE_SOURCE_DIR}/tests/unit_test_qt.cpp)
   ENDIF(QT_ENABLED)
 
   IF(LIBEV_FOUND)
