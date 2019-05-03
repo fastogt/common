@@ -25,18 +25,22 @@ Dependencies (Optional)
   * LibEv
   * Qt
 
-Windows
+Windows:
 -------
 `cmake .. -GNinja -DQT_ENABLED=ON -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/mingw64`<br>
 `cmake .. -GNinja -DQT_ENABLED=ON -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/mingw32`
 
-Linux, FreeBSD, MacOS X
+Linux, FreeBSD, MacOSX:
 -------
 `cmake .. -GNinja -DQT_ENABLED=ON -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/usr/local`
 
-Android
+Android:
 -------
 `cmake .. -DCMAKE_STRIP="/opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-strip" -DCMAKE_AR="/opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar" -DCMAKE_C_COMPILER="/opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc" -DCMAKE_CXX_COMPILER="/opt/android-ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-g++" -GNinja -DQT_ENABLED=ON -DCMAKE_TOOLCHAIN_FILE=../cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-9/arch-arm/usr/`
+
+IOS:
+-------
+`cmake .. -GNinja -DQT_ENABLED=ON -DCMAKE_TOOLCHAIN_FILE=../cmake/ios.toolchain.cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=${CMAKE_OSX_SYSROOT}/usr`
 
 License
 =======
