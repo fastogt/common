@@ -36,10 +36,12 @@ Linux, FreeBSD, MacOSX:
 
 Android:
 -------
+### Enviroment:
 `ANDROID_PLATFORM=android-16`<br>
-`ANDROID_NDK=/home/sasha/Android/Sdk/ndk-bundle`<br>
+`ANDROID_NDK=/home/sasha/Android/Sdk/ndk-bundle`
+
 `
-cmake .. -GNinja -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_ROOT/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=$ANDROID_PLATFORM -DCMAKE_INSTALL_PREFIX=$ANDROID_NDK_ROOT/platforms/$ANDROID_PLATFORM/arch-arm/usr/
+cmake .. -GNinja -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=RELEASE -DANDROID_PLATFORM=$ANDROID_PLATFORM -DCMAKE_INSTALL_PREFIX=$ANDROID_NDK_ROOT/platforms/$ANDROID_PLATFORM/arch-arm/usr/
 `
 
 IOS:
