@@ -176,11 +176,11 @@ bool get_schemes(const char* url_s, size_t len, Url::scheme* prot) {
 
 }  // namespace detail
 
-Url::Url() : scheme_(unknown), host_() {
+Url::Url() : scheme_(unknown), host_(), path_() {
   host_.reserve(host_size);
 }
 
-Url::Url(const std::string& url_s) : scheme_(unknown), host_() {
+Url::Url(const std::string& url_s) : scheme_(unknown), host_(), path_() {
   host_.reserve(host_size);
   Parse(url_s);
 }
@@ -196,7 +196,7 @@ void Url::Parse(const std::string& url_s) {
     } else if (scheme_ == http) {
       start = 7;
     } else if (scheme_ == file) {
-      start = 6;
+      start = 7;
     } else if (scheme_ == ws) {
       start = 5;
     } else if (scheme_ == wss) {
@@ -215,7 +215,7 @@ void Url::Parse(const std::string& url_s) {
 
     for (size_t i = start; i < len; ++i) {
       if (url_s[i] == uri_separator) {
-        path_ = Upath(data + i + 1);
+        path_ = Upath(data + i);
         break;
       }
       char c = std::tolower(url_s[i], std::locale());
