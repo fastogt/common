@@ -466,7 +466,7 @@ TEST(Http2, frame_goaway) {
 
 TEST(http_client, head) {
   net::HostAndPort example("example.com", 80);
-  uri::Upath root;
+  uri::Upath root = uri::Upath::MakeRoot();
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
@@ -482,7 +482,7 @@ TEST(http_client, head) {
 
 TEST(http_client, get) {
   net::HostAndPort example("example.com", 80);
-  uri::Upath root;
+  uri::Upath root = uri::Upath::MakeRoot();
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);

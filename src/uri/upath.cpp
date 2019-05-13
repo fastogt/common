@@ -44,8 +44,12 @@ Upath::Upath(const std::string& url_sp) : path_(), query_() {
   Parse(url_sp);
 }
 
+Upath Upath::MakeRoot() {
+  return Upath(uri_separator_string);
+}
+
 bool Upath::IsValid() const {
-  return !path_.empty();
+  return !path_.empty() && path_[0] == uri_separator;
 }
 
 bool Upath::IsRoot() const {

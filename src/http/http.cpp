@@ -166,25 +166,31 @@ bool HttpRequest::FindHeaderByValue(const std::string& value, bool case_sensitiv
   return false;
 }
 
-HttpRequest MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers) {
-  http::HttpRequest req(http::HM_HEAD, path, protocol, headers, std::string());
-  return req;
+Optional<HttpRequest> MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers) {
+  if (!path.IsValid()) {
+    return Optional<HttpRequest>();
+  }
+  return http::HttpRequest(http::HM_HEAD, path, protocol, headers, std::string());
 }
 
-HttpRequest MakeGetRequest(const uri::Upath& path,
-                           http_protocol protocol,
-                           const headers_t& headers,
-                           const std::string& body) {
-  http::HttpRequest req(http::HM_GET, path, protocol, headers, body);
-  return req;
+Optional<HttpRequest> MakeGetRequest(const uri::Upath& path,
+                                     http_protocol protocol,
+                                     const headers_t& headers,
+                                     const std::string& body) {
+  if (!path.IsValid()) {
+    return Optional<HttpRequest>();
+  }
+  return http::HttpRequest(http::HM_GET, path, protocol, headers, body);
 }
 
-HttpRequest MakePostRequest(const uri::Upath& path,
-                            http_protocol protocol,
-                            const headers_t& headers,
-                            const std::string& body) {
-  http::HttpRequest req(http::HM_POST, path, protocol, headers, body);
-  return req;
+Optional<HttpRequest> MakePostRequest(const uri::Upath& path,
+                                      http_protocol protocol,
+                                      const headers_t& headers,
+                                      const std::string& body) {
+  if (!path.IsValid()) {
+    return Optional<HttpRequest>();
+  }
+  return http::HttpRequest(http::HM_POST, path, protocol, headers, body);
 }
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {

@@ -65,7 +65,10 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
   http::HttpHeader cont("Content-Length", common::ConvertToString(file_size));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
 
-  http::HttpRequest req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont, user});
+  auto req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont, user});
+  if (!req) {
+    return make_error("Can't make request.");
+  }
   Error err = SendRequest(req);
   if (err) {
     file.Close();
@@ -85,7 +88,10 @@ Error IHttpClient::Get(const uri::Upath& path) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
-  http::HttpRequest req = http::MakeGetRequest(path, http::HP_1_1, {header, user});
+  auto req = http::MakeGetRequest(path, http::HP_1_1, {header, user});
+  if (!req) {
+    return make_error("Can't make request.");
+  }
   return SendRequest(req);
 }
 
@@ -93,13 +99,19 @@ Error IHttpClient::Head(const uri::Upath& path) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
-  http::HttpRequest req = http::MakeHeadRequest(path, http::HP_1_1, {header, user});
+  auto req = http::MakeHeadRequest(path, http::HP_1_1, {header, user});
+  if (!req) {
+    return make_error("Can't make request.");
+  }
   return SendRequest(req);
 }
 
-Error IHttpClient::SendRequest(const http::HttpRequest& request_headers) {
-  std::string request_str = ConvertToString(request_headers);
+Error IHttpClient::SendRequest(const Optional<http::HttpRequest>& request_headers) {
+  if (!request_headers) {
+    return make_error_inval();
+  }
 
+  std::string request_str = ConvertToString(*request_headers);
   size_t nwrite;
   ErrnoError err = sock_->Write(request_str.data(), request_str.size(), &nwrite);
   if (err) {

@@ -41,6 +41,7 @@ class Upath {
  public:
   Upath();
   explicit Upath(const std::string& url_sp);
+  static Upath MakeRoot();
 
   bool IsValid() const;
   bool IsRoot() const;
