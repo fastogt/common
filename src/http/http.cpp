@@ -96,6 +96,10 @@ headers_t HttpRequest::GetHeaders() const {
   return headers_;
 }
 
+bool HttpRequest::IsValid() const {
+  return path_.IsValid();
+}
+
 uri::Upath HttpRequest::GetPath() const {
   return path_;
 }

@@ -131,6 +131,7 @@ class HttpRequest {
 
   http_protocol GetProtocol() const;
   headers_t GetHeaders() const;
+  bool IsValid() const;
 
   uri::Upath GetPath() const;
   void SetPath(const uri::Upath& path);

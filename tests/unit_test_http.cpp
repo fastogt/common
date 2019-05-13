@@ -36,6 +36,7 @@ using namespace common;
 
 TEST(Http, parse) {
   http::HttpRequest r1;
+  ASSERT_FALSE(r1.IsValid());
   std::pair<http::http_status, Error> err = http::parse_http_request(std::string(), &r1);
   ASSERT_TRUE(err.second);
 }
@@ -642,7 +643,7 @@ class HttpsClient : public common::net::IHttpClient {
 
 TEST(https_client, get) {
   net::HostAndPort example("example.com", 443);
-  uri::Upath root;
+  uri::Upath root = uri::Upath::MakeRoot();
   HttpsClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);

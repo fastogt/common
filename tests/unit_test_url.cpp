@@ -35,7 +35,7 @@ TEST(Upath, isValidPathAndQuery) {
   common::uri::Upath path;
   ASSERT_FALSE(path.IsValid());
 
-  const std::string file_name = "index.html";
+  const std::string file_name = "/index.html";
   common::uri::Upath path2(file_name);
   ASSERT_TRUE(path2.IsValid());
   ASSERT_EQ(file_name, path2.GetUpath());

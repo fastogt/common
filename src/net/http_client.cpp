@@ -69,7 +69,7 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
   if (!req) {
     return make_error("Can't make request.");
   }
-  Error err = SendRequest(req);
+  Error err = SendRequest(*req);
   if (err) {
     file.Close();
     return err;
@@ -92,7 +92,7 @@ Error IHttpClient::Get(const uri::Upath& path) {
   if (!req) {
     return make_error("Can't make request.");
   }
-  return SendRequest(req);
+  return SendRequest(*req);
 }
 
 Error IHttpClient::Head(const uri::Upath& path) {
@@ -103,15 +103,15 @@ Error IHttpClient::Head(const uri::Upath& path) {
   if (!req) {
     return make_error("Can't make request.");
   }
-  return SendRequest(req);
+  return SendRequest(*req);
 }
 
-Error IHttpClient::SendRequest(const Optional<http::HttpRequest>& request_headers) {
-  if (!request_headers) {
+Error IHttpClient::SendRequest(const http::HttpRequest& request_headers) {
+  if (!request_headers.IsValid()) {
     return make_error_inval();
   }
 
-  std::string request_str = ConvertToString(*request_headers);
+  std::string request_str = ConvertToString(request_headers);
   size_t nwrite;
   ErrnoError err = sock_->Write(request_str.data(), request_str.size(), &nwrite);
   if (err) {
