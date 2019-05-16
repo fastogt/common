@@ -317,11 +317,11 @@ StreamSPtr Http2Client::FindStreamByType(http2::frame_t type) const {
 
 bool Http2Client::IsSettingNegotiated() const {
   StreamSPtr settings = FindStreamByStreamID(0);
-  if (!settings) {
+  if (!settings || settings->GetType() != http2::HTTP2_SETTINGS) {
     return false;
   }
 
-  HTTP2SettingsStreamSPtr rsettings = std::dynamic_pointer_cast<HTTP2SettingsStream>(settings);
+  HTTP2SettingsStreamSPtr rsettings = std::static_pointer_cast<HTTP2SettingsStream>(settings);
   if (rsettings) {
     return rsettings->IsNegotiated();
   }
