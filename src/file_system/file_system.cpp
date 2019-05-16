@@ -36,7 +36,6 @@
 #include <unistd.h>    // for close, lseek, read, ssize_t, etc
 
 #if defined(OS_WIN)
-#include <fileapi.h>
 #include <winsock2.h>
 #endif
 
@@ -178,7 +177,7 @@ ErrnoError do_create_directory(const char* path) {
 
 ErrnoError get_file_size_by_descriptor(descriptor_t fd_desc, off_t* size) {
   if (fd_desc == INVALID_DESCRIPTOR || !size) {
-    return make_error_perror("get_file_size_by_path", EINVAL);
+    return make_error_perror("get_file_size_by_descriptor", EINVAL);
   }
 
   struct stat sb;
