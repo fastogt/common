@@ -29,7 +29,7 @@ OPTION(DEVELOPER_GENERATE_DOCS "Generate docs api for ${PROJECT_NAME_TITLE} proj
 OPTION(DEVELOPER_ENABLE_COVERALLS "Generate coveralls data" OFF)
 OPTION(DEVELOPER_COVERALLS_UPLOAD "Upload the generated coveralls json" ON)
 OPTION(DCHECK_ALWAYS_ON "Enable dcheck in release." OFF)
-OPTION(BUILD_WITH_RTTI "Build library with rtti flags." OFF)
+OPTION(BUILD_WITH_RTTI "Build library with rtti flags." ON)
 OPTION(BUILD_WITH_FPIC "Build static library with -fPic flags." ON)
 
 ##################################DEFAULT VALUES##########################################
