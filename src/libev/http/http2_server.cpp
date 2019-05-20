@@ -35,7 +35,8 @@ namespace common {
 namespace libev {
 namespace http {
 
-Http2Server::Http2Server(const net::HostAndPort& host, libev::IoLoopObserver* observer) : HttpServer(host, observer) {}
+Http2Server::Http2Server(const net::HostAndPort& host, bool is_default, libev::IoLoopObserver* observer)
+    : HttpServer(host, is_default, observer) {}
 
 tcp::TcpClient* Http2Server::CreateClient(const net::socket_info& info) {
   return new Http2Client(this, info);

@@ -230,14 +230,14 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
           }
 
           std::string protcolAndPath = line.substr(space + 1);
-          size_t spaceP = protcolAndPath.find_first_of("HTTP");
-          if (spaceP != std::string::npos) {
-            std::string path = protcolAndPath.substr(1, spaceP - 2);
+          size_t space_protocol = protcolAndPath.find_first_of("HTTP");
+          if (space_protocol != std::string::npos) {
+            std::string path = protcolAndPath.substr(0, space_protocol - 1);
             if (protcolAndPath[0] != '/') {  // must start with /
               return std::make_pair(HS_BAD_REQUEST, make_error("Bad filename."));
             }
 
-            std::string protocol_str = protcolAndPath.substr(spaceP);
+            std::string protocol_str = protcolAndPath.substr(space_protocol);
             if (!ConvertFromString(protocol_str, &lprotocol)) {
               DNOTREACHED() << "Unknown protocol: " << protocol_str;
             }

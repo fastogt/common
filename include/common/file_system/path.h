@@ -152,6 +152,11 @@ class DirectoryStringPath : public StringPath<CharT, Traits> {
     const value_type path = base_class::GetPath();  // stabled
     return DirectoryStringPath<CharT, Traits>(path + directory);
   }
+
+  static DirectoryStringPath MakeHomeDir() {
+    const DirectoryStringPath home(get_home_separator_string<CharT>());
+    return home;
+  }
 };
 
 typedef StringPath<char> ascii_string_path;

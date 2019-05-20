@@ -35,7 +35,8 @@ namespace common {
 namespace libev {
 namespace http {
 
-HttpServer::HttpServer(const net::HostAndPort& host, IoLoopObserver* observer) : TcpServer(host, observer) {}
+HttpServer::HttpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer)
+    : TcpServer(host, is_default, observer) {}
 
 HttpServer::~HttpServer() {}
 
