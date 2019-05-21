@@ -227,6 +227,12 @@ const char* get_mime_type(const char* name) {
   if (strcmp(dot, ".pac") == 0) {
     return "application/x-ns-proxy-autoconfig";
   }
+  if (strcmp(dot, ".m3u8") == 0) {
+    return "application/x-mpegurl";
+  }
+  if (strcmp(dot, ".ts") == 0) {
+    return "video/mp2t";
+  }
 
   return "text/plain; charset=UTF-8";
 }
