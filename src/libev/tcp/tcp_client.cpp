@@ -55,49 +55,20 @@ ErrnoError TcpClient::SetBlocking(bool block) {
   return sock_->SetBlocking(block);
 }
 
-ErrnoError TcpClient::Write(const void* data, size_t size, size_t* nwrite_out) {
-  if (!data || !size || !nwrite_out) {
+ErrnoError TcpClient::SingleWrite(const void* data, size_t size, size_t* nwrite_out) {
+  if (!data || !size || !nwrite_out || !sock_) {
     return make_errno_error_inval();
   }
 
-  size_t total = 0;          // how many bytes we've sent
-  size_t bytes_left = size;  // how many we have left to send
-
-  while (total < size) {
-    size_t n;
-    ErrnoError err = sock_->Write(data, size, &n);
-    if (err) {
-      return err;
-    }
-    total += n;
-    bytes_left -= n;
-  }
-
-  *nwrite_out = total;  // return number actually sent here
-  return ErrnoError();
+  return sock_->Write(data, size, nwrite_out);
 }
 
-ErrnoError TcpClient::Read(void* out_data, size_t max_size, size_t* nread_out) {
-  if (!out_data || !max_size || !nread_out) {
+ErrnoError TcpClient::SingleRead(void* out_data, size_t max_size, size_t* nread_out) {
+  if (!out_data || !max_size || !nread_out || !sock_) {
     return make_errno_error_inval();
   }
 
-  size_t total = 0;              // how many bytes we've readed
-  size_t bytes_left = max_size;  // how many we have left to read
-
-  while (total < max_size) {
-    size_t n;
-    ErrnoError err = sock_->Read(static_cast<char*>(out_data) + total, bytes_left, &n);
-    if (err) {
-      *nread_out = total;  // return number actually readed here eagain
-      return err;
-    }
-    total += n;
-    bytes_left -= n;
-  }
-
-  *nread_out = total;  // return number actually readed here
-  return ErrnoError();
+  return sock_->Read(static_cast<char*>(out_data), max_size, nread_out);
 }
 
 ErrnoError TcpClient::DoClose() {

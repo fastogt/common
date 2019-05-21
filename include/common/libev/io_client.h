@@ -57,8 +57,11 @@ class IoClient : public IoBase<IoClient> {
 
   const char* ClassName() const override;
 
-  virtual ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
-  virtual ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
+  ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
+  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
+
+  virtual ErrnoError SingleWrite(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError SingleRead(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;

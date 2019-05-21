@@ -67,6 +67,10 @@ void LibevAsync::Stop() {
 }
 
 void LibevAsync::Notify() {
+  if (!loop_) {
+    return;
+  }
+
   loop_->NotifyAsync(this);
 }
 

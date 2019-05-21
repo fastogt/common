@@ -42,8 +42,8 @@ class DescriptorClient : public IoClient {
 
   const char* ClassName() const override;
 
-  ErrnoError Write(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-  ErrnoError Read(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  ErrnoError SingleWrite(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
+  ErrnoError SingleRead(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
 
  protected:
   descriptor_t GetFd() const override;
