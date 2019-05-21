@@ -189,7 +189,7 @@ ErrnoError do_recvfrom(socket_descr_t fd,
 #endif
 
   if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendfile", errno);
+    return make_error_perror("recvfrom", errno);
   }
   if (*nread_out) {
     *nread_out = res;
@@ -659,7 +659,7 @@ ErrnoError recvfrom(socket_descr_t fd,
   return do_recvfrom(fd, out_data, max_size, addr, addr_len, nread_out);
 }
 
-ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, off_t size) {
+ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, size_t size) {
   if (sock == INVALID_SOCKET_VALUE || fd == INVALID_DESCRIPTOR) {
     return make_error_perror("send_file_to_fd", EINVAL);
   }
