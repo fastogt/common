@@ -664,9 +664,16 @@ ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, s
     return make_error_perror("send_file_to_fd", EINVAL);
   }
 
-  ssize_t res = sendfile(sock, fd, &offset, size);
-  if (res == ERROR_RESULT_VALUE) {
-    return make_error_perror("sendfile", errno);
+  for (size_t size_to_send = size; size_to_send > 0;) {
+    ssize_t sent = sendfile(sock, fd, &offset, size_to_send);
+    if (sent == ERROR_RESULT_VALUE) {
+      return make_error_perror("sendfile", errno);
+    } else if (sent == 0) {
+      return ErrnoError();
+    }
+
+    offset += sent;
+    size_to_send -= sent;
   }
 
   return ErrnoError();
