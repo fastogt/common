@@ -665,7 +665,8 @@ ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, s
   }
 
   for (size_t size_to_send = size; size_to_send > 0;) {
-    ssize_t sent = sendfile(sock, fd, &offset, size_to_send);
+    off_t off = offset;
+    ssize_t sent = sendfile(sock, fd, &off, size_to_send);
     if (sent == ERROR_RESULT_VALUE) {
       return make_error_perror("sendfile", errno);
     } else if (sent == 0) {
@@ -700,15 +701,9 @@ ErrnoError send_file(const std::string& path, const HostAndPort& to) {
 
   off_t offset = 0;
   err = send_file_to_fd(info.fd(), fd, offset, stat_buf.st_size);
-  if (err) {
-    ::close(info.fd());
-    ::close(fd);
-    return err;
-  }
-
   ::close(info.fd());
   ::close(fd);
-  return ErrnoError();
+  return err;
 }
 
 }  // namespace net
