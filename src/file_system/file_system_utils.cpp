@@ -90,7 +90,7 @@ void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
     bool is_dir = dent->d_type == DT_DIR;
 #endif
     if (!is_dir) {
-      if (EndsWith(ConvertFromCharArray<value_type>(dent->d_name), pattern, true)) {
+      if (MatchPattern(ConvertFromCharArray<value_type>(dent->d_name), pattern)) {
         const value_type vt = ConvertFromCharArray<value_type>(dent->d_name);
         auto file = folder.MakeFileStringPath(vt);
         if (file) {

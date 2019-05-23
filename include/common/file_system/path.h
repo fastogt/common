@@ -30,6 +30,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include <common/file_system/types.h>
 
@@ -82,6 +83,11 @@ inline bool operator==(const StringPath<CharT, Traits>& left, const StringPath<C
 template <typename CharT, typename Traits>
 inline bool operator!=(const StringPath<CharT, Traits>& left, const StringPath<CharT, Traits>& right) {
   return !(left == right);
+}
+
+template <typename CharT, typename Traits>
+inline bool operator<(const StringPath<CharT, Traits>& left, const StringPath<CharT, Traits>& right) {
+  return left.GetPath() < right.GetPath();
 }
 
 template <typename CharT, typename Traits = std::char_traits<CharT>>
