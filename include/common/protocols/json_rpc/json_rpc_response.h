@@ -34,6 +34,8 @@
 #include <common/optional.h>
 #include <common/protocols/json_rpc/json_rpc_types.h>
 
+#define JSONRPC_OK_RESULT "OK"
+
 namespace common {
 namespace protocols {
 namespace json_rpc {
@@ -53,6 +55,9 @@ struct JsonRPCError {
   std::string message;
   JsonRPCErrorCode code;
 
+  static JsonRPCError MakeServerErrorFromText(const std::string& error_text);
+  static JsonRPCError MakeInternalErrorFromText(const std::string& error_text);
+
   bool Equals(const JsonRPCError& err) const;
 };
 
@@ -66,6 +71,8 @@ inline bool operator!=(const JsonRPCError& left, const JsonRPCError& right) {
 
 struct JsonRPCMessage {
   std::string result;
+
+  static JsonRPCMessage MakeSuccessMessage(const std::string& result = JSONRPC_OK_RESULT);
 
   bool Equals(const JsonRPCMessage& msg) const;
 };

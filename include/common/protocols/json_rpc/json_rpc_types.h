@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 
@@ -38,8 +40,11 @@ namespace common {
 namespace protocols {
 namespace json_rpc {
 
-typedef Optional<std::string> json_rpc_id;  // null or digits or string
+typedef Optional<std::string> json_rpc_id;  // null or digits or string or not exist
 extern const json_rpc_id null_json_rpc_id;
+
+typedef uint64_t seq_id_t;
+json_rpc_id MakeRequestID(seq_id_t sid);
 
 }  // namespace json_rpc
 }  // namespace protocols

@@ -37,8 +37,28 @@ bool JsonRPCError::Equals(const JsonRPCError& err) const {
   return code == err.code && message == err.message;
 }
 
+JsonRPCError JsonRPCError::MakeServerErrorFromText(const std::string& error_text) {
+  JsonRPCError err;
+  err.code = JSON_RPC_SERVER_ERROR;
+  err.message = error_text;
+  return err;
+}
+
+JsonRPCError JsonRPCError::MakeInternalErrorFromText(const std::string& error_text) {
+  JsonRPCError err;
+  err.code = JSON_RPC_INTERNAL_ERROR;
+  err.message = error_text;
+  return err;
+}
+
 bool JsonRPCMessage::Equals(const JsonRPCMessage& msg) const {
   return result == msg.result;
+}
+
+JsonRPCMessage JsonRPCMessage::MakeSuccessMessage(const std::string& result) {
+  JsonRPCMessage msg;
+  msg.result = result;
+  return msg;
 }
 
 JsonRPCResponse::JsonRPCResponse() : id(), message(), error() {}

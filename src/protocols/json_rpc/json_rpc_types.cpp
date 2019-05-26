@@ -29,11 +29,25 @@
 
 #include <common/protocols/json_rpc/json_rpc_types.h>
 
+#include <string.h>
+
+#include <common/convert2string.h>
+#include <common/sys_byteorder.h>
+
 namespace common {
 namespace protocols {
 namespace json_rpc {
 
 const json_rpc_id null_json_rpc_id = std::string("null");
+
+json_rpc_id MakeRequestID(seq_id_t sid) {
+  char bytes[sizeof(seq_id_t)];
+  const seq_id_t stabled = common::NetToHost64(sid);  // for human readable hex
+  memcpy(&bytes, &stabled, sizeof(seq_id_t));
+  json_rpc_id::value_type hexed;
+  common::utils::hex::encode(std::string(bytes, sizeof(seq_id_t)), true, &hexed);
+  return hexed;
+}
 
 }  // namespace json_rpc
 }  // namespace protocols
