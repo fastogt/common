@@ -259,10 +259,10 @@ std::string Url::GetUrl() const {
   DCHECK(IsValid());
 
   if (host_.empty()) {
-    return MemSPrintf("%s://%s", GetProtocol(), path_.GetUpath());
+    return MemSPrintf("%s:/%s", GetProtocol(), path_.GetUpath());  // upath have / if valid
   }
 
-  return MemSPrintf("%s://%s/%s", GetProtocol(), host_, path_.GetUpath());
+  return MemSPrintf("%s://%s%s", GetProtocol(), host_, path_.GetUpath());  // upath have / if valid
 }
 
 std::string Url::GetHroot() const {

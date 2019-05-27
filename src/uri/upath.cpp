@@ -125,10 +125,6 @@ std::string Upath::GetUpath() const {
 }
 
 bool Upath::Equals(const Upath& path) const {
-  if (!IsValid()) {
-    return path.IsValid() ? false : GetUpath() == path.GetUpath();
-  }
-
   return path.IsValid() == IsValid() && GetUpath() == path.GetUpath();
 }
 

@@ -102,6 +102,13 @@ TEST(Url, Scheme) {
   ASSERT_EQ(http_path.GetUpath(), "/hls/69_avformat_test_alex_2/play.m3u8");
   ASSERT_EQ(http_path.GetPath(), http_path.GetHpath() + http_path.GetFileName());
 
+  common::uri::Url copy_http_uri = http_uri;
+  common::uri::Upath up("/hls/69_avformat_test_alex_2/play.m3u8");
+  ASSERT_EQ(up.GetUpath(), "/hls/69_avformat_test_alex_2/play.m3u8");
+  ASSERT_EQ(up.GetPath(), "/hls/69_avformat_test_alex_2/play.m3u8");
+  copy_http_uri.SetPath(up);
+  ASSERT_EQ(copy_http_uri.GetUrl(), "http://localhost:8080/hls/69_avformat_test_alex_2/play.m3u8");
+
   common::uri::Url ftp_uri("ftp://localhost:8080");
   ASSERT_EQ(ftp_uri.GetScheme(), common::uri::Url::ftp);
   ASSERT_EQ(ftp_uri.GetHost(), "localhost:8080");
