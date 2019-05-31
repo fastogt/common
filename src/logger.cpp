@@ -35,6 +35,7 @@
 #include <iostream>
 #include <memory>
 
+#include <common/file_system/file_system.h>
 #include <common/file_system/types.h>
 #include <common/patterns/singleton_pattern.h>
 #include <common/sprintf.h>
@@ -113,12 +114,23 @@ void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level) {
   SET_LOGGER_PROJECT_NAME(project_name);
 }
 
-void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level) {
+void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level, ssize_t max_size) {
   INIT_LOGGER(project_name, level);
   const std::string stabled_path = file_system::prepare_path(file_path);
-
   if (kLoggerFileHelper->is_open()) {
     kLoggerFileHelper->close();
+  }
+
+  if (max_size != -1) {
+    off_t file_size = 0;
+    if (file_system::get_file_size_by_path(stabled_path, &file_size)) {
+      if (file_size > max_size) {
+        common::ErrnoError err = file_system::remove_file(stabled_path);
+        if (err) {
+          WARNING_LOG() << "Can't remove file: " << stabled_path << ", error: " << err->GetDescription();
+        }
+      }
+    }
   }
 
   kLoggerFileHelper->open(stabled_path, std::ofstream::out | std::ofstream::app);

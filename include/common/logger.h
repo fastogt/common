@@ -73,8 +73,11 @@ class LogMessage {
   std::ostringstream stream_;
 };
 
-void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level);                                // to console
-void INIT_LOGGER(const std::string& project_name, const std::string& file_path, LOG_LEVEL level);  // to file
+void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level);  // to console
+void INIT_LOGGER(const std::string& project_name,
+                 const std::string& file_path,
+                 LOG_LEVEL level,
+                 ssize_t max_size = -1);  // to file, max_size = -1 => unlimited file
 
 void SET_LOGER_STREAM(std::ostream* logger);
 
