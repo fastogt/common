@@ -36,6 +36,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_response.h
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_request.h
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_types.h
+    ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/protocol_client.h
   )
 
   SET(PROTOCOLS_SOURCES ${PROTOCOLS_SOURCES}
@@ -43,6 +44,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_response.cpp
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_request.cpp
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/json_rpc_types.cpp
+    ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/protocol_client.cpp
   )
 
   SET(SERIALIZER_HEADERS
