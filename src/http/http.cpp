@@ -65,7 +65,7 @@ bool ConvertFromString(const std::string& from, http::http_protocol* out) {
     return true;
   }
 
-  NOTREACHED();
+  DNOTREACHED() << "Unknown protocol: " << from;
   return false;
 }
 
