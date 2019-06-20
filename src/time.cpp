@@ -55,11 +55,6 @@ struct timeval current_timeval() {
   return tv;
 }
 
-time64_t current_mstime() {
-  struct timeval tv = current_timeval();
-  return timeval2mstime(&tv);
-}
-
 struct timespec timeval2timespec(const struct timeval* tv) {
   if (!tv) {
     return timespec();
@@ -102,17 +97,25 @@ time64_t timespec2mstime(struct timespec* ts) {
   return mst;
 }
 
-utctime_t tm2utctime(struct tm* tm) {
-  return mktime(tm);
+utctime_t tm2utctime(struct tm* timestruct, bool is_local) {
+  return is_local ? mktime(timestruct) : timegm(timestruct);
 }
 
-struct tm utctime2tm(utctime_t time_sec) {
+struct tm utctime2tm(utctime_t time_sec, bool is_local) {
   struct tm info;  // representing a calendar time
+  if (is_local) {
 #ifdef OS_WIN
-  localtime_s(&info, &time_sec);  // time to calendar_time
+    localtime_s(&info, &time_sec);  // time to calendar_time
 #else
-  localtime_r(&time_sec, &info);  // time to calendar_time
+    localtime_r(&time_sec, &info);  // time to calendar_time
 #endif
+  } else {
+#ifdef OS_WIN
+    gmtime_s(&info, &time_sec);  // time to calendar_time
+#else
+    gmtime_r(&time_sec, &info);     // time to calendar_time
+#endif
+  }
   return info;
 }
 

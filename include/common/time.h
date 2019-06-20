@@ -37,7 +37,6 @@
 namespace common {
 namespace time {
 
-time64_t current_mstime();      // millisecond
 time64_t current_utc_mstime();  // millisecond
 struct timespec current_timespec();
 struct timeval current_timeval();
@@ -48,8 +47,8 @@ struct timeval timespec2timeval(const struct timespec* ts);
 time64_t timeval2mstime(const struct timeval* tv);    // millisecond
 time64_t timespec2mstime(const struct timespec* ts);  // millisecond
 
-utctime_t tm2utctime(struct tm* tm);
-struct tm utctime2tm(utctime_t time_sec);
+utctime_t tm2utctime(struct tm* timestruct, bool is_local);
+struct tm utctime2tm(utctime_t time_sec, bool is_local);
 
 struct timeval mstime2timeval(time64_t mst);
 struct timespec mstime2timespec(time64_t mst);
