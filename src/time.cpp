@@ -98,7 +98,7 @@ time64_t timespec2mstime(struct timespec* ts) {
 }
 
 utctime_t tm2utctime(struct tm* timestruct, bool is_local) {
-  return is_local ? mktime(timestruct) : timegm(timestruct);
+  return is_local ? mktime(timestruct) : _mkgmtime(timestruct);
 }
 
 struct tm utctime2tm(utctime_t time_sec, bool is_local) {
