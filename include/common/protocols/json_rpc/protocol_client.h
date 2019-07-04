@@ -37,9 +37,9 @@ namespace detail {
 common::ErrnoError WriteRequest(common::libev::IoClient* client,
                                 common::IEDcoder* compressor,
                                 const JsonRPCRequest& request) WARN_UNUSED_RESULT;
-common::ErrnoError WriteResponce(common::libev::IoClient* client,
+common::ErrnoError WriteResponse(common::libev::IoClient* client,
                                  common::IEDcoder* compressor,
-                                 const JsonRPCResponse& responce) WARN_UNUSED_RESULT;
+                                 const JsonRPCResponse& response) WARN_UNUSED_RESULT;
 common::ErrnoError ReadCommand(common::libev::IoClient* client,
                                common::IEDcoder* compressor,
                                std::string* out) WARN_UNUSED_RESULT;
@@ -49,7 +49,7 @@ template <typename Client, typename Compression>
 class ProtocolClient : public Client {
  public:
   typedef Client base_class;
-  typedef std::function<void(const JsonRPCResponse* responce)> callback_t;
+  typedef std::function<void(const JsonRPCResponse* response)> callback_t;
   typedef std::pair<JsonRPCRequest, callback_t> request_save_entry_t;
 
   template <typename... Args>
@@ -65,8 +65,8 @@ class ProtocolClient : public Client {
     return err;
   }
 
-  common::ErrnoError WriteResponce(const JsonRPCResponse& responce) WARN_UNUSED_RESULT {
-    return detail::WriteResponce(this, compressor_, responce);
+  common::ErrnoError WriteResponse(const JsonRPCResponse& response) WARN_UNUSED_RESULT {
+    return detail::WriteResponse(this, compressor_, response);
   }
 
   common::ErrnoError ReadCommand(std::string* out) WARN_UNUSED_RESULT {

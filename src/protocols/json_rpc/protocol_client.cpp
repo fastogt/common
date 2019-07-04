@@ -183,15 +183,15 @@ common::ErrnoError WriteRequest(common::libev::IoClient* client,
   return WriteMessage(client, compressor, request_str);
 }
 
-common::ErrnoError WriteResponce(common::libev::IoClient* client,
+common::ErrnoError WriteResponse(common::libev::IoClient* client,
                                  common::IEDcoder* compressor,
-                                 const JsonRPCResponse& responce) {
-  std::string responce_str;
-  common::Error err = common::protocols::json_rpc::MakeJsonRPCResponse(responce, &responce_str);
+                                 const JsonRPCResponse& response) {
+  std::string resp;
+  common::Error err = common::protocols::json_rpc::MakeJsonRPCResponse(response, &resp);
   if (err) {
     return common::make_errno_error(err->GetDescription(), err->GetErrorCode());
   }
-  return WriteMessage(client, compressor, responce_str);
+  return WriteMessage(client, compressor, resp);
 }
 
 }  // namespace detail
