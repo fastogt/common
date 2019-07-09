@@ -53,7 +53,7 @@ class ProtocolClient : public Client {
   typedef std::pair<JsonRPCRequest, callback_t> request_save_entry_t;
 
   template <typename... Args>
-  explicit ProtocolClient(Args... args) : base_class(args...), compressor_(new Compression) {}
+  explicit ProtocolClient(Args... args) : base_class(args...), compressor_(new Compression), id_(0) {}
 
   ~ProtocolClient() override { destroy(&compressor_); }
 
@@ -92,9 +92,16 @@ class ProtocolClient : public Client {
     return true;
   }
 
+ protected:
+  json_rpc_id NextRequestID() {
+    const seq_id_t next_id = id_++;
+    return MakeRequestID(next_id);
+  }
+
  private:
   common::IEDcoder* compressor_;
   std::map<json_rpc_id, request_save_entry_t> requests_queue_;
+  std::atomic<seq_id_t> id_;
   using Client::Read;
   using Client::Write;
 };
