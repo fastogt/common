@@ -31,6 +31,8 @@
 
 #include <common/uri/url.h>
 
+#define DEV_VIDEO_PATH "/dev/video3"
+
 TEST(Upath, isValidPathAndQuery) {
   common::uri::Upath path;
   ASSERT_FALSE(path.IsValid());
@@ -138,6 +140,11 @@ TEST(Url, Scheme) {
   common::uri::Url rtmp_uri("rtmp://localhost:8080");
   ASSERT_EQ(rtmp_uri.GetScheme(), common::uri::Url::rtmp);
   ASSERT_EQ(rtmp_uri.GetHost(), "localhost:8080");
+
+  common::uri::Url dev_uri("dev://" DEV_VIDEO_PATH);
+  ASSERT_EQ(dev_uri.GetScheme(), common::uri::Url::dev);
+  ASSERT_EQ(dev_uri.GetPath(), common::uri::Upath(DEV_VIDEO_PATH));
+  ASSERT_EQ(dev_uri.GetHost(), std::string());
 }
 
 TEST(Url, level) {

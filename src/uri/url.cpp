@@ -210,7 +210,7 @@ void Url::Parse(const std::string& url_s) {
     } else if (scheme_ == https) {
       start = 8;
     } else if (scheme_ == dev) {
-      start = 5;
+      start = 6;
     }
 
     for (size_t i = start; i < len; ++i) {
