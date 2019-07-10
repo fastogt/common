@@ -60,7 +60,7 @@ class IHttpClient {
   Error SendRequest(const http::HttpRequest& request_headers) WARN_UNUSED_RESULT;
 
   net::ISocket* sock_;
-  common::Optional<http::HttpRequest> last_request_;
+  Optional<http::HttpRequest> last_request_;
 };
 
 class HttpClient : public IHttpClient {

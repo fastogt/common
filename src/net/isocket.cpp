@@ -35,7 +35,7 @@ namespace net {
 ErrnoError ISocket::Write(const void* data, size_t size, size_t* nwrite_out) {
   DCHECK(IsValid());
   if (!data || size == 0 || !nwrite_out) {
-    return common::make_errno_error_inval();
+    return make_errno_error_inval();
   }
 
   return WriteImpl(data, size, nwrite_out);
@@ -44,7 +44,7 @@ ErrnoError ISocket::Write(const void* data, size_t size, size_t* nwrite_out) {
 ErrnoError ISocket::WriteBuffer(const std::string& data, size_t* nwrite_out) {
   DCHECK(IsValid());
   if (data.empty() || !nwrite_out) {
-    return common::make_errno_error_inval();
+    return make_errno_error_inval();
   }
 
   return WriteImpl(data.data(), data.size(), nwrite_out);
@@ -53,7 +53,7 @@ ErrnoError ISocket::WriteBuffer(const std::string& data, size_t* nwrite_out) {
 ErrnoError ISocket::Read(void* out_data, size_t max_size, size_t* nread_out) {
   DCHECK(IsValid());
   if (!out_data || max_size == 0 || !nread_out) {
-    return common::make_errno_error_inval();
+    return make_errno_error_inval();
   }
 
   return ReadImpl(out_data, max_size, nread_out);
@@ -62,7 +62,7 @@ ErrnoError ISocket::Read(void* out_data, size_t max_size, size_t* nread_out) {
 ErrnoError ISocket::ReadToBuffer(char_buffer_t* out_data, size_t max_size) {
   DCHECK(IsValid());
   if (!out_data || max_size == 0) {
-    return common::make_errno_error_inval();
+    return make_errno_error_inval();
   }
 
   out_data->resize(max_size);

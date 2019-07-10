@@ -74,7 +74,7 @@ class DescriptorGuard : public Descriptor {
   explicit DescriptorGuard(Args... args) : base_class(args...) {}
 
   ~DescriptorGuard() {
-    common::ErrnoError err = base_class::Close();
+    ErrnoError err = base_class::Close();
     DCHECK(!err) << "Close client error: " << err->GetDescription();
   }
 

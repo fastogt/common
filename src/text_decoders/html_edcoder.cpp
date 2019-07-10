@@ -38,7 +38,7 @@ HtmlEscEDcoder::HtmlEscEDcoder() : IEDcoder(ED_HTML_ESC) {}
 Error HtmlEscEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
   char_buffer_t lout;
   if (!utils::html::encode(data, &lout)) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   *out = lout;
@@ -48,7 +48,7 @@ Error HtmlEscEDcoder::DoEncode(const StringPiece& data, char_buffer_t* out) {
 Error HtmlEscEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
   char_buffer_t lout;
   if (!utils::html::decode(data, &lout)) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   *out = lout;
@@ -58,7 +58,7 @@ Error HtmlEscEDcoder::DoDecode(const StringPiece& data, char_buffer_t* out) {
 Error HtmlEscEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
   char_buffer_t lout;
   if (!utils::html::encode(data, &lout)) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   *out = lout;
@@ -68,7 +68,7 @@ Error HtmlEscEDcoder::DoEncode(const char_buffer_t& data, char_buffer_t* out) {
 Error HtmlEscEDcoder::DoDecode(const char_buffer_t& data, char_buffer_t* out) {
   char_buffer_t lout;
   if (!utils::html::decode(data, &lout)) {
-    return common::make_error_inval();
+    return make_error_inval();
   }
 
   *out = lout;

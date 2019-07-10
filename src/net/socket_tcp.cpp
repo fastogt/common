@@ -167,7 +167,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   }
 
   SetInfo(lbinfo);
-  return common::ErrnoError();
+  return ErrnoError();
 }
 
 ErrnoError ServerSocketTcp::Listen(int backlog) {

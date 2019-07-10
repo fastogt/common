@@ -64,7 +64,7 @@ class SocketGuard : public Socket {
   explicit SocketGuard(Args... args) : base_class(args...) {}
 
   ~SocketGuard() {
-    common::ErrnoError err = base_class::Close();
+    ErrnoError err = base_class::Close();
     DCHECK(!err) << "Close client error: " << err->GetDescription();
   }
 

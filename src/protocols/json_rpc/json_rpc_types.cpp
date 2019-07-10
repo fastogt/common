@@ -42,10 +42,10 @@ const json_rpc_id null_json_rpc_id = std::string("null");
 
 json_rpc_id MakeRequestID(seq_id_t sid) {
   char bytes[sizeof(seq_id_t)];
-  const seq_id_t stabled = common::NetToHost64(sid);  // for human readable hex
+  const seq_id_t stabled = NetToHost64(sid);  // for human readable hex
   memcpy(&bytes, &stabled, sizeof(seq_id_t));
   json_rpc_id::value_type hexed;
-  common::utils::hex::encode(std::string(bytes, sizeof(seq_id_t)), true, &hexed);
+  utils::hex::encode(std::string(bytes, sizeof(seq_id_t)), true, &hexed);
   return hexed;
 }
 

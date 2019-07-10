@@ -34,15 +34,13 @@ COMPILE_ASSERT(std::numeric_limits<protocoled_size_t>::max() > MAX_COMMAND_LENGT
                "Protocoled packet size should be greater MAX_COMMAND_LENGTH");
 
 namespace detail {
-common::ErrnoError WriteRequest(common::libev::IoClient* client,
-                                common::IEDcoder* compressor,
-                                const JsonRPCRequest& request) WARN_UNUSED_RESULT;
-common::ErrnoError WriteResponse(common::libev::IoClient* client,
-                                 common::IEDcoder* compressor,
-                                 const JsonRPCResponse& response) WARN_UNUSED_RESULT;
-common::ErrnoError ReadCommand(common::libev::IoClient* client,
-                               common::IEDcoder* compressor,
-                               std::string* out) WARN_UNUSED_RESULT;
+ErrnoError WriteRequest(libev::IoClient* client,
+                        IEDcoder* compressor,
+                        const JsonRPCRequest& request) WARN_UNUSED_RESULT;
+ErrnoError WriteResponse(libev::IoClient* client,
+                         IEDcoder* compressor,
+                         const JsonRPCResponse& response) WARN_UNUSED_RESULT;
+ErrnoError ReadCommand(libev::IoClient* client, IEDcoder* compressor, std::string* out) WARN_UNUSED_RESULT;
 }  // namespace detail
 
 template <typename Client, typename Compression>
@@ -57,21 +55,19 @@ class ProtocolClient : public Client {
 
   ~ProtocolClient() override { destroy(&compressor_); }
 
-  common::ErrnoError WriteRequest(const JsonRPCRequest& request, callback_t cb = callback_t()) WARN_UNUSED_RESULT {
-    common::ErrnoError err = detail::WriteRequest(this, compressor_, request);
+  ErrnoError WriteRequest(const JsonRPCRequest& request, callback_t cb = callback_t()) WARN_UNUSED_RESULT {
+    ErrnoError err = detail::WriteRequest(this, compressor_, request);
     if (!err && !request.IsNotification()) {
       requests_queue_[request.id] = std::make_pair(request, cb);
     }
     return err;
   }
 
-  common::ErrnoError WriteResponse(const JsonRPCResponse& response) WARN_UNUSED_RESULT {
+  ErrnoError WriteResponse(const JsonRPCResponse& response) WARN_UNUSED_RESULT {
     return detail::WriteResponse(this, compressor_, response);
   }
 
-  common::ErrnoError ReadCommand(std::string* out) WARN_UNUSED_RESULT {
-    return detail::ReadCommand(this, compressor_, out);
-  }
+  ErrnoError ReadCommand(std::string* out) WARN_UNUSED_RESULT { return detail::ReadCommand(this, compressor_, out); }
 
   bool PopRequestByID(json_rpc_id sid, JsonRPCRequest* req, callback_t* cb = nullptr) {
     if (!req || !sid) {
@@ -99,7 +95,7 @@ class ProtocolClient : public Client {
   }
 
  private:
-  common::IEDcoder* compressor_;
+  IEDcoder* compressor_;
   std::map<json_rpc_id, request_save_entry_t> requests_queue_;
   std::atomic<seq_id_t> id_;
   using Client::Read;

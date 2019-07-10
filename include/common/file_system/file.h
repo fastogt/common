@@ -145,7 +145,7 @@ class FileGuard : public File {
   explicit FileGuard(Args... args) : base_class(args...) {}
 
   ~FileGuard() {
-    common::ErrnoError err = base_class::Close();
+    ErrnoError err = base_class::Close();
     DCHECK(!err) << "Close client error: " << err->GetDescription();
   }
 

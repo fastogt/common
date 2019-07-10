@@ -61,8 +61,8 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader type("Content-Type", "application/octet-stream");
-  http::HttpHeader disp("Content-Disposition", common::MemSPrintf("attachment, filename=\"%s\"", file_path.GetName()));
-  http::HttpHeader cont("Content-Length", common::ConvertToString(file_size));
+  http::HttpHeader disp("Content-Disposition", MemSPrintf("attachment, filename=\"%s\"", file_path.GetName()));
+  http::HttpHeader cont("Content-Length", ConvertToString(file_size));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
 
   auto req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont, user});
@@ -81,7 +81,7 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
     return make_error_from_errno(errn);
   }
 
-  return common::Error();
+  return Error();
 }
 
 Error IHttpClient::Get(const uri::Upath& path) {
@@ -115,7 +115,7 @@ Error IHttpClient::SendRequest(const http::HttpRequest& request_headers) {
   size_t nwrite;
   ErrnoError err = sock_->Write(request_str.data(), request_str.size(), &nwrite);
   if (err) {
-    last_request_ = common::Optional<http::HttpRequest>();
+    last_request_ = Optional<http::HttpRequest>();
     return make_error_from_errno(err);
   }
 
