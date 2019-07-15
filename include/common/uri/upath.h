@@ -30,12 +30,18 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace common {
 namespace uri {
 
 extern const char uri_separator;
 extern const char uri_separator_string[];
+
+struct QueryParams {
+  std::string key;
+  std::string value;
+};
 
 class Upath {
  public:
@@ -50,6 +56,7 @@ class Upath {
   void SetPath(const std::string& path);
 
   std::string GetQuery() const;
+  std::vector<QueryParams> GetQueryParams() const;
 
   std::string GetMime() const;  // mime
   size_t GetLevels() const;

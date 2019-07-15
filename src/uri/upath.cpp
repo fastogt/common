@@ -68,6 +68,29 @@ std::string Upath::GetQuery() const {
   return query_;
 }
 
+std::vector<QueryParams> Upath::GetQueryParams() const {
+  std::vector<std::string> params;
+  size_t tokens = Tokenize(query_, "&", &params);
+  if (tokens == 0) {
+    return std::vector<QueryParams>();
+  }
+
+  std::vector<QueryParams> result;
+  for (size_t i = 0; i < tokens; ++i) {
+    std::string line = params[i];
+    size_t delem = line.find_first_of('=');
+    if (delem != std::string::npos) {
+      std::string key = line.substr(0, delem);
+      std::string value = line.substr(delem + 1);
+      result.push_back({key, value});
+    } else {
+      return std::vector<QueryParams>();
+    }
+  }
+
+  return result;
+}
+
 std::string Upath::GetHpath() const {
   size_t slash = path_.find_last_of(uri_separator_string);
   if (slash != std::string::npos) {
