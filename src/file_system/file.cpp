@@ -267,6 +267,47 @@ ErrnoError ANSIFile::Unlock() {
   return unlock_descriptor(fd);
 }
 
+ErrnoError ANSIFile::Seek(off_t offset, int whence) {
+  DCHECK(IsValid());
+
+  if (!file_) {
+    return make_error_perror("ANSIFile::Unlock", EINVAL);
+  }
+
+  int res = fseek(file_, offset, whence);
+  if (res == ERROR_RESULT_VALUE) {
+    return make_error_perror("fseek", errno);
+  }
+
+  return ErrnoError();
+}
+
+ErrnoError ANSIFile::GetSize(size_t* size) {
+  DCHECK(IsValid());
+  if (!size) {
+    return make_errno_error_inval();
+  }
+
+  if (!file_) {
+    return make_error_perror("ANSIFile::GetSize", EINVAL);
+  }
+
+  off_t old_pos = ftell(file_);
+  ErrnoError errn = Seek(0, SEEK_END);
+  if (errn) {
+    return errn;
+  }
+
+  size_t fsize = ftell(file_);
+  errn = Seek(old_pos, SEEK_SET);
+  if (errn) {
+    return errn;
+  }
+
+  *size = fsize;
+  return ErrnoError();
+}
+
 bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
   DCHECK(IsValid());
 
