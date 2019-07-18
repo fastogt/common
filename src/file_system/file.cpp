@@ -308,7 +308,25 @@ ErrnoError ANSIFile::GetSize(size_t* size) {
   return ErrnoError();
 }
 
-bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
+bool ANSIFile::Read(byte_t* out, size_t len, size_t* nread_out) {
+  DCHECK(IsValid());
+
+  if (!file_ || !out || !nread_out) {
+    return false;
+  }
+
+  size_t res = fread(out, sizeof(byte_t), len, file_);
+  if (res > 0) {
+    *nread_out = res;
+    return true;
+  } else if (feof(file_)) {
+    return false;
+  }
+
+  return false;
+}
+
+bool ANSIFile::Read(buffer_t* out_data, size_t max_size) {
   DCHECK(IsValid());
 
   if (!file_ || !out_data) {
@@ -333,7 +351,7 @@ bool ANSIFile::Read(buffer_t* out_data, uint32_t max_size) {
   return true;
 }
 
-bool ANSIFile::Read(std::string* out_data, uint32_t max_size) {
+bool ANSIFile::Read(std::string* out_data, size_t max_size) {
   DCHECK(IsValid());
 
   if (!file_ || !out_data) {

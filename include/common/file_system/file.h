@@ -106,8 +106,9 @@ class ANSIFile {
   ErrnoError Seek(off_t offset, int whence) WARN_UNUSED_RESULT;
   ErrnoError GetSize(size_t* size) WARN_UNUSED_RESULT;
 
-  bool Read(buffer_t* out_data, uint32_t max_size);
-  bool Read(std::string* out_data, uint32_t max_size);
+  bool Read(byte_t* out, size_t len, size_t* nread_out);
+  bool Read(buffer_t* out_data, size_t max_size);
+  bool Read(std::string* out_data, size_t max_size);
   bool ReadLine(buffer_t* out_data);
   bool ReadLine(std::string* out_data);
 
