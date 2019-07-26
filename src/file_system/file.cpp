@@ -531,10 +531,10 @@ ErrnoError create_node(const std::string& path) {
 }
 
 bool read_file_to_string(const std::string& path, std::string* contents) {
-  return read_file_to_string_with_max_size(path, contents, std::numeric_limits<size_t>::max());
+  return read_file_to_string_with_max_size(path, contents, std::numeric_limits<off_t>::max());
 }
 
-bool read_file_to_string_with_max_size(const std::string& path, std::string* contents, size_t max_size) {
+bool read_file_to_string_with_max_size(const std::string& path, std::string* contents, off_t max_size) {
   if (path.empty() || !contents || max_size == 0) {
     return false;
   }
@@ -550,7 +550,7 @@ bool read_file_to_string_with_max_size(const std::string& path, std::string* con
   constexpr off_t kDefaultChunkSize = 1 << 16;
   off_t chunk_size;
 #if !defined(OS_NACL_NONSFI)
-  if (!get_file_size_by_path(path, &chunk_size) || chunk_size <= 0) {
+  if (get_file_size_by_path(path, &chunk_size)) {
     chunk_size = kDefaultChunkSize - 1;
   }
   // We need to attempt to read at EOF for feof flag to be set so here we
