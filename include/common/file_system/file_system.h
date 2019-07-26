@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <common/error.h>  // for ErrnoError, Error
 #include <common/types.h>
 
@@ -69,6 +71,9 @@ ErrnoError get_file_time_last_modification(const std::string& file_path,
                                            utctime_t* mod_time_sec) WARN_UNUSED_RESULT;  // utc time
 
 bool find_file_in_path(const std::string& file_name, std::string* out_path) WARN_UNUSED_RESULT;
+
+bool read_file_to_string(const std::string& path, std::string* contents);
+bool read_file_to_string_with_max_size(const std::string& path, std::string* contents, size_t max_size);
 
 }  // namespace file_system
 }  // namespace common

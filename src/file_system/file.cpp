@@ -29,6 +29,8 @@
 
 #include <common/file_system/file.h>
 
+#include <limits>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
@@ -526,6 +528,73 @@ ErrnoError create_node(const std::string& path) {
 
   ignore_result(fl.Close());
   return ErrnoError();
+}
+
+bool read_file_to_string(const std::string& path, std::string* contents) {
+  return read_file_to_string_with_max_size(path, contents, std::numeric_limits<size_t>::max());
+}
+
+bool read_file_to_string_with_max_size(const std::string& path, std::string* contents, size_t max_size) {
+  if (path.empty() || !contents || max_size == 0) {
+    return false;
+  }
+
+  FILE* file = fopen(path.c_str(), "rb");
+  if (!file) {
+    return false;
+  }
+
+  // Many files supplied in |path| have incorrect size (proc files etc).
+  // Hence, the file is read sequentially as opposed to a one-shot read, using
+  // file size as a hint for chunk size if available.
+  constexpr off_t kDefaultChunkSize = 1 << 16;
+  off_t chunk_size;
+#if !defined(OS_NACL_NONSFI)
+  if (!get_file_size_by_path(path, &chunk_size) || chunk_size <= 0) {
+    chunk_size = kDefaultChunkSize - 1;
+  }
+  // We need to attempt to read at EOF for feof flag to be set so here we
+  // use |chunk_size| + 1.
+  chunk_size = std::min<off_t>(chunk_size, max_size) + 1;
+#else
+  chunk_size = kDefaultChunkSize;
+#endif  // !defined(OS_NACL_NONSFI)
+  size_t bytes_read_this_pass;
+  size_t bytes_read_so_far = 0;
+  bool read_status = true;
+  std::string local_contents;
+  local_contents.resize(chunk_size);
+
+  while ((bytes_read_this_pass = fread(&local_contents[bytes_read_so_far], 1, chunk_size, file)) > 0) {
+    if ((max_size - bytes_read_so_far) < bytes_read_this_pass) {
+      // Read more than max_size bytes, bail out.
+      bytes_read_so_far = max_size;
+      read_status = false;
+      break;
+    }
+    // In case EOF was not reached, iterate again but revert to the default
+    // chunk size.
+    if (bytes_read_so_far == 0) {
+      chunk_size = kDefaultChunkSize;
+    }
+
+    bytes_read_so_far += bytes_read_this_pass;
+    // Last fread syscall (after EOF) can be avoided via feof, which is just a
+    // flag check.
+    if (feof(file)) {
+      break;
+    }
+    local_contents.resize(bytes_read_so_far + chunk_size);
+  }
+
+  read_status = read_status && !ferror(file);
+  fclose(file);
+  if (contents) {
+    contents->swap(local_contents);
+    contents->resize(bytes_read_so_far);
+  }
+
+  return read_status;
 }
 
 }  // namespace file_system
