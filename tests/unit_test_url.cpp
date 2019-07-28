@@ -145,6 +145,10 @@ TEST(Url, Scheme) {
   ASSERT_EQ(dev_uri.GetScheme(), common::uri::Url::dev);
   ASSERT_EQ(dev_uri.GetPath(), common::uri::Upath(DEV_VIDEO_PATH));
   ASSERT_EQ(dev_uri.GetHost(), std::string());
+
+  common::uri::Url rtsp_uri("rtsp://some.server/url");
+  ASSERT_EQ(rtsp_uri.GetScheme(), common::uri::Url::rtsp);
+  ASSERT_EQ(rtsp_uri.GetHost(), "some.server");
 }
 
 TEST(Url, level) {

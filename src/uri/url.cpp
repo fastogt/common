@@ -36,7 +36,7 @@ namespace uri {
 namespace {
 const char* scheme_name(int level) {
   static const char* kSchemeNames[Url::num_schemes] = {"unknown", "http", "https", "ftp",  "file", "ws",
-                                                       "wss",     "udp",  "tcp",   "rtmp", "dev"};
+                                                       "wss",     "udp",  "tcp",   "rtmp", "dev",  "rtsp"};
   if (level >= 0 && level < Url::num_schemes) {
     return kSchemeNames[level];
   }
@@ -162,8 +162,15 @@ bool get_schemes(const char* url_s, size_t len, Url::scheme* prot) {
         *prot = Url::tcp;
         return true;
       } else if (url_s[0] == 'r' || url_s[0] == 'R') {
-        *prot = Url::rtmp;
-        return true;
+        if (url_s[1] == 't' || url_s[1] == 'T') {
+          if (url_s[2] == 's' || url_s[2] == 'S') {
+            *prot = Url::rtsp;
+            return true;
+          } else if (url_s[2] == 'm' || url_s[2] == 'M') {
+            *prot = Url::rtmp;
+            return true;
+          }
+        }
       } else if (url_s[0] == 'd' || url_s[0] == 'D') {
         *prot = Url::dev;
         return true;
@@ -211,6 +218,8 @@ void Url::Parse(const std::string& url_s) {
       start = 8;
     } else if (scheme_ == dev) {
       start = 6;
+    } else if (scheme_ == rtsp) {
+      start = 7;
     }
 
     for (size_t i = start; i < len; ++i) {

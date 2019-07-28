@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <common/macros.h>
 
 #include <common/uri/upath.h>
@@ -50,6 +52,7 @@ class Url {
     tcp = 8,
     rtmp = 9,
     dev = 10,
+    rtsp = 11,
     num_schemes
   };
   enum {
