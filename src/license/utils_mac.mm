@@ -1,6 +1,7 @@
 #include <common/license/utils.h>
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
 
 #import <IOKit/IOKitLib.h>
 
