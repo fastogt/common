@@ -14,6 +14,10 @@
 
 #include <common/license/utils.h>
 
+#include <errno.h>
+#include <unistd.h>
+#include <uuid/uuid.h>
+
 namespace common {
 namespace license {
 
@@ -30,6 +34,23 @@ bool GetMachineID(std::string* serial) {
     return false;
   }
 
+  struct timespec ts;
+  ts.tv_sec = 1;
+  ts.tv_nsec = 0;
+  uuid_t uuid = {0};
+
+  if (gethostuuid(uuid, &ts) == -1) {
+    switch (errno) {
+      case EFAULT:
+        return false;
+      case EWOULDBLOCK:
+        return false;
+    }
+  }
+
+  uuid_string_t uuid_string;
+  uuid_unparse_lower(uuid, uuid_string);
+  *serial = uuid_string;
   return false;
 }
 
