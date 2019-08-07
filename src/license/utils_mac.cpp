@@ -21,14 +21,6 @@
 namespace common {
 namespace license {
 
-bool GetHddID(std::string* serial) {
-  if (!serial) {
-    return false;
-  }
-
-  return false;
-}
-
 bool GetMachineID(std::string* serial) {
   if (!serial) {
     return false;
