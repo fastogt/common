@@ -51,7 +51,7 @@ bool GetMachineID(std::string* serial) {
   uuid_string_t uuid_string;
   uuid_unparse_lower(uuid, uuid_string);
   *serial = uuid_string;
-  return false;
+  return true;
 }
 
 }  // namespace license
