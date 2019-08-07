@@ -38,8 +38,9 @@ bool GetHddID(std::string* serial) {
     return false;
   }
 
-  *serial = [hdd_serial UTF8String];
-  return false;
+  const char* serial_ptr = [hdd_serial UTF8String];
+  *serial = serial_ptr;
+  return true;
 }
 
 }  // namespace license
