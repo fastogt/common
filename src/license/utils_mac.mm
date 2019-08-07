@@ -1,5 +1,7 @@
 #include <common/license/utils.h>
 
+#import <Foundation/NSString.h>
+
 #import <IOKit/IOKitLib.h>
 
 namespace common {
