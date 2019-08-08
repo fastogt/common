@@ -31,6 +31,8 @@
 
 #include <sys/utsname.h>
 
+#include <limits>
+
 #if defined(OS_ANDROID)
 #include <sys/vfs.h>
 #define statvfs statfs  // Android uses a statvfs-like statfs struct and call.
@@ -38,6 +40,12 @@
 #include <sys/statvfs.h>
 #endif
 
+#if defined(OS_LINUX)
+#include <linux/magic.h>
+#include <sys/vfs.h>
+#endif
+
+#include <common/eintr_wrapper.h>
 #include <common/macros.h>
 
 namespace {
