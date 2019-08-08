@@ -39,8 +39,17 @@
 namespace common {
 namespace system_info {
 
+// Return the number of bytes of physical memory on the current machine.
 int64_t AmountOfPhysicalMemory();
+// Return the number of bytes of current available physical memory on the machine.
+// (The amount of memory that can be allocated without any significant impact on the system. It can lead to freeing
+// inactive file-backed and/or speculative file-backed memory).
 int64_t AmountOfAvailablePhysicalMemory();
+
+// Return the available disk space in bytes on the volume containing |path|, or -1 on failure.
+int64_t AmountOfFreeDiskSpace(const std::string& path);
+// Return the total disk space in bytes on the volume containing |path|, or -1 on failure.
+int64_t AmountOfTotalDiskSpace(const std::string& path);
 
 std::string OperatingSystemName();
 std::string OperatingSystemVersion();

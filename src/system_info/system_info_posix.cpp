@@ -31,10 +31,79 @@
 
 #include <sys/utsname.h>
 
+#if defined(OS_ANDROID)
+#include <sys/vfs.h>
+#define statvfs statfs  // Android uses a statvfs-like statfs struct and call.
+#else
+#include <sys/statvfs.h>
+#endif
+
 #include <common/macros.h>
+
+namespace {
+#if defined(OS_LINUX)
+bool IsStatsZeroIfUnlimited(const std::string& path) {
+  struct statfs stats;
+
+  if (HANDLE_EINTR(statfs(path.c_str(), &stats)) != 0) {
+    return false;
+  }
+
+  switch (stats.f_type) {
+    case TMPFS_MAGIC:
+    case HUGETLBFS_MAGIC:
+    case RAMFS_MAGIC:
+      return true;
+  }
+  return false;
+}
+#endif  // defined(OS_LINUX)
+
+bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t* total_bytes) {
+  struct statvfs stats;
+  if (HANDLE_EINTR(statvfs(path.c_str(), &stats)) != 0) {
+    return false;
+  }
+
+#if defined(OS_LINUX)
+  const bool zero_size_means_unlimited = stats.f_blocks == 0 && IsStatsZeroIfUnlimited(path);
+#else
+  const bool zero_size_means_unlimited = false;
+#endif
+
+  if (available_bytes) {
+    *available_bytes = zero_size_means_unlimited ? std::numeric_limits<int64_t>::max()
+                                                 : static_cast<int64_t>(stats.f_bavail) * stats.f_frsize;
+  }
+
+  if (total_bytes) {
+    *total_bytes = zero_size_means_unlimited ? std::numeric_limits<int64_t>::max()
+                                             : static_cast<int64_t>(stats.f_blocks) * stats.f_frsize;
+  }
+  return true;
+}
+}  // namespace
 
 namespace common {
 namespace system_info {
+
+// static
+int64_t AmountOfFreeDiskSpace(const std::string& path) {
+  int64_t available;
+  if (!GetDiskSpaceInfo(path, &available, nullptr)) {
+    return -1;
+  }
+  return available;
+}
+
+// static
+int64_t AmountOfTotalDiskSpace(const std::string& path) {
+  int64_t total;
+  if (!GetDiskSpaceInfo(path, nullptr, &total)) {
+    return -1;
+  }
+  return total;
+}
 
 long GetProcessRss(pid_t pid) {
   char buff[64] = {0};

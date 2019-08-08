@@ -47,6 +47,29 @@ int64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
   return rv < 0 ? std::numeric_limits<int64_t>::max() : rv;
 }
 
+bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t* total_bytes) {
+  ULARGE_INTEGER available;
+  ULARGE_INTEGER total;
+  ULARGE_INTEGER free;
+  if (!GetDiskFreeSpaceExA(path.c_str(), &available, &total, &free)) {
+    return false;
+  }
+
+  if (available_bytes) {
+    *available_bytes = static_cast<int64_t>(available.QuadPart);
+    if (*available_bytes < 0) {
+      *available_bytes = std::numeric_limits<int64_t>::max();
+    }
+  }
+  if (total_bytes) {
+    *total_bytes = static_cast<int64_t>(total.QuadPart);
+    if (*total_bytes < 0) {
+      *total_bytes = std::numeric_limits<int64_t>::max();
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace common {
@@ -58,6 +81,22 @@ int64_t AmountOfPhysicalMemory() {
 
 int64_t AmountOfAvailablePhysicalMemory() {
   return AmountOfMemory(&MEMORYSTATUSEX::ullAvailPhys);
+}
+
+int64_t AmountOfFreeDiskSpace(const std::string& path) {
+  int64_t available;
+  if (!GetDiskSpaceInfo(path, &available, nullptr)) {
+    return -1;
+  }
+  return available;
+}
+
+int64_t AmountOfTotalDiskSpace(const std::string& path) {
+  int64_t total;
+  if (!GetDiskSpaceInfo(path, nullptr, &total)) {
+    return -1;
+  }
+  return total;
 }
 
 std::string OperatingSystemName() {
