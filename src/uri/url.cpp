@@ -44,8 +44,6 @@ const char* scheme_name(int level) {
   DNOTREACHED();
   return kSchemeNames[0];
 }
-}  // namespace
-namespace detail {
 
 char from_hex(char ch) {
   return std::isdigit(ch) ? ch - '0' : std::tolower(ch, std::locale()) - 'a' + 10;
@@ -55,6 +53,8 @@ char to_hex(char code) {
   static char hex[] = "0123456789ABCDEF";
   return hex[code & 15];
 }
+}  // namespace
+namespace detail {
 
 char* uri_encode(const char* str, size_t len) {
   if (!str || len == 0) {

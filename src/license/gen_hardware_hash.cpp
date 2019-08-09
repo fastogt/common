@@ -14,14 +14,22 @@
 
 #include <common/license/gen_hardware_hash.h>
 
-#include <common/convert2string.h>
 #include <common/hash/md5.h>
-
 #include <common/license/utils.h>
+#include <common/macros.h>
+
+#define HALF_LICENSE_KEY_LENGHT LICENSE_KEY_LENGHT / 2
 
 namespace common {
+namespace license {
+
 namespace {
-bool MakeMd5Hash(const std::string& data, std::string* out) {
+char to_hex(char code) {
+  static char hex[] = "0123456789abcdef";
+  return hex[code & 15];
+}
+
+bool MakeMd5Hash(const std::string& data, char* out) {
   if (!out) {
     return false;
   }
@@ -30,15 +38,17 @@ bool MakeMd5Hash(const std::string& data, std::string* out) {
   hash::MD5_Init(&md5);
   const unsigned char* cdata = reinterpret_cast<const unsigned char*>(data.c_str());
   hash::MD5_Update(&md5, cdata, data.size());
-  unsigned char md5_result[16];
+  unsigned char md5_result[MD5_HASH_LENGHT];
   hash::MD5_Final(&md5, md5_result);
-  std::string hs(std::begin(md5_result), std::end(md5_result));
-  return utils::hex::encode(hs, true, out);
+  for (size_t i = 0; i < MD5_HASH_LENGHT; ++i) {
+    out[i * 2] = to_hex(md5_result[i] >> 4);
+    out[i * 2 + 1] = to_hex(md5_result[i] & 15);
+  }
+  return true;
 }
 }  // namespace
-namespace license {
 
-bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
+bool GenerateHardwareHash(ALGO_TYPE t, common::license::license_key_t hash) {
   if (!hash) {
     return false;
   }
@@ -50,11 +60,8 @@ bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
       return false;
     }
 
-    std::string cpu_id_hash;
-    MakeMd5Hash(cpu_id, &cpu_id_hash);
-    std::string hdd_id_hash;
-    MakeMd5Hash(hdd_id, &hdd_id_hash);
-    *hash = cpu_id_hash + hdd_id_hash;
+    MakeMd5Hash(cpu_id, hash);
+    MakeMd5Hash(hdd_id, hash + HALF_LICENSE_KEY_LENGHT);
     return true;
   } else if (t == MACHINE_ID) {
     std::string system_id;
@@ -62,11 +69,8 @@ bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash) {
       return false;
     }
 
-    std::string cpu_id_hash;
-    MakeMd5Hash(cpu_id, &cpu_id_hash);
-    std::string machine_id_hash;
-    MakeMd5Hash(system_id, &machine_id_hash);
-    *hash = cpu_id_hash + machine_id_hash;
+    MakeMd5Hash(cpu_id, hash);
+    MakeMd5Hash(system_id, hash + HALF_LICENSE_KEY_LENGHT);
     return true;
   }
 

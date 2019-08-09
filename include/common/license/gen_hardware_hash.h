@@ -12,13 +12,19 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
 #include <string>
+
+#define LICENSE_KEY_LENGHT 64
 
 namespace common {
 namespace license {
 
+typedef char license_key_t[LICENSE_KEY_LENGHT];
+
 enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
-bool GenerateHardwareHash(ALGO_TYPE t, std::string* hash);
+bool GenerateHardwareHash(ALGO_TYPE t, license_key_t hash);
 
 }  // namespace license
 }  // namespace common

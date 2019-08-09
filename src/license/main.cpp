@@ -46,11 +46,11 @@ int main(int argc, char** argv) {
     }
   }
 
-  std::string hash;
-  if (!common::license::GenerateHardwareHash(algo, &hash)) {
+  common::license::license_key_t hash;
+  if (!common::license::GenerateHardwareHash(algo, hash)) {
     return EXIT_FAILURE;
   }
 
-  std::cout << hash << std::endl;
+  std::cout << std::string(hash, LICENSE_KEY_LENGHT) << std::endl;
   return EXIT_SUCCESS;
 }
