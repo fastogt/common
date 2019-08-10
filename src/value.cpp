@@ -1052,7 +1052,7 @@ Value* HashValue::Find(const std::string& key) const {
     return nullptr;
   }
 
-  return Find(key);
+  return Find(string_t(key.begin(), key.end()));
 }
 
 bool HashValue::GetAsHash(HashValue** out_value) {
