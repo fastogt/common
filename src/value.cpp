@@ -1001,14 +1001,13 @@ HashValue::~HashValue() {
 void HashValue::Clear() {
   for (iterator i(hash_.begin()); i != hash_.end(); ++i) {
     value_type m = *i;
-    delete m.first;
     delete m.second;
   }
   hash_.clear();
 }
 
-bool HashValue::Insert(Value* key, Value* value) {
-  if (!key || !value) {
+bool HashValue::Insert(const string_t& key, Value* value) {
+  if (key.empty() || !value) {
     return false;
   }
 
@@ -1016,8 +1015,24 @@ bool HashValue::Insert(Value* key, Value* value) {
   return true;
 }
 
-void HashValue::Insert(const string_t& key, const string_t& value) {
-  Insert(Value::CreateStringValue(key), Value::CreateStringValue(value));
+Value* HashValue::Find(const string_t& key) const {
+  if (key.empty()) {
+    return nullptr;
+  }
+
+  const auto it = hash_.find(key);
+  if (it == hash_.end()) {
+    return nullptr;
+  }
+  return it->second;
+}
+
+Value* HashValue::Find(const std::string& key) const {
+  if (key.empty()) {
+    return nullptr;
+  }
+
+  return Find(key);
 }
 
 bool HashValue::GetAsHash(HashValue** out_value) {
@@ -1040,9 +1055,8 @@ HashValue* HashValue::DeepCopy() const {
 
   for (const_iterator i = hash_.begin(); i != hash_.end(); ++i) {
     auto key_value = *i;
-    Value* key = key_value.first->DeepCopy();
     Value* val = key_value.second->DeepCopy();
-    result->Insert(key, val);
+    result->Insert(key_value.first, val);
   }
 
   return result;
@@ -1057,12 +1071,12 @@ bool HashValue::Equals(const Value* other) const {
   const_iterator lhs_it, rhs_it;
   for (lhs_it = begin(), rhs_it = other_zset->begin(); lhs_it != end() && rhs_it != other_zset->end();
        ++lhs_it, ++rhs_it) {
-    Value* rkey = (*rhs_it).first;
+    string_t rkey = (*rhs_it).first;
     Value* rval = (*rhs_it).second;
-    Value* lkey = (*lhs_it).first;
+    string_t lkey = (*lhs_it).first;
     Value* lval = (*lhs_it).second;
 
-    if (!lkey->Equals(rkey) || !lval->Equals(rval)) {
+    if (lkey != rkey || !lval->Equals(rval)) {
       return false;
     }
   }

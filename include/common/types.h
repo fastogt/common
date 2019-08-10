@@ -42,6 +42,10 @@ enum tribool { FAIL = 0, SUCCESS = 1, INDETERMINATE = -1 };
 
 typedef uint8_t byte_t;
 
+inline size_t hash_combine(size_t seed, size_t value) {
+  return seed ^ (value + 0x9e3779b9 + (seed << 6u) + (seed >> 2u));
+}
+
 template <typename T>
 class ByteArray : public std::vector<T> {
  public:
@@ -139,6 +143,21 @@ class ClonableBase {
 };
 
 }  // namespace common
+
+namespace std {
+
+template <typename T>
+struct hash<common::ByteArray<T>> {
+  size_t operator()(const common::ByteArray<T>& k) const {
+    size_t seed = 0;
+    for (const auto& elem : k) {
+      seed = common::hash_combine(seed, std::hash<T>()(elem));
+    }
+    return seed;
+  }
+};
+
+}  // namespace std
 
 std::ostream& operator<<(std::ostream& out, const common::buffer_t& buff);
 std::ostream& operator<<(std::ostream& out, const common::char_buffer_t& buff);

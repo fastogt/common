@@ -32,7 +32,9 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <common/macros.h>
 #include <common/types.h>  // for byte_array_t
@@ -150,18 +152,18 @@ class FundamentalValue : public Value {
   explicit FundamentalValue(unsigned long long in_value);
   explicit FundamentalValue(double in_value);
 
-  virtual ~FundamentalValue() override;
+  ~FundamentalValue() override;
 
-  virtual bool GetAsBoolean(bool* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsInteger(int* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsUInteger(unsigned int* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsLongInteger(long* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsULongInteger(unsigned long* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsLongLongInteger(long long* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsULongLongInteger(unsigned long long* out_value) const override WARN_UNUSED_RESULT;
-  virtual bool GetAsDouble(double* out_value) const override WARN_UNUSED_RESULT;
-  virtual FundamentalValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsBoolean(bool* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsInteger(int* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsUInteger(unsigned int* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsLongInteger(long* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsULongInteger(unsigned long* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsLongLongInteger(long long* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsULongLongInteger(unsigned long long* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsDouble(double* out_value) const override WARN_UNUSED_RESULT;
+  FundamentalValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   union {
@@ -177,11 +179,11 @@ class FundamentalValue : public Value {
 class StringValue : public Value {
  public:
   explicit StringValue(const string_t& in_value);
-  virtual ~StringValue() override;
+  ~StringValue() override;
 
-  virtual bool GetAsString(string_t* out_value) const override WARN_UNUSED_RESULT;
-  virtual StringValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsString(string_t* out_value) const override WARN_UNUSED_RESULT;
+  StringValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   string_t value_;
@@ -196,7 +198,7 @@ class ArrayValue : public Value {
   typedef ValueVector::const_iterator const_iterator;
 
   ArrayValue();
-  virtual ~ArrayValue() override;
+  ~ArrayValue() override;
 
   void clear();
 
@@ -255,10 +257,10 @@ class ArrayValue : public Value {
   const_iterator begin() const { return list_.begin(); }
   const_iterator end() const { return list_.end(); }
 
-  virtual bool GetAsList(ArrayValue** out_value) override WARN_UNUSED_RESULT;
-  virtual bool GetAsList(const ArrayValue** out_value) const override WARN_UNUSED_RESULT;
-  virtual ArrayValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsList(ArrayValue** out_value) override WARN_UNUSED_RESULT;
+  bool GetAsList(const ArrayValue** out_value) const override WARN_UNUSED_RESULT;
+  ArrayValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   ValueVector list_;
@@ -272,7 +274,7 @@ class ByteArrayValue : public Value {
   typedef byte_array_t::value_type value_type;
 
   explicit ByteArrayValue(const byte_array_t& array);
-  virtual ~ByteArrayValue() override;
+  ~ByteArrayValue() override;
 
   void Clear();
 
@@ -297,9 +299,9 @@ class ByteArrayValue : public Value {
   const_iterator begin() const { return array_.begin(); }
   const_iterator end() const { return array_.end(); }
 
-  virtual bool GetAsByteArray(byte_array_t* out_value) const override WARN_UNUSED_RESULT;
-  virtual ByteArrayValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsByteArray(byte_array_t* out_value) const override WARN_UNUSED_RESULT;
+  ByteArrayValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   byte_array_t array_;
@@ -314,7 +316,7 @@ class SetValue : public Value {
   typedef ValueSet::const_iterator const_iterator;
 
   SetValue();
-  virtual ~SetValue() override;
+  ~SetValue() override;
 
   void Clear();
 
@@ -334,10 +336,10 @@ class SetValue : public Value {
   const_iterator begin() const { return set_.begin(); }
   const_iterator end() const { return set_.end(); }
 
-  virtual bool GetAsSet(SetValue** out_value) override WARN_UNUSED_RESULT;
-  virtual bool GetAsSet(const SetValue** out_value) const override WARN_UNUSED_RESULT;
-  virtual SetValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsSet(SetValue** out_value) override WARN_UNUSED_RESULT;
+  bool GetAsSet(const SetValue** out_value) const override WARN_UNUSED_RESULT;
+  SetValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   ValueSet set_;
@@ -353,7 +355,7 @@ class ZSetValue : public Value {
   typedef ValueZSet::value_type value_type;
 
   ZSetValue();
-  virtual ~ZSetValue() override;
+  ~ZSetValue() override;
 
   void Clear();
 
@@ -373,10 +375,10 @@ class ZSetValue : public Value {
   const_iterator begin() const { return map_.begin(); }
   const_iterator end() const { return map_.end(); }
 
-  virtual bool GetAsZSet(ZSetValue** out_value) override WARN_UNUSED_RESULT;
-  virtual bool GetAsZSet(const ZSetValue** out_value) const override WARN_UNUSED_RESULT;
-  virtual ZSetValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsZSet(ZSetValue** out_value) override WARN_UNUSED_RESULT;
+  bool GetAsZSet(const ZSetValue** out_value) const override WARN_UNUSED_RESULT;
+  ZSetValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   ValueZSet map_;
@@ -387,14 +389,14 @@ typedef ZSetValue MapValue;
 
 class HashValue : public Value {
  public:
-  typedef std::unordered_map<Value*, Value*> ValueHash;
+  typedef std::unordered_map<string_t, Value*> ValueHash;
 
   typedef ValueHash::iterator iterator;
   typedef ValueHash::const_iterator const_iterator;
   typedef ValueHash::value_type value_type;
 
   HashValue();
-  virtual ~HashValue() override;
+  ~HashValue() override;
 
   void Clear();
 
@@ -404,8 +406,10 @@ class HashValue : public Value {
   bool IsEmpty() const { return hash_.empty(); }
 
   // Insert a Value to the map.
-  bool Insert(Value* key, Value* value);
-  void Insert(const string_t& key, const string_t& value);
+  bool Insert(const string_t& key, Value* value);
+
+  Value* Find(const string_t& key) const;
+  Value* Find(const std::string& key) const;
 
   // Iteration.
   iterator begin() { return hash_.begin(); }
@@ -414,10 +418,10 @@ class HashValue : public Value {
   const_iterator begin() const { return hash_.begin(); }
   const_iterator end() const { return hash_.end(); }
 
-  virtual bool GetAsHash(HashValue** out_value) override WARN_UNUSED_RESULT;
-  virtual bool GetAsHash(const HashValue** out_value) const override WARN_UNUSED_RESULT;
-  virtual HashValue* DeepCopy() const override;
-  virtual bool Equals(const Value* other) const override;
+  bool GetAsHash(HashValue** out_value) override WARN_UNUSED_RESULT;
+  bool GetAsHash(const HashValue** out_value) const override WARN_UNUSED_RESULT;
+  HashValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
 
  private:
   ValueHash hash_;
