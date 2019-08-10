@@ -114,6 +114,7 @@ class Value {
   virtual bool GetAsULongLongInteger(unsigned long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetAsBasicString(std::string* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
   virtual bool GetAsList(const ArrayValue** out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsByteArray(byte_array_t* out_value) const WARN_UNUSED_RESULT;
@@ -407,6 +408,7 @@ class HashValue : public Value {
 
   // Insert a Value to the map.
   bool Insert(const string_t& key, Value* value);
+  bool Insert(const std::string& key, Value* value);
 
   Value* Find(const string_t& key) const;
   Value* Find(const std::string& key) const;

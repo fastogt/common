@@ -180,6 +180,17 @@ bool Value::GetAsString(string_t* out_value) const {
   return false;
 }
 
+bool Value::GetAsBasicString(std::string* out_value) const {
+  if (out_value) {
+    string_t str;
+    if (GetAsString(&str)) {
+      *out_value = str.as_string();
+    }
+  }
+
+  return true;
+}
+
 bool Value::GetAsList(ArrayValue** out_value) {
   UNUSED(out_value);
 
@@ -1012,6 +1023,15 @@ bool HashValue::Insert(const string_t& key, Value* value) {
   }
 
   hash_[key] = value;
+  return true;
+}
+
+bool HashValue::Insert(const std::string& key, Value* value) {
+  if (key.empty() || !value) {
+    return false;
+  }
+
+  hash_[string_t(key.begin(), key.end())] = value;
   return true;
 }
 
