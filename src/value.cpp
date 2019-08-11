@@ -183,9 +183,10 @@ bool Value::GetAsString(string_t* out_value) const {
 bool Value::GetAsBasicString(std::string* out_value) const {
   if (out_value) {
     string_t str;
-    if (GetAsString(&str)) {
-      *out_value = str.as_string();
+    if (!GetAsString(&str)) {
+      return false;
     }
+    *out_value = str.as_string();
   }
 
   return true;
