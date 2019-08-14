@@ -44,9 +44,10 @@ namespace common {
 class ArrayValue;
 class ByteArrayValue;
 class FundamentalValue;
+class TimeValue;
+class StringValue;
 class HashValue;
 class SetValue;
-class StringValue;
 class ZSetValue;
 
 class Value {
@@ -62,6 +63,7 @@ class Value {
     TYPE_LONG_LONG_INTEGER,
     TYPE_ULONG_LONG_INTEGER,
     TYPE_DOUBLE,
+    TYPE_TIME,
     TYPE_STRING,
     TYPE_ARRAY,  // list
     TYPE_BYTE_ARRAY,
@@ -86,6 +88,8 @@ class Value {
   static FundamentalValue* CreateULongLongIntegerValue(unsigned long long in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
 
+  static TimeValue* CreateTimeValue(time_t time);
+
   static StringValue* CreateEmptyStringValue();
   static StringValue* CreateStringValue(const string_t& in_value);
   static StringValue* CreateStringValueFromBasicString(const std::string& in_value);
@@ -98,7 +102,7 @@ class Value {
   static bool IsIntegral(Type type) {
     return type == TYPE_BOOLEAN || type == TYPE_INTEGER || type == TYPE_UINTEGER || type == TYPE_LONG_INTEGER ||
            type == TYPE_ULONG_INTEGER || type == TYPE_LONG_LONG_INTEGER || type == TYPE_ULONG_LONG_INTEGER ||
-           type == TYPE_DOUBLE;
+           type == TYPE_DOUBLE || type == TYPE_TIME;
   }
 
   Type GetType() const { return type_; }
@@ -113,6 +117,7 @@ class Value {
   virtual bool GetAsLongLongInteger(long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsULongLongInteger(unsigned long long* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsTime(time_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
   bool GetAsBasicString(std::string* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
@@ -175,6 +180,21 @@ class FundamentalValue : public Value {
     long long long_long_integer_value_;
   };
   DISALLOW_COPY_AND_ASSIGN(FundamentalValue);
+};
+
+class TimeValue : public Value {
+ public:
+  explicit TimeValue(time_t time);
+
+  ~TimeValue() override;
+
+  TimeValue* DeepCopy() const override;
+  bool Equals(const Value* other) const override;
+  bool GetAsTime(time_t* out_value) const override;
+
+ private:
+  utctime_t value_;
+  DISALLOW_COPY_AND_ASSIGN(TimeValue);
 };
 
 class StringValue : public Value {

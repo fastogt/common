@@ -89,6 +89,10 @@ FundamentalValue* Value::CreateDoubleValue(double in_value) {
   return new FundamentalValue(in_value);
 }
 
+TimeValue* Value::CreateTimeValue(time_t time) {
+  return new TimeValue(time);
+}
+
 // static
 StringValue* Value::CreateEmptyStringValue() {
   return CreateStringValue(string_t());
@@ -169,6 +173,12 @@ bool Value::GetAsULongLongInteger(unsigned long long* out_value) const {
 }
 
 bool Value::GetAsDouble(double* out_value) const {
+  UNUSED(out_value);
+
+  return false;
+}
+
+bool Value::GetAsTime(time_t* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -426,6 +436,31 @@ bool FundamentalValue::Equals(const Value* other) const {
     return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
   }
   return false;
+}
+
+TimeValue::TimeValue(time_t time) : Value(TYPE_TIME), value_(time) {}
+
+TimeValue::~TimeValue() {}
+
+TimeValue* TimeValue::DeepCopy() const {
+  return CreateTimeValue(value_);
+}
+
+bool TimeValue::GetAsTime(time_t* out_value) const {
+  if (out_value) {
+    *out_value = value_;
+  }
+
+  return true;
+}
+
+bool TimeValue::Equals(const Value* other) const {
+  if (other->GetType() != GetType()) {
+    return false;
+  }
+
+  time_t lhs, rhs;
+  return GetAsTime(&lhs) && other->GetAsTime(&rhs) && lhs == rhs;
 }
 
 ///////////////////// StringValue ////////////////////
