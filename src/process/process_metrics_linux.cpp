@@ -71,7 +71,7 @@ time64_t ClockTicksToTimeDelta(int clock_ticks) {
   // which means the answer is 100.
   // It may be the case that this value is always 100.
   static const int kHertz = sysconf(_SC_CLK_TCK);
-  return 1000 * clock_ticks / kHertz;
+  return time::kMillisecondsPerSecond * clock_ticks / kHertz;
 }
 
 int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats, ProcStatsFields field_num) {

@@ -53,6 +53,20 @@ struct tm utctime2tm(utctime_t time_sec, bool is_local);
 struct timeval mstime2timeval(time64_t mst);
 struct timespec mstime2timespec(time64_t mst);
 
+static constexpr int64_t kHoursPerDay = 24;
+static constexpr int64_t kSecondsPerMinute = 60;
+static constexpr int64_t kSecondsPerHour = 60 * kSecondsPerMinute;
+static constexpr int64_t kMillisecondsPerSecond = 1000;
+static constexpr int64_t kMillisecondsPerDay = kMillisecondsPerSecond * 60 * 60 * kHoursPerDay;
+static constexpr int64_t kMicrosecondsPerMillisecond = 1000;
+static constexpr int64_t kMicrosecondsPerSecond = kMicrosecondsPerMillisecond * kMillisecondsPerSecond;
+static constexpr int64_t kMicrosecondsPerMinute = kMicrosecondsPerSecond * 60;
+static constexpr int64_t kMicrosecondsPerHour = kMicrosecondsPerMinute * 60;
+static constexpr int64_t kMicrosecondsPerDay = kMicrosecondsPerHour * kHoursPerDay;
+static constexpr int64_t kMicrosecondsPerWeek = kMicrosecondsPerDay * 7;
+static constexpr int64_t kNanosecondsPerMicrosecond = 1000;
+static constexpr int64_t kNanosecondsPerSecond = kNanosecondsPerMicrosecond * kMicrosecondsPerSecond;
+
 }  // namespace time
 }  // namespace common
 
