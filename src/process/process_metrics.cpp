@@ -27,43 +27,44 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/process/process_metrics.h>
 
-#include <stdint.h>  // for int64_t
-#include <unistd.h>
-
-#include <string>  // for string
-
-#include <common/optional.h>
+#include <common/time.h>
 
 namespace common {
-namespace system_info {
+namespace process {
 
-// system
-Optional<size_t> AmountOfPhysicalMemory();
-Optional<size_t> AmountOfAvailablePhysicalMemory();
-Optional<size_t> AmountOfFreeDiskSpace(const std::string& path);
-Optional<size_t> AmountOfTotalDiskSpace(const std::string& path);
+ProcessMetrics::~ProcessMetrics() {}
 
-std::string OperatingSystemName();
-std::string OperatingSystemVersion();
-std::string OperatingSystemArchitecture();
+std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(process_handle_t process) {
+  return std::unique_ptr<ProcessMetrics>(new ProcessMetrics(process));
+}
 
-class SystemInfo {
- public:
-  SystemInfo(const std::string& name, const std::string& version, const std::string& arch);
+double ProcessMetrics::GetPlatformIndependentCPUUsage() {
+  time64_t cumulative_cpu = GetCumulativeCPUUsage();
+  time64_t time = time::current_utc_mstime();
 
-  const std::string& GetName() const;
-  const std::string& GetVersion() const;
-  const std::string& GetArch() const;
+  if (!last_cumulative_cpu_) {
+    // First call, just set the last values.
+    last_cumulative_cpu_ = cumulative_cpu;
+    last_cpu_time_ = time;
+    return 0;
+  }
 
- private:
-  const std::string name_;
-  const std::string version_;
-  const std::string arch_;
-};
+  time64_t system_time_delta = cumulative_cpu - *last_cumulative_cpu_;
+  time64_t time_delta = time - last_cpu_time_;
+  if (time_delta == 0) {
+    return 0;
+  }
 
-const SystemInfo& currentSystemInfo();
+  last_cumulative_cpu_ = cumulative_cpu;
+  last_cpu_time_ = time;
 
-}  // namespace system_info
+  return 100.0 * static_cast<double>(system_time_delta) / static_cast<double>(time_delta);
+}
+
+ProcessMetrics::ProcessMetrics(process_handle_t process)
+    : process_(process), last_cumulative_cpu_(), last_cpu_time_() {}
+
+}  // namespace process
 }  // namespace common

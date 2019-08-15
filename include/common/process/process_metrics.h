@@ -29,41 +29,38 @@
 
 #pragma once
 
-#include <stdint.h>  // for int64_t
-#include <unistd.h>
-
-#include <string>  // for string
+#include <memory>
 
 #include <common/optional.h>
+#include <common/time.h>
 
 namespace common {
-namespace system_info {
+namespace process {
 
-// system
-Optional<size_t> AmountOfPhysicalMemory();
-Optional<size_t> AmountOfAvailablePhysicalMemory();
-Optional<size_t> AmountOfFreeDiskSpace(const std::string& path);
-Optional<size_t> AmountOfTotalDiskSpace(const std::string& path);
-
-std::string OperatingSystemName();
-std::string OperatingSystemVersion();
-std::string OperatingSystemArchitecture();
-
-class SystemInfo {
+class ProcessMetrics {
  public:
-  SystemInfo(const std::string& name, const std::string& version, const std::string& arch);
+  typedef pid_t process_handle_t;
 
-  const std::string& GetName() const;
-  const std::string& GetVersion() const;
-  const std::string& GetArch() const;
+  ~ProcessMetrics();
+
+  static std::unique_ptr<ProcessMetrics> CreateProcessMetrics(process_handle_t process);
+
+  double GetPlatformIndependentCPUUsage();
+  time64_t GetCumulativeCPUUsage();
+
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+  // Resident Set Size is a Linux/Android specific memory concept. Do not
+  // attempt to extend this to other platforms.
+  size_t GetResidentSetSize() const;
+#endif
 
  private:
-  const std::string name_;
-  const std::string version_;
-  const std::string arch_;
+  explicit ProcessMetrics(process_handle_t process);
+
+  process_handle_t process_;
+  Optional<time64_t> last_cumulative_cpu_;
+  time64_t last_cpu_time_;
 };
 
-const SystemInfo& currentSystemInfo();
-
-}  // namespace system_info
+}  // namespace process
 }  // namespace common

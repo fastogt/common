@@ -92,6 +92,14 @@ SET(SYSTEM_SOURCES
   ${CMAKE_SOURCE_DIR}/src/system/system.cpp
 )
 
+SET(PROCESS_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/process/process_metrics.h
+)
+
+SET(PROCESS_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/process/process_metrics.cpp
+)
+
 SET(FILE_SYSTEM_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/file_system/types.h
 
@@ -367,6 +375,7 @@ ELSEIF(OS_POSIX)
     SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_linux.cpp
       ${CMAKE_SOURCE_DIR}/src/license/utils_linux.cpp
+      ${CMAKE_SOURCE_DIR}/src/process/process_metrics_linux.cpp
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} dl)
     IF(UDEV_LIBRARY AND UDEV_INCLUDE_DIR)
@@ -536,6 +545,7 @@ SET(COMMON_HEADERS
 
   ${PATTERNS_HEADERS}
   ${SYSTEM_HEADERS}
+  ${PROCESS_HEADERS}
   ${FILE_SYSTEM_HEADERS}
   ${APPLIATION_HEADERS}
   ${PROTOCOLS_HEADERS}
@@ -585,6 +595,7 @@ SET(COMMON_SOURCES
   ${SERIALIZER_SOURCES}
   ${URI_SOURCES}
   ${SYSTEM_SOURCES}
+  ${PROCESS_SOURCES}
   ${FILE_SYSTEM_SOURCES}
   ${THREADS_SOURCES}
   ${NET_SOURCES}

@@ -111,60 +111,6 @@ Optional<size_t> AmountOfTotalDiskSpace(const std::string& path) {
   return total;
 }
 
-Optional<size_t> GetCurrentProcessRss() {
-  long rss = 0L;
-  FILE* fp = NULL;
-  if ((fp = fopen("/proc/self/statm", "r")) == NULL) {
-    return Optional<size_t>();
-  }
-
-  if (fscanf(fp, "%*s%ld", &rss) != 1) {
-    fclose(fp);
-    return Optional<size_t>();
-  }
-  fclose(fp);
-  return rss * sysconf(_SC_PAGESIZE);
-}
-
-Optional<size_t> GetProcessRss(pid_t pid) {
-  char buff[64] = {0};
-  snprintf(buff, sizeof(buff), "ps --no-headers -p %ld -o rss", static_cast<long>(pid));
-
-  FILE* fp = popen(buff, "r");
-  if (!fp) {
-    return Optional<size_t>();
-  }
-
-  char path[16] = {0};
-  char* res = fgets(path, sizeof(path) - 1, fp);
-  pclose(fp);
-
-  if (!res) {
-    return Optional<size_t>();
-  }
-  return std::stol(res);
-}
-
-Optional<double> GetCpuLoad(pid_t pid) {
-  char buff[32] = {0};
-  snprintf(buff, sizeof(buff), "ps -o pcpu= %ld", static_cast<long>(pid));
-
-  FILE* fp = popen(buff, "r");
-  if (!fp) {
-    return Optional<double>();
-  }
-
-  char path[16] = {0};
-  char* res = fgets(path, sizeof(path) - 1, fp);
-  pclose(fp);
-
-  if (!res) {
-    return Optional<double>();
-  }
-
-  return std::stod(res);
-}
-
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID)
 std::string OperatingSystemName() {
   struct utsname info;
