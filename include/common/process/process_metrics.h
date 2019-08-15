@@ -49,8 +49,7 @@ class ProcessMetrics {
   time64_t GetCumulativeCPUUsage();
 
 #if defined(OS_LINUX) || defined(OS_ANDROID)
-  // Resident Set Size is a Linux/Android specific memory concept. Do not
-  // attempt to extend this to other platforms.
+  // Resident Set Size is a Linux/Android specific memory concept. Do not attempt to extend this to other platforms.
   size_t GetResidentSetSize() const;
 #endif
 
