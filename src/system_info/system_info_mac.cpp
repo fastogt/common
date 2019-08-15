@@ -41,30 +41,30 @@ std::string OperatingSystemName() {
   return "Mac OS X";
 }
 
-int64_t AmountOfPhysicalMemory() {
+Optional<size_t> AmountOfPhysicalMemory() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
   mach_port_t host = mach_host_self();
   int result = host_info(host, HOST_BASIC_INFO, reinterpret_cast<host_info_t>(&hostinfo), &count);
   if (result != KERN_SUCCESS) {
-    NOTREACHED();
-    return 0;
+    DNOTREACHED();
+    return Optional<size_t>();
   }
 
   DCHECK_EQ(HOST_BASIC_INFO_COUNT, count);
-  return static_cast<int64_t>(hostinfo.max_mem);
+  return hostinfo.max_mem;
 }
 
-int64_t AmountOfAvailablePhysicalMemory() {
+Optional<size_t> AmountOfAvailablePhysicalMemory() {
   mach_port_t host = mach_host_self();
   vm_statistics_data_t vm_info;
   mach_msg_type_number_t count = HOST_VM_INFO_COUNT;
   if (host_statistics(host, HOST_VM_INFO, reinterpret_cast<host_info_t>(&vm_info), &count) != KERN_SUCCESS) {
-    NOTREACHED();
-    return 0;
+    DNOTREACHED();
+    return Optional<size_t>();
   }
 
-  return static_cast<int64_t>(vm_info.free_count - vm_info.speculative_count) * PAGE_SIZE;
+  return (vm_info.free_count - vm_info.speculative_count) * PAGE_SIZE;
 }
 }  // namespace system_info
 }  // namespace common
