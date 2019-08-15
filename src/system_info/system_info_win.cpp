@@ -27,27 +27,35 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/system_info/cpu_info.h>
+#include <common/system_info/system_info.h>
 
 #include <windows.h>
+
+#include <psapi.h>
+
 #include <limits>
 
 #include <common/sprintf.h>
 
 namespace {
 
-int64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
+bool AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field, size_t* amount) {
   MEMORYSTATUSEX memory_info;
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
-    NOTREACHED();
-    return 0;
+    return false;
   }
-  int64_t rv = static_cast<int64_t>(memory_info.*memory_field);
-  return rv < 0 ? std::numeric_limits<int64_t>::max() : rv;
+
+  size_t rv = memory_info.*memory_field;
+  if (rv == SIZE_MAX) {
+    return false;
+  }
+
+  *amount = rv;
+  return true;
 }
 
-bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t* total_bytes) {
+bool GetDiskSpaceInfo(const std::string& path, size_t* available_bytes, size_t* total_bytes) {
   ULARGE_INTEGER available;
   ULARGE_INTEGER total;
   ULARGE_INTEGER free;
@@ -56,16 +64,19 @@ bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t
   }
 
   if (available_bytes) {
-    *available_bytes = static_cast<int64_t>(available.QuadPart);
-    if (*available_bytes < 0) {
-      *available_bytes = std::numeric_limits<int64_t>::max();
+    size_t lavailable_bytes = available.QuadPart;
+    if (lavailable_bytes == std::numeric_limits<size_t>::max()) {
+      return false;
     }
+    *available_bytes = lavailable_bytes;
   }
+
   if (total_bytes) {
-    *total_bytes = static_cast<int64_t>(total.QuadPart);
-    if (*total_bytes < 0) {
-      *total_bytes = std::numeric_limits<int64_t>::max();
+    size_t ltotal_bytes = total.QuadPart;
+    if (ltotal_bytes == std::numeric_limits<size_t>::max()) {
+      return false;
     }
+    *total_bytes = ltotal_bytes;
   }
   return true;
 }
@@ -75,26 +86,38 @@ bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t
 namespace common {
 namespace system_info {
 
-int64_t AmountOfPhysicalMemory() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys);
+Optional<size_t> AmountOfPhysicalMemory() {
+  size_t memory;
+  bool res = AmountOfMemory(&MEMORYSTATUSEX::ullTotalPhys, &memory);
+  if (!res) {
+    return Optional<size_t>();
+  }
+
+  return memory;
 }
 
-int64_t AmountOfAvailablePhysicalMemory() {
-  return AmountOfMemory(&MEMORYSTATUSEX::ullAvailPhys);
+Optional<size_t> AmountOfAvailablePhysicalMemory() {
+  size_t memory;
+  bool res = AmountOfMemory(&MEMORYSTATUSEX::ullAvailPhys, &memory);
+  if (!res) {
+    return Optional<size_t>();
+  }
+
+  return memory;
 }
 
-int64_t AmountOfFreeDiskSpace(const std::string& path) {
-  int64_t available;
+Optional<size_t> AmountOfFreeDiskSpace(const std::string& path) {
+  size_t available;
   if (!GetDiskSpaceInfo(path, &available, nullptr)) {
-    return -1;
+    return Optional<size_t>();
   }
   return available;
 }
 
-int64_t AmountOfTotalDiskSpace(const std::string& path) {
-  int64_t total;
+Optional<size_t> AmountOfTotalDiskSpace(const std::string& path) {
+  size_t total;
   if (!GetDiskSpaceInfo(path, nullptr, &total)) {
-    return -1;
+    return Optional<size_t>();
   }
   return total;
 }
@@ -188,5 +211,16 @@ std::string OperatingSystemArchitecture() {
       return "unknown";
   }
 }
+
+Optional<size_t> GetCurrentProcessRss() {
+  PROCESS_MEMORY_COUNTERS info;
+  WINBOOL result = GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
+  if (!result) {
+    return Optional<size_t>();
+  }
+
+  return info.WorkingSetSize;
+}
+
 }  // namespace system_info
 }  // namespace common

@@ -29,34 +29,29 @@
 
 #pragma once
 
-// https://chromium.googlesource.com/chromium/src/base/+/master/sys_info.h
-
 #include <stdint.h>  // for int64_t
 #include <unistd.h>
 
 #include <string>  // for string
 
+#include <common/optional.h>
+
 namespace common {
 namespace system_info {
 
-// Return the number of bytes of physical memory on the current machine.
-int64_t AmountOfPhysicalMemory();
-// Return the number of bytes of current available physical memory on the machine.
-// (The amount of memory that can be allocated without any significant impact on the system. It can lead to freeing
-// inactive file-backed and/or speculative file-backed memory).
-int64_t AmountOfAvailablePhysicalMemory();
-
-// Return the available disk space in bytes on the volume containing |path|, or -1 on failure.
-int64_t AmountOfFreeDiskSpace(const std::string& path);
-// Return the total disk space in bytes on the volume containing |path|, or -1 on failure.
-int64_t AmountOfTotalDiskSpace(const std::string& path);
+Optional<size_t> AmountOfPhysicalMemory();
+Optional<size_t> AmountOfAvailablePhysicalMemory();
+Optional<size_t> AmountOfFreeDiskSpace(const std::string& path);
+Optional<size_t> AmountOfTotalDiskSpace(const std::string& path);
 
 std::string OperatingSystemName();
 std::string OperatingSystemVersion();
 std::string OperatingSystemArchitecture();
 
-long GetProcessRss(pid_t pid);
-double GetCpuLoad(pid_t pid);
+Optional<size_t> GetCurrentProcessRss();
+
+Optional<size_t> GetProcessRss(pid_t pid);
+Optional<double> GetCpuLoad(pid_t pid);
 
 class SystemInfo {
  public:
