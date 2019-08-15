@@ -35,15 +35,16 @@
 
 namespace {
 
-int64_t AmountOfMemory(int pages_name) {
-  int64_t pages = sysconf(pages_name);
-  int64_t page_size = sysconf(_SC_PAGESIZE);
+bool AmountOfMemory(int pages_name, size_t* size) {
+  long pages = sysconf(pages_name);
+  long page_size = sysconf(_SC_PAGESIZE);
   if (pages == -1 || page_size == -1) {
     DNOTREACHED();
-    return 0;
+    return false;
   }
 
-  return pages * page_size;
+  *size = pages * page_size;
+  return true;
 }
 
 }  // namespace
@@ -51,12 +52,22 @@ int64_t AmountOfMemory(int pages_name) {
 namespace common {
 namespace system_info {
 
-int64_t AmountOfPhysicalMemory() {
-  return AmountOfMemory(_SC_PHYS_PAGES);
+Optional<size_t> AmountOfPhysicalMemory() {
+  size_t res;
+  if (!AmountOfMemory(_SC_PHYS_PAGES, &res)) {
+    return Optional<size_t>();
+  }
+
+  return res;
 }
 
-int64_t AmountOfAvailablePhysicalMemory() {
-  return AmountOfMemory(_SC_AVPHYS_PAGES);
+Optional<size_t> AmountOfAvailablePhysicalMemory() {
+  size_t res;
+  if (!AmountOfMemory(_SC_AVPHYS_PAGES, &res)) {
+    return Optional<size_t>();
+  }
+
+  return res;
 }
 
 }  // namespace system_info

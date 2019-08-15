@@ -67,7 +67,7 @@ bool IsStatsZeroIfUnlimited(const std::string& path) {
 }
 #endif  // defined(OS_LINUX)
 
-bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t* total_bytes) {
+bool GetDiskSpaceInfo(const std::string& path, size_t* available_bytes, size_t* total_bytes) {
   struct statvfs stats;
   if (HANDLE_EINTR(statvfs(path.c_str(), &stats)) != 0) {
     return false;
@@ -80,13 +80,11 @@ bool GetDiskSpaceInfo(const std::string& path, int64_t* available_bytes, int64_t
 #endif
 
   if (available_bytes) {
-    *available_bytes = zero_size_means_unlimited ? std::numeric_limits<int64_t>::max()
-                                                 : static_cast<int64_t>(stats.f_bavail) * stats.f_frsize;
+    *available_bytes = zero_size_means_unlimited ? std::numeric_limits<size_t>::max() : stats.f_bavail * stats.f_frsize;
   }
 
   if (total_bytes) {
-    *total_bytes = zero_size_means_unlimited ? std::numeric_limits<int64_t>::max()
-                                             : static_cast<int64_t>(stats.f_blocks) * stats.f_frsize;
+    *total_bytes = zero_size_means_unlimited ? std::numeric_limits<size_t>::max() : stats.f_blocks * stats.f_frsize;
   }
   return true;
 }
@@ -96,30 +94,45 @@ namespace common {
 namespace system_info {
 
 // static
-int64_t AmountOfFreeDiskSpace(const std::string& path) {
-  int64_t available;
+Optional<size_t> AmountOfFreeDiskSpace(const std::string& path) {
+  size_t available;
   if (!GetDiskSpaceInfo(path, &available, nullptr)) {
-    return -1;
+    return Optional<size_t>();
   }
   return available;
 }
 
 // static
-int64_t AmountOfTotalDiskSpace(const std::string& path) {
-  int64_t total;
+Optional<size_t> AmountOfTotalDiskSpace(const std::string& path) {
+  size_t total;
   if (!GetDiskSpaceInfo(path, nullptr, &total)) {
-    return -1;
+    return Optional<size_t>();
   }
   return total;
 }
 
-long GetProcessRss(pid_t pid) {
+Optional<size_t> GetCurrentProcessRss() {
+  long rss = 0L;
+  FILE* fp = NULL;
+  if ((fp = fopen("/proc/self/statm", "r")) == NULL) {
+    return Optional<size_t>();
+  }
+
+  if (fscanf(fp, "%*s%ld", &rss) != 1) {
+    fclose(fp);
+    return Optional<size_t>();
+  }
+  fclose(fp);
+  return rss * sysconf(_SC_PAGESIZE);
+}
+
+Optional<size_t> GetProcessRss(pid_t pid) {
   char buff[64] = {0};
   snprintf(buff, sizeof(buff), "ps --no-headers -p %ld -o rss", static_cast<long>(pid));
 
   FILE* fp = popen(buff, "r");
   if (!fp) {
-    return 0;
+    return Optional<size_t>();
   }
 
   char path[16] = {0};
@@ -127,18 +140,18 @@ long GetProcessRss(pid_t pid) {
   pclose(fp);
 
   if (!res) {
-    return 0;
+    return Optional<size_t>();
   }
   return std::stol(res);
 }
 
-double GetCpuLoad(pid_t pid) {
+Optional<double> GetCpuLoad(pid_t pid) {
   char buff[32] = {0};
   snprintf(buff, sizeof(buff), "ps -o pcpu= %ld", static_cast<long>(pid));
 
   FILE* fp = popen(buff, "r");
   if (!fp) {
-    return 0.0;
+    return Optional<double>();
   }
 
   char path[16] = {0};
@@ -146,7 +159,7 @@ double GetCpuLoad(pid_t pid) {
   pclose(fp);
 
   if (!res) {
-    return 0.0;
+    return Optional<double>();
   }
 
   return std::stod(res);
