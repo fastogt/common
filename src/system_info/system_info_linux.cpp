@@ -31,7 +31,7 @@
 
 #include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
 
-#include <common/macros.h>  // for NOTREACHED
+#include <common/macros.h>  // for DNOTREACHED
 
 namespace {
 
