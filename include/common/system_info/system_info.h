@@ -39,6 +39,7 @@
 namespace common {
 namespace system_info {
 
+// system
 Optional<size_t> AmountOfPhysicalMemory();
 Optional<size_t> AmountOfAvailablePhysicalMemory();
 Optional<size_t> AmountOfFreeDiskSpace(const std::string& path);
@@ -48,10 +49,14 @@ std::string OperatingSystemName();
 std::string OperatingSystemVersion();
 std::string OperatingSystemArchitecture();
 
+// current process
 Optional<size_t> GetCurrentProcessRss();
 
+// any process
+#if defined(OS_POSIX)
 Optional<size_t> GetProcessRss(pid_t pid);
 Optional<double> GetCpuLoad(pid_t pid);
+#endif
 
 class SystemInfo {
  public:
