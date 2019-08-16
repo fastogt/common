@@ -45,6 +45,17 @@ namespace common {
 namespace process {
 
 namespace {
+bool GetTaskInfo(mach_port_t task, task_basic_info_64* task_info_data) {
+  if (task == MACH_PORT_NULL) {
+    return false;
+  }
+
+  mach_msg_type_number_t count = TASK_BASIC_INFO_64_COUNT;
+  kern_return_t kr = task_info(task, TASK_BASIC_INFO_64, reinterpret_cast<task_info_t>(task_info_data), &count);
+  // Most likely cause for failure: |task| is a zombie.
+  return kr == KERN_SUCCESS;
+}
+
 mach_port_t TaskForPid(pid_t process) {
   mach_port_t task = MACH_PORT_NULL;
   if (process == getpid()) {
