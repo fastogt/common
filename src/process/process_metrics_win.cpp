@@ -33,14 +33,14 @@
 
 #include <limits>
 
-#include <common/macros.h>
+#include <common/bit_cast.h>
 
 namespace common {
 namespace process {
 
 namespace {
 time64_t FromFileTime(FILETIME ft) {
-  if (bit_cast<int64_t, FILETIME>(ft) == 0) {
+  if (bit_cast<time64_t, FILETIME>(ft) == 0) {
     return 0;
   }
 

@@ -523,6 +523,7 @@ SET(COMMON_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
   ${CMAKE_SOURCE_DIR}/include/common/logger.h
   ${CMAKE_SOURCE_DIR}/include/common/macros.h
+  ${CMAKE_SOURCE_DIR}/include/common/bit_cast.h
   ${CMAKE_SOURCE_DIR}/include/common/eintr_wrapper.h
   ${CMAKE_SOURCE_DIR}/include/common/optional.h
   ${CMAKE_SOURCE_DIR}/include/common/utf_string_conversion_utils.h
