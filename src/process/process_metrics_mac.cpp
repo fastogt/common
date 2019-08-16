@@ -29,6 +29,8 @@
 
 #include <common/process/process_metrics.h>
 
+#include <unistd.h>
+
 #include <common/time.h>
 
 #include <mach/mach.h>
@@ -43,7 +45,7 @@ namespace common {
 namespace process {
 
 namespace {
-mach_port_t ProcessMetrics::TaskForPid(pid_t process) const {
+mach_port_t TaskForPid(pid_t process) {
   mach_port_t task = MACH_PORT_NULL;
   if (process == getpid()) {
     task = mach_task_self();
