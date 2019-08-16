@@ -27,43 +27,46 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/process/process_metrics.h>
 
-#include <memory>
+#include <windows.h>
 
-#include <common/optional.h>
-#include <common/time.h>
+#include <limits>
+
+#include <common/macros.h>
 
 namespace common {
 namespace process {
 
-class ProcessMetrics {
- public:
-#if defined(OS_WIN)
-  typedef void* process_handle_t;
-#else
-  typedef pid_t process_handle_t;
-#endif
+namespace {
+time64_t FromFileTime(FILETIME ft) {
+  if (bit_cast<int64_t, FILETIME>(ft) == 0) {
+    return 0;
+  }
 
-  ~ProcessMetrics();
+  if (ft.dwHighDateTime == std::numeric_limits<DWORD>::max() && ft.dwLowDateTime == std::numeric_limits<DWORD>::max()) {
+    return 0;
+  }
 
-  static std::unique_ptr<ProcessMetrics> CreateProcessMetrics(process_handle_t process);
+  return bit_cast<time64_t, FILETIME>(ft) / (10 * 1000);
+}
+}  // namespace
 
-  double GetPlatformIndependentCPUUsage();
-  time64_t GetCumulativeCPUUsage();
+time64_t ProcessMetrics::GetCumulativeCPUUsage() {
+  FILETIME creation_time;
+  FILETIME exit_time;
+  FILETIME kernel_time;
+  FILETIME user_time;
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
-  // Resident Set Size is a Linux/Android specific memory concept. Do not attempt to extend this to other platforms.
-  size_t GetResidentSetSize() const;
-#endif
+  if (!process_ || process_ == INVALID_HANDLE_VALUE) {
+    return 0;
+  }
 
- private:
-  explicit ProcessMetrics(process_handle_t process);
+  if (!GetProcessTimes(process_, &creation_time, &exit_time, &kernel_time, &user_time)) {
+    return 0;
+  }
 
-  process_handle_t process_;
-  Optional<time64_t> last_cumulative_cpu_;
-  time64_t last_cpu_time_;
-};
-
+  return FromFileTime(kernel_time) + FromFileTime(user_time);
+}
 }  // namespace process
 }  // namespace common

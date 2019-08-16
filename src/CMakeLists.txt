@@ -332,6 +332,7 @@ IF(OS_WINDOWS)
     ${CMAKE_SOURCE_DIR}/src/system_info/system_info_win.cpp
     ${CMAKE_SOURCE_DIR}/src/system/system_win.cpp
     ${CMAKE_SOURCE_DIR}/src/license/utils_win.cpp
+    ${CMAKE_SOURCE_DIR}/src/process/process_metrics_win.cpp
   )
   SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ws2_32)
   SET(COMMON_PLATFORM_DEFINITIONS)
