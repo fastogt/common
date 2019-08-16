@@ -29,6 +29,10 @@
 
 #include <common/process/process_metrics.h>
 
+#include <sys/user.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
 namespace common {
 namespace process {
 
