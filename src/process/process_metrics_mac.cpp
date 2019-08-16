@@ -33,6 +33,12 @@
 
 #include <mach/mach.h>
 
+#define TIME_VALUE_TO_TIMEVAL(a, r)   \
+  do {                                \
+    (r)->tv_sec = (a)->seconds;       \
+    (r)->tv_usec = (a)->microseconds; \
+  } while (0)
+
 namespace common {
 namespace process {
 
