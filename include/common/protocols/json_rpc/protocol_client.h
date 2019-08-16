@@ -29,8 +29,8 @@ namespace protocols {
 namespace json_rpc {
 
 typedef uint32_t protocoled_size_t;  // sizeof 4 byte
-enum : protocoled_size_t { MAX_COMMAND_LENGTH = 1024 * 1024 };
-COMPILE_ASSERT(std::numeric_limits<protocoled_size_t>::max() > MAX_COMMAND_LENGTH,
+enum : protocoled_size_t { MAX_COMMAND_LENGTH = UINT32_MAX };
+COMPILE_ASSERT(std::numeric_limits<protocoled_size_t>::max() >= MAX_COMMAND_LENGTH,
                "Protocoled packet size should be greater MAX_COMMAND_LENGTH");
 
 namespace detail {
