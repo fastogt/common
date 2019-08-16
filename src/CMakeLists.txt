@@ -359,6 +359,7 @@ ELSEIF(OS_POSIX)
       ${CMAKE_SOURCE_DIR}/src/file_system/string_path_utils.mm
       ${CMAKE_SOURCE_DIR}/src/license/utils_mac.cpp
       ${CMAKE_SOURCE_DIR}/src/license/utils_mac.mm
+      ${CMAKE_SOURCE_DIR}/src/process/process_metrics_mac.cpp
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES} ${FOUNDATION_LIBRARY} ${IOKIT_LIBRARY})
   ELSEIF(OS_IOS)
@@ -395,6 +396,7 @@ ELSEIF(OS_POSIX)
     SET(COMMON_PLATFORM_SOURCES ${COMMON_PLATFORM_SOURCES}
       ${CMAKE_SOURCE_DIR}/src/license/utils_freebsd.cpp
       ${CMAKE_SOURCE_DIR}/src/system_info/system_info_freebsd.cpp
+      ${CMAKE_SOURCE_DIR}/src/process/process_metrics_freebsd.cpp
     )
     SET(COMMON_PLATFORM_LIBRARIES ${COMMON_PLATFORM_LIBRARIES})
   ENDIF(OS_MACOSX)
