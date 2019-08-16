@@ -42,6 +42,16 @@
 namespace common {
 namespace process {
 
+namespace {
+mach_port_t ProcessMetrics::TaskForPid(pid_t process) const {
+  mach_port_t task = MACH_PORT_NULL;
+  if (process == getpid()) {
+    task = mach_task_self();
+  }
+  return task;
+}
+}  // namespace
+
 time64_t ProcessMetrics::GetCumulativeCPUUsage() {
   mach_port_t task = TaskForPid(process_);
   if (task == MACH_PORT_NULL) {
