@@ -29,6 +29,8 @@
 
 #pragma once
 
+#if defined(OS_LINUX)
+
 #include <vector>
 
 #include <common/file_system/path.h>
@@ -76,3 +78,5 @@ class IoInotifyClient : public DescriptorClient {
 }  // namespace inotify
 }  // namespace libev
 }  // namespace common
+
+#endif

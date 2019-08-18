@@ -29,6 +29,8 @@
 
 #pragma once
 
+#if defined(OS_LINUX)
+
 namespace common {
 namespace libev {
 namespace inotify {
@@ -53,3 +55,5 @@ enum {
 }  // namespace inotify
 }  // namespace libev
 }  // namespace common
+
+#endif

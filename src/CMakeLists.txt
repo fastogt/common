@@ -748,7 +748,7 @@ IF(LIBEV_FOUND)
     ${LIBEV_WEBSOCKET_SOURCES}
   )
 
-  IF(OS_POSIX)
+  IF(OS_LINUX)
     SET(LIBEV_HEADERS ${LIBEV_HEADERS}
       ${CMAKE_SOURCE_DIR}/include/common/libev/inotify/types.h
       ${CMAKE_SOURCE_DIR}/include/common/libev/inotify/inotify_client.h
@@ -758,7 +758,7 @@ IF(LIBEV_FOUND)
       ${CMAKE_SOURCE_DIR}/src/libev/inotify/inotify_client.cpp
       ${CMAKE_SOURCE_DIR}/src/libev/inotify/inotify_client_observer.cpp
     )
-  ENDIF(OS_POSIX)
+  ENDIF(OS_LINUX)
 
   SET(COMMON_LIBEV_PROJECT_NAME ${PROJECT_NAME_LOWERCASE}_ev)
   ADD_LIBRARY(${COMMON_LIBEV_PROJECT_NAME} ${LIBEV_HEADERS} ${LIBEV_SOURCES})

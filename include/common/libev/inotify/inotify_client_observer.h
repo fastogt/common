@@ -29,6 +29,8 @@
 
 #pragma once
 
+#if defined(OS_LINUX)
+
 #include <string>
 
 #include <common/file_system/path.h>
@@ -54,3 +56,5 @@ class IoInotifyClientObserver {
 }  // namespace inotify
 }  // namespace libev
 }  // namespace common
+
+#endif
