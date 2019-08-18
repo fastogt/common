@@ -27,12 +27,29 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/io_inotify_client_observer.h>
+#pragma once
 
 namespace common {
 namespace libev {
+namespace inotify {
 
-IoInotifyClientObserver::~IoInotifyClientObserver() {}
+enum {
+  EV_IN_ACCESS = 0x00000001,                               /* File was accessed.  */
+  EV_IN_MODIFY = 0x00000002,                               /* File was modified.  */
+  EV_IN_ATTRIB = 0x00000004,                               /* Metadata changed.  */
+  EV_IN_CLOSE_WRITE = 0x00000008,                          /* Writtable file was closed.  */
+  EV_IN_CLOSE_NOWRITE = 0x00000010,                        /* Unwrittable file closed.  */
+  EV_IN_CLOSE = (EV_IN_CLOSE_WRITE | EV_IN_CLOSE_NOWRITE), /* Close.  */
+  EV_IN_OPEN = 0x00000020,                                 /* File was opened.  */
+  EV_IN_MOVED_FROM = 0x00000040,                           /* File was moved from X.  */
+  EV_IN_MOVED_TO = 0x00000080,                             /* File was moved to Y.  */
+  EV_IN_MOVE = (EV_IN_MOVED_FROM | EV_IN_MOVED_TO),        /* Moves.  */
+  EV_IN_CREATE = 0x00000100,                               /* Subfile was created.  */
+  EV_IN_DELETE = 0x00000200,                               /* Subfile was deleted.  */
+  EV_IN_DELETE_SELF = 0x00000400,                          /* Self was deleted.  */
+  EV_IN_MOVE_SELF = 0x00000800                             /* Self was moved.  */
+};
 
+}  // namespace inotify
 }  // namespace libev
 }  // namespace common

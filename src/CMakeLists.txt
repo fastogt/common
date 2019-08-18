@@ -750,12 +750,13 @@ IF(LIBEV_FOUND)
 
   IF(OS_POSIX)
     SET(LIBEV_HEADERS ${LIBEV_HEADERS}
-      ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client.h
-      ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client_observer.h
+      ${CMAKE_SOURCE_DIR}/include/common/libev/inotify/types.h
+      ${CMAKE_SOURCE_DIR}/include/common/libev/inotify/inotify_client.h
+      ${CMAKE_SOURCE_DIR}/include/common/libev/inotify/inotify_client_observer.h
     )
     SET(LIBEV_SOURCES ${LIBEV_SOURCES}
-      ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client.cpp
-      ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_observer.cpp
+      ${CMAKE_SOURCE_DIR}/src/libev/inotify/inotify_client.cpp
+      ${CMAKE_SOURCE_DIR}/src/libev/inotify/inotify_client_observer.cpp
     )
   ENDIF(OS_POSIX)
 

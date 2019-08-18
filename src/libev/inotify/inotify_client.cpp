@@ -27,17 +27,18 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/io_inotify_client.h>
+#include <common/libev/inotify/inotify_client.h>
 
 #include <sys/inotify.h>
 
-#include <common/libev/io_inotify_client_observer.h>
+#include <common/libev/inotify/inotify_client_observer.h>
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_SIZE (1024 * (EVENT_SIZE + 16))
 
 namespace common {
 namespace libev {
+namespace inotify {
 
 IoInotifyClient::IoInotifyClient(IoLoop* server, IoInotifyClientObserver* client, flags_t flags)
     : base_class(server, inotify_init(), flags), client_(client) {}
@@ -73,29 +74,17 @@ void IoInotifyClient::ProcessRead() {
     return;
   }
 
-  ssize_t i = 0;
+  size_t i = 0;
   while (i < nread) {
     struct inotify_event* event = reinterpret_cast<struct inotify_event*>(data + i);
     if (event->len) {
       const auto inode = FindInotifyNodeByDescriptor(event->wd);
       if (inode) {
-        if (event->mask & IN_CREATE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_CREATE);
-          }
-        } else if (event->mask & IN_DELETE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_DELETE);
-          }
-        } else if (event->mask & IN_MOVED_TO) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_MOVED_TO);
-          }
-        } else if (event->mask & IN_CLOSE_WRITE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_CLOSE_WRITE);
-          }
+        if (client_) {
+          client_->HandleChanges(this, inode->directory, event->name, event->len, event->mask & IN_ISDIR, event->mask);
         }
+      } else {
+        DNOTREACHED();
       }
     }
     i += EVENT_SIZE + event->len;
@@ -130,5 +119,6 @@ ErrnoError IoInotifyClient::DoClose() {
   return base_class::DoClose();
 }
 
+}
 }  // namespace libev
 }  // namespace common
