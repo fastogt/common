@@ -29,28 +29,25 @@
 
 #pragma once
 
-#include <common/file_system/descriptor_holder.h>
-#include <common/libev/io_client.h>
+#include <string>
+
+#include <common/file_system/path.h>
 
 namespace common {
 namespace libev {
 
-class DescriptorClient : public IoClient {
+enum FSEventType { FS_CREATE, FS_DELETE, FS_MOVED_TO, FS_CLOSE_WRITE };
+
+class IoInotifyClient;
+
+class IoInotifyClientObserver {
  public:
-  DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
-  ~DescriptorClient() override;
-
-  const char* ClassName() const override;
-
-  ErrnoError SingleWrite(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-  ErrnoError SingleRead(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
-
- protected:
-  descriptor_t GetFd() const override;
-  ErrnoError DoClose() override;
-
- private:
-  file_system::DescriptorHolder desc_;
+  virtual void HandleChanges(IoInotifyClient* client,
+                             const file_system::ascii_directory_string_path& directory,
+                             const std::string& name,
+                             bool is_dir,
+                             FSEventType ev) = 0;
+  virtual ~IoInotifyClientObserver();
 };
 
 }  // namespace libev

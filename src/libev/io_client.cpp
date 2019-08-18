@@ -59,15 +59,6 @@ flags_t IoClient::GetFlags() const {
   return flags_;
 }
 
-void IoClient::SetFlags(flags_t flags) {
-  if (flags_ != flags) {
-    flags_ = flags;
-    read_write_io_->Stop();
-    read_write_io_->SetEvents(flags);
-    read_write_io_->Start();
-  }
-}
-
 const char* IoClient::ClassName() const {
   return "IoClient";
 }

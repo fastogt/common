@@ -29,28 +29,46 @@
 
 #pragma once
 
-#include <common/file_system/descriptor_holder.h>
-#include <common/libev/io_client.h>
+#include <vector>
+
+#include <common/file_system/path.h>
+#include <common/libev/descriptor_client.h>
 
 namespace common {
 namespace libev {
 
-class DescriptorClient : public IoClient {
+struct InotifyNode {
+  descriptor_t fd;
+  file_system::ascii_directory_string_path directory;
+};
+
+class IoInotifyClientObserver;
+
+class IoInotifyClient : public DescriptorClient {
  public:
-  DescriptorClient(IoLoop* server, descriptor_t fd, flags_t flags = EV_READ);
-  ~DescriptorClient() override;
+  typedef DescriptorClient base_class;
 
-  const char* ClassName() const override;
+  explicit IoInotifyClient(IoLoop* server, IoInotifyClientObserver* client, flags_t flags = EV_READ);
+  ~IoInotifyClient() override;
 
-  ErrnoError SingleWrite(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-  ErrnoError SingleRead(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  common::ErrnoError WatchDirectory(const file_system::ascii_directory_string_path& direcotry,
+                                    uint32_t mask) WARN_UNUSED_RESULT;
 
- protected:
-  descriptor_t GetFd() const override;
-  ErrnoError DoClose() override;
+  void ProcessRead();
 
  private:
-  file_system::DescriptorHolder desc_;
+  Optional<InotifyNode> FindInotifyNodeByDescriptor(descriptor_t fd) const;
+
+  using base_class::Read;
+  using base_class::SingleRead;
+  using base_class::SingleWrite;
+  using base_class::Write;
+
+  ErrnoError DoClose() override;
+
+  IoInotifyClientObserver* client_;
+  std::vector<InotifyNode> watched_directories_;
+  DISALLOW_COPY_AND_ASSIGN(IoInotifyClient);
 };
 
 }  // namespace libev

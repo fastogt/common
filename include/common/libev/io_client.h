@@ -53,7 +53,6 @@ class IoClient : public IoBase<IoClient> {
   IoLoop* GetServer() const;
 
   flags_t GetFlags() const;
-  void SetFlags(flags_t flags);
 
   const char* ClassName() const override;
 
@@ -65,10 +64,9 @@ class IoClient : public IoBase<IoClient> {
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
-
- private:
   virtual ErrnoError DoClose() = 0;
 
+ private:
   IoLoop* server_;
   LibevIO* read_write_io_;
   flags_t flags_;

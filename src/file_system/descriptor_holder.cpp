@@ -73,7 +73,6 @@ ErrnoError DescriptorHolder::Read(void* out_data, size_t max_size, size_t* nread
 }
 
 ErrnoError DescriptorHolder::Close() {
-  DCHECK(IsValid());
   return close_descriptor(fd_);
 }
 
