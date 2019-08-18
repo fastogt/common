@@ -119,6 +119,6 @@ ErrnoError IoInotifyClient::DoClose() {
   return base_class::DoClose();
 }
 
-}
+}  // namespace inotify
 }  // namespace libev
 }  // namespace common
