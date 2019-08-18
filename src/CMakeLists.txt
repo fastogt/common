@@ -733,7 +733,6 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_observer.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
@@ -751,6 +750,12 @@ IF(LIBEV_FOUND)
     ${LIBEV_HTTP_SOURCES}
     ${LIBEV_WEBSOCKET_SOURCES}
   )
+
+  IF(OS_POSIX)
+    SET(LIBEV_SOURCES ${LIBEV_SOURCES} ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_posix.cpp)
+  ELSE()
+    SET(LIBEV_SOURCES ${LIBEV_SOURCES} ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_win.cpp)
+  ENDIF(OS_POSIX)
 
   SET(COMMON_LIBEV_PROJECT_NAME ${PROJECT_NAME_LOWERCASE}_ev)
   ADD_LIBRARY(${COMMON_LIBEV_PROJECT_NAME} ${LIBEV_HEADERS} ${LIBEV_SOURCES})

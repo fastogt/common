@@ -29,78 +29,22 @@
 
 #include <common/libev/io_inotify_client.h>
 
-#include <sys/inotify.h>
-
-#include <common/libev/io_inotify_client_observer.h>
-
-#define EVENT_SIZE (sizeof(struct inotify_event))
-#define BUF_SIZE (1024 * (EVENT_SIZE + 16))
-
 namespace common {
 namespace libev {
 
 IoInotifyClient::IoInotifyClient(IoLoop* server, IoInotifyClientObserver* client, flags_t flags)
-    : base_class(server, inotify_init(), flags), client_(client) {}
+    : base_class(server, INVALID_DESCRIPTOR, flags), client_(client) {}
 
 IoInotifyClient::~IoInotifyClient() {}
 
 common::ErrnoError IoInotifyClient::WatchDirectory(const file_system::ascii_directory_string_path& direcotry,
                                                    uint32_t mask) {
-  if (!direcotry.IsValid()) {
-    return common::make_errno_error_inval();
-  }
-
-  descriptor_t inode = GetFd();
-  if (inode == INVALID_DESCRIPTOR) {
-    return common::make_errno_error("Invalid inode", EINVAL);
-  }
-
-  const std::string dir_str = direcotry.GetPath();
-  descriptor_t watcher_fd = inotify_add_watch(inode, dir_str.c_str(), mask);
-  if (watcher_fd == ERROR_RESULT_VALUE) {
-    return common::make_errno_error(errno);
-  }
-
-  watched_directories_.push_back({watcher_fd, direcotry});
+  UNUSED(direcotry);
+  UNUSED(mask);
   return common::ErrnoError();
 }
 
-void IoInotifyClient::ProcessRead() {
-  char data[BUF_SIZE] = {0};
-  size_t nread = 0;
-  common::ErrnoError errn = SingleRead(data, BUF_SIZE, &nread);
-  if ((errn && errn->GetErrorCode() != EAGAIN) || nread == 0) {
-    return;
-  }
-
-  ssize_t i = 0;
-  while (i < nread) {
-    struct inotify_event* event = reinterpret_cast<struct inotify_event*>(data + i);
-    if (event->len) {
-      const auto inode = FindInotifyNodeByDescriptor(event->wd);
-      if (inode) {
-        if (event->mask & IN_CREATE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_CREATE);
-          }
-        } else if (event->mask & IN_DELETE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_DELETE);
-          }
-        } else if (event->mask & IN_MOVED_TO) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_MOVED_TO);
-          }
-        } else if (event->mask & IN_CLOSE_WRITE) {
-          if (client_) {
-            client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, FS_CLOSE_WRITE);
-          }
-        }
-      }
-    }
-    i += EVENT_SIZE + event->len;
-  }
-}
+void IoInotifyClient::ProcessRead() {}
 
 Optional<InotifyNode> IoInotifyClient::FindInotifyNodeByDescriptor(descriptor_t fd) const {
   if (fd == INVALID_DESCRIPTOR) {
@@ -118,11 +62,11 @@ Optional<InotifyNode> IoInotifyClient::FindInotifyNodeByDescriptor(descriptor_t 
 
 ErrnoError IoInotifyClient::DoClose() {
   descriptor_t inode = GetFd();
-  if (inode != INVALID_DESCRIPTOR) {
-    for (size_t i = 0; i < watched_directories_.size(); ++i) {
-      inotify_rm_watch(inode, watched_directories_[i].fd);
-    }
+  if (inode == INVALID_DESCRIPTOR) {
+    watched_directories_.clear();
+    return ErrnoError();
   }
+
   watched_directories_.clear();
   return base_class::DoClose();
 }
