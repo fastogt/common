@@ -35,7 +35,7 @@
 
 #include <common/patterns/crtp_pattern.h>  // for id_counter
 
-#ifdef OS_POSIX
+#if defined(OS_POSIX)
 #define LIBEV_CHILD_ENABLE 1
 #else
 #define LIBEV_CHILD_ENABLE 0

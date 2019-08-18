@@ -110,7 +110,7 @@ ErrnoError ReadCommand(libev::IoClient* client, IEDcoder* compressor, std::strin
     return make_errno_error_inval();
   }
 
-  protocoled_size_t message_size;
+  protocoled_size_t message_size = 0;
   ErrnoError err = ReadDataSize(client, &message_size);
   if (err) {
     return err;

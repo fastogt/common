@@ -711,8 +711,6 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_loop_observer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/io_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client.h
-    ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client_observer.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/descriptor_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/pipe_client.h
     ${CMAKE_SOURCE_DIR}/include/common/libev/event_loop.h
@@ -733,7 +731,6 @@ IF(LIBEV_FOUND)
     ${CMAKE_SOURCE_DIR}/src/libev/event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/default_event_loop.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_client.cpp
-    ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_observer.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/descriptor_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/pipe_client.cpp
     ${CMAKE_SOURCE_DIR}/src/libev/io_loop.cpp
@@ -752,9 +749,14 @@ IF(LIBEV_FOUND)
   )
 
   IF(OS_POSIX)
-    SET(LIBEV_SOURCES ${LIBEV_SOURCES} ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_posix.cpp)
-  ELSE()
-    SET(LIBEV_SOURCES ${LIBEV_SOURCES} ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_win.cpp)
+    SET(LIBEV_HEADERS ${LIBEV_HEADERS}
+      ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client.h
+      ${CMAKE_SOURCE_DIR}/include/common/libev/io_inotify_client_observer.h
+    )
+    SET(LIBEV_SOURCES ${LIBEV_SOURCES}
+      ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client.cpp
+      ${CMAKE_SOURCE_DIR}/src/libev/io_inotify_client_observer.cpp
+    )
   ENDIF(OS_POSIX)
 
   SET(COMMON_LIBEV_PROJECT_NAME ${PROJECT_NAME_LOWERCASE}_ev)
