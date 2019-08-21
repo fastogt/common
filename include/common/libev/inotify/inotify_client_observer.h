@@ -46,8 +46,7 @@ class IoInotifyClientObserver {
  public:
   virtual void HandleChanges(IoInotifyClient* client,
                              const file_system::ascii_directory_string_path& directory,
-                             const char* name,
-                             uint32_t name_len,
+                             const std::string& name,
                              bool is_dir,
                              uint32_t mask) = 0;
   virtual ~IoInotifyClientObserver();

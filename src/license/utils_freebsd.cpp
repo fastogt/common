@@ -43,8 +43,10 @@ bool GetHddID(std::string* serial) {
     return false;
   }
 
+  char type = S_ISCHR(stats.st_mode) ? 'c' : 'b';
+
   /* Create a list of the devices in the 'hidraw' subsystem. */
-  struct udev_device* device = udev_device_new_from_devnum(udev, 'b', stats.st_dev);
+  struct udev_device* device = udev_device_new_from_devnum(udev, type, stats.st_dev);
   if (!device) {
     udev_unref(udev);
     return false;

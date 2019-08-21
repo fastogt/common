@@ -81,7 +81,7 @@ void IoInotifyClient::ProcessRead() {
       const auto inode = FindInotifyNodeByDescriptor(event->wd);
       if (inode) {
         if (client_) {
-          client_->HandleChanges(this, inode->directory, event->name, event->len, event->mask & IN_ISDIR, event->mask);
+          client_->HandleChanges(this, inode->directory, event->name, event->mask & IN_ISDIR, event->mask);
         }
       } else {
         DNOTREACHED();
