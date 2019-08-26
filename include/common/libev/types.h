@@ -46,6 +46,8 @@
 #if LIBEV_CHILD_ENABLE
 struct ev_child;
 typedef ev_child fasto_ev_child;
+#else
+struct fasto_ev_child;
 #endif
 
 namespace common {
