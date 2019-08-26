@@ -92,17 +92,15 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     UNUSED(id);
   }
 
-#if LIBEV_CHILD_ENABLE
   void Accepted(common::libev::IoChild* child) override { UNUSED(child); }
   void Moved(common::libev::IoLoop* server, common::libev::IoChild* child) override {
     UNUSED(server);
     UNUSED(child);
   }
-  void ChildStatusChanged(common::libev::IoChild* child, int status) override {
+  void ChildStatusChanged(common::libev::IoChild* child, int status, int signal) override {
     UNUSED(child);
     UNUSED(status);
   }
-#endif
 
   void DataReceived(common::libev::IoClient* client) override {
     char buff[BUF_SIZE] = {0};

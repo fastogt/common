@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <common/threads/platform_thread.h>
 
 #include <common/libev/types.h>
@@ -37,7 +39,6 @@ struct ev_loop;
 struct ev_io;
 struct ev_timer;
 struct ev_async;
-struct fasto_ev_child;
 
 namespace common {
 namespace libev {
@@ -58,7 +59,7 @@ class LibEvLoop {
   typedef void io_callback_t(struct ev_loop* loop, struct ev_io* watcher, int revents);
   typedef void async_callback_t(struct ev_loop* loop, struct ev_async* watcher, int revents);
   typedef void timer_callback_t(struct ev_loop* loop, struct ev_timer* watcher, int revents);
-  typedef void child_callback_t(struct ev_loop* loop, struct fasto_ev_child* watcher, int revents);
+  typedef void child_callback_t(struct ev_loop* loop, fasto_ev_child* watcher, int revents);
 
   LibEvLoop();
   virtual ~LibEvLoop();

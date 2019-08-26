@@ -34,7 +34,7 @@
 #include <common/libev/event_loop.h>
 
 #if EV_CHILD_ENABLE
-typedef ev_child fasto_ev_child;
+using fasto_ev_child = ev_child;
 #else
 #if defined(OS_WIN)
 #include "fasto_ev_child_win.h"
@@ -82,7 +82,7 @@ process_handle_t LibevChild::GetPid() const {
   return pid_;
 }
 
-void LibevChild::child_callback(struct ev_loop* loop, struct fasto_ev_child* watcher, int revents) {
+void LibevChild::child_callback(struct ev_loop* loop, fasto_ev_child* watcher, int revents) {
   UNUSED(loop);
   UNUSED(revents);
 

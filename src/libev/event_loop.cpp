@@ -31,18 +31,16 @@
 
 #include <stdlib.h>
 
-#include <mutex>
-
 #include <ev.h>
+
+#include <mutex>
 
 #include <common/libev/event_async.h>
 #include <common/libev/event_child.h>
 #include <common/libev/event_io.h>
 #include <common/libev/event_timer.h>
 
-#if EV_CHILD_ENABLE
-typedef ev_child fasto_ev_child;
-#else
+#if !EV_CHILD_ENABLE
 #if defined(OS_WIN)
 #include <windows.h>
 #include "fasto_ev_child_win.h"

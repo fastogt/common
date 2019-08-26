@@ -37,13 +37,24 @@
 
 #define INVALID_TIMER_ID -1
 
+#if defined(OS_POSIX)
+#define LIBEV_CHILD_ENABLE 1
+#else
+#define LIBEV_CHILD_ENABLE 0
+#endif
+
+#if LIBEV_CHILD_ENABLE
+struct ev_child;
+typedef ev_child fasto_ev_child;
+#endif
+
 namespace common {
 namespace libev {
 
 #if defined(OS_WIN)
-  typedef void* process_handle_t;
+typedef void* process_handle_t;
 #else
-  typedef pid_t process_handle_t;
+typedef pid_t process_handle_t;
 #endif
 
 class LibEvLoop;
@@ -104,9 +115,9 @@ class LibevBase : public patterns::id_counter<LibevBase<handle_t, id_t>, id_t> {
   user_data_t GetUserData() const { return user_data_; }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LibevBase);
   handle_t* handle_;
   user_data_t user_data_;
+  DISALLOW_COPY_AND_ASSIGN(LibevBase);
 };
 
 typedef std::function<void()> custom_loop_exec_function_t;
@@ -114,7 +125,8 @@ typedef std::function<void()> custom_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevAsync* async, flags_t revents)> async_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevIO* io, flags_t revents)> io_loop_exec_function_t;
 typedef std::function<void(LibEvLoop* loop, LibevTimer* timer, flags_t revents)> timer_loop_exec_function_t;
-typedef std::function<void(LibEvLoop* loop, LibevChild* child, int status, int signal, flags_t revents)> child_loop_exec_function_t;
+typedef std::function<void(LibEvLoop* loop, LibevChild* child, int status, int signal, flags_t revents)>
+    child_loop_exec_function_t;
 
 }  // namespace libev
 }  // namespace common
