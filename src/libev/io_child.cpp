@@ -29,8 +29,6 @@
 
 #include <common/libev/io_child.h>
 
-#if LIBEV_CHILD_ENABLE
-
 #include <common/libev/event_child.h>
 #include <common/libev/io_loop.h>
 
@@ -49,7 +47,7 @@ IoLoop* IoChild::GetServer() const {
   return server_;
 }
 
-pid_t IoChild::GetPid() const {
+process_handle_t IoChild::GetProcessID() const {
   return child_->GetPid();
 }
 
@@ -59,5 +57,3 @@ const char* IoChild::ClassName() const {
 
 }  // namespace libev
 }  // namespace common
-
-#endif

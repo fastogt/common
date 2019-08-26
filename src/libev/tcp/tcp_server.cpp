@@ -104,11 +104,9 @@ TcpClient* TcpServer::CreateClient(const net::socket_info& info) {
   return new TcpClient(this, info);
 }
 
-#if LIBEV_CHILD_ENABLE
 IoChild* TcpServer::CreateChild() {
   return new IoChild(this);
 }
-#endif
 
 void TcpServer::PreLooped(LibEvLoop* loop) {
   net::socket_descr_t fd = sock_.GetFd();

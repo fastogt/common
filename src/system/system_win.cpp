@@ -27,7 +27,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "common/system/system.h"
+#include <common/system/system.h>
 
 #include <windows.h>
 

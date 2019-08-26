@@ -40,6 +40,34 @@
 #include <common/libev/event_io.h>
 #include <common/libev/event_timer.h>
 
+#if EV_CHILD_ENABLE
+typedef ev_child fasto_ev_child;
+#else
+#if defined(OS_WIN)
+#include <windows.h>
+#include "fasto_ev_child_win.h"
+namespace {
+const DWORD kBasicProcessAccess = PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
+
+static void WINAPI win32_deadchild_callback(PVOID user_data, BOOLEAN) {
+  fasto_ev_child* childinfo = static_cast<fasto_ev_child*>(user_data);
+  if (!childinfo) {
+    return;
+  }
+
+  DWORD exitcode;
+  childinfo->rstatus = EXIT_FAILURE;
+  if (GetExitCodeProcess(childinfo->proc_handle, &exitcode)) {
+    childinfo->rstatus = static_cast<int>(exitcode);
+  }
+  childinfo->loop->ExecInLoopThread([childinfo]() { (childinfo->cb)(childinfo->ev_loop, childinfo, EV_CHILD); });
+}
+}  // namespace
+#else
+#error "Please implement"
+#endif
+#endif
+
 namespace common {
 namespace libev {
 
@@ -186,25 +214,58 @@ void LibEvLoop::StopTimer(LibevTimer* timer) {
   ev_timer_stop(loop_, eit);
 }
 
-#if LIBEV_CHILD_ENABLE
-void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, pid_t pid) {
+void LibEvLoop::InitChild(LibevChild* child, child_callback_t cb, process_handle_t pid) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
-  ev_child* eic = child->GetHandle();
+  fasto_ev_child* eic = child->GetHandle();
+#if EV_CHILD_ENABLE
   ev_child_init(eic, cb, pid, 0);
+#else
+#if defined(OS_WIN)
+  eic->proc_handle = pid;
+  eic->ev_loop = loop_;
+  eic->loop = this;
+  eic->cb = cb;
+#else
+#error "Please implement"
+#endif
+#endif
 }
 
 void LibEvLoop::StartChild(LibevChild* child) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
-  ev_child* eic = child->GetHandle();
+  fasto_ev_child* eic = child->GetHandle();
+#if EV_CHILD_ENABLE
   ev_child_start(loop_, eic);
+#else
+#if defined(OS_WIN)
+  RegisterWaitForSingleObject(&eic->wait_handle, eic->proc_handle, win32_deadchild_callback, eic, INFINITE,
+                              WT_EXECUTEONLYONCE | WT_EXECUTEINWAITTHREAD);
+#else
+#error "Please implement"
+#endif
+#endif
 }
 
 void LibEvLoop::StopChild(LibevChild* child) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
-  ev_child* eic = child->GetHandle();
+  fasto_ev_child* eic = child->GetHandle();
+#if EV_CHILD_ENABLE
   ev_child_stop(loop_, eic);
-}
+#else
+#if defined(OS_WIN)
+  if (eic->wait_handle) {
+    UnregisterWaitEx(eic->wait_handle, nullptr);
+    eic->wait_handle = nullptr;
+  }
+  if (eic->proc_handle) {
+    CloseHandle(eic->proc_handle);
+    eic->proc_handle = nullptr;
+  }
+#else
+#error "Please implement"
 #endif
+#endif
+}
 
 void LibEvLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
   if (IsLoopThread()) {

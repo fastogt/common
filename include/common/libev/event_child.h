@@ -31,34 +31,32 @@
 
 #include <common/libev/types.h>
 
-#if LIBEV_CHILD_ENABLE
-struct ev_child;
+struct fasto_ev_child;
 struct ev_loop;
 
 namespace common {
 namespace libev {
 
-class LibevChild : public LibevBase<struct ev_child, child_id_t> {
+class LibevChild : public LibevBase<struct fasto_ev_child, child_id_t> {
  public:
-  typedef LibevBase<struct ev_child, child_id_t> base_class;
+  typedef LibevBase<struct fasto_ev_child, child_id_t> base_class;
   LibevChild();
   ~LibevChild();
 
-  bool Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid);
+  bool Init(LibEvLoop* loop, child_loop_exec_function_t cb, process_handle_t pid);
   void Start();
   void Stop();
 
-  pid_t GetPid() const;
+  process_handle_t GetPid() const;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LibevChild);
-  static void child_callback(struct ev_loop* loop, struct ev_child* child, int revents);
+  static void child_callback(struct ev_loop* loop, struct fasto_ev_child* child, int revents);
 
   LibEvLoop* loop_;
   child_loop_exec_function_t func_;
-  pid_t pid_;
+  process_handle_t pid_;
 };
 
 }  // namespace libev
 }  // namespace common
-#endif

@@ -44,9 +44,7 @@ namespace libev {
 
 class IoLoopObserver;
 class IoClient;
-#if LIBEV_CHILD_ENABLE
 class IoChild;
-#endif
 
 class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
  public:
@@ -65,11 +63,9 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
-#if LIBEV_CHILD_ENABLE
-  IoChild* RegisterChild(pid_t pid);
-  void RegisterChild(IoChild* child, pid_t pid);
+  IoChild* RegisterChild(process_handle_t pid);
+  void RegisterChild(IoChild* child, process_handle_t pid);
   void UnRegisterChild(IoChild* child);
-#endif
 
   virtual const char* ClassName() const override = 0;
 
@@ -78,17 +74,13 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
   bool IsLoopThread() const;
 
   std::vector<IoClient*> GetClients() const;
-#if LIBEV_CHILD_ENABLE
   std::vector<IoChild*> GetChilds() const;
-#endif
 
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
  protected:
   virtual IoClient* CreateClient(const net::socket_info& info) = 0;
-#if LIBEV_CHILD_ENABLE
   virtual IoChild* CreateChild() = 0;
-#endif
 
   virtual void PreLooped(LibEvLoop* loop) override;
   virtual void Started(LibEvLoop* loop) override;
@@ -102,17 +94,13 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
   static void read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents);
   void ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents);
 
-#if LIBEV_CHILD_ENABLE
-  static void child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents);
-  void ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t revents);
-#endif
+  static void child_cb(LibEvLoop* loop, LibevChild* child, int status, int signal, flags_t revents);
+  void ChildStatus(LibEvLoop* loop, IoChild* child, int status, int signal, flags_t revents);
 
   IoLoopObserver* const observer_;
 
   std::vector<IoClient*> clients_;
-#if LIBEV_CHILD_ENABLE
   std::vector<IoChild*> childs_;
-#endif
   const patterns::id_counter<IoLoop> id_;
 
   std::string name_;

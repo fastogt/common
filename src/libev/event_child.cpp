@@ -29,20 +29,29 @@
 
 #include <common/libev/event_child.h>
 
-#ifdef OS_POSIX
 #include <ev.h>
 
 #include <common/libev/event_loop.h>
 
+#if EV_CHILD_ENABLE
+typedef ev_child fasto_ev_child;
+#else
+#if defined(OS_WIN)
+#include "fasto_ev_child_win.h"
+#else
+#error "Please implement"
+#endif
+#endif
+
 namespace common {
 namespace libev {
 
-LibevChild::LibevChild() : base_class(), loop_(nullptr), func_(), pid_(INVALID_PID) {}
+LibevChild::LibevChild() : base_class(), loop_(nullptr), func_(), pid_(INVALID_PROCESS_ID) {}
 
 LibevChild::~LibevChild() {}
 
-bool LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, pid_t pid) {
-  if (!loop || !cb || pid == INVALID_PID) {
+bool LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, process_handle_t pid) {
+  if (!loop || !cb || pid == INVALID_PROCESS_ID) {
     return false;
   }
 
@@ -69,20 +78,34 @@ void LibevChild::Stop() {
   loop_->StopChild(this);
 }
 
-pid_t LibevChild::GetPid() const {
+process_handle_t LibevChild::GetPid() const {
   return pid_;
 }
 
-void LibevChild::child_callback(struct ev_loop* loop, struct ev_child* watcher, int revents) {
+void LibevChild::child_callback(struct ev_loop* loop, struct fasto_ev_child* watcher, int revents) {
   UNUSED(loop);
   UNUSED(revents);
 
   LibevChild* child = reinterpret_cast<LibevChild*>(watcher->data);
   if (child) {
-    child->func_(child->loop_, child, watcher->rstatus, revents);
+    int stabled_status = EXIT_SUCCESS;
+    int signal_number = 0;
+
+#if defined(OS_POSIX)
+    if (WIFEXITED(watcher->rstatus)) {
+      stabled_status = WEXITSTATUS(watcher->rstatus);
+    } else {
+      stabled_status = EXIT_FAILURE;
+    }
+    if (WIFSIGNALED(watcher->rstatus)) {
+      signal_number = WTERMSIG(watcher->rstatus);
+    }
+#else
+    stabled_status = watcher->rstatus;
+#endif
+    child->func_(child->loop_, child, stabled_status, signal_number, revents);
   }
 }
 
 }  // namespace libev
 }  // namespace common
-#endif

@@ -52,9 +52,7 @@ class TcpServer : public IoLoop {
 
  private:
   TcpClient* CreateClient(const net::socket_info& info) override;
-#if LIBEV_CHILD_ENABLE
   IoChild* CreateChild() override;
-#endif
   void PreLooped(LibEvLoop* loop) override;
   void PostLooped(LibEvLoop* loop) override;
 

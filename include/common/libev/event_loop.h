@@ -37,7 +37,7 @@ struct ev_loop;
 struct ev_io;
 struct ev_timer;
 struct ev_async;
-struct ev_child;
+struct fasto_ev_child;
 
 namespace common {
 namespace libev {
@@ -54,12 +54,12 @@ class EvLoopObserver {
 };
 
 class LibEvLoop {
+ public:
   typedef void io_callback_t(struct ev_loop* loop, struct ev_io* watcher, int revents);
   typedef void async_callback_t(struct ev_loop* loop, struct ev_async* watcher, int revents);
   typedef void timer_callback_t(struct ev_loop* loop, struct ev_timer* watcher, int revents);
-  typedef void child_callback_t(struct ev_loop* loop, struct ev_child* watcher, int revents);
+  typedef void child_callback_t(struct ev_loop* loop, struct fasto_ev_child* watcher, int revents);
 
- public:
   LibEvLoop();
   virtual ~LibEvLoop();
 
@@ -84,12 +84,9 @@ class LibEvLoop {
   void StartTimer(LibevTimer* timer);
   void StopTimer(LibevTimer* timer);
 
-#if LIBEV_CHILD_ENABLE
-  // child
-  void InitChild(LibevChild* child, child_callback_t cb, pid_t pid);
+  void InitChild(LibevChild* child, child_callback_t cb, process_handle_t pid);
   void StartChild(LibevChild* child);
   void StopChild(LibevChild* child);
-#endif
 
   void ExecInLoopThread(custom_loop_exec_function_t func);
 

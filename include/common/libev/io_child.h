@@ -31,8 +31,6 @@
 
 #include <common/libev/types.h>
 
-#if LIBEV_CHILD_ENABLE
-
 #include <common/libev/io_base.h>
 
 namespace common {
@@ -46,10 +44,10 @@ class IoChild : public IoBase<IoChild> {
   typedef IoBase<IoChild> base_class;
 
   explicit IoChild(IoLoop* server);
-  virtual ~IoChild();
+  virtual ~IoChild() override;
 
   IoLoop* GetServer() const;
-  pid_t GetPid() const;
+  process_handle_t GetProcessID() const;
 
   virtual const char* ClassName() const override;
 
@@ -61,5 +59,3 @@ class IoChild : public IoBase<IoChild> {
 
 }  // namespace libev
 }  // namespace common
-
-#endif

@@ -38,10 +38,8 @@
 #include <common/libev/io_client.h>
 #include <common/libev/io_loop_observer.h>
 
-#if LIBEV_CHILD_ENABLE
 #include <common/libev/event_child.h>
 #include <common/libev/io_child.h>
-#endif
 
 namespace {
 
@@ -166,14 +164,13 @@ void IoLoop::RemoveTimer(timer_id_t id) {
   loop_->RemoveTimer(id);
 }
 
-#if LIBEV_CHILD_ENABLE
-IoChild* IoLoop::RegisterChild(pid_t pid) {
+IoChild* IoLoop::RegisterChild(process_handle_t pid) {
   IoChild* client = CreateChild();
   RegisterChild(client, pid);
   return client;
 }
 
-void IoLoop::RegisterChild(IoChild* child, pid_t pid) {
+void IoLoop::RegisterChild(IoChild* child, process_handle_t pid) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(child);
   const std::string formated_name = child->GetFormatedName();
@@ -222,7 +219,6 @@ void IoLoop::UnRegisterChild(IoChild* child) {
   INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
              << childs_.size() << " client(s) connected.";
 }
-#endif
 
 void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
   loop_->ExecInLoopThread(func);
@@ -254,13 +250,11 @@ std::vector<IoClient*> IoLoop::GetClients() const {
   return clients_;
 }
 
-#if LIBEV_CHILD_ENABLE
 std::vector<IoChild*> IoLoop::GetChilds() const {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
 
   return childs_;
 }
-#endif
 
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
   IoClient* pclient = reinterpret_cast<IoClient*>(io->GetUserData());
@@ -291,14 +285,13 @@ void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
   }
 }
 
-#if LIBEV_CHILD_ENABLE
-void IoLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, flags_t revents) {
+void IoLoop::child_cb(LibEvLoop* loop, LibevChild* child, int status, int signal, flags_t revents) {
   IoChild* pchild = reinterpret_cast<IoChild*>(child->GetUserData());
   IoLoop* pserver = pchild->GetServer();
-  pserver->ChildStatus(loop, pchild, status, revents);
+  pserver->ChildStatus(loop, pchild, status, signal, revents);
 }
 
-void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t revents) {
+void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, int signal, flags_t revents) {
   CHECK(IsLoopThread()) << "Must be called in loop thread!";
   CHECK(loop_ == loop);
   CHECK(child && child->GetServer() == this);
@@ -310,12 +303,10 @@ void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, flags_t re
 
   if (revents & EV_CHILD) {
     if (observer_) {
-      observer_->ChildStatusChanged(child, status);
+      observer_->ChildStatusChanged(child, status, signal);
     }
   }
 }
-
-#endif
 
 void IoLoop::PreLooped(LibEvLoop* loop) {
   UNUSED(loop);
@@ -346,13 +337,11 @@ void IoLoop::Stopped(LibEvLoop* loop) {
     delete client;
   }
 
-#if LIBEV_CHILD_ENABLE
   const std::vector<IoChild*> childs = GetChilds();
   for (size_t i = 0; i < childs.size(); ++i) {
     IoChild* child = childs[i];
     delete child;
   }
-#endif
 }
 
 void IoLoop::PostLooped(LibEvLoop* loop) {

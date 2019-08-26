@@ -29,34 +29,14 @@
 
 #pragma once
 
-#include <common/libev/types.h>
+#include <common/libev/event_loop.h>
 
-namespace common {
-namespace libev {
-
-class IoLoop;
-class IoClient;
-class IoChild;
-
-class IoLoopObserver {
- public:
-  virtual void PreLooped(IoLoop* server) = 0;
-
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void Accepted(IoChild* child) = 0;
-  virtual void Moved(IoLoop* server, IoChild* child) = 0;  // owner server, now child is orphan
-  virtual void ChildStatusChanged(IoChild* child, int status, int signal) = 0;
-
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
-
-  virtual void PostLooped(IoLoop* server) = 0;
-
-  virtual ~IoLoopObserver();
+struct fasto_ev_child {
+  void *data;
+  struct ev_loop* ev_loop;
+  common::libev::LibEvLoop* loop;
+  void* wait_handle;
+  void* proc_handle;
+  int rstatus;
+  common::libev::LibEvLoop::child_callback_t* cb;
 };
-
-}  // namespace libev
-}  // namespace common

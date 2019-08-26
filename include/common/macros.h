@@ -40,12 +40,14 @@
 #define SUCCESS_RESULT_VALUE ZERO_RESULT_VALUE
 
 #if defined(OS_WIN)
+#define INVALID_PROCESS_ID nullptr
 #if defined(COMPILER_MINGW)
 typedef int descriptor_t;
 #elif defined(COMPILER_MSVC)
 typedef HANDLE descriptor_t;
 #endif
 #else
+#define INVALID_PROCESS_ID -1
 typedef int descriptor_t;
 #endif
 
