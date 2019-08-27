@@ -78,8 +78,8 @@ bool GetHddID(std::string* serial) {
     return false;
   }
 
-  BYTE bytes[UUID_SIZE];
-  memcpy(&bytes, &disk_serialINT, sizeof(bytes));
+  BYTE bytes[UUID_SIZE] = {0};
+  memcpy(&bytes, &disk_serialINT, sizeof(DWORD));
 
   uuid_string_t uuid_string;
   uuid_unparse_lower(bytes, uuid_string);
