@@ -29,6 +29,10 @@
 
 #include <common/libev/event_child.h>
 
+#if defined(OS_POSIX)
+#include <sys/wait.h>
+#endif
+
 #include <ev.h>
 
 #include <common/libev/event_loop.h>
