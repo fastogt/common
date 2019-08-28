@@ -491,12 +491,7 @@ ErrnoError connect(const socket_info& info, struct timeval* timeout, socket_info
     return make_error_perror("connect", EINVAL);
   }
 
-  ErrnoError err = socket(addr->ai_family, native_to_socket_type(addr->ai_socktype), addr->ai_protocol, out_info);
-  if (err) {
-    return err;
-  }
-
-  err = do_connect(fd, addr->ai_addr, addr->ai_addrlen, timeout);
+  ErrnoError err = do_connect(fd, addr->ai_addr, addr->ai_addrlen, timeout);
   if (err) {
     return err;
   }
