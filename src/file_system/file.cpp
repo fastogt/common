@@ -589,10 +589,8 @@ bool read_file_to_string_with_max_size(const std::string& path, std::string* con
 
   read_status = read_status && !ferror(file);
   fclose(file);
-  if (contents) {
-    contents->swap(local_contents);
-    contents->resize(bytes_read_so_far);
-  }
+  contents->swap(local_contents);
+  contents->resize(bytes_read_so_far);
 
   return read_status;
 }

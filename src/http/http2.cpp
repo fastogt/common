@@ -1749,7 +1749,7 @@ uint32_t frame_hdr::length() const {
   return static_cast<uint32_t>(length_[0] << 16 | length_[1] << 8 | length_[2]);
 }
 
-http2_settings_entry::http2_settings_entry() {
+http2_settings_entry::http2_settings_entry() : settings_id_(), value_() {
   SIZEOF_DATA_MUST_BE(http2_settings_entry, 6);
 }
 

@@ -52,7 +52,10 @@ namespace json_rpc {
 
 namespace {
 Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
-  CHECK(rpc && result);
+  if (!rpc || !result) {
+    DNOTREACHED();
+    return make_error_inval();
+  }
 
   json_object* jrpc = nullptr;
   json_bool jrpc_exists = json_object_object_get_ex(rpc, JSONRPC_FIELD, &jrpc);
@@ -93,7 +96,10 @@ Error GetJsonRPCRequest(json_object* rpc, JsonRPCRequest* result) {
 }
 
 Error GetJsonRPCResponse(json_object* rpc, JsonRPCResponse* result) {
-  CHECK(rpc && result);
+  if (!rpc || !result) {
+    DNOTREACHED();
+    return make_error_inval();
+  }
 
   json_object* jrpc = nullptr;
   json_bool jrpc_exists = json_object_object_get_ex(rpc, JSONRPC_FIELD, &jrpc);

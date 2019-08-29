@@ -48,13 +48,13 @@ bool MakeMd5Hash(const std::string& data, char* out) {
 }
 }  // namespace
 
-bool GenerateHardwareHash(ALGO_TYPE t, common::license::license_key_t hash) {
+bool GenerateHardwareHash(ALGO_TYPE algo_type, common::license::license_key_t hash) {
   if (!hash) {
     return false;
   }
 
   const std::string cpu_id = GetNativeCpuID();
-  if (t == HDD) {
+  if (algo_type == HDD) {
     std::string hdd_id;
     if (!GetHddID(&hdd_id)) {
       return false;
@@ -63,7 +63,7 @@ bool GenerateHardwareHash(ALGO_TYPE t, common::license::license_key_t hash) {
     MakeMd5Hash(cpu_id, hash);
     MakeMd5Hash(hdd_id, hash + HALF_LICENSE_KEY_LENGHT);
     return true;
-  } else if (t == MACHINE_ID) {
+  } else if (algo_type == MACHINE_ID) {
     std::string system_id;
     if (!GetMachineID(&system_id)) {
       return false;
@@ -74,7 +74,7 @@ bool GenerateHardwareHash(ALGO_TYPE t, common::license::license_key_t hash) {
     return true;
   }
 
-  NOTREACHED() << "Unknown algo: " << t;
+  NOTREACHED() << "Unknown algo: " << algo_type;
   return false;
 }
 
