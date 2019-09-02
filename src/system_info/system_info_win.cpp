@@ -212,15 +212,5 @@ std::string OperatingSystemArchitecture() {
   }
 }
 
-Optional<size_t> GetCurrentProcessRss() {
-  PROCESS_MEMORY_COUNTERS info;
-  WINBOOL result = GetProcessMemoryInfo(GetCurrentProcess(), &info, sizeof(info));
-  if (!result) {
-    return Optional<size_t>();
-  }
-
-  return info.WorkingSetSize;
-}
-
 }  // namespace system_info
 }  // namespace common
