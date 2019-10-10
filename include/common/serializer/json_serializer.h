@@ -18,6 +18,7 @@
 #include <json-c/json_tokener.h>  // for json_tokener_parse
 
 #include <string>
+#include <vector>
 
 #include <common/serializer/iserializer.h>  // for ISerializer
 
@@ -103,12 +104,46 @@ class JsonSerializer : public JsonSerializerBase<T> {
 template <typename T>
 class JsonSerializerArray : public JsonSerializerBase<T> {
  public:
+  typedef std::vector<T> container_t;
   typedef JsonSerializerBase<T> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
+  container_t Get() const { return array_; }
+
+  void Add(const T& value) { array_.push_back(value); }
+
+  bool Equals(const JsonSerializerArray<T>& val) const { return array_ == val.array_; }
+
  protected:
-  virtual Error DoDeSerialize(json_object* serialized_array) = 0;
-  virtual Error SerializeArray(json_object* out_array) const = 0;
+  common::Error SerializeArray(json_object* deserialized_array) const {
+    for (T value : array_) {
+      json_object* jvalue = nullptr;
+      common::Error err = value.Serialize(&jvalue);
+      if (err) {
+        continue;
+      }
+      json_object_array_add(deserialized_array, jvalue);
+    }
+
+    return common::Error();
+  }
+
+  common::Error DoDeSerialize(json_object* serialized) override {
+    container_t array;
+    size_t len = json_object_array_length(serialized);
+    for (size_t i = 0; i < len; ++i) {
+      json_object* jvalue = json_object_array_get_idx(serialized, i);
+      T value;
+      common::Error err = value.DeSerialize(jvalue);
+      if (err) {
+        continue;
+      }
+      array.push_back(value);
+    }
+
+    (*this).array_ = array;
+    return common::Error();
+  }
 
   Error DoSerialize(serialize_type* out) const final {
     json_object* obj = json_object_new_array();
@@ -121,7 +156,20 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
     *out = obj;
     return Error();
   }
+
+ private:
+  container_t array_;
 };
+
+template <typename T>
+inline bool operator==(const JsonSerializerArray<T>& lhs, const JsonSerializerArray<T>& rhs) {
+  return lhs.Equals(rhs);
+}
+
+template <typename T>
+inline bool operator!=(const JsonSerializerArray<T>& x, const JsonSerializerArray<T>& y) {
+  return !(x == y);
+}
 
 }  // namespace serializer
 }  // namespace common
