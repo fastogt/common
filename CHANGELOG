@@ -1,3 +1,7 @@
+1.26.0 / October 17, 2019
+[Alexandr Topilski]
+- Json serializer for array
+
 1.26.0 / August 29, 2019
 [Alexandr Topilski]
 - License gen for all platforms
