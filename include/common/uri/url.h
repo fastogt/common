@@ -53,6 +53,7 @@ class Url {
     rtmp = 9,
     dev = 10,
     rtsp = 11,
+    srt = 12,
     num_schemes
   };
   enum {

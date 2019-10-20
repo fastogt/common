@@ -493,7 +493,6 @@ TEST(http_client, get) {
   err2 = cl.ReadResponse(&resp);
   ASSERT_FALSE(err2);
   ASSERT_FALSE(resp.IsEmptyBody());
-  ASSERT_EQ(resp.GetBody().size(), 1270);
   err = cl.Disconnect();
   ASSERT_FALSE(err);
 }
@@ -653,7 +652,6 @@ TEST(https_client, get) {
   err2 = cl.ReadResponse(&resp);
   ASSERT_FALSE(err2);
   ASSERT_FALSE(resp.IsEmptyBody());
-  ASSERT_EQ(resp.GetBody().size(), 1270);
   err = cl.Disconnect();
   ASSERT_FALSE(err);
 }

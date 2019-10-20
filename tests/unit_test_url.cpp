@@ -149,6 +149,10 @@ TEST(Url, Scheme) {
   common::uri::Url rtsp_uri("rtsp://some.server/url");
   ASSERT_EQ(rtsp_uri.GetScheme(), common::uri::Url::rtsp);
   ASSERT_EQ(rtsp_uri.GetHost(), "some.server");
+
+  common::uri::Url srt_uri("srt://localhost:8080");
+  ASSERT_EQ(srt_uri.GetScheme(), common::uri::Url::srt);
+  ASSERT_EQ(srt_uri.GetHost(), "localhost:8080");
 }
 
 TEST(Url, level) {
