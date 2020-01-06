@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2018 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2020 FastoGT. All right reserved.
     This file is part of sniffer.
     sniffer is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

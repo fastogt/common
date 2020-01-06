@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2018 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2020 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -32,7 +32,7 @@
 #include <common/libev/event_loop.h>
 
 struct fasto_ev_child {
-  void *data;
+  void* data;
   struct ev_loop* ev_loop;
   common::libev::LibEvLoop* loop;
   void* wait_handle;
