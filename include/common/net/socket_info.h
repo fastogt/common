@@ -36,6 +36,7 @@
 #include <ws2tcpip.h>
 #endif
 
+#include <common/config.h>
 #include <common/macros.h>  // for INVALID_DESCRIPTOR
 
 struct addrinfo;
