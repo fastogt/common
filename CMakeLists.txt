@@ -24,6 +24,7 @@ STRING(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPERRCASE)
 
 ########################## Options #########################
 OPTION(QT_ENABLED "Enable Qt support" OFF)
+OPTION(IPV6_ENABLED "Enable IPV6 connections" ON)
 OPTION(DEVELOPER_ENABLE_TESTS "Enable tests for ${PROJECT_NAME_TITLE} project" OFF)
 OPTION(DEVELOPER_CHECK_STYLE "Enable check style for ${PROJECT_NAME_TITLE} project" OFF)
 OPTION(DEVELOPER_GENERATE_DOCS "Generate docs api for ${PROJECT_NAME_TITLE} project" OFF)
