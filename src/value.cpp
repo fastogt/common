@@ -1144,4 +1144,8 @@ bool HashValue::Equals(const Value* other) const {
   return true;
 }
 
+std::ostream& operator<<(std::ostream& out, const Value& value) {
+  return out;
+}
+
 }  // namespace common
