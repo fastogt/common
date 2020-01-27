@@ -110,6 +110,8 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
 
   container_t Get() const { return array_; }
 
+  bool Empty() const { return array_.empty(); }
+  
   void Add(const T& value) { array_.push_back(value); }
 
   bool Equals(const JsonSerializerArray<T>& val) const { return array_ == val.array_; }
