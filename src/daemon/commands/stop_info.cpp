@@ -27,36 +27,44 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/daemon/commands/stop_info.h>
 
-#include <string>
-
-#include <common/error.h>
+#define STOP_SERVICE_INFO_DELAY_FIELD "delay"
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
- public:
-  typedef S serialize_type;
+StopInfo::StopInfo() : base_class(), delay_(0) {}
 
-  virtual ~ISerializer() {}
+StopInfo::StopInfo(const std::string& license, common::time64_t delay) : base_class(license), delay_(delay) {}
 
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
+common::Error StopInfo::DoDeSerialize(json_object* serialized) {
+  StopInfo inf;
+  common::Error err = inf.base_class::DoDeSerialize(serialized);
+  if (err) {
+    return err;
   }
 
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
+  json_object* jlicense = nullptr;
+  json_bool jdelay_exists = json_object_object_get_ex(serialized, STOP_SERVICE_INFO_DELAY_FIELD, &jlicense);
+  if (jdelay_exists) {
+    inf.delay_ = json_object_get_int64(jlicense);
+  }
 
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
+  *this = inf;
+  return common::Error();
+}
 
- protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
-};
+common::Error StopInfo::SerializeFields(json_object* out) const {
+  json_object_object_add(out, STOP_SERVICE_INFO_DELAY_FIELD, json_object_new_int64(delay_));
+  return base_class::SerializeFields(out);
+}
 
-}  // namespace serializer
+common::time64_t StopInfo::GetDelay() const {
+  return delay_;
+}
+
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common

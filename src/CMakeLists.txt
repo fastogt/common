@@ -56,6 +56,19 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/src/serializer/json_serializer.cpp
   )
 
+  SET(DAEMON_HEADERS
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/stop_info.h
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/ping_info.h
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/license_info.h
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/activate_info.h
+  )
+  SET(DAEMON_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/stop_info.cpp
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/ping_info.cpp
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/license_info.cpp
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/activate_info.cpp
+  )
+
   SET(COMMON_INCLUDE_DIRS ${COMMON_INCLUDE_DIRS} ${JSONC_INCLUDE_DIRS})
   SET(COMMON_LIBS ${COMMON_LIBS} ${JSONC_LIBRARIES})
 ENDIF(JSONC_FOUND)
@@ -575,6 +588,7 @@ SET(COMMON_HEADERS
   ${HTTP_HEADERS}
   ${COMMON_PLATFORM_HEADERS}
   ${COMPRESS_HEADERS}
+  ${DAEMON_HEADERS}
 
   ${COMMON_CONFIG_GEN_PATH}
 )
@@ -622,6 +636,7 @@ SET(COMMON_SOURCES
   ${HTTP_SOURCES}
   ${COMMON_PLATFORM_SOURCES}
   ${COMPRESS_SOURCES}
+  ${DAEMON_SOURCES}
 )
 
 SET(COMMON_LIBS ${COMMON_LIBS} ${COMMON_PLATFORM_LIBRARIES})

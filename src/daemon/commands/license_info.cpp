@@ -27,36 +27,39 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <common/daemon/commands/license_info.h>
 
-#include <string>
-
-#include <common/error.h>
+#define LICENSE_INFO_KEY_FIELD "license_key"
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
- public:
-  typedef S serialize_type;
+LicenseInfo::LicenseInfo() : base_class(), license_() {}
 
-  virtual ~ISerializer() {}
+LicenseInfo::LicenseInfo(const std::string& license) : base_class(), license_(license) {}
 
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
+common::Error LicenseInfo::SerializeFields(json_object* out) const {
+  json_object_object_add(out, LICENSE_INFO_KEY_FIELD, json_object_new_string(license_.c_str()));
+  return common::Error();
+}
+
+common::Error LicenseInfo::DoDeSerialize(json_object* serialized) {
+  LicenseInfo inf;
+  json_object* jlicense = nullptr;
+  json_bool jlicense_exists = json_object_object_get_ex(serialized, LICENSE_INFO_KEY_FIELD, &jlicense);
+  if (jlicense_exists) {
+    inf.license_ = json_object_get_string(jlicense);
   }
 
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
+  *this = inf;
+  return common::Error();
+}
 
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
+std::string LicenseInfo::GetLicense() const {
+  return license_;
+}
 
- protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
-};
-
-}  // namespace serializer
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common

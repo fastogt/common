@@ -31,32 +31,30 @@
 
 #include <string>
 
-#include <common/error.h>
+#include <common/time.h>
+
+#include <common/daemon/commands/license_info.h>
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
+class StopInfo : public LicenseInfo {
  public:
-  typedef S serialize_type;
+  typedef LicenseInfo base_class;
+  StopInfo();
+  explicit StopInfo(const std::string& license, common::time64_t delay = 0);
 
-  virtual ~ISerializer() {}
-
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
-  }
-
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
-
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
+  common::time64_t GetDelay() const;
 
  protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* out) const override;
+
+ private:
+  common::time64_t delay_;
 };
 
-}  // namespace serializer
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common

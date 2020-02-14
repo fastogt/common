@@ -27,36 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include <string>
-
-#include <common/error.h>
+#include <common/daemon/commands/activate_info.h>
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
- public:
-  typedef S serialize_type;
+ActivateInfo::ActivateInfo() : LicenseInfo() {}
 
-  virtual ~ISerializer() {}
+ActivateInfo::ActivateInfo(const std::string& license) : LicenseInfo(license) {}
 
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
-  }
-
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
-
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
-
- protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
-};
-
-}  // namespace serializer
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common

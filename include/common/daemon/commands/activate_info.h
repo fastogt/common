@@ -31,32 +31,18 @@
 
 #include <string>
 
-#include <common/error.h>
+#include <common/daemon/commands/license_info.h>
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
+class ActivateInfo : public LicenseInfo {
  public:
-  typedef S serialize_type;
-
-  virtual ~ISerializer() {}
-
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
-  }
-
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
-
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
-
- protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
+  ActivateInfo();
+  explicit ActivateInfo(const std::string& license);
 };
 
-}  // namespace serializer
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common

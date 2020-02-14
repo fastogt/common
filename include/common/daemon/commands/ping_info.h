@@ -29,34 +29,63 @@
 
 #pragma once
 
-#include <string>
+#include <common/time.h>
 
-#include <common/error.h>
+#include <common/serializer/json_serializer.h>
 
 namespace common {
-namespace serializer {
+namespace daemon {
+namespace commands {
 
-template <typename S = std::string>
-class ISerializer {
+class ServerPingInfo : public common::serializer::JsonSerializer<ServerPingInfo> {
  public:
-  typedef S serialize_type;
+  ServerPingInfo();
 
-  virtual ~ISerializer() {}
+  common::time64_t GetTimeStamp() const;
+  void SetTimestamp(common::time64_t time);
 
-  Error Serialize(serialize_type* out) const WARN_UNUSED_RESULT {
-    if (!out) {
-      return make_error_inval();
-    }
-    return DoSerialize(out);
-  }
-
-  virtual Error SerializeFromString(const std::string& data, serialize_type* out) const WARN_UNUSED_RESULT = 0;
-
-  virtual Error SerializeToString(std::string* out) const WARN_UNUSED_RESULT = 0;
+  bool Equals(const ServerPingInfo& ping) const;
 
  protected:
-  virtual Error DoSerialize(serialize_type* out) const = 0;
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* deserialized) const override;
+
+ private:
+  common::time64_t timestamp_;  // utc time
 };
 
-}  // namespace serializer
+inline bool operator==(const ServerPingInfo& lhs, const ServerPingInfo& rhs) {
+  return lhs.Equals(rhs);
+}
+
+inline bool operator!=(const ServerPingInfo& x, const ServerPingInfo& y) {
+  return !(x == y);
+}
+
+class ClientPingInfo : public common::serializer::JsonSerializer<ClientPingInfo> {
+ public:
+  ClientPingInfo();
+
+  common::time64_t GetTimeStamp() const;
+
+  bool Equals(const ClientPingInfo& ping) const;
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* deserialized) const override;
+
+ private:
+  common::time64_t timestamp_;  // utc time
+};
+
+inline bool operator==(const ClientPingInfo& lhs, const ClientPingInfo& rhs) {
+  return lhs.Equals(rhs);
+}
+
+inline bool operator!=(const ClientPingInfo& x, const ClientPingInfo& y) {
+  return !(x == y);
+}
+
+}  // namespace commands
+}  // namespace daemon
 }  // namespace common
