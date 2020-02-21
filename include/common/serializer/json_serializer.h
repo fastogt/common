@@ -115,6 +115,8 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
   void Add(const T& value) { array_.push_back(value); }
 
   bool Equals(const JsonSerializerArray<T>& val) const { return array_ == val.array_; }
+    
+  size_t Size() const { return array_.size(); }
 
  protected:
   common::Error SerializeArray(json_object* deserialized_array) const {
