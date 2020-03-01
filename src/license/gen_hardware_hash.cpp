@@ -92,7 +92,24 @@ bool GenerateHardwareHash(ALGO_TYPE algo, common::license::license_key_t hash) {
 }
 
 Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key) {
-  if (project.empty()) {
+  time64_t res;
+  Error err = GetExpireTimeFromKey(project, license_key, expire_key, &res);
+  if (err) {
+    return err;
+  }
+
+  time64_t utc_msec = time::current_utc_mstime();
+  if (utc_msec > res) {
+    return make_error("License time expired");
+  }
+  return Error();
+}
+
+Error GetExpireTimeFromKey(const std::string& project,
+                           const license_key_t license_key,
+                           const expire_key_t expire_key,
+                           time64_t* time) {
+  if (project.empty() || !time) {
     return make_error_inval();
   }
 
@@ -121,10 +138,7 @@ Error CheckExpireKey(const std::string& project, const license_key_t license_key
     return make_error("Invalid time");
   }
 
-  time64_t utc_msec = time::current_utc_mstime();
-  if (utc_msec > res) {
-    return make_error("License time expired");
-  }
+  *time = res;
   return Error();
 }
 
