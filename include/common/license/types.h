@@ -14,15 +14,22 @@
 
 #pragma once
 
-#include <common/error.h>
-#include <common/license/types.h>
+#include <string>
+
+#define LICENSE_KEY_LENGHT 64
+#define EXPIRE_KEY_LENGHT 96
 
 namespace common {
 namespace license {
 
-enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
-bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t hash);
-Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key);
+typedef char license_key_t[LICENSE_KEY_LENGHT];
+typedef char expire_key_t[EXPIRE_KEY_LENGHT];
+
+std::string licensekey2string(license_key_t from);
+bool string2licensekey(const std::string& from, license_key_t out);
+
+std::string expirekey2string(expire_key_t from);
+bool string2expirekey(const std::string& from, expire_key_t out);
 
 }  // namespace license
 }  // namespace common

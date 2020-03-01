@@ -12,17 +12,40 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <common/error.h>
 #include <common/license/types.h>
 
 namespace common {
 namespace license {
 
-enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
-bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t hash);
-Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key);
+std::string licensekey2string(license_key_t from) {
+  return std::string(from, LICENSE_KEY_LENGHT);
+}
+
+bool string2licensekey(const std::string& from, common::license::license_key_t out) {
+  if (from.size() != LICENSE_KEY_LENGHT) {
+    return false;
+  }
+
+  for (size_t i = 0; i < LICENSE_KEY_LENGHT; ++i) {
+    out[i] = from[i];
+  }
+  return true;
+}
+
+std::string expirekey2string(expire_key_t from) {
+  return std::string(from, EXPIRE_KEY_LENGHT);
+}
+
+bool string2expirekey(const std::string& from, common::license::expire_key_t out) {
+  if (from.size() != EXPIRE_KEY_LENGHT) {
+    return false;
+  }
+
+  for (size_t i = 0; i < EXPIRE_KEY_LENGHT; ++i) {
+    out[i] = from[i];
+  }
+  return true;
+}
 
 }  // namespace license
 }  // namespace common

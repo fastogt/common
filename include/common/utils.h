@@ -43,7 +43,7 @@
 namespace common {
 namespace utils {
 namespace hash {
-uint64_t crc64(uint64_t crc, const byte_t* data, uint64_t lenght);
+uint64_t crc64(uint64_t crc, const byte_t* data, size_t lenght);
 uint64_t crc64(uint64_t crc, const buffer_t& data);
 }  // namespace hash
 

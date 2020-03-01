@@ -219,7 +219,7 @@ namespace common {
 namespace utils {
 namespace hash {
 
-uint64_t crc64(uint64_t crc, const byte_t* data, uint64_t lenght) {
+uint64_t crc64(uint64_t crc, const byte_t* data, size_t lenght) {
   for (uint64_t j = 0; j < lenght; ++j) {
     byte_t byte = data[j];
     crc = crc64_tab[static_cast<byte_t>(crc) ^ byte] ^ (crc >> 8);
