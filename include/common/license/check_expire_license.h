@@ -16,13 +16,18 @@
 
 #include <string>
 
+#include <common/error.h>
 #include <common/license/types.h>
+#include <common/time.h>
 
 namespace common {
 namespace license {
 
-enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
-bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t hash);
+Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key);
+Error GetExpireTimeFromKey(const std::string& project,
+                           const license_key_t license_key,
+                           const expire_key_t expire_key,
+                           time64_t* time);
 
 }  // namespace license
 }  // namespace common

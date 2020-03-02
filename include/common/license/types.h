@@ -25,9 +25,11 @@ namespace license {
 typedef char license_key_t[LICENSE_KEY_LENGHT];
 typedef char expire_key_t[EXPIRE_KEY_LENGHT];
 
+bool is_valid_license_key(const std::string& key);
 std::string licensekey2string(license_key_t from);
 bool string2licensekey(const std::string& from, license_key_t out);
 
+bool is_valid_expire_key(const std::string& key);
 std::string expirekey2string(expire_key_t from);
 bool string2expirekey(const std::string& from, expire_key_t out);
 

@@ -17,12 +17,16 @@
 namespace common {
 namespace license {
 
+bool is_valid_license_key(const std::string& key) {
+  return key.size() == LICENSE_KEY_LENGHT;
+}
+
 std::string licensekey2string(license_key_t from) {
   return std::string(from, LICENSE_KEY_LENGHT);
 }
 
 bool string2licensekey(const std::string& from, common::license::license_key_t out) {
-  if (from.size() != LICENSE_KEY_LENGHT) {
+  if (!is_valid_license_key(from)) {
     return false;
   }
 
@@ -32,12 +36,16 @@ bool string2licensekey(const std::string& from, common::license::license_key_t o
   return true;
 }
 
+bool is_valid_expire_key(const std::string& key) {
+  return key.size() == EXPIRE_KEY_LENGHT;
+}
+
 std::string expirekey2string(expire_key_t from) {
   return std::string(from, EXPIRE_KEY_LENGHT);
 }
 
 bool string2expirekey(const std::string& from, common::license::expire_key_t out) {
-  if (from.size() != EXPIRE_KEY_LENGHT) {
+  if (!is_valid_expire_key(from)) {
     return false;
   }
 
