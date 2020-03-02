@@ -34,14 +34,6 @@ char to_hex(char code) {
   return hex[code & 15];
 }
 
-char hextob(char ch) {
-  if (ch >= '0' && ch <= '9')
-    return ch - '0';
-  if (ch >= 'a' && ch <= 'f')
-    return ch - 'a' + 10;
-  return 0;
-}
-
 bool MakeMd5Hash(const std::string& data, char* out) {
   if (!out) {
     return false;
