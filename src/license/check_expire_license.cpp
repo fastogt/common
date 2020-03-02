@@ -19,7 +19,9 @@
 namespace common {
 namespace license {
 
-Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key) {
+Error CheckExpireKey(const std::string& project,
+                     const common::license::license_key_t& license_key,
+                     const common::license::expire_key_t& expire_key) {
   time64_t res;
   Error err = GetExpireTimeFromKey(project, license_key, expire_key, &res);
   if (err) {
@@ -34,8 +36,8 @@ Error CheckExpireKey(const std::string& project, const license_key_t license_key
 }
 
 Error GetExpireTimeFromKey(const std::string& project,
-                           const license_key_t license_key,
-                           const expire_key_t expire_key,
+                           const common::license::license_key_t& license_key,
+                           const common::license::expire_key_t& expire_key,
                            time64_t* time) {
   if (project.empty() || !time) {
     return make_error_inval();

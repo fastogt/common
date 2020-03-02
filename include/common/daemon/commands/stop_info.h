@@ -43,7 +43,7 @@ class StopInfo : public LicenseInfo {
  public:
   typedef LicenseInfo base_class;
   StopInfo();
-  explicit StopInfo(const std::string& license, common::time64_t delay = 0);
+  explicit StopInfo(license_t license, common::time64_t delay = 0);
 
   common::time64_t GetDelay() const;
 

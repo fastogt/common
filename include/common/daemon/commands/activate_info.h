@@ -37,10 +37,10 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-class ActivateInfo : public LicenseInfo {
+class ActivateInfo : public ExpLicenseInfo {
  public:
   ActivateInfo();
-  explicit ActivateInfo(const std::string& license);
+  explicit ActivateInfo(license_t license);
 };
 
 }  // namespace commands

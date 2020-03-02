@@ -29,8 +29,6 @@
   "    --machine-id hash algorithm\n"
 
 int main(int argc, char** argv) {
-  UNUSED(argc);
-  UNUSED(argv);
   common::license::ALGO_TYPE algo = common::license::HDD;
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "--hdd") == 0) {
@@ -47,10 +45,10 @@ int main(int argc, char** argv) {
   }
 
   common::license::license_key_t hash;
-  if (!common::license::GenerateHardwareHash(algo, hash)) {
+  if (!common::license::GenerateHardwareHash(algo, &hash)) {
     return EXIT_FAILURE;
   }
 
-  std::cout << std::string(hash, LICENSE_KEY_LENGHT) << std::endl;
+  std::cout << std::string(hash.data(), hash.size()) << std::endl;
   return EXIT_SUCCESS;
 }

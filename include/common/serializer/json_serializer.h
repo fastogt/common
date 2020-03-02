@@ -31,7 +31,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
   typedef ISerializer<struct json_object*> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
-  Error SerializeToString(std::string* out) const final WARN_UNUSED_RESULT {
+  Error SerializeToString(std::string* out) const override final WARN_UNUSED_RESULT {
     serialize_type des = nullptr;
     Error err = base_class::Serialize(&des);
     if (err) {
@@ -43,7 +43,7 @@ class JsonSerializerBase : public ISerializer<struct json_object*> {
     return Error();
   }
 
-  Error SerializeFromString(const std::string& data, serialize_type* out) const final WARN_UNUSED_RESULT {
+  Error SerializeFromString(const std::string& data, serialize_type* out) const override final WARN_UNUSED_RESULT {
     const char* data_ptr = data.c_str();
     serialize_type res = json_tokener_parse(data_ptr);
     if (!res) {
@@ -85,10 +85,10 @@ class JsonSerializer : public JsonSerializerBase<T> {
   typedef typename base_class::serialize_type serialize_type;
 
  protected:
-  virtual Error DoDeSerialize(json_object* serialized) = 0;
+  virtual Error DoDeSerialize(json_object* serialized) override = 0;
   virtual Error SerializeFields(json_object* out) const = 0;
 
-  Error DoSerialize(serialize_type* out) const final {
+  Error DoSerialize(serialize_type* out) const override final {
     json_object* obj = json_object_new_object();
     Error err = SerializeFields(obj);
     if (err) {
@@ -111,11 +111,11 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
   container_t Get() const { return array_; }
 
   bool Empty() const { return array_.empty(); }
-  
+
   void Add(const T& value) { array_.push_back(value); }
 
   bool Equals(const JsonSerializerArray<T>& val) const { return array_ == val.array_; }
-    
+
   size_t Size() const { return array_.size(); }
 
  protected:

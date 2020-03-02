@@ -31,6 +31,8 @@
 
 #include <string>
 
+#include <common/license/types.h>
+#include <common/optional.h>
 #include <common/serializer/json_serializer.h>
 
 namespace common {
@@ -40,18 +42,39 @@ namespace commands {
 class LicenseInfo : public common::serializer::JsonSerializer<LicenseInfo> {
  public:
   typedef JsonSerializer<LicenseInfo> base_class;
+  typedef license::license_key_t raw_license_key_t;
+  typedef Optional<raw_license_key_t> license_t;
   LicenseInfo();
-  explicit LicenseInfo(const std::string& license);
+  explicit LicenseInfo(license_t license);
 
   bool IsValid() const;
-  std::string GetLicense() const;
+  license_t GetLicense() const;
 
  protected:
-  common::Error DoDeSerialize(json_object* serialized) override;
-  common::Error SerializeFields(json_object* out) const override;
+  Error DoDeSerialize(json_object* serialized) override;
+  Error SerializeFields(json_object* out) const override;
 
  private:
-  std::string license_;
+  license_t license_;
+};
+
+class ExpLicenseInfo : public common::serializer::JsonSerializer<ExpLicenseInfo> {
+ public:
+  typedef JsonSerializer<ExpLicenseInfo> base_class;
+  typedef license::expire_key_t raw_expire_key_t;
+  typedef Optional<raw_expire_key_t> license_t;
+  ExpLicenseInfo();
+  explicit ExpLicenseInfo(license_t license);
+
+  bool IsValid() const;
+  license_t GetLicense() const;
+
+ protected:
+  Error DoDeSerialize(json_object* serialized) override;
+  Error SerializeFields(json_object* out) const override;
+
+ private:
+  license_t license_;
 };
 
 }  // namespace commands

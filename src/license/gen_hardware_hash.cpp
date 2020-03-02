@@ -18,8 +18,6 @@
 #include <common/license/utils.h>
 #include <common/macros.h>
 
-#define HALF_LICENSE_KEY_LENGHT LICENSE_KEY_LENGHT / 2
-
 namespace common {
 namespace license {
 
@@ -48,7 +46,7 @@ bool MakeMd5Hash(const std::string& data, char* out) {
 }
 }  // namespace
 
-bool GenerateHardwareHash(ALGO_TYPE algo, common::license::license_key_t hash) {
+bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t* hash) {
   if (!hash) {
     return false;
   }
@@ -60,8 +58,10 @@ bool GenerateHardwareHash(ALGO_TYPE algo, common::license::license_key_t hash) {
       return false;
     }
 
-    MakeMd5Hash(cpu_id, hash);
-    MakeMd5Hash(hdd_id, hash + HALF_LICENSE_KEY_LENGHT);
+    license_key_t lhash;
+    MakeMd5Hash(cpu_id, lhash.data());
+    MakeMd5Hash(hdd_id, lhash.data() + license_key_t::license_size / 2);
+    *hash = lhash;
     return true;
   } else if (algo == MACHINE_ID) {
     std::string system_id;
@@ -69,8 +69,10 @@ bool GenerateHardwareHash(ALGO_TYPE algo, common::license::license_key_t hash) {
       return false;
     }
 
-    MakeMd5Hash(cpu_id, hash);
-    MakeMd5Hash(system_id, hash + HALF_LICENSE_KEY_LENGHT);
+    license_key_t lhash;
+    MakeMd5Hash(cpu_id, lhash.data());
+    MakeMd5Hash(system_id, lhash.data() + license_key_t::license_size / 2);
+    *hash = lhash;
     return true;
   }
 

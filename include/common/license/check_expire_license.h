@@ -23,10 +23,10 @@
 namespace common {
 namespace license {
 
-Error CheckExpireKey(const std::string& project, const license_key_t license_key, const expire_key_t expire_key);
+Error CheckExpireKey(const std::string& project, const license_key_t& license_key, const expire_key_t& expire_key);
 Error GetExpireTimeFromKey(const std::string& project,
-                           const license_key_t license_key,
-                           const expire_key_t expire_key,
+                           const license_key_t& license_key,
+                           const expire_key_t& expire_key,
                            time64_t* time);
 
 }  // namespace license

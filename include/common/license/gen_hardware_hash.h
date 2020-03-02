@@ -22,7 +22,7 @@ namespace common {
 namespace license {
 
 enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
-bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t hash);
+bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t* hash);
 
 }  // namespace license
 }  // namespace common

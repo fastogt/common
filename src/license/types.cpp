@@ -15,45 +15,5 @@
 #include <common/license/types.h>
 
 namespace common {
-namespace license {
-
-bool is_valid_license_key(const std::string& key) {
-  return key.size() == LICENSE_KEY_LENGHT;
-}
-
-std::string licensekey2string(license_key_t from) {
-  return std::string(from, LICENSE_KEY_LENGHT);
-}
-
-bool string2licensekey(const std::string& from, common::license::license_key_t out) {
-  if (!is_valid_license_key(from)) {
-    return false;
-  }
-
-  for (size_t i = 0; i < LICENSE_KEY_LENGHT; ++i) {
-    out[i] = from[i];
-  }
-  return true;
-}
-
-bool is_valid_expire_key(const std::string& key) {
-  return key.size() == EXPIRE_KEY_LENGHT;
-}
-
-std::string expirekey2string(expire_key_t from) {
-  return std::string(from, EXPIRE_KEY_LENGHT);
-}
-
-bool string2expirekey(const std::string& from, common::license::expire_key_t out) {
-  if (!is_valid_expire_key(from)) {
-    return false;
-  }
-
-  for (size_t i = 0; i < EXPIRE_KEY_LENGHT; ++i) {
-    out[i] = from[i];
-  }
-  return true;
-}
-
-}  // namespace license
+namespace license {}  // namespace license
 }  // namespace common

@@ -14,24 +14,35 @@
 
 #pragma once
 
+#include <common/optional.h>
+#include <array>
 #include <string>
-
-#define LICENSE_KEY_LENGHT 64
-#define EXPIRE_KEY_LENGHT 96
 
 namespace common {
 namespace license {
 
-typedef char license_key_t[LICENSE_KEY_LENGHT];
-typedef char expire_key_t[EXPIRE_KEY_LENGHT];
+template <size_t N>
+class License : public std::array<char, N> {
+ public:
+  typedef std::array<char, N> base_class;
+  enum : size_t { license_size = N };
 
-bool is_valid_license_key(const std::string& key);
-std::string licensekey2string(license_key_t from);
-bool string2licensekey(const std::string& from, license_key_t out);
+  std::string as_string() const { return std::string(base_class::data(), N); }
+};
 
-bool is_valid_expire_key(const std::string& key);
-std::string expirekey2string(expire_key_t from);
-bool string2expirekey(const std::string& from, expire_key_t out);
+typedef License<64> license_key_t;
+typedef License<96> expire_key_t;
+
+template <typename Lic>
+Optional<Lic> make_license(const std::string& data) {
+  if (data.empty() || data.size() != Lic::license_size) {
+    return Optional<Lic>();
+  }
+
+  Lic lic;
+  std::copy(data.begin(), data.end(), lic.data());
+  return lic;
+}
 
 }  // namespace license
 }  // namespace common

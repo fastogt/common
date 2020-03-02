@@ -37,19 +37,24 @@ namespace commands {
 
 LicenseInfo::LicenseInfo() : base_class(), license_() {}
 
-LicenseInfo::LicenseInfo(const std::string& license) : base_class(), license_(license) {}
+LicenseInfo::LicenseInfo(license_t license) : base_class(), license_(license) {}
 
 common::Error LicenseInfo::SerializeFields(json_object* out) const {
   if (!IsValid()) {
     return make_error_inval();
   }
 
-  json_object_object_add(out, LICENSE_INFO_KEY_FIELD, json_object_new_string(license_.c_str()));
+  const auto license_str = *license_;
+  json_object_object_add(out, LICENSE_INFO_KEY_FIELD,
+                         json_object_new_string_len(license_str.data(), license_str.size()));
   return Error();
 }
 
 bool LicenseInfo::IsValid() const {
-  return !license_.empty();
+  if (license_) {
+    return true;
+  }
+  return false;
 }
 
 common::Error LicenseInfo::DoDeSerialize(json_object* serialized) {
@@ -61,16 +66,64 @@ common::Error LicenseInfo::DoDeSerialize(json_object* serialized) {
   }
 
   const std::string license = json_object_get_string(jlicense);
-  if (license.empty()) {
+  if (license.size() != raw_license_key_t::license_size) {
     return make_error_inval();
   }
 
-  inf.license_ = license;
+  LicenseInfo::license_t::value_type lic;
+  std::copy(license.begin(), license.end(), lic.data());
+  inf.license_ = lic;
   *this = inf;
   return common::Error();
 }
 
-std::string LicenseInfo::GetLicense() const {
+LicenseInfo::license_t LicenseInfo::GetLicense() const {
+  return license_;
+}
+
+ExpLicenseInfo::ExpLicenseInfo() : base_class(), license_() {}
+
+ExpLicenseInfo::ExpLicenseInfo(license_t license) : base_class(), license_(license) {}
+
+common::Error ExpLicenseInfo::SerializeFields(json_object* out) const {
+  if (!IsValid()) {
+    return make_error_inval();
+  }
+
+  const auto license_str = *license_;
+  json_object_object_add(out, LICENSE_INFO_KEY_FIELD,
+                         json_object_new_string_len(license_str.data(), license_str.size()));
+  return Error();
+}
+
+bool ExpLicenseInfo::IsValid() const {
+  if (license_) {
+    return true;
+  }
+  return false;
+}
+
+common::Error ExpLicenseInfo::DoDeSerialize(json_object* serialized) {
+  ExpLicenseInfo inf;
+  json_object* jlicense = nullptr;
+  json_bool jlicense_exists = json_object_object_get_ex(serialized, LICENSE_INFO_KEY_FIELD, &jlicense);
+  if (!jlicense_exists) {
+    return make_error_inval();
+  }
+
+  const std::string license = json_object_get_string(jlicense);
+  if (license.size() != raw_expire_key_t::license_size) {
+    return make_error_inval();
+  }
+
+  ExpLicenseInfo::license_t::value_type lic;
+  std::copy(license.begin(), license.end(), lic.data());
+  inf.license_ = lic;
+  *this = inf;
+  return common::Error();
+}
+
+ExpLicenseInfo::license_t ExpLicenseInfo::GetLicense() const {
   return license_;
 }
 

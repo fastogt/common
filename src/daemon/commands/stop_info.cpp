@@ -37,7 +37,7 @@ namespace commands {
 
 StopInfo::StopInfo() : base_class(), delay_(0) {}
 
-StopInfo::StopInfo(const std::string& license, common::time64_t delay) : base_class(license), delay_(delay) {}
+StopInfo::StopInfo(license_t license, common::time64_t delay) : base_class(license), delay_(delay) {}
 
 common::Error StopInfo::DoDeSerialize(json_object* serialized) {
   StopInfo inf;
