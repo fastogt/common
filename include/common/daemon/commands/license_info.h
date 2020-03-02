@@ -43,6 +43,7 @@ class LicenseInfo : public common::serializer::JsonSerializer<LicenseInfo> {
   LicenseInfo();
   explicit LicenseInfo(const std::string& license);
 
+  bool IsValid() const;
   std::string GetLicense() const;
 
  protected:

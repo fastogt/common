@@ -40,18 +40,32 @@ LicenseInfo::LicenseInfo() : base_class(), license_() {}
 LicenseInfo::LicenseInfo(const std::string& license) : base_class(), license_(license) {}
 
 common::Error LicenseInfo::SerializeFields(json_object* out) const {
+  if (!IsValid()) {
+    return make_error_inval();
+  }
+
   json_object_object_add(out, LICENSE_INFO_KEY_FIELD, json_object_new_string(license_.c_str()));
-  return common::Error();
+  return Error();
+}
+
+bool LicenseInfo::IsValid() const {
+  return !license_.empty();
 }
 
 common::Error LicenseInfo::DoDeSerialize(json_object* serialized) {
   LicenseInfo inf;
   json_object* jlicense = nullptr;
   json_bool jlicense_exists = json_object_object_get_ex(serialized, LICENSE_INFO_KEY_FIELD, &jlicense);
-  if (jlicense_exists) {
-    inf.license_ = json_object_get_string(jlicense);
+  if (!jlicense_exists) {
+    return make_error_inval();
   }
 
+  const std::string license = json_object_get_string(jlicense);
+  if (license.empty()) {
+    return make_error_inval();
+  }
+
+  inf.license_ = license;
   *this = inf;
   return common::Error();
 }
