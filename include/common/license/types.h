@@ -14,9 +14,11 @@
 
 #pragma once
 
-#include <common/optional.h>
 #include <array>
 #include <string>
+#include <algorithm>
+
+#include <common/optional.h>
 
 namespace common {
 namespace license {
@@ -35,7 +37,7 @@ typedef License<96> expire_key_t;
 
 template <typename Lic>
 Optional<Lic> make_license(const std::string& data) {
-  if (data.empty() || data.size() != Lic::license_size) {
+  if (data.size() != Lic::license_size) {
     return Optional<Lic>();
   }
 
