@@ -35,21 +35,16 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-StopInfo::StopInfo() : base_class(), delay_(0) {}
+StopInfo::StopInfo() : StopInfo(0) {}
 
-StopInfo::StopInfo(license_t license, common::time64_t delay) : base_class(license), delay_(delay) {}
+StopInfo::StopInfo(common::time64_t delay) : base_class(), delay_(delay) {}
 
 common::Error StopInfo::DoDeSerialize(json_object* serialized) {
   StopInfo inf;
-  common::Error err = inf.base_class::DoDeSerialize(serialized);
-  if (err) {
-    return err;
-  }
-
-  json_object* jlicense = nullptr;
-  json_bool jdelay_exists = json_object_object_get_ex(serialized, STOP_SERVICE_INFO_DELAY_FIELD, &jlicense);
+  json_object* jdelay = nullptr;
+  json_bool jdelay_exists = json_object_object_get_ex(serialized, STOP_SERVICE_INFO_DELAY_FIELD, &jdelay);
   if (jdelay_exists) {
-    inf.delay_ = json_object_get_int64(jlicense);
+    inf.delay_ = json_object_get_int64(jdelay);
   }
 
   *this = inf;

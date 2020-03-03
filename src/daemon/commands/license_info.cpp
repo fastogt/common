@@ -66,12 +66,11 @@ common::Error LicenseInfo::DoDeSerialize(json_object* serialized) {
   }
 
   const std::string license = json_object_get_string(jlicense);
-  if (license.size() != raw_hardware_hash_t::license_size) {
+  const auto lic = common::license::make_license<raw_license_t>(license);
+  if (!lic) {
     return make_error_inval();
   }
 
-  LicenseInfo::license_t::value_type lic;
-  std::copy(license.begin(), license.end(), lic.data());
   inf.license_ = lic;
   *this = inf;
   return common::Error();

@@ -31,19 +31,18 @@
 
 #include <string>
 
+#include <common/serializer/json_serializer.h>
 #include <common/time.h>
-
-#include <common/daemon/commands/license_info.h>
 
 namespace common {
 namespace daemon {
 namespace commands {
 
-class StopInfo : public LicenseInfo {
+class StopInfo : public common::serializer::JsonSerializer<StopInfo> {
  public:
-  typedef LicenseInfo base_class;
+  typedef common::serializer::JsonSerializer<StopInfo> base_class;
   StopInfo();
-  explicit StopInfo(license_t license, common::time64_t delay = 0);
+  explicit StopInfo(common::time64_t delay);
 
   common::time64_t GetDelay() const;
 
