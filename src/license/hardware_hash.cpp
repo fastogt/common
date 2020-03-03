@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <common/license/gen_hardware_hash.h>
+#include <common/license/hardware_hash.h>
 
 #include <common/hash/md5.h>
 #include <common/license/utils.h>
@@ -46,7 +46,7 @@ bool MakeMd5Hash(const std::string& data, char* out) {
 }
 }  // namespace
 
-bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t* hash) {
+bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
   if (!hash) {
     return false;
   }
@@ -58,10 +58,15 @@ bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t* hash) {
       return false;
     }
 
-    license_key_t lhash;
+    hardware_hash_t lhash;
     MakeMd5Hash(cpu_id, lhash.data());
-    MakeMd5Hash(hdd_id, lhash.data() + license_key_t::license_size / 2);
-    *hash = lhash;
+    MakeMd5Hash(hdd_id, lhash.data() + hardware_hash_t::license_size / 2);
+    hardware_hash_t mixed;
+    for (size_t i = 0; i < lhash.size() / 2; ++i) {
+      mixed[i] = lhash[i];
+      mixed[i + 1] = lhash[hardware_hash_t::license_size / 2 + i];
+    }
+    *hash = mixed;
     return true;
   } else if (algo == MACHINE_ID) {
     std::string system_id;
@@ -69,14 +74,35 @@ bool GenerateHardwareHash(ALGO_TYPE algo, license_key_t* hash) {
       return false;
     }
 
-    license_key_t lhash;
+    hardware_hash_t lhash;
     MakeMd5Hash(cpu_id, lhash.data());
-    MakeMd5Hash(system_id, lhash.data() + license_key_t::license_size / 2);
+    MakeMd5Hash(system_id, lhash.data() + hardware_hash_t::license_size / 2);
+    hardware_hash_t mixed;
+    for (size_t i = 0; i < lhash.size() / 2; ++i) {
+      mixed[i] = lhash[i];
+      mixed[i + 1] = lhash[hardware_hash_t::license_size / 2 + i];
+    }
     *hash = lhash;
     return true;
   }
 
   NOTREACHED() << "Unknown algo: " << algo;
+  return false;
+}
+
+bool IsValidHardwareHash(const hardware_hash_t& hash) {
+  hardware_hash_t lic;
+  if (GenerateHardwareHash(HDD, &lic)) {
+    if (lic == hash) {
+      return true;
+    }
+  }
+  if (GenerateHardwareHash(MACHINE_ID, &lic)) {
+    if (lic == hash) {
+      return true;
+    }
+  }
+
   return false;
 }
 

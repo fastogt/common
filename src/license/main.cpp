@@ -18,7 +18,7 @@
 
 #include <common/macros.h>
 
-#include <common/license/gen_hardware_hash.h>
+#include <common/license/hardware_hash.h>
 
 #define HELP_TEXT                              \
   "Usage: " LICENSE_GEN_NAME                   \
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  common::license::license_key_t hash;
+  common::license::hardware_hash_t hash;
   if (!common::license::GenerateHardwareHash(algo, &hash)) {
     return EXIT_FAILURE;
   }

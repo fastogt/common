@@ -337,14 +337,14 @@ SET(SYSTEM_INFO_SOURCES ${SYSTEM_INFO_SOURCES}
 )
 
 SET(LICENSE_HEADERS
-  ${CMAKE_SOURCE_DIR}/include/common/license/gen_hardware_hash.h
-  ${CMAKE_SOURCE_DIR}/include/common/license/check_expire_license.h
+  ${CMAKE_SOURCE_DIR}/include/common/license/hardware_hash.h
+  ${CMAKE_SOURCE_DIR}/include/common/license/expire_license.h
   ${CMAKE_SOURCE_DIR}/include/common/license/types.h
   ${CMAKE_SOURCE_DIR}/include/common/license/utils.h
 )
 SET(LICENSE_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/license/gen_hardware_hash.cpp
-  ${CMAKE_SOURCE_DIR}/src/license/check_expire_license.cpp
+  ${CMAKE_SOURCE_DIR}/src/license/hardware_hash.cpp
+  ${CMAKE_SOURCE_DIR}/src/license/expire_license.cpp
   ${CMAKE_SOURCE_DIR}/src/license/utils.cpp
   ${CMAKE_SOURCE_DIR}/src/license/types.cpp
 )

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <common/license/gen_hardware_hash.h>
+#include <common/license/hardware_hash.h>
 
 TEST(License, Generate) {
   bool hdd_hash = common::license::GenerateHardwareHash(common::license::HDD, nullptr);

@@ -16,18 +16,19 @@
 
 #include <string>
 
-#include <common/error.h>
 #include <common/license/types.h>
 #include <common/time.h>
 
 namespace common {
 namespace license {
 
-Error CheckExpireKey(const std::string& project, const license_key_t& license_key, const expire_key_t& expire_key);
-Error GetExpireTimeFromKey(const std::string& project,
-                           const license_key_t& license_key,
-                           const expire_key_t& expire_key,
-                           time64_t* time);
+bool IsValidateExpireKey(const std::string& project,
+                         const hardware_hash_t& license_key,
+                         const expire_key_t& expire_key);
+bool GetExpireTimeFromKey(const std::string& project,
+                          const hardware_hash_t& license_key,
+                          const expire_key_t& expire_key,
+                          time64_t* time);
 
 }  // namespace license
 }  // namespace common

@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <string>
-#include <algorithm>
 
 #include <common/optional.h>
 
@@ -32,7 +32,7 @@ class License : public std::array<char, N> {
   std::string as_string() const { return std::string(base_class::data(), N); }
 };
 
-typedef License<64> license_key_t;
+typedef License<64> hardware_hash_t;
 typedef License<96> expire_key_t;
 
 template <typename Lic>

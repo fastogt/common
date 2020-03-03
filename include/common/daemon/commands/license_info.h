@@ -42,8 +42,8 @@ namespace commands {
 class LicenseInfo : public common::serializer::JsonSerializer<LicenseInfo> {
  public:
   typedef JsonSerializer<LicenseInfo> base_class;
-  typedef license::license_key_t raw_license_key_t;
-  typedef Optional<raw_license_key_t> license_t;
+  typedef license::hardware_hash_t raw_hardware_hash_t;
+  typedef Optional<raw_hardware_hash_t> license_t;
   LicenseInfo();
   explicit LicenseInfo(license_t license);
 

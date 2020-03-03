@@ -12,35 +12,41 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <common/license/check_expire_license.h>
+#include <common/license/expire_license.h>
+
+#include <common/license/hardware_hash.h>
 
 #include <common/convert2string.h>
 
 namespace common {
 namespace license {
 
-Error CheckExpireKey(const std::string& project,
-                     const common::license::license_key_t& license_key,
-                     const common::license::expire_key_t& expire_key) {
+bool ValidateExpireKey(const std::string& project,
+                       const common::license::hardware_hash_t& license_key,
+                       const common::license::expire_key_t& expire_key) {
   time64_t res;
-  Error err = GetExpireTimeFromKey(project, license_key, expire_key, &res);
-  if (err) {
-    return err;
+  bool is_ok = GetExpireTimeFromKey(project, license_key, expire_key, &res);
+  if (!is_ok) {
+    return false;
   }
 
   time64_t utc_msec = time::current_utc_mstime();
   if (utc_msec > res) {
-    return make_error("License time expired");
+    return false;
   }
-  return Error();
+  return true;
 }
 
-Error GetExpireTimeFromKey(const std::string& project,
-                           const common::license::license_key_t& license_key,
-                           const common::license::expire_key_t& expire_key,
-                           time64_t* time) {
+bool GetExpireTimeFromKey(const std::string& project,
+                          const common::license::hardware_hash_t& license_key,
+                          const common::license::expire_key_t& expire_key,
+                          time64_t* time) {
   if (project.empty() || !time) {
-    return make_error_inval();
+    return false;
+  }
+
+  if (!IsValidHardwareHash(license_key)) {
+    return false;
   }
 
   uint64_t crc = 0;
@@ -60,16 +66,16 @@ Error GetExpireTimeFromKey(const std::string& project,
 
   uint64_t project_calc;
   if (!common::HexStringToUInt64(project_calc_str, &project_calc) || crc != project_calc) {
-    return make_error("Invalid project");
+    return false;
   }
 
   time64_t res;
   if (!common::HexStringToInt64(res_str, &res)) {
-    return make_error("Invalid time");
+    return false;
   }
 
   *time = res;
-  return Error();
+  return true;
 }
 
 }  // namespace license
