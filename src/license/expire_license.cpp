@@ -21,7 +21,7 @@
 namespace common {
 namespace license {
 
-bool ValidateExpireKey(const std::string& project,
+bool IsValidExpireKey(const std::string& project,
                        const common::license::hardware_hash_t& license_key,
                        const common::license::expire_key_t& expire_key) {
   time64_t res;
