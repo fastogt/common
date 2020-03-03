@@ -63,8 +63,8 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     MakeMd5Hash(hdd_id, lhash.data() + hardware_hash_t::license_size / 2);
     hardware_hash_t mixed;
     for (size_t i = 0; i < lhash.size() / 2; ++i) {
-      mixed[i] = lhash[i];
-      mixed[i + 1] = lhash[hardware_hash_t::license_size / 2 + i];
+      mixed[i * 2] = lhash[i];
+      mixed[i * 2 + 1] = lhash[hardware_hash_t::license_size / 2 + i];
     }
     *hash = mixed;
     return true;
@@ -79,10 +79,10 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     MakeMd5Hash(system_id, lhash.data() + hardware_hash_t::license_size / 2);
     hardware_hash_t mixed;
     for (size_t i = 0; i < lhash.size() / 2; ++i) {
-      mixed[i] = lhash[i];
-      mixed[i + 1] = lhash[hardware_hash_t::license_size / 2 + i];
+      mixed[i * 2] = lhash[i];
+      mixed[i * 2 + 1] = lhash[hardware_hash_t::license_size / 2 + i];
     }
-    *hash = lhash;
+    *hash = mixed;
     return true;
   }
 
