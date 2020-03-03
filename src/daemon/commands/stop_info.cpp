@@ -53,7 +53,7 @@ common::Error StopInfo::DoDeSerialize(json_object* serialized) {
 
 common::Error StopInfo::SerializeFields(json_object* out) const {
   json_object_object_add(out, STOP_SERVICE_INFO_DELAY_FIELD, json_object_new_int64(delay_));
-  return base_class::SerializeFields(out);
+  return common::Error();
 }
 
 common::time64_t StopInfo::GetDelay() const {
