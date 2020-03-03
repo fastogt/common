@@ -37,7 +37,7 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-class ActivateInfo : public ExpLicenseInfo {
+class ActivateInfo : public LicenseInfo {
  public:
   ActivateInfo();
   explicit ActivateInfo(license_t license);

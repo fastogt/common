@@ -21,7 +21,7 @@
 namespace common {
 namespace license {
 
-enum ALGO_TYPE { HDD = 0, MACHINE_ID = 1 };
+enum ALGO_TYPE : char { HDD = '0', MACHINE_ID = '1' };
 bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash);
 bool IsValidHardwareHash(const hardware_hash_t& hash);
 

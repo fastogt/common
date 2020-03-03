@@ -42,29 +42,10 @@ namespace commands {
 class LicenseInfo : public common::serializer::JsonSerializer<LicenseInfo> {
  public:
   typedef JsonSerializer<LicenseInfo> base_class;
-  typedef license::hardware_hash_t raw_hardware_hash_t;
+  typedef license::expire_key_t raw_hardware_hash_t;
   typedef Optional<raw_hardware_hash_t> license_t;
   LicenseInfo();
   explicit LicenseInfo(license_t license);
-
-  bool IsValid() const;
-  license_t GetLicense() const;
-
- protected:
-  Error DoDeSerialize(json_object* serialized) override;
-  Error SerializeFields(json_object* out) const override;
-
- private:
-  license_t license_;
-};
-
-class ExpLicenseInfo : public common::serializer::JsonSerializer<ExpLicenseInfo> {
- public:
-  typedef JsonSerializer<ExpLicenseInfo> base_class;
-  typedef license::expire_key_t raw_expire_key_t;
-  typedef Optional<raw_expire_key_t> license_t;
-  ExpLicenseInfo();
-  explicit ExpLicenseInfo(license_t license);
 
   bool IsValid() const;
   license_t GetLicense() const;

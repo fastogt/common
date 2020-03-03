@@ -22,11 +22,8 @@
 namespace common {
 namespace license {
 
-bool IsValidExpireKey(const std::string& project, const hardware_hash_t& license_key, const expire_key_t& expire_key);
-bool GetExpireTimeFromKey(const std::string& project,
-                          const hardware_hash_t& license_key,
-                          const expire_key_t& expire_key,
-                          time64_t* time);
+bool IsValidExpireKey(const std::string& project, const expire_key_t& expire_key);
+bool GetExpireTimeFromKey(const std::string& project, const expire_key_t& expire_key, time64_t* time);
 
 }  // namespace license
 }  // namespace common

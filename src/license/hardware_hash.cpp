@@ -16,7 +16,6 @@
 
 #include <common/hash/md5.h>
 #include <common/license/utils.h>
-#include <common/macros.h>
 
 namespace common {
 namespace license {
@@ -52,6 +51,9 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
   }
 
   const std::string cpu_id = GetNativeCpuID();
+  hardware_hash_t mixed;
+  mixed[hardware_hash_t::license_size - 1] = algo;
+
   if (algo == HDD) {
     std::string hdd_id;
     if (!GetHddID(&hdd_id)) {
@@ -61,7 +63,6 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     hardware_hash_t lhash;
     MakeMd5Hash(cpu_id, lhash.data());
     MakeMd5Hash(hdd_id, lhash.data() + hardware_hash_t::license_size / 2);
-    hardware_hash_t mixed;
     for (size_t i = 0; i < lhash.size() / 2; ++i) {
       mixed[i * 2] = lhash[i];
       mixed[i * 2 + 1] = lhash[hardware_hash_t::license_size / 2 + i];
@@ -77,7 +78,6 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     hardware_hash_t lhash;
     MakeMd5Hash(cpu_id, lhash.data());
     MakeMd5Hash(system_id, lhash.data() + hardware_hash_t::license_size / 2);
-    hardware_hash_t mixed;
     for (size_t i = 0; i < lhash.size() / 2; ++i) {
       mixed[i * 2] = lhash[i];
       mixed[i * 2 + 1] = lhash[hardware_hash_t::license_size / 2 + i];
@@ -86,18 +86,13 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     return true;
   }
 
-  NOTREACHED() << "Unknown algo: " << algo;
   return false;
 }
 
 bool IsValidHardwareHash(const hardware_hash_t& hash) {
   hardware_hash_t lic;
-  if (GenerateHardwareHash(HDD, &lic)) {
-    if (lic == hash) {
-      return true;
-    }
-  }
-  if (GenerateHardwareHash(MACHINE_ID, &lic)) {
+  ALGO_TYPE algo = static_cast<ALGO_TYPE>(hash[hardware_hash_t::license_size - 1]);
+  if (GenerateHardwareHash(algo, &lic)) {
     if (lic == hash) {
       return true;
     }

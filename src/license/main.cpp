@@ -49,6 +49,10 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  if (!common::license::IsValidHardwareHash(hash)) {
+    return EXIT_FAILURE;
+  }
+
   std::cout << std::string(hash.data(), hash.size()) << std::endl;
   return EXIT_SUCCESS;
 }

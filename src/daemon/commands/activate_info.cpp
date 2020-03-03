@@ -33,9 +33,9 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-ActivateInfo::ActivateInfo() : ExpLicenseInfo() {}
+ActivateInfo::ActivateInfo() : LicenseInfo() {}
 
-ActivateInfo::ActivateInfo(license_t license) : ExpLicenseInfo(license) {}
+ActivateInfo::ActivateInfo(license_t license) : LicenseInfo(license) {}
 
 }  // namespace commands
 }  // namespace daemon

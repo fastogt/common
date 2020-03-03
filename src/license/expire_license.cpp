@@ -21,11 +21,31 @@
 namespace common {
 namespace license {
 
-bool IsValidExpireKey(const std::string& project,
-                      const common::license::hardware_hash_t& license_key,
-                      const common::license::expire_key_t& expire_key) {
+bool GetHardwareHash(const expire_key_t& expire_key, hardware_hash_t* hash) {
+  if (!hash) {
+    return false;
+  }
+
+  hardware_hash_t lhash;
+  static const int chunk_size = sizeof(common::time64_t);
+  for (size_t i = 0; i < chunk_size; ++i) {
+    lhash[i * chunk_size] = expire_key[i * 12 + 2];
+    lhash[i * chunk_size + 1] = expire_key[i * 12 + 3];
+    lhash[i * chunk_size + 2] = expire_key[i * 12 + 4];
+    lhash[i * chunk_size + 3] = expire_key[i * 12 + 5];
+    lhash[i * chunk_size + 4] = expire_key[i * 12 + 6];
+    lhash[i * chunk_size + 5] = expire_key[i * 12 + 7];
+    lhash[i * chunk_size + 6] = expire_key[i * 12 + 8];
+    lhash[i * chunk_size + 7] = expire_key[i * 12 + 9];
+  }
+  lhash[hardware_hash_t::license_size - 1] = expire_key[expire_key_t::license_size - 1];
+  *hash = lhash;
+  return true;
+}
+
+bool IsValidExpireKey(const std::string& project, const common::license::expire_key_t& expire_key) {
   time64_t res;
-  bool is_ok = GetExpireTimeFromKey(project, license_key, expire_key, &res);
+  bool is_ok = GetExpireTimeFromKey(project, expire_key, &res);
   if (!is_ok) {
     return false;
   }
@@ -37,11 +57,13 @@ bool IsValidExpireKey(const std::string& project,
   return true;
 }
 
-bool GetExpireTimeFromKey(const std::string& project,
-                          const common::license::hardware_hash_t& license_key,
-                          const common::license::expire_key_t& expire_key,
-                          time64_t* time) {
+bool GetExpireTimeFromKey(const std::string& project, const common::license::expire_key_t& expire_key, time64_t* time) {
   if (project.empty() || !time) {
+    return false;
+  }
+
+  hardware_hash_t license_key;
+  if (!GetHardwareHash(expire_key, &license_key)) {
     return false;
   }
 
