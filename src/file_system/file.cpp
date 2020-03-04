@@ -550,7 +550,8 @@ bool read_file_to_string_with_max_size(const std::string& path, std::string* con
   constexpr off_t kDefaultChunkSize = 1 << 16;
   off_t chunk_size;
 #if !defined(OS_NACL_NONSFI)
-  if (get_file_size_by_path(path, &chunk_size)) {
+  common::ErrnoError err = get_file_size_by_path(path, &chunk_size);
+  if (err) {
     chunk_size = kDefaultChunkSize - 1;
   }
   // We need to attempt to read at EOF for feof flag to be set so here we

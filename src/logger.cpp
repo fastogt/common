@@ -123,9 +123,10 @@ void INIT_LOGGER(const std::string& project_name, const std::string& file_path, 
 
   if (max_size != -1) {
     off_t file_size = 0;
-    if (file_system::get_file_size_by_path(stabled_path, &file_size)) {
+    common::ErrnoError err = file_system::get_file_size_by_path(stabled_path, &file_size);
+    if (!err) {
       if (file_size > max_size) {
-        ErrnoError err = file_system::remove_file(stabled_path);
+        err = file_system::remove_file(stabled_path);
         if (err) {
           WARNING_LOG() << "Can't remove file: " << stabled_path << ", error: " << err->GetDescription();
         }
