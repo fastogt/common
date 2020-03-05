@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 
 #if defined(OS_POSIX)
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
@@ -430,6 +431,20 @@ uint16_t get_in_port(struct sockaddr* sa) {
   return sin->sin6_port;
 }
 
+char* get_in_addr(struct sockaddr* sa) {
+  if (sa->sa_family == AF_INET) {
+    struct sockaddr_in* sin = reinterpret_cast<struct sockaddr_in*>(sa);
+    char* str = static_cast<char*>(calloc(INET_ADDRSTRLEN, sizeof(char)));
+    inet_ntop(AF_INET, &sin->sin_addr, str, INET_ADDRSTRLEN);
+    return str;
+  }
+
+  struct sockaddr_in6* sin = reinterpret_cast<struct sockaddr_in6*>(sa);
+  char* str = static_cast<char*>(calloc(INET6_ADDRSTRLEN, sizeof(char)));
+  inet_ntop(AF_INET6, &sin->sin6_addr, str, INET6_ADDRSTRLEN);
+  return str;
+}
+
 ErrnoError listen(const socket_info& info, int backlog) {
   socket_descr_t fd = info.fd();
   if (fd == INVALID_SOCKET_VALUE) {
@@ -465,6 +480,10 @@ ErrnoError accept(const socket_info& info, socket_info* out_info) {
   }
 
   out_info->set_fd(res);
+  out_info->set_port(get_in_port(addr));
+  char* host = get_in_addr(addr);
+  out_info->set_host(host);
+  free(host);
   return ErrnoError();
 }
 

@@ -31,6 +31,8 @@
 
 #include <unistd.h>  // for socklen_t, ssize_t, off_t
 
+#include <string>
+
 #include <common/error.h>  // for ErrnoError
 #include <common/net/socket_info.h>
 #include <common/net/types.h>
@@ -48,6 +50,7 @@ ErrnoError bind(socket_descr_t fd,
 ErrnoError getsockname(socket_descr_t fd, struct sockaddr* addr, socklen_t addr_len, socket_info* out_info)
     WARN_UNUSED_RESULT;
 uint16_t get_in_port(struct sockaddr* sa);
+char* get_in_addr(struct sockaddr* sa);  // allocate memory
 ErrnoError listen(const socket_info& info, int backlog) WARN_UNUSED_RESULT;
 ErrnoError accept(const socket_info& info, socket_info* out_info) WARN_UNUSED_RESULT;
 

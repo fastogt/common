@@ -36,6 +36,7 @@
 namespace {
 const char kLocalhostText[] = "localhost";
 const char kLocalhostDigits[] = "127.0.0.1";
+const char kLocalhostIPV6Text[] = "::1";
 }  // namespace
 
 namespace common {
@@ -65,13 +66,7 @@ bool IsLocalHost(const std::string& host) {
     return false;
   }
 
-  COMPILE_ASSERT(SIZEOFMASS(kLocalhostText) == SIZEOFMASS(kLocalhostDigits),
-                 "Size of constant should be same, because 1 condition.");
-  if (host.size() != SIZEOFMASS(kLocalhostText) - 1) {
-    return false;
-  }
-
-  return host == kLocalhostText || host == kLocalhostDigits;
+  return host == kLocalhostText || host == kLocalhostDigits || host == kLocalhostIPV6Text;
 }
 
 HostAndPort HostAndPort::CreateLocalHost(uint16_t port) {
