@@ -20,8 +20,6 @@
 
 #include <common/license/hardware_hash.h>
 
-#include <common/logger.h>
-
 #define HELP_TEXT                              \
   "Usage: " LICENSE_GEN_NAME                   \
   " [options]\n"                               \
@@ -45,8 +43,6 @@ int main(int argc, char** argv) {
       return EXIT_SUCCESS;
     }
   }
-
-  INIT_LOGGER(PROJECT_NAME_LOWERCASE, "~/1.txt", common::logging::LOG_LEVEL_ALERT, 1024);
 
   common::license::hardware_hash_t hash;
   if (!common::license::GenerateHardwareHash(algo, &hash)) {
