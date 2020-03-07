@@ -48,7 +48,6 @@ enum EDType : unsigned {
   ED_XHEX,
   ED_UNICODE,
   ED_UUNICODE,
-  ED_MSG_PACK,
   ED_HTML_ESC,
   ENCODER_DECODER_NUM_TYPES
 };

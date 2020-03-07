@@ -16,8 +16,6 @@
 
 #include <iostream>
 
-#include <common/macros.h>
-
 #include <common/license/hardware_hash.h>
 
 #define HELP_TEXT                              \

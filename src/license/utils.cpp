@@ -13,8 +13,7 @@
 */
 
 #include <common/license/utils.h>
-
-#include <common/sprintf.h>
+#include <common/macros.h>
 
 namespace {
 void native_cpuid(unsigned int* eax, unsigned int* ebx, unsigned int* ecx, unsigned int* edx) {
@@ -34,7 +33,12 @@ namespace license {
 std::string GetNativeCpuID() {
   unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;
   native_cpuid(&eax, &ebx, &ecx, &edx);
-  return MemSPrintf("%08X %08X %08X %08X", eax, ebx, ecx, edx);
+  char result[36] = {0};
+  int res = snprintf(result, sizeof(result), "%08X %08X %08X %08X", eax, ebx, ecx, edx);
+  if (res < 0 || sizeof(result) < static_cast<size_t>(res)) {
+    return std::string();
+  }
+  return std::string(result, res);
 }
 
 }  // namespace license
