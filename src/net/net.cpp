@@ -432,6 +432,10 @@ uint16_t get_in_port(struct sockaddr* sa) {
 }
 
 char* get_in_addr(struct sockaddr* sa) {
+#if defined(OS_WIN)
+  struct sockaddr_in* sin = reinterpret_cast<struct sockaddr_in*>(sa);
+  return strdup(inet_ntoa(sin->sin_addr));
+#else
   if (sa->sa_family == AF_INET) {
     struct sockaddr_in* sin = reinterpret_cast<struct sockaddr_in*>(sa);
     char* str = static_cast<char*>(calloc(INET_ADDRSTRLEN, sizeof(char)));
@@ -451,6 +455,7 @@ char* get_in_addr(struct sockaddr* sa) {
     return nullptr;
   }
   return str;
+#endif
 }
 
 ErrnoError listen(const socket_info& info, int backlog) {
