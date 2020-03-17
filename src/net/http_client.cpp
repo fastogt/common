@@ -43,6 +43,39 @@
 namespace common {
 namespace net {
 
+namespace {
+bool GetHttpHostAndPort(const std::string& host, HostAndPort* out) {
+  if (host.empty() || !out) {
+    return false;
+  }
+
+  HostAndPort http_server;
+  size_t del = host.find_last_of(':');
+  if (del != std::string::npos) {
+    http_server.SetHost(host.substr(0, del));
+    std::string port_str = host.substr(del + 1);
+    uint16_t lport;
+    if (ConvertFromString(port_str, &lport)) {
+      http_server.SetPort(lport);
+    }
+  } else {
+    http_server.SetHost(host);
+    http_server.SetPort(80);
+  }
+  *out = http_server;
+  return true;
+}
+
+bool GetPostServerFromUrl(const uri::Url& url, HostAndPort* out) {
+  if (!url.IsValid() || !out) {
+    return false;
+  }
+
+  const std::string host_str = url.GetHost();
+  return GetHttpHostAndPort(host_str, out);
+}
+}  // namespace
+
 Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_file_string_path& file_path) {
   file_system::File file;
   ErrnoError errn = file.Open(file_path, file_system::File::FLAG_OPEN | file_system::File::FLAG_READ);
@@ -193,39 +226,74 @@ IHttpClient::~IHttpClient() {
   sock_ = nullptr;
 }
 
-IHttpClient::IHttpClient(net::ISocket* sock) : sock_(sock) {
+IHttpClient::IHttpClient(ISocket* sock) : sock_(sock) {
   CHECK(sock) << "Socket must be passed!";
 }
 
-net::ISocket* IHttpClient::GetSocket() const {
+ISocket* IHttpClient::GetSocket() const {
   return sock_;
 }
 
-HttpClient::HttpClient(const HostAndPort& host) : IHttpClient(new net::ClientSocketTcp(host)) {}
+HttpClient::HttpClient(const HostAndPort& host) : IHttpClient(new ClientSocketTcp(host)) {}
 
 ErrnoError HttpClient::Connect(struct timeval* tv) {
-  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->Connect(tv);
 }
 
 bool HttpClient::IsConnected() const {
-  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->IsConnected();
 }
 
 ErrnoError HttpClient::Disconnect() {
-  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->Disconnect();
 }
 
 ErrnoError HttpClient::SendFile(descriptor_t file_fd, size_t file_size) {
-  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->SendFile(file_fd, file_size);
 }
 
 HostAndPort HttpClient::GetHost() const {
-  net::ClientSocketTcp* sock = static_cast<net::ClientSocketTcp*>(GetSocket());
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->GetHost();
+}
+
+Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::Url& url) {
+  HostAndPort http_server_address;
+  if (!GetPostServerFromUrl(url, &http_server_address)) {
+    return make_error_inval();
+  }
+
+  HttpClient cl(http_server_address);
+  ErrnoError errn = cl.Connect();
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  const auto path = url.GetPath();
+  Error err = cl.PostFile(path, file_path);
+  if (err) {
+    cl.Disconnect();
+    return err;
+  }
+
+  http::HttpResponse lresp;
+  err = cl.ReadResponse(&lresp);
+  if (err) {
+    cl.Disconnect();
+    return err;
+  }
+
+  if (lresp.IsEmptyBody()) {
+    cl.Disconnect();
+    return make_error("Empty body");
+  }
+
+  cl.Disconnect();
+  return Error();
 }
 
 }  // namespace net

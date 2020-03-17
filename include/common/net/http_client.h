@@ -33,6 +33,7 @@
 #include <common/http/http.h>
 #include <common/net/isocket.h>
 #include <common/net/types.h>
+#include <common/uri/url.h>
 
 namespace common {
 namespace net {
@@ -73,6 +74,8 @@ class HttpClient : public IHttpClient {
 
   HostAndPort GetHost() const override;
 };
+
+Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::Url& url);
 
 }  // namespace net
 }  // namespace common
