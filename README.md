@@ -5,7 +5,7 @@ About Common
 
 FastoGT common sources
 
-Visit our site: [www.fastogt.com](http://www.fastogt.com)
+Visit our site: [fastogt.com](https://fastogt.com)
 
 Contribute
 ==========
@@ -53,7 +53,7 @@ cmake .. -GNinja -DCMAKE_TOOLCHAIN_FILE=../cmake/ios.toolchain.cmake -DCMAKE_BUI
 License
 =======
 
-Copyright (C) 2014-2019 FastoGT (http://www.fastogt.com)
+Copyright (C) 2014-2020 FastoGT (https://fastogt.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 3 as 
