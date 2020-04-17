@@ -1145,6 +1145,49 @@ bool HashValue::Equals(const Value* other) const {
 }
 
 std::ostream& operator<<(std::ostream& out, const Value& value) {
+  const Value::Type value_type = value.GetType();
+  if (value_type == Value::TYPE_BOOLEAN) {
+    bool res;
+    if (value.GetAsBoolean(&res)) {
+      return out << res;
+    }
+  } else if (value_type == Value::TYPE_INTEGER) {
+    int res;
+    if (value.GetAsInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == Value::TYPE_UINTEGER) {
+    unsigned int res;
+    if (value.GetAsUInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == common::Value::TYPE_LONG_INTEGER) {
+    long res;
+    if (value.GetAsLongInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == common::Value::TYPE_ULONG_INTEGER) {
+    unsigned long res;
+    if (value.GetAsULongInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == common::Value::TYPE_LONG_LONG_INTEGER) {
+    long long res;
+    if (value.GetAsLongLongInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == common::Value::TYPE_ULONG_LONG_INTEGER) {
+    unsigned long long res;
+    if (value.GetAsULongLongInteger(&res)) {
+      return out << res;
+    }
+  } else if (value_type == common::Value::TYPE_DOUBLE) {
+    double res;
+    if (value.GetAsDouble(&res)) {
+      return out << res;
+    }
+  }
+
   return out;
 }
 
