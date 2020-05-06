@@ -59,7 +59,7 @@ template <typename CharT, typename Traits = std::char_traits<CharT>>
 void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
                   const std::basic_string<CharT, Traits>& pattern,
                   bool recursive,
-                  bool (*filter_predicate)(const FileStringPath<CharT, Traits>&),
+                  std::function<bool(const FileStringPath<CharT, Traits>&)> filter_predicate,
                   std::vector<FileStringPath<CharT, Traits>>* result) {
   typedef typename DirectoryStringPath<CharT, Traits>::value_type value_type;
   if (!folder.IsValid() || pattern.empty() || !result) {
@@ -117,25 +117,27 @@ void DoScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
 }  // namespace
 
 template <typename CharT, typename Traits>
-std::vector<FileStringPath<CharT, Traits>> ScanFolder(const DirectoryStringPath<CharT, Traits>& folder,
-                                                      const std::basic_string<CharT, Traits>& pattern,
-                                                      bool recursive,
-                                                      bool (*filter_predicate)(const FileStringPath<CharT, Traits>&)) {
+std::vector<FileStringPath<CharT, Traits>> ScanFolder(
+    const DirectoryStringPath<CharT, Traits>& folder,
+    const std::basic_string<CharT, Traits>& pattern,
+    bool recursive,
+    std::function<bool(const FileStringPath<CharT, Traits>&)> filter_predicate) {
   std::vector<FileStringPath<CharT, Traits>> result;
   DoScanFolder(folder, pattern, recursive, filter_predicate, &result);
   return result;
 }
 
 // Instantiate versions we know callers will need.
-template std::vector<ascii_file_string_path> ScanFolder<char>(const ascii_directory_string_path& folder,
-                                                              const std::string& pattern,
-                                                              bool recursive,
-                                                              bool (*filter_predicate)(const ascii_file_string_path&));
+template std::vector<ascii_file_string_path> ScanFolder<char>(
+    const ascii_directory_string_path& folder,
+    const std::string& pattern,
+    bool recursive,
+    std::function<bool(const ascii_file_string_path&)> filter_predicate);
 template std::vector<utf_file_string_path> ScanFolder<char16, string16_char_traits>(
     const utf_directory_string_path& folder,
     const std::basic_string<char16, string16_char_traits>& pattern,
     bool recursive,
-    bool (*filter_predicate)(const utf_file_string_path&));
+    std::function<bool(const utf_file_string_path&)> filter_predicate);
 
 }  // namespace file_system
 }  // namespace common

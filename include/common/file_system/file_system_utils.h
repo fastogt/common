@@ -29,6 +29,10 @@
 
 #pragma once
 
+#include <functional>
+#include <string>
+#include <vector>
+
 #include <common/file_system/path.h>
 
 namespace common {
@@ -39,14 +43,16 @@ std::vector<FileStringPath<CharT, Traits>> ScanFolder(
     const DirectoryStringPath<CharT, Traits>& folder,
     const std::basic_string<CharT, Traits>& pattern,
     bool recursive,
-    bool (*filter_predicate)(const FileStringPath<CharT, Traits>&) = nullptr);
+    std::function<bool(const FileStringPath<CharT, Traits>&)> filter_predicate =
+        std::function<bool(const FileStringPath<CharT, Traits>&)>());
 
 template <typename CharT, typename Traits>
 std::vector<FileStringPath<CharT, Traits>> ScanFolder(
     const DirectoryStringPath<CharT, Traits>& folder,
     const CharT* pattern,
     bool recursive,
-    bool (*filter_predicate)(const FileStringPath<CharT, Traits>&) = nullptr) {
+    std::function<bool(const FileStringPath<CharT, Traits>&)> filter_predicate =
+        std::function<bool(const FileStringPath<CharT, Traits>&)>()) {
   return ScanFolder(folder, std::basic_string<CharT, Traits>(pattern), recursive, filter_predicate);
 }
 
