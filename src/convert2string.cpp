@@ -36,81 +36,13 @@
 
 #include <common/portable_endian.h>
 #include <common/sprintf.h>
+#include <common/string_number_conversions.h>
+#include <common/string_util.h>
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
 
 namespace common {
 
 namespace {
-
-template <typename STR, typename INT, typename UINT, bool NEG>
-struct IntToStringT {
-  // This is to avoid a compiler warning about unary minus on unsigned type.
-  // For example, say you had the following code:
-  //   template <typename INT>
-  //   INT abs(INT value) { return value < 0 ? -value : value; }
-  // Even though if INT is unsigned, it's impossible for value < 0, so the
-  // unary minus will never be taken, the compiler will still generate a
-  // warning.  We do a little specialization dance...
-  template <typename INT2, typename UINT2, bool NEG2>
-  struct ToUnsignedT {};
-
-  template <typename INT2, typename UINT2>
-  struct ToUnsignedT<INT2, UINT2, false> {
-    static UINT2 ToUnsigned(INT2 value) { return static_cast<UINT2>(value); }
-  };
-
-  template <typename INT2, typename UINT2>
-  struct ToUnsignedT<INT2, UINT2, true> {
-    static UINT2 ToUnsigned(INT2 value) { return static_cast<UINT2>(value < 0 ? -value : value); }
-  };
-
-  // This set of templates is very similar to the above templates, but
-  // for testing whether an integer is negative.
-  template <typename INT2, bool NEG2>
-  struct TestNegT {};
-  template <typename INT2>
-  struct TestNegT<INT2, false> {
-    static bool TestNeg(INT2 value) {
-      // value is unsigned, and can never be negative.
-      UNUSED(value);
-
-      return false;
-    }
-  };
-  template <typename INT2>
-  struct TestNegT<INT2, true> {
-    static bool TestNeg(INT2 value) { return value < 0; }
-  };
-
-  static STR IntToString(INT value) {
-    // log10(2) ~= 0.3 bytes needed per bit or per byte log10(2**8) ~= 2.4.
-    // So round up to allocate 3 output characters per byte, plus 1 for '-'.
-    const int kOutputBufSize = 3 * sizeof(INT) + 1;
-
-    // Allocate the whole string right away, we will right back to front, and
-    // then return the substr of what we ended up using.
-    STR outbuf(kOutputBufSize, 0);
-
-    bool is_neg = TestNegT<INT, NEG>::TestNeg(value);
-    // Even though is_neg will never be true when INT is parameterized as
-    // unsigned, even the presence of the unary operation causes a warning.
-    UINT res = ToUnsignedT<INT, UINT, NEG>::ToUnsigned(value);
-
-    typename STR::iterator it(outbuf.end());
-    do {
-      --it;
-      DCHECK(it != outbuf.begin());
-      *it = static_cast<typename STR::value_type>((res % 10) + '0');
-      res /= 10;
-    } while (res != 0);
-    if (is_neg) {
-      --it;
-      DCHECK(it != outbuf.begin());
-      *it = static_cast<typename STR::value_type>('-');
-    }
-    return STR(it, outbuf.end());
-  }
-};
 
 // Utility to convert a character to a digit in a given base
 template <typename CHAR, int BASE, bool BASE_LTE_10>
@@ -640,52 +572,62 @@ Buffer ConvertToBytesT(bool value) {
 
 template <typename Buffer>
 Buffer ConvertToBytesT(char value) {
-  return IntToStringT<Buffer, char, unsigned char, true>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(unsigned char value) {
-  return IntToStringT<Buffer, char, unsigned char, false>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(short value) {
-  return IntToStringT<Buffer, short, unsigned short, true>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(unsigned short value) {
-  return IntToStringT<Buffer, short, unsigned short, false>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(int value) {
-  return IntToStringT<Buffer, int, unsigned int, true>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(unsigned int value) {
-  return IntToStringT<Buffer, int, unsigned int, false>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(long value) {
-  return IntToStringT<Buffer, long, unsigned long, true>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(unsigned long value) {
-  return IntToStringT<Buffer, long, unsigned long, false>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(long long value) {
-  return IntToStringT<Buffer, long long, unsigned long long, true>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
 Buffer ConvertToBytesT(unsigned long long value) {
-  return IntToStringT<Buffer, long long, unsigned long long, false>::IntToString(value);
+  const std::string str = ConvertToString(value);  // more readable
+  return Buffer(str.begin(), str.end());
 }
 
 template <typename Buffer>
@@ -745,43 +687,43 @@ string16 ConvertToString16(bool value) {
 }
 
 string16 ConvertToString16(char value) {
-  return IntToStringT<string16, char, unsigned char, true>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(unsigned char value) {
-  return IntToStringT<string16, char, unsigned char, false>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(short value) {
-  return IntToStringT<string16, short, unsigned short, true>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(unsigned short value) {
-  return IntToStringT<string16, short, unsigned short, false>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(int value) {
-  return IntToStringT<string16, int, unsigned int, true>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(unsigned int value) {
-  return IntToStringT<string16, int, unsigned int, false>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(long value) {
-  return IntToStringT<string16, long, unsigned long, true>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(unsigned long value) {
-  return IntToStringT<string16, long, unsigned long, false>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(long long value) {
-  return IntToStringT<string16, long long, unsigned long long, true>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(unsigned long long value) {
-  return IntToStringT<string16, long long, unsigned long long, false>::IntToString(value);
+  return NumberToString16(value);
 }
 
 string16 ConvertToString16(float value) {
@@ -1070,95 +1012,51 @@ std::string ConvertToString(bool value) {
 }
 
 std::string ConvertToString(char value) {
-  return IntToStringT<std::string, char, unsigned char, true>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(unsigned char value) {
-  return IntToStringT<std::string, char, unsigned char, false>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(short value) {
-  return IntToStringT<std::string, short, unsigned short, true>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(unsigned short value) {
-  return IntToStringT<std::string, short, unsigned short, false>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(int value) {
-  return IntToStringT<std::string, int, unsigned int, true>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(unsigned int value) {
-  return IntToStringT<std::string, int, unsigned int, false>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(long value) {
-  return IntToStringT<std::string, long, unsigned long, true>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(unsigned long value) {
-  return IntToStringT<std::string, long, unsigned long, false>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(long long value) {
-  return IntToStringT<std::string, long long, unsigned long long, true>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(unsigned long long value) {
-  return IntToStringT<std::string, long long, unsigned long long, false>::IntToString(value);
+  return NumberToString(value);
 }
 
 std::string ConvertToString(float value, int prec) {
-  if (value == std::numeric_limits<float>::infinity()) {
-    return PPLUS_INF;
-  }
-  if (value == std::numeric_limits<float>::infinity()) {
-    return MINUS_INF;
-  }
-
-  char buffer[16];
-  if (prec == 0) {
-    SNPrintf(buffer, sizeof(buffer), "%.0f", value);
-  } else if (prec == 1) {
-    SNPrintf(buffer, sizeof(buffer), "%.1f", value);
-  } else if (prec == 2) {
-    SNPrintf(buffer, sizeof(buffer), "%.2f", value);
-  } else if (prec == 3) {
-    SNPrintf(buffer, sizeof(buffer), "%.3f", value);
-  } else if (prec == 4) {
-    SNPrintf(buffer, sizeof(buffer), "%.4f", value);
-  } else {
-    SNPrintf(buffer, sizeof(buffer), "%f", value);
-  }
-
-  return buffer;
+  return NumberToString(value, prec);
 }
 
 std::string ConvertToString(double value, int prec) {
-  if (value == std::numeric_limits<double>::infinity()) {
-    return PPLUS_INF;
-  }
-  if (value == std::numeric_limits<double>::infinity()) {
-    return MINUS_INF;
-  }
-
-  char buffer[32];
-  if (prec == 0) {
-    SNPrintf(buffer, sizeof(buffer), "%.0lf", value);
-  } else if (prec == 1) {
-    SNPrintf(buffer, sizeof(buffer), "%.1lf", value);
-  } else if (prec == 2) {
-    SNPrintf(buffer, sizeof(buffer), "%.2lf", value);
-  } else if (prec == 3) {
-    SNPrintf(buffer, sizeof(buffer), "%.3lf", value);
-  } else if (prec == 4) {
-    SNPrintf(buffer, sizeof(buffer), "%.4lf", value);
-  } else {
-    SNPrintf(buffer, sizeof(buffer), "%lf", value);
-  }
-
-  return buffer;
+  return NumberToString(value, prec);
 }
 
 bool ConvertFromString(const std::string& from, string16* out) {

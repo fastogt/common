@@ -121,17 +121,29 @@ bool IsWprintfFormatPortable(const wchar_t* format);
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
-template <class Char>
-inline Char ToLowerASCII(Char c) {
+inline char ToLowerASCII(char c) {
+  return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
+}
+inline char16 ToLowerASCII(char16 c) {
   return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
 }
 
 // ASCII-specific toupper.  The standard library's toupper is locale sensitive,
 // so we don't want to use it here.
-template <class Char>
-inline Char ToUpperASCII(Char c) {
+inline char ToUpperASCII(char c) {
   return (c >= 'a' && c <= 'z') ? (c + ('A' - 'a')) : c;
 }
+inline char16 ToUpperASCII(char16 c) {
+  return (c >= 'a' && c <= 'z') ? (c + ('A' - 'a')) : c;
+}
+
+// Converts the given string to it's ASCII-lowercase equivalent.
+std::string ToLowerASCII(StringPiece str);
+string16 ToLowerASCII(StringPiece16 str);
+
+// Converts the given string to it's ASCII-uppercase equivalent.
+std::string ToUpperASCII(StringPiece str);
+string16 ToUpperASCII(StringPiece16 str);
 
 // Function objects to aid in comparing/searching strings.
 

@@ -35,10 +35,6 @@
 #include <common/string_piece.h>
 #include <common/types.h>
 
-#define PLUS_INF "inf"
-#define PPLUS_INF "+inf"
-#define MINUS_INF "-inf"
-
 namespace common {
 
 std::string EscapedText(const std::string& str);  // add \n at the end if needed

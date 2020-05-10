@@ -38,10 +38,6 @@
 #include <common/containers/span.h>
 #include <common/string_piece.h>
 
-#define PLUS_INF "inf"
-#define PPLUS_INF "+inf"
-#define MINUS_INF "-inf"
-
 // ----------------------------------------------------------------------------
 // IMPORTANT MESSAGE FROM YOUR SPONSOR
 //

@@ -262,6 +262,45 @@ void immediate_exit();
 #define SIZEOF_DATA_MUST_BE(str, size) \
   COMPILE_ASSERT(sizeof(str) == size, "sizeof " STRINGIZE(str) " must be " STRINGIZE(size) " byte!")
 
+#if defined(__clang__) && __has_attribute(uninitialized)
+// Attribute "uninitialized" disables -ftrivial-auto-var-init=pattern for
+// the specified variable.
+// Library-wide alternative is
+// 'configs -= [ "//build/config/compiler:default_init_stack_vars" ]' in .gn
+// file.
+//
+// See "init_stack_vars" in build/config/compiler/BUILD.gn and
+// http://crbug.com/977230
+// "init_stack_vars" is enabled for non-official builds and we hope to enable it
+// in official build in 2020 as well. The flag writes fixed pattern into
+// uninitialized parts of all local variables. In rare cases such initialization
+// is undesirable and attribute can be used:
+//   1. Degraded performance
+// In most cases compiler is able to remove additional stores. E.g. if memory is
+// never accessed or properly initialized later. Preserved stores mostly will
+// not affect program performance. However if compiler failed on some
+// performance critical code we can get a visible regression in a benchmark.
+//   2. memset, memcpy calls
+// Compiler may replaces some memory writes with memset or memcpy calls. This is
+// not -ftrivial-auto-var-init specific, but it can happen more likely with the
+// flag. It can be a problem if code is not linked with C run-time library.
+//
+// Note: The flag is security risk mitigation feature. So in future the
+// attribute uses should be avoided when possible. However to enable this
+// mitigation on the most of the code we need to be less strict now and minimize
+// number of exceptions later. So if in doubt feel free to use attribute, but
+// please document the problem for someone who is going to cleanup it later.
+// E.g. platform, bot, benchmark or test name in patch description or next to
+// the attribute.
+#define STACK_UNINITIALIZED __attribute__((uninitialized))
+#else
+#define STACK_UNINITIALIZED
+#endif
+
+#define PLUS_INF "inf"
+#define PPLUS_INF "+inf"
+#define MINUS_INF "-inf"
+
 // Used to explicitly mark the return value of a function as unused. If you are
 // really sure you don't want to do anything with the return value of a function
 // that has been marked WARN_UNUSED_RESULT, wrap it with this. Example:
