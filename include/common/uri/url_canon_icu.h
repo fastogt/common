@@ -27,38 +27,11 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <gtest/gtest.h>
+#pragma once
+// ICU integration functions.
 
-#include <common/uri/gurl.h>
+#include <common/uri/url_canon.h>
 
-#define FILE_PATH "/home/sasha/1.mp4"
-#define DEV_VIDEO_PATH "/dev/video3"
-
-TEST(Url, IsValid) {
-  common::uri::GURL path;
-  ASSERT_FALSE(path.is_valid());
-
-  common::uri::GURL path2("http://www.permadi.com/index.html");
-  ASSERT_TRUE(path2.is_valid());
-
-  common::uri::GURL path3("http://www.permadi.com/tutorial/urlEncoding/index.html");
-  ASSERT_TRUE(path3.is_valid());
-
-  common::uri::GURL path4(
-      "http://www.permadi.com/tutorial/urlEncoding/example.html?var=This+is+a+simple+%26+short+test");
-  ASSERT_TRUE(path4.is_valid());
-
-  const std::string originFile = "file://" + std::string(FILE_PATH);
-  common::uri::GURL path5(originFile);
-  ASSERT_TRUE(path5.is_valid());
-  ASSERT_TRUE(path5.SchemeIsFile());
-  ASSERT_EQ(FILE_PATH, path5.path());
-  ASSERT_EQ(originFile, path5.spec());
-
-  const std::string originDev = "dev://" + std::string(DEV_VIDEO_PATH);
-  common::uri::GURL path6(originDev);
-  ASSERT_TRUE(path6.is_valid());
-  ASSERT_TRUE(path6.SchemeIs("dev"));
-  ASSERT_EQ(DEV_VIDEO_PATH, path6.path());
-  ASSERT_EQ(originDev, path6.spec());
-}
+namespace common {
+namespace uri {}  // namespace uri
+}  // namespace common
