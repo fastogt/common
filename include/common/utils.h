@@ -47,20 +47,6 @@ uint64_t crc64(uint64_t crc, const byte_t* data, size_t lenght);
 uint64_t crc64(uint64_t crc, const buffer_t& data);
 }  // namespace hash
 
-namespace traits {
-
-template <typename T>
-struct size_trait_info {
-  enum { value = sizeof(T) };
-};
-
-template <size_t N>
-struct size_trait_info<const char16[N]> {
-  enum { value = N };
-};
-
-}  // namespace traits
-
 namespace delete_wrappers {
 
 template <typename T>

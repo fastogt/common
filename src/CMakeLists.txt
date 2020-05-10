@@ -15,6 +15,12 @@ SET(PATTERNS_HEADERS
 SET(PATTERNS_SOURCES
 )
 
+SET(CONTAINERS_HEADERS
+  ${CMAKE_SOURCE_DIR}/include/common/containers/stack_container.h
+  ${CMAKE_SOURCE_DIR}/include/common/containers/span.h
+  ${CMAKE_SOURCE_DIR}/include/common/containers/checked_iterators.h
+)
+
 SET(APPLIATION_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/application/application.h
 )
@@ -98,11 +104,28 @@ ENDIF(CPUID_FOUND)
 SET(URI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/uri/upath.h
   ${CMAKE_SOURCE_DIR}/include/common/uri/url.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_canon_stdstring.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_parse.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_canon.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_parse_internal.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_constants.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_util_internal.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_util.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_canon_ip.h
+  ${CMAKE_SOURCE_DIR}/include/common/uri/url_canon_internal.h
 )
 
 SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/upath.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_stdstring.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_parse.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_canon.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_parse_internal.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_constants.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_util_internal.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_ip.cpp
 )
 
 SET(SYSTEM_HEADERS
@@ -169,6 +192,7 @@ SET(THREADS_SOURCES
 
 SET(NET_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/net/types.h
+  ${CMAKE_SOURCE_DIR}/include/common/net/ip_address.h
   ${CMAKE_SOURCE_DIR}/include/common/net/socket_info.h
   ${CMAKE_SOURCE_DIR}/include/common/net/net.h
   ${CMAKE_SOURCE_DIR}/include/common/net/isocket.h
@@ -179,6 +203,7 @@ SET(NET_HEADERS
 
 SET(NET_SOURCES
   ${CMAKE_SOURCE_DIR}/src/net/types.cpp
+  ${CMAKE_SOURCE_DIR}/src/net/ip_address.cpp
   ${CMAKE_SOURCE_DIR}/src/net/socket_info.cpp
   ${CMAKE_SOURCE_DIR}/src/net/net.cpp
   ${CMAKE_SOURCE_DIR}/src/net/isocket.cpp
@@ -573,6 +598,9 @@ SET(COMMON_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/log_levels.h
   ${CMAKE_SOURCE_DIR}/include/common/logger.h
   ${CMAKE_SOURCE_DIR}/include/common/macros.h
+  ${CMAKE_SOURCE_DIR}/include/common/template_util.h
+  ${CMAKE_SOURCE_DIR}/include/common/parse_number.h
+  ${CMAKE_SOURCE_DIR}/include/common/string_number_conversions.h
   ${CMAKE_SOURCE_DIR}/include/common/bit_cast.h
   ${CMAKE_SOURCE_DIR}/include/common/eintr_wrapper.h
   ${CMAKE_SOURCE_DIR}/include/common/optional.h
@@ -585,6 +613,8 @@ SET(COMMON_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/string_piece.h
   ${CMAKE_SOURCE_DIR}/include/common/string16.h
   ${CMAKE_SOURCE_DIR}/include/common/string_util.h
+  ${CMAKE_SOURCE_DIR}/include/common/string_split.h
+  ${CMAKE_SOURCE_DIR}/include/common/strcat.h
   ${CMAKE_SOURCE_DIR}/include/common/convert2string.h
   ${CMAKE_SOURCE_DIR}/include/common/types.h
   ${CMAKE_SOURCE_DIR}/include/common/bounded_value.h
@@ -598,6 +628,7 @@ SET(COMMON_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/time.h
 
   ${PATTERNS_HEADERS}
+  ${CONTAINERS_HEADERS}
   ${SYSTEM_HEADERS}
   ${PROCESS_HEADERS}
   ${FILE_SYSTEM_HEADERS}
@@ -626,12 +657,16 @@ SET(COMMON_HEADERS
 SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/log_levels.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
+  ${CMAKE_SOURCE_DIR}/src/parse_number.cpp
+  ${CMAKE_SOURCE_DIR}/src/string_number_conversions.cpp
   ${CMAKE_SOURCE_DIR}/src/event.cpp
   ${CMAKE_SOURCE_DIR}/src/sprintf.cpp
   ${CMAKE_SOURCE_DIR}/src/byte_writer.cpp
   ${CMAKE_SOURCE_DIR}/src/utf_string_conversions.cpp
   ${CMAKE_SOURCE_DIR}/src/utf_string_conversion_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/string_util.cpp
+  ${CMAKE_SOURCE_DIR}/src/string_split.cpp
+  ${CMAKE_SOURCE_DIR}/src/strcat.cpp
   ${CMAKE_SOURCE_DIR}/src/icu_utf.cpp
   ${CMAKE_SOURCE_DIR}/src/string_piece.cpp
   ${CMAKE_SOURCE_DIR}/src/string16.cpp

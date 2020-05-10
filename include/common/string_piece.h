@@ -110,7 +110,7 @@ StringPiece16 substr(const StringPiece16& self, size_t pos, size_t n);
 // rather to BasicStringPiece, StringPiece, or StringPiece16.
 //
 // This is templatized by string class type rather than character type, so
-// BasicStringPiece<std::string> or BasicStringPiece<base::string16>.
+// BasicStringPiece<std::string> or BasicStringPiece<common::string16>.
 template <typename STRING_TYPE>
 class BasicStringPiece {
  public:
@@ -146,6 +146,16 @@ class BasicStringPiece {
   size_type size() const { return length_; }
   size_type length() const { return length_; }
   bool empty() const { return length_ == 0; }
+
+  value_type front() const {
+    CHECK_NE(0UL, length_);
+    return ptr_[0];
+  }
+
+  value_type back() const {
+    CHECK_NE(0UL, length_);
+    return ptr_[length_ - 1];
+  }
 
   void clear() {
     ptr_ = nullptr;
@@ -184,6 +194,8 @@ class BasicStringPiece {
     // std::string doesn't like to take a NULL pointer even with a 0 size.
     return empty() ? STRING_TYPE() : STRING_TYPE(data(), size());
   }
+
+  explicit operator STRING_TYPE() const { return as_string(); }
 
   const_iterator begin() const { return ptr_; }
   const_iterator end() const { return ptr_ + length_; }

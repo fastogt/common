@@ -202,10 +202,6 @@ bool ReplaceChars(const std::string& input,
 bool TrimString(const string16& input, const StringPiece16& trim_chars, string16* output);
 bool TrimString(const std::string& input, const StringPiece& trim_chars, std::string* output);
 
-// Truncates a string to the nearest UTF-8 character that will leave
-// the string less than or equal to the specified byte size.
-void TruncateUTF8ToByteSize(const std::string& input, const size_t byte_size, std::string* output);
-
 // Trims any whitespace from either end of the input string.  Returns where
 // whitespace was found.
 // The non-wide version has two functions:
@@ -219,6 +215,16 @@ enum TrimPositions {
   TRIM_TRAILING = 1 << 1,
   TRIM_ALL = TRIM_LEADING | TRIM_TRAILING,
 };
+
+// StringPiece versions of the above. The returned pieces refer to the original
+// buffer.
+StringPiece16 TrimString(StringPiece16 input, StringPiece16 trim_chars, TrimPositions positions);
+StringPiece TrimString(StringPiece input, StringPiece trim_chars, TrimPositions positions);
+
+// Truncates a string to the nearest UTF-8 character that will leave
+// the string less than or equal to the specified byte size.
+void TruncateUTF8ToByteSize(const std::string& input, const size_t byte_size, std::string* output);
+
 TrimPositions TrimWhitespace(const string16& input, TrimPositions positions, string16* output);
 TrimPositions TrimWhitespaceASCII(const std::string& input, TrimPositions positions, std::string* output);
 
@@ -302,18 +308,10 @@ inline str StringToUpperASCII(const str& s) {
   return output;
 }
 
-// Compare the lower-case form of the given string against the given ASCII
-// string.  This is useful for doing checking if an input string matches some
-// token, and it is optimized to avoid intermediate string copies.  This API is
-// borrowed from the equivalent APIs in Mozilla.
-bool LowerCaseEqualsASCII(const std::string& a, const char* b);
-bool LowerCaseEqualsASCII(const string16& a, const char* b);
-
-// Same thing, but with string iterators instead.
-bool LowerCaseEqualsASCII(std::string::const_iterator a_begin, std::string::const_iterator a_end, const char* b);
-bool LowerCaseEqualsASCII(string16::const_iterator a_begin, string16::const_iterator a_end, const char* b);
-bool LowerCaseEqualsASCII(const char* a_begin, const char* a_end, const char* b);
-bool LowerCaseEqualsASCII(const char16* a_begin, const char16* a_end, const char* b);
+// Compare the lower-case form of the given string against the given
+// previously-lower-cased ASCII string (typically a constant).
+bool LowerCaseEqualsASCII(StringPiece str, StringPiece lowecase_ascii);
+bool LowerCaseEqualsASCII(StringPiece16 str, StringPiece lowecase_ascii);
 
 // Performs a case-sensitive string compare. The behavior is undefined if both
 // strings are not ASCII.
