@@ -103,7 +103,6 @@ ENDIF(CPUID_FOUND)
 
 SET(URI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/uri/upath.h
-  ${CMAKE_SOURCE_DIR}/include/common/uri/url.h
   ${CMAKE_SOURCE_DIR}/include/common/uri/gurl.h
   ${CMAKE_SOURCE_DIR}/include/common/uri/url_canon_stdstring.h
   ${CMAKE_SOURCE_DIR}/include/common/uri/url_parse.h
@@ -120,7 +119,6 @@ SET(URI_HEADERS
 
 SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/upath.cpp
-  ${CMAKE_SOURCE_DIR}/src/uri/url.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/gurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_stdstring.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse.cpp

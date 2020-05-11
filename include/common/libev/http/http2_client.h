@@ -48,8 +48,8 @@ class Http2Client : public HttpClient {
 
   Http2Client(IoLoop* server, const net::socket_info& info);
 
-  ErrnoError Get(const uri::Url& url, bool is_keep_alive) override WARN_UNUSED_RESULT;
-  ErrnoError Head(const uri::Url& url, bool is_keep_alive) override WARN_UNUSED_RESULT;
+  ErrnoError Get(const uri::GURL& url, bool is_keep_alive) override WARN_UNUSED_RESULT;
+  ErrnoError Head(const uri::GURL& url, bool is_keep_alive) override WARN_UNUSED_RESULT;
 
   ErrnoError SendError(common::http::http_protocol protocol,
                        common::http::http_status status,
@@ -68,7 +68,7 @@ class Http2Client : public HttpClient {
                          const HttpServerInfo& info) override WARN_UNUSED_RESULT;
 
   ErrnoError SendRequest(common::http::http_method method,
-                         const uri::Url& url,
+                         const uri::GURL& url,
                          common::http::http_protocol protocol,
                          const char* extra_header,
                          bool is_keep_alive) override WARN_UNUSED_RESULT;

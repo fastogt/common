@@ -135,7 +135,7 @@ TEST(Http, parse_POST) {
   ASSERT_EQ(r3.GetMethod(), http::HM_POST);
   ASSERT_EQ(r3.GetPath().GetPath(), "/hello.htm");
   ASSERT_EQ(r3.GetHeaders().size(), 5);
-  ASSERT_EQ(r3.GetBody(), "home=Cosby&favorite flavor=flies");
+  ASSERT_EQ(r3.GetBody(), "home=Cosby&favorite+flavor=flies");
   ASSERT_EQ(r3.GetBody().size(), 32);
   ASSERT_FALSE(err.second);
 }

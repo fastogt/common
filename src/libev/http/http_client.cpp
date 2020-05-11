@@ -77,11 +77,11 @@ bool HttpClient::IsAuthenticated() const {
   return isAuth_;
 }
 
-ErrnoError HttpClient::Get(const uri::Url& url, bool is_keep_alive) {
+ErrnoError HttpClient::Get(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_GET, url, common::http::HP_1_1, nullptr, is_keep_alive);
 }
 
-ErrnoError HttpClient::Head(const uri::Url& url, bool is_keep_alive) {
+ErrnoError HttpClient::Head(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_HEAD, url, common::http::HP_1_1, nullptr, is_keep_alive);
 }
 
@@ -187,18 +187,17 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
 }
 
 ErrnoError HttpClient::SendRequest(common::http::http_method method,
-                                   const uri::Url& url,
+                                   const uri::GURL& url,
                                    common::http::http_protocol protocol,
                                    const char* extra_header,
                                    bool is_keep_alive) {
   CHECK(protocol <= common::http::HP_1_1);
 
-  if (!url.IsValid()) {
+  if (!url.is_valid()) {
     return make_errno_error_inval();
   }
 
-  uri::Url::scheme sc = url.GetScheme();
-  if (!(sc == uri::Url::http || sc == uri::Url::https)) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
     return make_errno_error_inval();
   }
 
@@ -207,18 +206,19 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
   char timebuf[100];
   strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
 
-  uri::Upath path = url.GetPath();
+  std::string host = url.HostNoBrackets();
+  std::string path = url.PathForRequest();
   char header_data[1024] = {0};
   int cur_pos = SNPrintf(header_data, sizeof(header_data),
-                         protocol == common::http::HP_2_0 ? "%s /%s " HTTP_2_0_PROTOCOL_NAME
+                         protocol == common::http::HP_2_0 ? "%s %s " HTTP_2_0_PROTOCOL_NAME
                                                             "\r\n"
                                                             "Host: %s\r\n"
                                                             "Date: %s\r\n"
-                                                          : "%s /%s " HTTP_1_1_PROTOCOL_NAME
+                                                          : "%s %s " HTTP_1_1_PROTOCOL_NAME
                                                             "\r\n"
                                                             "Host: %s\r\n"
                                                             "Date: %s\r\n",
-                         method_str, path.GetHpath(), url.GetHost(), timebuf);
+                         method_str, path, host, timebuf);
 
   if (extra_header) {
     int exlen = SNPrintf(header_data + cur_pos, sizeof(header_data) - cur_pos, "%s\r\n", extra_header);

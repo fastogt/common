@@ -41,26 +41,26 @@ const char* WebSocketClient::ClassName() const {
   return "WebSocketClient";
 }
 
-ErrnoError WebSocketClient::StartHandshake(const uri::Url& url) {
-  if (!url.IsValid()) {
+ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url) {
+  if (!url.is_valid()) {
     return make_errno_error_inval();
   }
 
-  uri::Url::scheme sc = url.GetScheme();
-  if (!(sc == uri::Url::ws || sc == uri::Url::wss)) {
+  if (!url.SchemeIsWSOrWSS()) {
     return make_errno_error_inval();
   }
 
-  uri::Upath path = url.GetPath();
+  std::string host = url.HostNoBrackets();
+  std::string path = url.PathForRequest();
   const std::string request = MemSPrintf(
-      "GET /%s HTTP/1.1\r\n"
+      "GET %s HTTP/1.1\r\n"
       "Host: %s\r\n"
       "Upgrade: websocket\r\n"
       "Connection: Upgrade\r\n"
       "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n"
       "Sec-WebSocket-Version: 13\r\n"
       "\r\n",
-      path.GetHpath(), url.GetHost());
+      path, host);
   size_t nout;
   return Write(request.c_str(), request.size(), &nout);
 }

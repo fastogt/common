@@ -92,11 +92,11 @@ namespace http {
 
 Http2Client::Http2Client(libev::IoLoop* server, const net::socket_info& info) : HttpClient(server, info), streams_() {}
 
-ErrnoError Http2Client::Get(const uri::Url& url, bool is_keep_alive) {
+ErrnoError Http2Client::Get(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_GET, url, common::http::HP_2_0, nullptr, is_keep_alive);
 }
 
-ErrnoError Http2Client::Head(const uri::Url& url, bool is_keep_alive) {
+ErrnoError Http2Client::Head(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_HEAD, url, common::http::HP_2_0, nullptr, is_keep_alive);
 }
 
@@ -240,7 +240,7 @@ ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
 }
 
 ErrnoError Http2Client::SendRequest(common::http::http_method method,
-                                    const uri::Url& url,
+                                    const uri::GURL& url,
                                     common::http::http_protocol protocol,
                                     const char* extra_header,
                                     bool is_keep_alive) {
@@ -260,15 +260,16 @@ ErrnoError Http2Client::SendRequest(common::http::http_method method,
     nvstatus.value = ConvertToBytes(method_str);
     nvs.push_back(nvstatus);
 
-    uri::Upath path = url.GetPath();
+    const std::string path = url.PathForRequest();
     http2::http2_nv nvpath;
     nvpath.name = MAKE_BUFFER(":path");
-    nvpath.value = ConvertToBytes(path.GetHpath());
+    nvpath.value = ConvertToBytes(path);
     nvs.push_back(nvpath);
 
+    const std::string host = url.HostNoBrackets();
     http2::http2_nv nvhost;
     nvhost.name = MAKE_BUFFER(":host");
-    nvhost.value = ConvertToBytes(url.GetHost());
+    nvhost.value = ConvertToBytes(host);
     nvs.push_back(nvhost);
 
     char timebuf[100];

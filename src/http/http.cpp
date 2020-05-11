@@ -31,7 +31,7 @@
 
 #include <common/convert2string.h>  // for ConvertFromString
 #include <common/sprintf.h>
-#include <common/uri/url.h>
+#include <common/uri/url_util.h>
 #include <common/utils.h>
 
 namespace common {
@@ -269,19 +269,19 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
     start = pos + 2;
   }
 
-  char* lbody = nullptr;
+  uri::RawCanonOutputT<char16> unescaped;
   if (len != start && line_count != 0) {
     const char* request_str = request.c_str() + start;
-    lbody = uri::detail::uri_decode(request_str, strlen(request_str));
+    uri::DecodeURLEscapeSequences(request_str, strlen(request_str), uri::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
   }
 
   if (line_count == 0) {
-    utils::freeifnotnull(lbody);
     return std::make_pair(HS_BAD_REQUEST, make_error("Not found CRLF"));
   }
 
-  *req_out = HttpRequest(lmethod, lpath, lprotocol, lheaders, lbody ? lbody : std::string());
-  utils::freeifnotnull(lbody);
+  auto pieace = StringPiece16(unescaped.data(), unescaped.length());
+  std::string body = ConvertToString(pieace);
+  *req_out = HttpRequest(lmethod, lpath, lprotocol, lheaders, body);
   return std::make_pair(HS_OK, Error());
 }
 

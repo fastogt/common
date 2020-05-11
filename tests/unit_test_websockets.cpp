@@ -41,7 +41,7 @@
 #define BUF_SIZE 4096
 #define HOST "demos.kaazing.com"
 namespace {
-const common::uri::Url ws_url("ws://" HOST "/echo");
+const common::uri::GURL ws_url("ws://" HOST "/echo");
 const common::net::HostAndPort g_hs("localhost", 8011);
 const common::net::HostAndPort kHostAndPort(HOST, 80);
 const common::libev::http::HttpServerInfo kHinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);

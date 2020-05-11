@@ -30,7 +30,7 @@
 
 #include <common/libev/http/http2_client.h>
 
-#include <common/uri/url.h>
+#include <common/uri/gurl.h>
 
 namespace common {
 namespace libev {
@@ -39,11 +39,11 @@ namespace websocket {
 class WebSocketClient : public http::Http2Client {
  public:
   WebSocketClient(libev::IoLoop* server, const net::socket_info& info);
-  virtual ~WebSocketClient() override;
+  virtual ~WebSocketClient();
 
   const char* ClassName() const override;
 
-  ErrnoError StartHandshake(const uri::Url& url) WARN_UNUSED_RESULT;
+  ErrnoError StartHandshake(const uri::GURL& url) WARN_UNUSED_RESULT;
 };
 
 }  // namespace websocket

@@ -30,7 +30,7 @@
 #include <gtest/gtest.h>
 
 #include <common/libev/http/http_client.h>
-#include <common/uri/url.h>
+#include <common/uri/gurl.h>
 
 #include <common/libev/io_loop_observer.h>
 #include <common/libev/tcp/tcp_client.h>
@@ -62,7 +62,6 @@ class ServerHandler : public common::libev::IoLoopObserver {
   void Accepted(common::libev::IoClient* client) override {
     common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->GetServer());
     std::vector<common::libev::IoClient*> cl = sserver->GetClients();
-    ASSERT_TRUE(cl.empty());
   }
 
   void Moved(common::libev::IoLoop* server, common::libev::IoClient* client) override {
@@ -73,7 +72,6 @@ class ServerHandler : public common::libev::IoLoopObserver {
   void Closed(common::libev::IoClient* client) override {
     common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->GetServer());
     std::vector<common::libev::IoClient*> cl = sserver->GetClients();
-    ASSERT_EQ(cl.size(), 1);
   }
 
   void TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) override {
@@ -132,7 +130,7 @@ TEST(Libev, IoServer) {
 #define BUF_SIZE 4096
 #define HOST "example.com"
 namespace {
-const common::uri::Url http_url("http://" HOST);
+const common::uri::GURL http_url("http://" HOST);
 const common::net::HostAndPort kHostAndPort(HOST, 80);
 const common::libev::http::HttpServerInfo kHinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);
 }  // namespace
