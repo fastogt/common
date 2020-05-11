@@ -31,6 +31,7 @@
 
 #include <common/uri/gurl.h>
 
+#define HTTP_PATH "/home/index.html"
 #define FILE_PATH "/home/sasha/1.mp4"
 #define DEV_VIDEO_PATH "/dev/video3"
 
@@ -62,4 +63,7 @@ TEST(Url, IsValid) {
   ASSERT_TRUE(path6.SchemeIsDev());
   ASSERT_EQ(DEV_VIDEO_PATH, path6.path());
   ASSERT_EQ(originDev, path6.spec());
+
+  common::uri::GURL http_path(HTTP_PATH);
+  ASSERT_FALSE(http_path.is_valid());
 }

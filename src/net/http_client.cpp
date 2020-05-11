@@ -76,7 +76,7 @@ bool GetPostServerFromUrl(const uri::GURL& url, HostAndPort* out) {
 }
 }  // namespace
 
-Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_file_string_path& file_path) {
+Error IHttpClient::PostFile(const url_t& path, const file_system::ascii_file_string_path& file_path) {
   file_system::File file;
   ErrnoError errn = file.Open(file_path, file_system::File::FLAG_OPEN | file_system::File::FLAG_READ);
   if (errn) {
@@ -117,7 +117,7 @@ Error IHttpClient::PostFile(const uri::Upath& path, const file_system::ascii_fil
   return Error();
 }
 
-Error IHttpClient::Get(const uri::Upath& path) {
+Error IHttpClient::Get(const url_t& path) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
@@ -128,7 +128,7 @@ Error IHttpClient::Get(const uri::Upath& path) {
   return SendRequest(*req);
 }
 
-Error IHttpClient::Head(const uri::Upath& path) {
+Error IHttpClient::Head(const url_t& path) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
@@ -274,7 +274,7 @@ Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const u
   }
 
   const auto path = url.PathForRequest();
-  Error err = cl.PostFile(uri::Upath(path), file_path);
+  Error err = cl.PostFile(path, file_path);
   if (err) {
     cl.Disconnect();
     return err;

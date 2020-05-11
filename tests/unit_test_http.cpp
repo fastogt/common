@@ -48,7 +48,7 @@ TEST(Http, parse_GET) {
       "HTTPTool/1.0\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request, &r1);
   ASSERT_EQ(r1.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r1.GetPath().GetPath(), "/path/file.html");
+  ASSERT_EQ(r1.GetURL().PathForRequest(), "/path/file.html");
   ASSERT_EQ(r1.GetHeaders().size(), 2);
   ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
@@ -63,7 +63,7 @@ TEST(Http, parse_GET) {
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request2, &r2);
   ASSERT_EQ(r2.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r2.GetPath().GetPath(), "/hello.htm");
+  ASSERT_EQ(r2.GetURL().PathForRequest(), "/hello.htm");
   ASSERT_EQ(r2.GetHeaders().size(), 5);
   ASSERT_TRUE(r2.GetBody().empty());
   ASSERT_FALSE(err.second);
@@ -78,7 +78,7 @@ TEST(Http, parse_GET) {
       "Connection: Keep-Alive\r\n\r\n";
   err = http::parse_http_request(request4, &r4);
   ASSERT_EQ(r4.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r4.GetPath().GetPath(), "/hello.htm");
+  ASSERT_EQ(r4.GetURL().PathForRequest(), "/hello.htm?home=Cosby&favorite+flavor=flies");
   // ASSERT_EQ(r4.path().Query(), "home=Cosby&favorite flavor=flies");
   ASSERT_EQ(r4.GetHeaders().size(), 5);
   ASSERT_TRUE(r4.GetBody().empty());
@@ -98,7 +98,7 @@ TEST(Http, parse_GET) {
   err = http::parse_http_request(request5, &r5);
   ASSERT_FALSE(err.second);
   ASSERT_EQ(r5.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r5.GetPath().GetPath(), "/[object LocalMediaStream]");
+  ASSERT_EQ(r5.GetURL().PathForRequest(), "/[object%20LocalMediaStream]");
   ASSERT_EQ(r5.GetProtocol(), http::HP_1_1);
   ASSERT_EQ(r5.GetHeaders().size(), 7);
   ASSERT_TRUE(r5.GetBody().empty());
@@ -115,7 +115,7 @@ TEST(Http, parse_HEAD) {
       "Connection: Keep-Alive\r\n\r\n";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.GetMethod(), http::HM_HEAD);
-  ASSERT_EQ(r3.GetPath().GetPath(), "/hello.htm");
+  ASSERT_EQ(r3.GetURL().PathForRequest(), "/hello.htm");
   ASSERT_EQ(r3.GetHeaders().size(), 5);
   ASSERT_TRUE(r3.GetBody().empty());
   ASSERT_FALSE(err.second);
@@ -133,7 +133,7 @@ TEST(Http, parse_POST) {
       "home=Cosby&favorite+flavor=flies";
   std::pair<http::http_status, Error> err = http::parse_http_request(request3, &r3);
   ASSERT_EQ(r3.GetMethod(), http::HM_POST);
-  ASSERT_EQ(r3.GetPath().GetPath(), "/hello.htm");
+  ASSERT_EQ(r3.GetURL().PathForRequest(), "/hello.htm");
   ASSERT_EQ(r3.GetHeaders().size(), 5);
   ASSERT_EQ(r3.GetBody(), "home=Cosby&favorite+flavor=flies");
   ASSERT_EQ(r3.GetBody().size(), 32);
@@ -395,7 +395,7 @@ TEST(Http2, frame_headers) {
   http::HttpRequest r0;
   std::pair<http::http_status, Error> err0 = http2::parse_http_request(*head0, &r0);
   ASSERT_EQ(r0.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r0.GetPath().GetPath(), "/");
+  ASSERT_EQ(r0.GetURL().PathForRequest(), "/");
   ASSERT_EQ(r0.GetHeaders().size(), 3);
   ASSERT_TRUE(r0.GetBody().empty());
   ASSERT_FALSE(err0.second);
@@ -428,7 +428,7 @@ TEST(Http2, frame_headers) {
   http::HttpRequest r1;
   std::pair<http::http_status, Error> err = http2::parse_http_request(*head1, &r1);
   ASSERT_EQ(r1.GetMethod(), http::HM_GET);
-  ASSERT_EQ(r1.GetPath().GetPath(), "/");
+  ASSERT_EQ(r1.GetURL().PathForRequest(), "/");
   ASSERT_EQ(r1.GetHeaders().size(), 3);
   ASSERT_TRUE(r1.GetBody().empty());
   ASSERT_FALSE(err.second);
@@ -467,11 +467,10 @@ TEST(Http2, frame_goaway) {
 
 TEST(http_client, head) {
   net::HostAndPort example("example.com", 80);
-  uri::Upath root = uri::Upath::MakeRoot();
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Head(root);
+  Error err2 = cl.Head("/");
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);
@@ -483,11 +482,10 @@ TEST(http_client, head) {
 
 TEST(http_client, get) {
   net::HostAndPort example("example.com", 80);
-  uri::Upath root = uri::Upath::MakeRoot();
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Get(root);
+  Error err2 = cl.Get("/");
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);
@@ -642,11 +640,10 @@ class HttpsClient : public common::net::IHttpClient {
 
 TEST(https_client, get) {
   net::HostAndPort example("example.com", 443);
-  uri::Upath root = uri::Upath::MakeRoot();
   HttpsClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Get(root);
+  Error err2 = cl.Get("/");
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);

@@ -145,6 +145,20 @@ class DirectoryStringPath : public StringPath<CharT, Traits> {
     return FileStringPath<CharT, Traits>(path + filename);
   }
 
+  Optional<FileStringPath<CharT, Traits>> MakeConcatFileStringPath(const value_type& last_part) const
+      WARN_UNUSED_RESULT {
+    if (!base_class::IsValid()) {
+      return Optional<FileStringPath<CharT, Traits>>();
+    }
+
+    if (!is_relative_path(last_part)) {
+      return Optional<FileStringPath<CharT, Traits>>();
+    }
+
+    const value_type path = base_class::GetPath();  // stabled
+    return FileStringPath<CharT, Traits>(path + last_part);
+  }
+
   Optional<DirectoryStringPath<CharT, Traits>> MakeDirectoryStringPath(const value_type& directory) const
       WARN_UNUSED_RESULT {
     if (!base_class::IsValid()) {

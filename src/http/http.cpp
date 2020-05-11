@@ -31,6 +31,7 @@
 
 #include <common/convert2string.h>  // for ConvertFromString
 #include <common/sprintf.h>
+#include <common/uri/gurl.h>
 #include <common/uri/url_util.h>
 #include <common/utils.h>
 
@@ -79,14 +80,14 @@ bool HttpHeader::IsValid() const {
   return !key.empty();
 }
 
-HttpRequest::HttpRequest() : method_(), path_(), protocol_(), headers_(), body_() {}
+HttpRequest::HttpRequest() : method_(), relative_url_(), base_url_(), protocol_(), headers_(), body_() {}
 
 HttpRequest::HttpRequest(http_method method,
-                         const uri::Upath& path,
+                         const path_t& relative_url,
                          http_protocol protocol,
                          const headers_t& headers,
                          const std::string& body)
-    : method_(method), path_(path), protocol_(protocol), headers_(headers), body_(body) {}
+    : method_(method), relative_url_(relative_url), base_url_(), protocol_(protocol), headers_(headers), body_(body) {}
 
 http::http_protocol HttpRequest::GetProtocol() const {
   return protocol_;
@@ -97,15 +98,21 @@ headers_t HttpRequest::GetHeaders() const {
 }
 
 bool HttpRequest::IsValid() const {
-  return path_.IsValid();
+  return !relative_url_.empty();
 }
 
-uri::Upath HttpRequest::GetPath() const {
-  return path_;
+HttpRequest::path_t HttpRequest::GetRelativeUrl() const {
+  return relative_url_;
 }
 
-void HttpRequest::SetPath(const uri::Upath& path) {
-  path_ = path;
+void HttpRequest::SetRelativeUrl(const path_t& path) {
+  relative_url_ = path;
+}
+
+uri::GURL HttpRequest::GetURL() const {
+  if (base_url_.is_valid())
+    return base_url_.Resolve(relative_url_);
+  return uri::GURL("http://localhost" + relative_url_);
 }
 
 http::http_method HttpRequest::GetMethod() const {
@@ -170,31 +177,34 @@ bool HttpRequest::FindHeaderByValue(const std::string& value, bool case_sensitiv
   return false;
 }
 
-Optional<HttpRequest> MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers) {
-  if (!path.IsValid()) {
+Optional<HttpRequest> MakeHeadRequest(const std::string& path, http_protocol protocol, const headers_t& headers) {
+  http::HttpRequest req(http::HM_HEAD, path, protocol, headers, std::string());
+  if (!req.IsValid()) {
     return Optional<HttpRequest>();
   }
-  return http::HttpRequest(http::HM_HEAD, path, protocol, headers, std::string());
+  return req;
 }
 
-Optional<HttpRequest> MakeGetRequest(const uri::Upath& path,
+Optional<HttpRequest> MakeGetRequest(const std::string& path,
                                      http_protocol protocol,
                                      const headers_t& headers,
                                      const std::string& body) {
-  if (!path.IsValid()) {
+  http::HttpRequest req(http::HM_GET, path, protocol, headers, body);
+  if (!req.IsValid()) {
     return Optional<HttpRequest>();
   }
-  return http::HttpRequest(http::HM_GET, path, protocol, headers, body);
+  return req;
 }
 
-Optional<HttpRequest> MakePostRequest(const uri::Upath& path,
+Optional<HttpRequest> MakePostRequest(const std::string& path,
                                       http_protocol protocol,
                                       const headers_t& headers,
                                       const std::string& body) {
-  if (!path.IsValid()) {
+  http::HttpRequest req(http::HM_POST, path, protocol, headers, body);
+  if (!req.IsValid()) {
     return Optional<HttpRequest>();
   }
-  return http::HttpRequest(http::HM_POST, path, protocol, headers, body);
+  return req;
 }
 
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
@@ -207,7 +217,7 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
   const string_size_t len = request.size();
 
   http_method lmethod = HM_GET;
-  uri::Upath lpath;
+  std::string lpath;
   http_protocol lprotocol = HP_1_0;
   headers_t lheaders;
 
@@ -241,7 +251,14 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
             if (!ConvertFromString(protocol_str, &lprotocol)) {
               DNOTREACHED() << "Unknown protocol: " << protocol_str;
             }
-            lpath = uri::Upath(path);
+            common::uri::GURL url(path);
+            if (url.is_valid()) {
+              lpath = url.PathForRequest();
+            } else if (path[0] == '/') {
+              lpath = path;
+            } else {
+              lpath = "/" + path;
+            }
           } else {
             return std::make_pair(HS_FORBIDDEN, make_error("Not allowed."));
           }
@@ -417,6 +434,77 @@ Error parse_http_response(const std::string& response, HttpResponse* res_out, si
   return Error();
 }
 
+std::string get_mime_type(const std::string& file_name) {
+  if (file_name.empty()) {
+    return "text/plain; charset=UTF-8";
+  }
+
+  const char* name = file_name.c_str();
+  const char* dot = strrchr(name, '.');
+  if (dot == nullptr) {
+    return "text/plain; charset=UTF-8";
+  }
+  if (strcmp(dot, ".html") == 0 || strcmp(dot, ".htm") == 0) {
+    return "text/html; charset=UTF-8";
+  }
+  if (strcmp(dot, ".xhtml") == 0 || strcmp(dot, ".xht") == 0) {
+    return "application/xhtml+xml; charset=UTF-8";
+  }
+  if (strcmp(dot, ".jpg") == 0 || strcmp(dot, ".jpeg") == 0) {
+    return "image/jpeg";
+  }
+  if (strcmp(dot, ".gif") == 0) {
+    return "image/gif";
+  }
+  if (strcmp(dot, ".png") == 0) {
+    return "image/png";
+  }
+  if (strcmp(dot, ".css") == 0) {
+    return "text/css";
+  }
+  if (strcmp(dot, ".xml") == 0 || strcmp(dot, ".xsl") == 0) {
+    return "text/xml; charset=UTF-8";
+  }
+  if (strcmp(dot, ".au") == 0) {
+    return "audio/basic";
+  }
+  if (strcmp(dot, ".wav") == 0) {
+    return "audio/wav";
+  }
+  if (strcmp(dot, ".avi") == 0) {
+    return "video/x-msvideo";
+  }
+  if (strcmp(dot, ".mov") == 0 || strcmp(dot, ".qt") == 0) {
+    return "video/quicktime";
+  }
+  if (strcmp(dot, ".mpeg") == 0 || strcmp(dot, ".mpe") == 0) {
+    return "video/mpeg";
+  }
+  if (strcmp(dot, ".vrml") == 0 || strcmp(dot, ".wrl") == 0) {
+    return "model/vrml";
+  }
+  if (strcmp(dot, ".midi") == 0 || strcmp(dot, ".mid") == 0) {
+    return "audio/midi";
+  }
+  if (strcmp(dot, ".mp3") == 0) {
+    return "audio/mpeg";
+  }
+  if (strcmp(dot, ".ogg") == 0) {
+    return "application/ogg";
+  }
+  if (strcmp(dot, ".pac") == 0) {
+    return "application/x-ns-proxy-autoconfig";
+  }
+  if (strcmp(dot, ".m3u8") == 0) {
+    return "application/x-mpegurl";
+  }
+  if (strcmp(dot, ".ts") == 0) {
+    return "video/mp2t";
+  }
+
+  return "text/plain; charset=UTF-8";
+}
+
 }  // namespace http
 
 std::string ConvertToString(http::http_method method) {
@@ -559,10 +647,10 @@ std::string ConvertToString(http::HttpHeader header) {
 }
 
 std::string ConvertToString(http::HttpRequest request) {
-  uri::Upath upath = request.GetPath();
+  auto upath = request.GetRelativeUrl();
   http::http_method method = request.GetMethod();
 
-  std::string headerout = MemSPrintf("%s %s %s\r\n", ConvertToString(method), upath.GetPath(),
+  std::string headerout = MemSPrintf("%s %s %s\r\n", ConvertToString(method), upath,
                                      ConvertToString(request.GetProtocol()));  // "GET /hello.htm HTTP/1.1\r\n"
   http::headers_t headers = request.GetHeaders();
   for (size_t i = 0; i < headers.size(); ++i) {

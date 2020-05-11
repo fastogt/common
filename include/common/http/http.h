@@ -33,9 +33,9 @@
 #include <utility>  // for pair
 #include <vector>   // for vector
 
-#include <common/error.h>      // for Error
-#include <common/types.h>      // for buffer_t
-#include <common/uri/upath.h>  // for Upath
+#include <common/error.h>  // for Error
+#include <common/types.h>  // for buffer_t
+#include <common/uri/gurl.h>
 
 #define HTTP_1_0_PROTOCOL_NAME "HTTP/1.0"
 #define HTTP_1_0_PROTOCOL_NAME_LEN (sizeof(HTTP_1_0_PROTOCOL_NAME) - 1)
@@ -122,9 +122,10 @@ typedef std::vector<header_t> headers_t;
 
 class HttpRequest {
  public:
+  typedef std::string path_t;
   HttpRequest();
   HttpRequest(http_method method,
-              const uri::Upath& path,
+              const path_t& relative_url,
               http_protocol protocol,
               const headers_t& headers,
               const std::string& body);
@@ -133,8 +134,10 @@ class HttpRequest {
   headers_t GetHeaders() const;
   bool IsValid() const;
 
-  uri::Upath GetPath() const;
-  void SetPath(const uri::Upath& path);
+  path_t GetRelativeUrl() const;
+  void SetRelativeUrl(const path_t& path);
+
+  uri::GURL GetURL() const;
 
   http::http_method GetMethod() const;
   std::string GetBody() const;
@@ -147,18 +150,19 @@ class HttpRequest {
 
  private:
   http_method method_;
-  uri::Upath path_;
+  path_t relative_url_;
+  uri::GURL base_url_;
   http_protocol protocol_;
   headers_t headers_;
   std::string body_;
 };
 
-Optional<HttpRequest> MakeHeadRequest(const uri::Upath& path, http_protocol protocol, const headers_t& headers);
-Optional<HttpRequest> MakeGetRequest(const uri::Upath& path,
+Optional<HttpRequest> MakeHeadRequest(const std::string& path, http_protocol protocol, const headers_t& headers);
+Optional<HttpRequest> MakeGetRequest(const std::string& path,
                                      http_protocol protocol,
                                      const headers_t& headers,
                                      const std::string& body = std::string());
-Optional<HttpRequest> MakePostRequest(const uri::Upath& path,
+Optional<HttpRequest> MakePostRequest(const std::string& path,
                                       http_protocol protocol,
                                       const headers_t& headers,
                                       const std::string& body = std::string());
@@ -184,6 +188,8 @@ class HttpResponse {
 };
 
 Error parse_http_response(const std::string& response, HttpResponse* res_out, size_t* not_parsed) WARN_UNUSED_RESULT;
+
+std::string get_mime_type(const std::string& file_name);
 
 }  // namespace http
 

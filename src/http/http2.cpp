@@ -2132,7 +2132,7 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
   uint8_t validation_flags = 0;
 
   http::http_method lmethod = http::HM_GET;
-  uri::Upath lpath;
+  std::string lpath;
   std::string lbody;
   http::headers_t lheaders;
 
@@ -2149,7 +2149,7 @@ std::pair<http::http_status, Error> parse_http_request(const frame_headers& fram
       lmethod = met;
       validation_flags |= 1;
     } else if (key == ":path") {
-      lpath = uri::Upath(value);
+      lpath = value;
       validation_flags |= 2;
     } else if (key == ":scheme") {
       // lprotocol = value;
