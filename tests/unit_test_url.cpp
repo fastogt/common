@@ -47,6 +47,7 @@ TEST(Url, IsValid) {
   common::uri::GURL path4(
       "http://www.permadi.com/tutorial/urlEncoding/example.html?var=This+is+a+simple+%26+short+test");
   ASSERT_TRUE(path4.is_valid());
+  ASSERT_TRUE(path4.SchemeIsHTTPOrHTTPS());
 
   const std::string originFile = "file://" + std::string(FILE_PATH);
   common::uri::GURL path5(originFile);
@@ -58,7 +59,7 @@ TEST(Url, IsValid) {
   const std::string originDev = "dev://" + std::string(DEV_VIDEO_PATH);
   common::uri::GURL path6(originDev);
   ASSERT_TRUE(path6.is_valid());
-  ASSERT_TRUE(path6.SchemeIs("dev"));
+  ASSERT_TRUE(path6.SchemeIsDev());
   ASSERT_EQ(DEV_VIDEO_PATH, path6.path());
   ASSERT_EQ(originDev, path6.spec());
 }

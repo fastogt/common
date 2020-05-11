@@ -1,3 +1,32 @@
+/*  Copyright (C) 2014-2020 FastoGT. All right reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+        * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+        * Neither the name of FastoGT. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <common/uri/url_util.h>
 
 #include <algorithm>
@@ -33,11 +62,10 @@ struct SchemeRegistry {
       // URL may be empty, a behavior which is special-cased during
       // canonicalization.
       {kFileScheme, SCHEME_WITH_HOST},
+      {kDevScheme, SCHEME_WITH_HOST},
       {kFtpScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
       {kWssScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},  // WebSocket secure.
       {kWsScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},   // WebSocket.
-      {kFileSystemScheme, SCHEME_WITHOUT_AUTHORITY},
-      {kQuicTransportScheme, SCHEME_WITH_HOST_AND_PORT},
   };
 
   // Schemes that are allowed for referrers.
@@ -48,20 +76,18 @@ struct SchemeRegistry {
 
   // Schemes that do not trigger mixed content warning.
   std::vector<std::string> secure_schemes = {
-      kHttpsScheme, kAboutScheme, kDataScheme, kQuicTransportScheme, kWssScheme,
+      kHttpsScheme,
+      kDataScheme,
+      kWssScheme,
   };
 
   // Schemes that normal pages cannot link to or access (i.e., with the same
   // security rules as those applied to "file" URLs).
-  std::vector<std::string> local_schemes = {
-      kFileScheme,
-  };
+  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme};
 
   // Schemes that cause pages loaded with them to not have access to pages
   // loaded with any other URL scheme.
   std::vector<std::string> no_access_schemes = {
-      kAboutScheme,
-      kJavaScriptScheme,
       kDataScheme,
   };
 
@@ -79,12 +105,6 @@ struct SchemeRegistry {
 
   // Schemes that can bypass the Content-Security-Policy (CSP) checks.
   std::vector<std::string> csp_bypassing_schemes = {};
-
-  // Schemes that are strictly empty documents, allowing them to commit
-  // synchronously.
-  std::vector<std::string> empty_document_schemes = {
-      kAboutScheme,
-  };
 
   bool allow_non_standard_schemes = false;
 };
@@ -226,22 +246,15 @@ bool DoCanonicalize(const CHAR* spec,
     // File URLs are special.
     ParseFileURL(spec, spec_len, &parsed_input);
     success = CanonicalizeFileURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
-  } else if (DoCompareSchemeComponent(spec, scheme, uri::kFileSystemScheme)) {
-    // Filesystem URLs are special.
-    ParseFileSystemURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeFileSystemURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
-
+  } else if (DoCompareSchemeComponent(spec, scheme, uri::kDevScheme)) {
+    // Dev URLs are special.
+    ParseDevURL(spec, spec_len, &parsed_input);
+    success = CanonicalizeDevURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
     // All "normal" URLs.
     ParseStandardURL(spec, spec_len, &parsed_input);
     success =
         CanonicalizeStandardURL(spec, spec_len, parsed_input, scheme_type, charset_converter, output, output_parsed);
-
-  } else if (DoCompareSchemeComponent(spec, scheme, uri::kMailToScheme)) {
-    // Mailto URLs are treated like standard URLs, with only a scheme, path,
-    // and query.
-    ParseMailtoURL(spec, spec_len, &parsed_input);
-    success = CanonicalizeMailtoURL(spec, spec_len, parsed_input, output, output_parsed);
 
   } else {
     // "Weird" URLs like data: and javascript:.
@@ -312,7 +325,8 @@ bool DoResolveRelative(const char* base_spec,
   } else if (is_relative) {
     // Relative, resolve and canonicalize.
     bool file_base_scheme =
-        base_parsed.scheme.is_nonempty() && DoCompareSchemeComponent(base_spec, base_parsed.scheme, kFileScheme);
+        base_parsed.scheme.is_nonempty() && (DoCompareSchemeComponent(base_spec, base_parsed.scheme, kFileScheme) ||
+                                             DoCompareSchemeComponent(base_spec, base_parsed.scheme, kDevScheme));
     return ResolveRelativeURL(base_spec, base_parsed, file_base_scheme, relative, relative_component, charset_converter,
                               output, output_parsed);
   }
@@ -392,18 +406,13 @@ bool DoReplaceComponents(const char* spec,
 
   // If we get here, then we know the scheme doesn't need to be replaced, so can
   // just key off the scheme in the spec to know how to do the replacements.
-  if (DoCompareSchemeComponent(spec, parsed.scheme, uri::kFileScheme)) {
+  if (DoCompareSchemeComponent(spec, parsed.scheme, uri::kFileScheme) ||
+      DoCompareSchemeComponent(spec, parsed.scheme, uri::kDevScheme)) {
     return ReplaceFileURL(spec, parsed, replacements, charset_converter, output, out_parsed);
-  }
-  if (DoCompareSchemeComponent(spec, parsed.scheme, uri::kFileSystemScheme)) {
-    return ReplaceFileSystemURL(spec, parsed, replacements, charset_converter, output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoIsStandard(spec, parsed.scheme, &scheme_type)) {
     return ReplaceStandardURL(spec, parsed, replacements, scheme_type, charset_converter, output, out_parsed);
-  }
-  if (DoCompareSchemeComponent(spec, parsed.scheme, uri::kMailToScheme)) {
-    return ReplaceMailtoURL(spec, parsed, replacements, output, out_parsed);
   }
 
   // Default is a path URL.
@@ -531,14 +540,6 @@ void AddCSPBypassingScheme(const char* new_scheme) {
 
 const std::vector<std::string>& GetCSPBypassingSchemes() {
   return GetSchemeRegistry().csp_bypassing_schemes;
-}
-
-void AddEmptyDocumentScheme(const char* new_scheme) {
-  DoAddScheme(new_scheme, &GetSchemeRegistryWithoutLocking()->empty_document_schemes);
-}
-
-const std::vector<std::string>& GetEmptyDocumentSchemes() {
-  return GetSchemeRegistry().empty_document_schemes;
 }
 
 void LockSchemeRegistries() {

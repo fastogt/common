@@ -49,7 +49,7 @@ GURL::GURL(const GURL& other) : spec_(other.spec_), is_valid_(other.is_valid_), 
   if (other.inner_url_)
     inner_url_.reset(new GURL(*other.inner_url_));
   // Valid filesystem urls should always have an inner_url_.
-  DCHECK(!is_valid_ || !SchemeIsFileSystem() || inner_url_);
+  DCHECK(!is_valid_ || inner_url_);
 }
 
 GURL::GURL(GURL&& other) noexcept
@@ -90,51 +90,11 @@ void GURL::InitCanonical(BasicStringPiece<STR> input_spec, bool trim_path_end) {
       Canonicalize(input_spec.data(), static_cast<int>(input_spec.length()), trim_path_end, NULL, &output, &parsed_);
 
   output.Complete();  // Must be done before using string.
-  if (is_valid_ && SchemeIsFileSystem()) {
-    inner_url_.reset(new GURL(spec_.data(), parsed_.Length(), *parsed_.inner_parsed(), true));
-  }
   // Valid URLs always have non-empty specs.
   DCHECK(!is_valid_ || !spec_.empty());
 }
 
-void GURL::InitializeFromCanonicalSpec() {
-  if (is_valid_ && SchemeIsFileSystem()) {
-    inner_url_.reset(new GURL(spec_.data(), parsed_.Length(), *parsed_.inner_parsed(), true));
-  }
-
-#ifndef NDEBUG
-  // For testing purposes, check that the parsed canonical URL is identical to
-  // what we would have produced. Skip checking for invalid URLs have no meaning
-  // and we can't always canonicalize then reproducibly.
-  if (is_valid_) {
-    DCHECK(!spec_.empty());
-    Component scheme;
-    // We can't do this check on the inner_url of a filesystem URL, as
-    // canonical_spec actually points to the start of the outer URL, so we'd
-    // end up with infinite recursion in this constructor.
-    if (!FindAndCompareScheme(spec_.data(), spec_.length(), kFileSystemScheme, &scheme) ||
-        scheme.begin == parsed_.scheme.begin) {
-      // We need to retain trailing whitespace on path URLs, as the |parsed_|
-      // spec we originally received may legitimately contain trailing white-
-      // space on the path or  components e.g. if the #ref has been
-      // removed from a "foo:hello #ref" URL (see http://crbug.com/291747).
-      GURL test_url(spec_, RETAIN_TRAILING_PATH_WHITEPACE);
-
-      DCHECK(test_url.is_valid_ == is_valid_);
-      DCHECK(test_url.spec_ == spec_);
-
-      DCHECK(test_url.parsed_.scheme == parsed_.scheme);
-      DCHECK(test_url.parsed_.username == parsed_.username);
-      DCHECK(test_url.parsed_.password == parsed_.password);
-      DCHECK(test_url.parsed_.host == parsed_.host);
-      DCHECK(test_url.parsed_.port == parsed_.port);
-      DCHECK(test_url.parsed_.path == parsed_.path);
-      DCHECK(test_url.parsed_.query == parsed_.query);
-      DCHECK(test_url.parsed_.ref == parsed_.ref);
-    }
-  }
-#endif
-}
+void GURL::InitializeFromCanonicalSpec() {}
 
 GURL::~GURL() = default;
 
@@ -196,10 +156,6 @@ GURL GURL::Resolve(StringPiece relative) const {
 
   output.Complete();
   result.is_valid_ = true;
-  if (result.SchemeIsFileSystem()) {
-    result.inner_url_.reset(
-        new GURL(result.spec_.data(), result.parsed_.Length(), *result.parsed_.inner_parsed(), true));
-  }
   return result;
 }
 
@@ -219,10 +175,6 @@ GURL GURL::Resolve(StringPiece16 relative) const {
 
   output.Complete();
   result.is_valid_ = true;
-  if (result.SchemeIsFileSystem()) {
-    result.inner_url_.reset(
-        new GURL(result.spec_.data(), result.parsed_.Length(), *result.parsed_.inner_parsed(), true));
-  }
   return result;
 }
 
@@ -239,10 +191,6 @@ GURL GURL::ReplaceComponents(const uri::Replacements<char>& replacements) const 
                                             &output, &result.parsed_);
 
   output.Complete();
-  if (result.is_valid_ && result.SchemeIsFileSystem()) {
-    result.inner_url_.reset(
-        new GURL(result.spec_.data(), result.parsed_.Length(), *result.parsed_.inner_parsed(), true));
-  }
   return result;
 }
 
@@ -259,10 +207,6 @@ GURL GURL::ReplaceComponents(const uri::Replacements<char16>& replacements) cons
                                             &output, &result.parsed_);
 
   output.Complete();
-  if (result.is_valid_ && result.SchemeIsFileSystem()) {
-    result.inner_url_.reset(
-        new GURL(result.spec_.data(), result.parsed_.Length(), *result.parsed_.inner_parsed(), true));
-  }
   return result;
 }
 
@@ -271,9 +215,6 @@ GURL GURL::GetOrigin() const {
   // the empty URL.
   if (!is_valid_ || !IsStandard())
     return GURL();
-
-  if (SchemeIsFileSystem())
-    return inner_url_->GetOrigin();
 
   uri::Replacements<char> replacements;
   replacements.ClearUsername();
@@ -329,14 +270,6 @@ GURL GURL::GetWithoutFilename() const {
 
 bool GURL::IsStandard() const {
   return uri::IsStandard(spec_.data(), parsed_.scheme);
-}
-
-bool GURL::IsAboutBlank() const {
-  return IsAboutUrl(kAboutBlankPath);
-}
-
-bool GURL::IsAboutSrcdoc() const {
-  return IsAboutUrl(kAboutSrcdocPath);
 }
 
 bool GURL::SchemeIs(StringPiece lower_ascii_scheme) const {
@@ -431,7 +364,7 @@ std::string GURL::GetContent() const {
   if (!is_valid_)
     return std::string();
   std::string content = ComponentString(parsed_.GetContent());
-  if (!SchemeIs(kJavaScriptScheme) && parsed_.ref.len >= 0)
+  if (parsed_.ref.len >= 0)
     content.erase(content.size() - parsed_.ref.len - 1);
   return content;
 }
@@ -449,9 +382,6 @@ bool GURL::DomainIs(StringPiece canonical_domain) const {
   if (!is_valid_)
     return false;
 
-  // FileSystem URLs have empty host_piece, so check this first.
-  if (inner_url_ && SchemeIsFileSystem())
-    return inner_url_->DomainIs(canonical_domain);
   return uri::DomainIs(host_piece(), canonical_domain);
 }
 
@@ -466,29 +396,6 @@ void GURL::Swap(GURL* other) {
   std::swap(is_valid_, other->is_valid_);
   std::swap(parsed_, other->parsed_);
   inner_url_.swap(other->inner_url_);
-}
-
-bool GURL::IsAboutUrl(StringPiece allowed_path) const {
-  if (!SchemeIs(kAboutScheme))
-    return false;
-
-  if (has_host() || has_username() || has_password() || has_port())
-    return false;
-
-  if (!path_piece().starts_with(allowed_path))
-    return false;
-
-  if (path_piece().size() == allowed_path.size()) {
-    DCHECK_EQ(path_piece(), allowed_path);
-    return true;
-  }
-
-  if ((path_piece().size() == allowed_path.size() + 1) && path_piece().back() == '/') {
-    DCHECK_EQ(path_piece(), allowed_path.as_string() + '/');
-    return true;
-  }
-
-  return false;
 }
 
 std::ostream& operator<<(std::ostream& out, const GURL& url) {

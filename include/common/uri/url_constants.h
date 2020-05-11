@@ -34,26 +34,12 @@
 namespace common {
 namespace uri {
 
-extern const char kAboutBlankURL[];
-extern const char kAboutSrcdocURL[];
-
-extern const char kAboutBlankPath[];
-extern const char kAboutSrcdocPath[];
-
-extern const char kAboutScheme[];
-extern const char kBlobScheme[];
-// The content scheme is specific to Android for identifying a stored file.
-extern const char kContentScheme[];
-extern const char kContentIDScheme[];
 extern const char kDataScheme[];
 extern const char kFileScheme[];
-extern const char kFileSystemScheme[];
+extern const char kDevScheme[];
 extern const char kFtpScheme[];
 extern const char kHttpScheme[];
 extern const char kHttpsScheme[];
-extern const char kJavaScriptScheme[];
-extern const char kMailToScheme[];
-extern const char kQuicTransportScheme[];
 extern const char kTelScheme[];
 extern const char kWsScheme[];
 extern const char kWssScheme[];

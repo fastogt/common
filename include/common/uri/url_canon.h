@@ -581,21 +581,21 @@ bool CanonicalizeFileURL(const char16* spec,
                          CanonOutput* output,
                          Parsed* new_parsed);
 
-// Use for filesystem URLs.
+// Use for dev URLs.
 
-bool CanonicalizeFileSystemURL(const char* spec,
-                               int spec_len,
-                               const Parsed& parsed,
-                               CharsetConverter* query_converter,
-                               CanonOutput* output,
-                               Parsed* new_parsed);
+bool CanonicalizeDevURL(const char* spec,
+                        int spec_len,
+                        const Parsed& parsed,
+                        CharsetConverter* query_converter,
+                        CanonOutput* output,
+                        Parsed* new_parsed);
 
-bool CanonicalizeFileSystemURL(const char16* spec,
-                               int spec_len,
-                               const Parsed& parsed,
-                               CharsetConverter* query_converter,
-                               CanonOutput* output,
-                               Parsed* new_parsed);
+bool CanonicalizeDevURL(const char16* spec,
+                        int spec_len,
+                        const Parsed& parsed,
+                        CharsetConverter* query_converter,
+                        CanonOutput* output,
+                        Parsed* new_parsed);
 
 // Use for path URLs such as javascript. This does not modify the path in any
 // way, for example, by escaping it.
@@ -607,24 +607,6 @@ bool CanonicalizePathURL(const char16* spec,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed);
-
-// Use for mailto URLs. This "canonicalizes" the URL into a path and query
-// component. It does not attempt to merge "to" fields. It uses UTF-8 for
-// the query encoding if there is a query. This is because a mailto URL is
-// really intended for an external mail program, and the encoding of a page,
-// etc. which would influence a query encoding normally are irrelevant.
-
-bool CanonicalizeMailtoURL(const char* spec,
-                           int spec_len,
-                           const Parsed& parsed,
-                           CanonOutput* output,
-                           Parsed* new_parsed);
-
-bool CanonicalizeMailtoURL(const char16* spec,
-                           int spec_len,
-                           const Parsed& parsed,
-                           CanonOutput* output,
-                           Parsed* new_parsed);
 
 // Part replacer --------------------------------------------------------------
 
@@ -816,23 +798,6 @@ bool ReplaceStandardURL(const char* base,
                         CanonOutput* output,
                         Parsed* new_parsed);
 
-// Filesystem URLs can only have the path, query, or ref replaced.
-// All other components will be ignored.
-
-bool ReplaceFileSystemURL(const char* base,
-                          const Parsed& base_parsed,
-                          const Replacements<char>& replacements,
-                          CharsetConverter* query_converter,
-                          CanonOutput* output,
-                          Parsed* new_parsed);
-
-bool ReplaceFileSystemURL(const char* base,
-                          const Parsed& base_parsed,
-                          const Replacements<char16>& replacements,
-                          CharsetConverter* query_converter,
-                          CanonOutput* output,
-                          Parsed* new_parsed);
-
 // Replacing some parts of a file URL is not permitted. Everything except
 // the host, path, query, and ref will be ignored.
 
@@ -864,21 +829,6 @@ bool ReplacePathURL(const char* base,
                     const Replacements<char16>& replacements,
                     CanonOutput* output,
                     Parsed* new_parsed);
-
-// Mailto URLs can only have the scheme, path, and query replaced.
-// All other components will be ignored.
-
-bool ReplaceMailtoURL(const char* base,
-                      const Parsed& base_parsed,
-                      const Replacements<char>& replacements,
-                      CanonOutput* output,
-                      Parsed* new_parsed);
-
-bool ReplaceMailtoURL(const char* base,
-                      const Parsed& base_parsed,
-                      const Replacements<char16>& replacements,
-                      CanonOutput* output,
-                      Parsed* new_parsed);
 
 // Relative URL ---------------------------------------------------------------
 

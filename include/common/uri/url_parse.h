@@ -262,17 +262,9 @@ void ParseFileURL(const char* url, int url_len, Parsed* parsed);
 
 void ParseFileURL(const char16* url, int url_len, Parsed* parsed);
 
-// Filesystem URLs are structured differently than other URLs.
+void ParseDevURL(const char* url, int url_len, Parsed* parsed);
 
-void ParseFileSystemURL(const char* url, int url_len, Parsed* parsed);
-
-void ParseFileSystemURL(const char16* url, int url_len, Parsed* parsed);
-
-// MailtoURL is for mailto: urls. They are made up scheme,path,query
-
-void ParseMailtoURL(const char* url, int url_len, Parsed* parsed);
-
-void ParseMailtoURL(const char16* url, int url_len, Parsed* parsed);
+void ParseDevURL(const char16* url, int url_len, Parsed* parsed);
 
 // Helper functions -----------------------------------------------------------
 

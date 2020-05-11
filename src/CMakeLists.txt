@@ -126,21 +126,20 @@ SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_constants.cpp
-  ${CMAKE_SOURCE_DIR}/src/uri/url_util_internal.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_util.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_ip.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_internal.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_stdurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_etc.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse_file.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_parse_dev.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_fileurl.cpp
-  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_filesystemurl.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_devurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_pathurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_path.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_relative.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_query.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_host.cpp
-  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_mailtourl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_idna_icu.cpp
 )
 

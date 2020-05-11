@@ -124,11 +124,6 @@ const std::vector<std::string>& GetWebStorageSchemes();
 void AddCSPBypassingScheme(const char* new_scheme);
 const std::vector<std::string>& GetCSPBypassingSchemes();
 
-// Adds an application-defined scheme to the list of schemes that are strictly
-// empty documents, allowing them to commit synchronously.
-void AddEmptyDocumentScheme(const char* new_scheme);
-const std::vector<std::string>& GetEmptyDocumentSchemes();
-
 // Sets a flag to prevent future calls to Add*Scheme from succeeding.
 //
 // This is designed to help prevent errors for multithreaded applications.

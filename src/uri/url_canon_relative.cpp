@@ -197,11 +197,6 @@ bool DoIsRelativeURL(const char* base,
 
   int colon_offset = scheme.end();
 
-  // If it's a filesystem URL, the only valid way to make it relative is not to
-  // supply a scheme. There's no equivalent to e.g. http:index.html.
-  if (CompareSchemeComponent(url, scheme, kFileSystemScheme))
-    return true;
-
   // ExtractScheme guarantees that the colon immediately follows what it
   // considers to be the scheme. CountConsecutiveSlashes will handle the
   // case where the begin offset is the end of the input.
