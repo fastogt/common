@@ -1,0 +1,97 @@
+1.26.0 / October 17, 2019
+[Alexandr Topilski]
+- Json serializer for array
+
+1.26.0 / August 29, 2019
+[Alexandr Topilski]
+- License gen for all platforms
+- System metrics
+
+1.25.0 / June 21, 2019
+[Alexandr Topilski]
+- Stabilization
+- Max log size
+
+1.24.0 / May 17, 2019
+[Alexandr Topilski]
+- IOS build
+- Android build
+
+1.23.7 / April 28, 2019
+[Alexandr Topilski]
+- Fixed absolute path for mac bundle
+
+1.23.6 / April 25, 2019
+[Alexandr Topilski]
+- Fixed http post file
+
+1.23.5 / April 23, 2019
+[Alexandr Topilski]
+- Sync with other projects
+
+1.23.4 / April 17, 2019
+[Alexandr Topilski]
+- Stabilization
+
+1.23.3 / February 21, 2019
+[Alexandr Topilski]
+- Guards
+
+1.23.2 / February 1, 2019
+[Alexandr Topilski]
+- Json RPC
+
+1.23.1 / December 25, 2018
+[Alexandr Topilski]
+- Review
+
+1.23.0 / December 16, 2018
+[Alexandr Topilski]
+- Https clients
+
+1.22.4 / December 2, 2018
+[Alexandr Topilski]
+- Stabilization
+
+1.22.3 / November 21, 2018
+[Alexandr Topilski]
+- Code review
+
+1.22.2 / November 19, 2018
+[Alexandr Topilski]
+- Stablization
+
+1.22.1 / November 12, 2018
+[Alexandr Topilski]
+- Removed old functions
+- Stabilization
+- char buffer
+
+1.21.2 / October 22, 2018
+[Alexandr Topilski]
+- More flexable functions for scan folders
+
+1.21.1 / October 18, 2018
+[Alexandr Topilski]
+- Stabilization
+
+1.21.0 / October 12, 2018
+[Alexandr Topilski]
+- XHex and UUnicode converters
+
+1.18.7 / April 3, 2018
+[Alexandr Topilski]
+- Unicode conversions
+
+1.18.3 / February 17, 2018
+[Alexandr Topilski]
+- Compressions
+
+1.17.12 / December 28, 2017
+[Alexandr Topilski]
+- Config file
+
+1.16.10 / October 1, 2016
+[Alexandr Topilski]
+- First release
+- Stable install phase

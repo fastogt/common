@@ -1,0 +1,67 @@
+# Build matrix / environment variable are explained on:
+# http://about.travis-ci.org/docs/user/build-configuration/
+# This file can be validated on:
+# http://lint.travis-ci.org/
+language: cpp
+install:
+# /usr/bin/gcc is 5.4 always, but gcc-X.Y is available.
+- if [ "$CXX" = "g++" ]; then export CXX="g++-7" CC="gcc-7"; fi
+# /usr/bin/clang is 3.4, lets override with modern one.
+- if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-7" CC="clang-7"; fi
+- echo ${PATH}
+- echo ${CXX}
+- ${CXX} --version
+- ${CXX} -v
+- cmake --version
+
+# build gtest library
+- sudo wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+- sudo tar xf release-1.8.0.tar.gz
+- cd googletest-release-1.8.0
+- sudo cmake . -DCMAKE_INSTALL_PREFIX=/usr/local
+- sudo make install
+- cd "${TRAVIS_BUILD_DIR}"
+addons:
+  apt:
+    # List of whitelisted in travis packages for ubuntu-precise can be found here:
+    #   https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
+    # List of whitelisted in travis apt-sources:
+    #   https://github.com/travis-ci/apt-source-whitelist/blob/master/ubuntu.json
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-7
+    packages:
+    - gcc-7
+    - g++-7
+    - clang-7
+    - valgrind
+    - cmake
+os:
+  - linux
+  - osx
+compiler:
+  - gcc
+  - clang
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+  
+before_script:
+  - mkdir build
+  - cd build
+  - cmake .. -DQT_ENABLED=OFF -DCMAKE_BUILD_TYPE=Debug -DDEVELOPER_ENABLE_TESTS=ON -DDEVELOPER_ENABLE_COVERALLS=ON
+
+script:
+  - make
+  - CTEST_OUTPUT_ON_FAILURE=1 make test
+
+after_success:
+  - make coveralls
+
+notifications:
+  recipients:
+    - atopilski@fastogt.com
+  email:
+    on_success: always
+    on_failure: always
