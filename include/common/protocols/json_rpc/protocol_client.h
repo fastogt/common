@@ -50,7 +50,7 @@ class ProtocolClient : public Client {
 
  public:
   typedef Client base_class;
-  typedef std::function<void(const JsonRPCResponse* response)> callback_t;
+  typedef std::function<void(const JsonRPCRequest* request, const JsonRPCResponse* response)> callback_t;
   typedef std::pair<JsonRPCRequest, callback_t> request_save_entry_t;
   typedef std::shared_ptr<IEDcoder> compressor_t;
 
