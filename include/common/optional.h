@@ -185,8 +185,9 @@ struct OptionalStorage : OptionalStoragecommon<T> {
   OptionalStorage() = default;
 
   OptionalStorage(const OptionalStorage& other) {
-    if (other.is_populated_)
+    if (other.is_populated_) {
       Init(other.value_);
+    }
   }
 
   OptionalStorage(OptionalStorage&& other) noexcept(std::is_nothrow_move_constructible<T>::value) {

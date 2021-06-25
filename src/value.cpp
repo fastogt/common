@@ -352,11 +352,11 @@ FundamentalValue* FundamentalValue::DeepCopy() const {
   } else if (t == TYPE_INTEGER32) {
     return CreateIntegerValue(integer_value_);
   } else if (t == TYPE_UINTEGER32) {
-    return CreateUIntegerValue(static_cast<int32_t>(integer_value_));
+    return CreateUIntegerValue(static_cast<uint32_t>(integer_value_));
   } else if (t == TYPE_INTEGER64) {
     return CreateLongIntegerValue(long_integer_value_);
   } else if (t == TYPE_UINTEGER64) {
-    return CreateULongIntegerValue(static_cast<int64_t>(long_integer_value_));
+    return CreateULongIntegerValue(static_cast<uint64_t>(long_integer_value_));
   } else if (t == TYPE_DOUBLE) {
     return CreateDoubleValue(double_value_);
   }
