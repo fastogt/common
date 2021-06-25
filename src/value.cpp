@@ -335,9 +335,14 @@ bool FundamentalValue::GetAsDouble(double* out_value) const {
     *out_value = integer_value_;
   } else if (out_value && IsType(TYPE_UINTEGER32)) {
     *out_value = integer_value_;
+  } else if (out_value && IsType(TYPE_INTEGER64)) {
+    *out_value = long_integer_value_;
+  } else if (out_value && IsType(TYPE_UINTEGER64)) {
+    *out_value = long_integer_value_;
   }
 
-  return (IsType(TYPE_DOUBLE) || IsType(TYPE_INTEGER32) || IsType(TYPE_UINTEGER32));
+  return (IsType(TYPE_DOUBLE) || IsType(TYPE_INTEGER32) || IsType(TYPE_UINTEGER32) || IsType(TYPE_INTEGER64) ||
+          IsType(TYPE_UINTEGER64));
 }
 
 FundamentalValue* FundamentalValue::DeepCopy() const {
