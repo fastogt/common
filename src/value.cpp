@@ -60,27 +60,19 @@ FundamentalValue* Value::CreateBooleanValue(bool in_value) {
 }
 
 // static
-FundamentalValue* Value::CreateIntegerValue(int in_value) {
+FundamentalValue* Value::CreateIntegerValue(int32_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateUIntegerValue(unsigned int in_value) {
+FundamentalValue* Value::CreateUIntegerValue(uint32_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateLongIntegerValue(long in_value) {
+FundamentalValue* Value::CreateLongIntegerValue(int64_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateULongIntegerValue(unsigned long in_value) {
-  return new FundamentalValue(in_value);
-}
-
-FundamentalValue* Value::CreateLongLongIntegerValue(long long in_value) {
-  return new FundamentalValue(in_value);
-}
-
-FundamentalValue* Value::CreateULongLongIntegerValue(unsigned long long in_value) {
+FundamentalValue* Value::CreateULongIntegerValue(uint64_t in_value) {
   return new FundamentalValue(in_value);
 }
 
@@ -136,37 +128,25 @@ bool Value::GetAsBoolean(bool* out_value) const {
   return false;
 }
 
-bool Value::GetAsInteger(int* out_value) const {
+bool Value::GetAsInteger(int32_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsUInteger(unsigned int* out_value) const {
+bool Value::GetAsUInteger(uint32_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsLongInteger(long* out_value) const {
+bool Value::GetAsLongInteger(int64_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsULongInteger(unsigned long* out_value) const {
-  UNUSED(out_value);
-
-  return false;
-}
-
-bool Value::GetAsLongLongInteger(long long* out_value) const {
-  UNUSED(out_value);
-
-  return false;
-}
-
-bool Value::GetAsULongLongInteger(unsigned long long* out_value) const {
+bool Value::GetAsULongInteger(uint64_t* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -294,21 +274,15 @@ Value& Value::operator=(const Value& that) {
 
 FundamentalValue::FundamentalValue(bool in_value) : Value(TYPE_BOOLEAN), boolean_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(int in_value) : Value(TYPE_INTEGER), integer_value_(in_value) {}
+FundamentalValue::FundamentalValue(int32_t in_value) : Value(TYPE_INTEGER32), integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned int in_value)
-    : Value(TYPE_UINTEGER), integer_value_(static_cast<int>(in_value)) {}
+FundamentalValue::FundamentalValue(uint32_t in_value)
+    : Value(TYPE_UINTEGER32), integer_value_(static_cast<int32_t>(in_value)) {}
 
-FundamentalValue::FundamentalValue(long in_value) : Value(TYPE_LONG_INTEGER), long_integer_value_(in_value) {}
+FundamentalValue::FundamentalValue(int64_t in_value) : Value(TYPE_INTEGER64), long_integer_value_(in_value) {}
 
-FundamentalValue::FundamentalValue(unsigned long in_value)
-    : Value(TYPE_ULONG_INTEGER), long_integer_value_(static_cast<long>(in_value)) {}
-
-FundamentalValue::FundamentalValue(long long in_value)
-    : Value(TYPE_LONG_LONG_INTEGER), long_long_integer_value_(in_value) {}
-
-FundamentalValue::FundamentalValue(unsigned long long in_value)
-    : Value(TYPE_ULONG_LONG_INTEGER), long_long_integer_value_(static_cast<long long>(in_value)) {}
+FundamentalValue::FundamentalValue(uint64_t in_value)
+    : Value(TYPE_INTEGER64), long_integer_value_(static_cast<int64_t>(in_value)) {}
 
 FundamentalValue::FundamentalValue(double in_value) : Value(TYPE_DOUBLE), double_value_(in_value) {}
 
@@ -322,82 +296,62 @@ bool FundamentalValue::GetAsBoolean(bool* out_value) const {
   return (IsType(TYPE_BOOLEAN));
 }
 
-bool FundamentalValue::GetAsInteger(int* out_value) const {
-  if (out_value && IsType(TYPE_INTEGER)) {
+bool FundamentalValue::GetAsInteger(int32_t* out_value) const {
+  if (out_value && IsType(TYPE_INTEGER32)) {
     *out_value = integer_value_;
   }
 
-  return (IsType(TYPE_INTEGER));
+  return (IsType(TYPE_INTEGER32));
 }
 
-bool FundamentalValue::GetAsUInteger(unsigned int* out_value) const {
-  if (out_value && IsType(TYPE_UINTEGER)) {
+bool FundamentalValue::GetAsUInteger(uint32_t* out_value) const {
+  if (out_value && IsType(TYPE_UINTEGER32)) {
     *out_value = static_cast<unsigned int>(integer_value_);
   }
 
-  return (IsType(TYPE_UINTEGER));
+  return (IsType(TYPE_UINTEGER32));
 }
 
-bool FundamentalValue::GetAsLongInteger(long* out_value) const {
-  if (out_value && IsType(TYPE_LONG_INTEGER)) {
+bool FundamentalValue::GetAsLongInteger(int64_t* out_value) const {
+  if (out_value && IsType(TYPE_INTEGER64)) {
     *out_value = long_integer_value_;
   }
 
-  return (IsType(TYPE_LONG_INTEGER));
+  return (IsType(TYPE_INTEGER64));
 }
 
-bool FundamentalValue::GetAsULongInteger(unsigned long* out_value) const {
-  if (out_value && IsType(TYPE_ULONG_INTEGER)) {
+bool FundamentalValue::GetAsULongInteger(uint64_t* out_value) const {
+  if (out_value && IsType(TYPE_UINTEGER64)) {
     *out_value = static_cast<unsigned long>(long_integer_value_);
   }
 
-  return (IsType(TYPE_ULONG_INTEGER));
-}
-
-bool FundamentalValue::GetAsLongLongInteger(long long* out_value) const {
-  if (out_value && IsType(TYPE_LONG_LONG_INTEGER)) {
-    *out_value = long_long_integer_value_;
-  }
-
-  return (IsType(TYPE_LONG_LONG_INTEGER));
-}
-
-bool FundamentalValue::GetAsULongLongInteger(unsigned long long* out_value) const {
-  if (out_value && IsType(TYPE_ULONG_LONG_INTEGER)) {
-    *out_value = static_cast<unsigned long long>(long_long_integer_value_);
-  }
-
-  return (IsType(TYPE_ULONG_LONG_INTEGER));
+  return (IsType(TYPE_UINTEGER64));
 }
 
 bool FundamentalValue::GetAsDouble(double* out_value) const {
   if (out_value && IsType(TYPE_DOUBLE)) {
     *out_value = double_value_;
-  } else if (out_value && IsType(TYPE_INTEGER)) {
+  } else if (out_value && IsType(TYPE_INTEGER32)) {
     *out_value = integer_value_;
-  } else if (out_value && IsType(TYPE_UINTEGER)) {
+  } else if (out_value && IsType(TYPE_UINTEGER32)) {
     *out_value = integer_value_;
   }
 
-  return (IsType(TYPE_DOUBLE) || IsType(TYPE_INTEGER) || IsType(TYPE_UINTEGER));
+  return (IsType(TYPE_DOUBLE) || IsType(TYPE_INTEGER32) || IsType(TYPE_UINTEGER32));
 }
 
 FundamentalValue* FundamentalValue::DeepCopy() const {
   const Type t = GetType();
   if (t == TYPE_BOOLEAN) {
     return CreateBooleanValue(boolean_value_);
-  } else if (t == TYPE_INTEGER) {
+  } else if (t == TYPE_INTEGER32) {
     return CreateIntegerValue(integer_value_);
-  } else if (t == TYPE_UINTEGER) {
-    return CreateUIntegerValue(static_cast<unsigned int>(integer_value_));
-  } else if (t == TYPE_LONG_INTEGER) {
+  } else if (t == TYPE_UINTEGER32) {
+    return CreateUIntegerValue(static_cast<int32_t>(integer_value_));
+  } else if (t == TYPE_INTEGER64) {
     return CreateLongIntegerValue(long_integer_value_);
-  } else if (t == TYPE_ULONG_INTEGER) {
-    return CreateULongIntegerValue(static_cast<unsigned long>(long_integer_value_));
-  } else if (t == TYPE_LONG_LONG_INTEGER) {
-    return CreateLongLongIntegerValue(long_long_integer_value_);
-  } else if (t == TYPE_ULONG_LONG_INTEGER) {
-    return CreateULongLongIntegerValue(static_cast<unsigned long long>(long_long_integer_value_));
+  } else if (t == TYPE_UINTEGER64) {
+    return CreateULongIntegerValue(static_cast<int64_t>(long_integer_value_));
   } else if (t == TYPE_DOUBLE) {
     return CreateDoubleValue(double_value_);
   }
@@ -413,24 +367,18 @@ bool FundamentalValue::Equals(const Value* other) const {
   if (t == TYPE_BOOLEAN) {
     bool lhs, rhs;
     return GetAsBoolean(&lhs) && other->GetAsBoolean(&rhs) && lhs == rhs;
-  } else if (t == TYPE_INTEGER) {
+  } else if (t == TYPE_INTEGER32) {
     int lhs, rhs;
     return GetAsInteger(&lhs) && other->GetAsInteger(&rhs) && lhs == rhs;
-  } else if (t == TYPE_UINTEGER) {
+  } else if (t == TYPE_UINTEGER32) {
     unsigned int lhs, rhs;
     return GetAsUInteger(&lhs) && other->GetAsUInteger(&rhs) && lhs == rhs;
-  } else if (t == TYPE_LONG_INTEGER) {
-    long lhs, rhs;
+  } else if (t == TYPE_INTEGER64) {
+    int64_t lhs, rhs;
     return GetAsLongInteger(&lhs) && other->GetAsLongInteger(&rhs) && lhs == rhs;
-  } else if (t == TYPE_ULONG_INTEGER) {
-    unsigned long lhs, rhs;
+  } else if (t == TYPE_UINTEGER64) {
+    uint64_t lhs, rhs;
     return GetAsULongInteger(&lhs) && other->GetAsULongInteger(&rhs) && lhs == rhs;
-  } else if (t == TYPE_LONG_LONG_INTEGER) {
-    long long lhs, rhs;
-    return GetAsLongLongInteger(&lhs) && other->GetAsLongLongInteger(&rhs) && lhs == rhs;
-  } else if (t == TYPE_ULONG_LONG_INTEGER) {
-    unsigned long long lhs, rhs;
-    return GetAsULongLongInteger(&lhs) && other->GetAsULongLongInteger(&rhs) && lhs == rhs;
   } else if (t == TYPE_DOUBLE) {
     double lhs, rhs;
     return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
@@ -581,24 +529,6 @@ bool ArrayValue::GetULongInteger(size_t index, unsigned long* out_value) const {
   }
 
   return value->GetAsULongInteger(out_value);
-}
-
-bool ArrayValue::GetLongLongInteger(size_t index, long long* out_value) const {
-  const Value* value;
-  if (!Get(index, &value)) {
-    return false;
-  }
-
-  return value->GetAsLongLongInteger(out_value);
-}
-
-bool ArrayValue::GetULongLongInteger(size_t index, unsigned long long* out_value) const {
-  const Value* value;
-  if (!Get(index, &value)) {
-    return false;
-  }
-
-  return value->GetAsULongLongInteger(out_value);
 }
 
 bool ArrayValue::GetDouble(size_t index, double* out_value) const {
@@ -1151,34 +1081,24 @@ std::ostream& operator<<(std::ostream& out, const Value& value) {
     if (value.GetAsBoolean(&res)) {
       return out << res;
     }
-  } else if (value_type == Value::TYPE_INTEGER) {
+  } else if (value_type == Value::TYPE_INTEGER32) {
     int res;
     if (value.GetAsInteger(&res)) {
       return out << res;
     }
-  } else if (value_type == Value::TYPE_UINTEGER) {
+  } else if (value_type == Value::TYPE_UINTEGER32) {
     unsigned int res;
     if (value.GetAsUInteger(&res)) {
       return out << res;
     }
-  } else if (value_type == Value::TYPE_LONG_INTEGER) {
+  } else if (value_type == Value::TYPE_INTEGER64) {
     long res;
     if (value.GetAsLongInteger(&res)) {
       return out << res;
     }
-  } else if (value_type == Value::TYPE_ULONG_INTEGER) {
+  } else if (value_type == Value::TYPE_UINTEGER64) {
     unsigned long res;
     if (value.GetAsULongInteger(&res)) {
-      return out << res;
-    }
-  } else if (value_type == Value::TYPE_LONG_LONG_INTEGER) {
-    long long res;
-    if (value.GetAsLongLongInteger(&res)) {
-      return out << res;
-    }
-  } else if (value_type == Value::TYPE_ULONG_LONG_INTEGER) {
-    unsigned long long res;
-    if (value.GetAsULongLongInteger(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_DOUBLE) {

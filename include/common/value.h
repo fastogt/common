@@ -56,12 +56,10 @@ class Value {
   enum Type : uint8_t {
     TYPE_NULL = 0,
     TYPE_BOOLEAN,
-    TYPE_INTEGER,
-    TYPE_UINTEGER,
-    TYPE_LONG_INTEGER,
-    TYPE_ULONG_INTEGER,
-    TYPE_LONG_LONG_INTEGER,
-    TYPE_ULONG_LONG_INTEGER,
+    TYPE_INTEGER32,
+    TYPE_UINTEGER32,
+    TYPE_INTEGER64,
+    TYPE_UINTEGER64,
     TYPE_DOUBLE,
     TYPE_TIME,
     TYPE_STRING,
@@ -80,12 +78,10 @@ class Value {
   // simple types
   static Value* CreateNullValue();
   static FundamentalValue* CreateBooleanValue(bool in_value);
-  static FundamentalValue* CreateIntegerValue(int in_value);
-  static FundamentalValue* CreateUIntegerValue(unsigned int in_value);
-  static FundamentalValue* CreateLongIntegerValue(long in_value);
-  static FundamentalValue* CreateULongIntegerValue(unsigned long in_value);
-  static FundamentalValue* CreateLongLongIntegerValue(long long in_value);
-  static FundamentalValue* CreateULongLongIntegerValue(unsigned long long in_value);
+  static FundamentalValue* CreateIntegerValue(int32_t in_value);
+  static FundamentalValue* CreateUIntegerValue(uint32_t in_value);
+  static FundamentalValue* CreateLongIntegerValue(int64_t in_value);
+  static FundamentalValue* CreateULongIntegerValue(uint64_t in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
 
   static TimeValue* CreateTimeValue(time_t time);
@@ -100,9 +96,8 @@ class Value {
   static HashValue* CreateHashValue();
 
   static bool IsIntegral(Type type) {
-    return type == TYPE_BOOLEAN || type == TYPE_INTEGER || type == TYPE_UINTEGER || type == TYPE_LONG_INTEGER ||
-           type == TYPE_ULONG_INTEGER || type == TYPE_LONG_LONG_INTEGER || type == TYPE_ULONG_LONG_INTEGER ||
-           type == TYPE_DOUBLE || type == TYPE_TIME;
+    return type == TYPE_BOOLEAN || type == TYPE_INTEGER32 || type == TYPE_UINTEGER32 || type == TYPE_INTEGER64 ||
+           type == TYPE_UINTEGER64 || type == TYPE_DOUBLE || type == TYPE_TIME;
   }
 
   Type GetType() const { return type_; }
@@ -110,12 +105,10 @@ class Value {
   bool IsType(Type type) const { return type == type_; }
 
   virtual bool GetAsBoolean(bool* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsInteger(int* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsUInteger(unsigned int* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsLongInteger(long* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsULongInteger(unsigned long* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsLongLongInteger(long long* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsULongLongInteger(unsigned long long* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsInteger(int32_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsUInteger(uint32_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsLongInteger(int64_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsULongInteger(uint64_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsTime(time_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
@@ -150,23 +143,19 @@ class Value {
 class FundamentalValue : public Value {
  public:
   explicit FundamentalValue(bool in_value);
-  explicit FundamentalValue(int in_value);
-  explicit FundamentalValue(unsigned int in_value);
-  explicit FundamentalValue(long in_value);
-  explicit FundamentalValue(unsigned long in_value);
-  explicit FundamentalValue(long long in_value);
-  explicit FundamentalValue(unsigned long long in_value);
+  explicit FundamentalValue(int32_t in_value);
+  explicit FundamentalValue(uint32_t in_value);
+  explicit FundamentalValue(int64_t in_value);
+  explicit FundamentalValue(uint64_t in_value);
   explicit FundamentalValue(double in_value);
 
   ~FundamentalValue() override;
 
   bool GetAsBoolean(bool* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsInteger(int* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsUInteger(unsigned int* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsLongInteger(long* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsULongInteger(unsigned long* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsLongLongInteger(long long* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsULongLongInteger(unsigned long long* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsInteger(int32_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsUInteger(uint32_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsLongInteger(int64_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsULongInteger(uint64_t* out_value) const override WARN_UNUSED_RESULT;
   bool GetAsDouble(double* out_value) const override WARN_UNUSED_RESULT;
   FundamentalValue* DeepCopy() const override;
   bool Equals(const Value* other) const override;
@@ -174,10 +163,9 @@ class FundamentalValue : public Value {
  private:
   union {
     bool boolean_value_;
-    int integer_value_;
+    int32_t integer_value_;
     double double_value_;
-    long long_integer_value_;
-    long long long_long_integer_value_;
+    int64_t long_integer_value_;
   };
   DISALLOW_COPY_AND_ASSIGN(FundamentalValue);
 };
@@ -234,12 +222,10 @@ class ArrayValue : public Value {
   bool Get(size_t index, Value** out_value) WARN_UNUSED_RESULT;
 
   bool GetBoolean(size_t index, bool* out_value) const WARN_UNUSED_RESULT;
-  bool GetInteger(size_t index, int* out_value) const WARN_UNUSED_RESULT;
-  bool GetUInteger(size_t index, unsigned int* out_value) const WARN_UNUSED_RESULT;
-  bool GetLongInteger(size_t index, long* out_value) const WARN_UNUSED_RESULT;
-  bool GetULongInteger(size_t index, unsigned long* out_value) const WARN_UNUSED_RESULT;
-  bool GetLongLongInteger(size_t index, long long* out_value) const WARN_UNUSED_RESULT;
-  bool GetULongLongInteger(size_t index, unsigned long long* out_value) const WARN_UNUSED_RESULT;
+  bool GetInteger(size_t index, int32_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetUInteger(size_t index, uint32_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetLongInteger(size_t index, int64_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetULongInteger(size_t index, uint64_t* out_value) const WARN_UNUSED_RESULT;
   bool GetDouble(size_t index, double* out_value) const WARN_UNUSED_RESULT;
   bool GetString(size_t index, string_t* out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, const ArrayValue** out_value) const WARN_UNUSED_RESULT;
