@@ -78,10 +78,10 @@ class Value {
   // simple types
   static Value* CreateNullValue();
   static FundamentalValue* CreateBooleanValue(bool in_value);
-  static FundamentalValue* CreateIntegerValue(int32_t in_value);
-  static FundamentalValue* CreateUIntegerValue(uint32_t in_value);
-  static FundamentalValue* CreateLongIntegerValue(int64_t in_value);
-  static FundamentalValue* CreateULongIntegerValue(uint64_t in_value);
+  static FundamentalValue* CreateInteger32Value(int32_t in_value);
+  static FundamentalValue* CreateUInteger32Value(uint32_t in_value);
+  static FundamentalValue* CreateInteger64Value(int64_t in_value);
+  static FundamentalValue* CreateUInteger64Value(uint64_t in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
 
   static TimeValue* CreateTimeValue(time_t time);
@@ -105,10 +105,10 @@ class Value {
   bool IsType(Type type) const { return type == type_; }
 
   virtual bool GetAsBoolean(bool* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsInteger(int32_t* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsUInteger(uint32_t* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsLongInteger(int64_t* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsULongInteger(uint64_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsInteger32(int32_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsUInteger32(uint32_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsInteger64(int64_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsUInteger64(uint64_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsTime(time_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
@@ -152,10 +152,10 @@ class FundamentalValue : public Value {
   ~FundamentalValue() override;
 
   bool GetAsBoolean(bool* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsInteger(int32_t* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsUInteger(uint32_t* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsLongInteger(int64_t* out_value) const override WARN_UNUSED_RESULT;
-  bool GetAsULongInteger(uint64_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsInteger32(int32_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsUInteger32(uint32_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsInteger64(int64_t* out_value) const override WARN_UNUSED_RESULT;
+  bool GetAsUInteger64(uint64_t* out_value) const override WARN_UNUSED_RESULT;
   bool GetAsDouble(double* out_value) const override WARN_UNUSED_RESULT;
   FundamentalValue* DeepCopy() const override;
   bool Equals(const Value* other) const override;

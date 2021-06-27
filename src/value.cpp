@@ -60,19 +60,19 @@ FundamentalValue* Value::CreateBooleanValue(bool in_value) {
 }
 
 // static
-FundamentalValue* Value::CreateIntegerValue(int32_t in_value) {
+FundamentalValue* Value::CreateInteger32Value(int32_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateUIntegerValue(uint32_t in_value) {
+FundamentalValue* Value::CreateUInteger32Value(uint32_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateLongIntegerValue(int64_t in_value) {
+FundamentalValue* Value::CreateInteger64Value(int64_t in_value) {
   return new FundamentalValue(in_value);
 }
 
-FundamentalValue* Value::CreateULongIntegerValue(uint64_t in_value) {
+FundamentalValue* Value::CreateUInteger64Value(uint64_t in_value) {
   return new FundamentalValue(in_value);
 }
 
@@ -128,25 +128,25 @@ bool Value::GetAsBoolean(bool* out_value) const {
   return false;
 }
 
-bool Value::GetAsInteger(int32_t* out_value) const {
+bool Value::GetAsInteger32(int32_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsUInteger(uint32_t* out_value) const {
+bool Value::GetAsUInteger32(uint32_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsLongInteger(int64_t* out_value) const {
+bool Value::GetAsInteger64(int64_t* out_value) const {
   UNUSED(out_value);
 
   return false;
 }
 
-bool Value::GetAsULongInteger(uint64_t* out_value) const {
+bool Value::GetAsUInteger64(uint64_t* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -296,7 +296,7 @@ bool FundamentalValue::GetAsBoolean(bool* out_value) const {
   return (IsType(TYPE_BOOLEAN));
 }
 
-bool FundamentalValue::GetAsInteger(int32_t* out_value) const {
+bool FundamentalValue::GetAsInteger32(int32_t* out_value) const {
   if (out_value && IsType(TYPE_INTEGER32)) {
     *out_value = integer_value_;
   }
@@ -304,7 +304,7 @@ bool FundamentalValue::GetAsInteger(int32_t* out_value) const {
   return (IsType(TYPE_INTEGER32));
 }
 
-bool FundamentalValue::GetAsUInteger(uint32_t* out_value) const {
+bool FundamentalValue::GetAsUInteger32(uint32_t* out_value) const {
   if (out_value && IsType(TYPE_UINTEGER32)) {
     *out_value = static_cast<unsigned int>(integer_value_);
   }
@@ -312,7 +312,7 @@ bool FundamentalValue::GetAsUInteger(uint32_t* out_value) const {
   return (IsType(TYPE_UINTEGER32));
 }
 
-bool FundamentalValue::GetAsLongInteger(int64_t* out_value) const {
+bool FundamentalValue::GetAsInteger64(int64_t* out_value) const {
   if (out_value && IsType(TYPE_INTEGER64)) {
     *out_value = long_integer_value_;
   }
@@ -320,7 +320,7 @@ bool FundamentalValue::GetAsLongInteger(int64_t* out_value) const {
   return (IsType(TYPE_INTEGER64));
 }
 
-bool FundamentalValue::GetAsULongInteger(uint64_t* out_value) const {
+bool FundamentalValue::GetAsUInteger64(uint64_t* out_value) const {
   if (out_value && IsType(TYPE_UINTEGER64)) {
     *out_value = static_cast<unsigned long>(long_integer_value_);
   }
@@ -350,13 +350,13 @@ FundamentalValue* FundamentalValue::DeepCopy() const {
   if (t == TYPE_BOOLEAN) {
     return CreateBooleanValue(boolean_value_);
   } else if (t == TYPE_INTEGER32) {
-    return CreateIntegerValue(integer_value_);
+    return CreateInteger32Value(integer_value_);
   } else if (t == TYPE_UINTEGER32) {
-    return CreateUIntegerValue(static_cast<uint32_t>(integer_value_));
+    return CreateUInteger32Value(static_cast<uint32_t>(integer_value_));
   } else if (t == TYPE_INTEGER64) {
-    return CreateLongIntegerValue(long_integer_value_);
+    return CreateInteger64Value(long_integer_value_);
   } else if (t == TYPE_UINTEGER64) {
-    return CreateULongIntegerValue(static_cast<uint64_t>(long_integer_value_));
+    return CreateUInteger64Value(static_cast<uint64_t>(long_integer_value_));
   } else if (t == TYPE_DOUBLE) {
     return CreateDoubleValue(double_value_);
   }
@@ -374,16 +374,16 @@ bool FundamentalValue::Equals(const Value* other) const {
     return GetAsBoolean(&lhs) && other->GetAsBoolean(&rhs) && lhs == rhs;
   } else if (t == TYPE_INTEGER32) {
     int lhs, rhs;
-    return GetAsInteger(&lhs) && other->GetAsInteger(&rhs) && lhs == rhs;
+    return GetAsInteger32(&lhs) && other->GetAsInteger32(&rhs) && lhs == rhs;
   } else if (t == TYPE_UINTEGER32) {
     unsigned int lhs, rhs;
-    return GetAsUInteger(&lhs) && other->GetAsUInteger(&rhs) && lhs == rhs;
+    return GetAsUInteger32(&lhs) && other->GetAsUInteger32(&rhs) && lhs == rhs;
   } else if (t == TYPE_INTEGER64) {
     int64_t lhs, rhs;
-    return GetAsLongInteger(&lhs) && other->GetAsLongInteger(&rhs) && lhs == rhs;
+    return GetAsInteger64(&lhs) && other->GetAsInteger64(&rhs) && lhs == rhs;
   } else if (t == TYPE_UINTEGER64) {
     uint64_t lhs, rhs;
-    return GetAsULongInteger(&lhs) && other->GetAsULongInteger(&rhs) && lhs == rhs;
+    return GetAsUInteger64(&lhs) && other->GetAsUInteger64(&rhs) && lhs == rhs;
   } else if (t == TYPE_DOUBLE) {
     double lhs, rhs;
     return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
@@ -506,7 +506,7 @@ bool ArrayValue::GetInteger(size_t index, int* out_value) const {
     return false;
   }
 
-  return value->GetAsInteger(out_value);
+  return value->GetAsInteger32(out_value);
 }
 
 bool ArrayValue::GetUInteger(size_t index, unsigned int* out_value) const {
@@ -515,7 +515,7 @@ bool ArrayValue::GetUInteger(size_t index, unsigned int* out_value) const {
     return false;
   }
 
-  return value->GetAsUInteger(out_value);
+  return value->GetAsUInteger32(out_value);
 }
 
 bool ArrayValue::GetLongInteger(size_t index, long* out_value) const {
@@ -524,7 +524,7 @@ bool ArrayValue::GetLongInteger(size_t index, long* out_value) const {
     return false;
   }
 
-  return value->GetAsLongInteger(out_value);
+  return value->GetAsInteger64(out_value);
 }
 
 bool ArrayValue::GetULongInteger(size_t index, unsigned long* out_value) const {
@@ -533,7 +533,7 @@ bool ArrayValue::GetULongInteger(size_t index, unsigned long* out_value) const {
     return false;
   }
 
-  return value->GetAsULongInteger(out_value);
+  return value->GetAsUInteger64(out_value);
 }
 
 bool ArrayValue::GetDouble(size_t index, double* out_value) const {
@@ -624,7 +624,7 @@ void ArrayValue::AppendBoolean(bool in_value) {
 }
 
 void ArrayValue::AppendInteger(int in_value) {
-  Append(CreateIntegerValue(in_value));
+  Append(CreateInteger32Value(in_value));
 }
 
 void ArrayValue::AppendDouble(double in_value) {
@@ -1088,22 +1088,22 @@ std::ostream& operator<<(std::ostream& out, const Value& value) {
     }
   } else if (value_type == Value::TYPE_INTEGER32) {
     int res;
-    if (value.GetAsInteger(&res)) {
+    if (value.GetAsInteger32(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_UINTEGER32) {
     unsigned int res;
-    if (value.GetAsUInteger(&res)) {
+    if (value.GetAsUInteger32(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_INTEGER64) {
     long res;
-    if (value.GetAsLongInteger(&res)) {
+    if (value.GetAsInteger64(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_UINTEGER64) {
     unsigned long res;
-    if (value.GetAsULongInteger(&res)) {
+    if (value.GetAsUInteger64(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_DOUBLE) {
