@@ -222,10 +222,10 @@ class ArrayValue : public Value {
   bool Get(size_t index, Value** out_value) WARN_UNUSED_RESULT;
 
   bool GetBoolean(size_t index, bool* out_value) const WARN_UNUSED_RESULT;
-  bool GetInteger(size_t index, int32_t* out_value) const WARN_UNUSED_RESULT;
-  bool GetUInteger(size_t index, uint32_t* out_value) const WARN_UNUSED_RESULT;
-  bool GetLongInteger(size_t index, int64_t* out_value) const WARN_UNUSED_RESULT;
-  bool GetULongInteger(size_t index, uint64_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetInteger32(size_t index, int32_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetUInteger32(size_t index, uint32_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetInteger64(size_t index, int64_t* out_value) const WARN_UNUSED_RESULT;
+  bool GetUInteger64(size_t index, uint64_t* out_value) const WARN_UNUSED_RESULT;
   bool GetDouble(size_t index, double* out_value) const WARN_UNUSED_RESULT;
   bool GetString(size_t index, string_t* out_value) const WARN_UNUSED_RESULT;
   bool GetList(size_t index, const ArrayValue** out_value) const WARN_UNUSED_RESULT;

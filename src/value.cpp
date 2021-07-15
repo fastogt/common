@@ -500,7 +500,7 @@ bool ArrayValue::GetBoolean(size_t index, bool* bool_value) const {
   return value->GetAsBoolean(bool_value);
 }
 
-bool ArrayValue::GetInteger(size_t index, int* out_value) const {
+bool ArrayValue::GetInteger32(size_t index, int* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -509,7 +509,7 @@ bool ArrayValue::GetInteger(size_t index, int* out_value) const {
   return value->GetAsInteger32(out_value);
 }
 
-bool ArrayValue::GetUInteger(size_t index, unsigned int* out_value) const {
+bool ArrayValue::GetUInteger32(size_t index, unsigned int* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -518,7 +518,7 @@ bool ArrayValue::GetUInteger(size_t index, unsigned int* out_value) const {
   return value->GetAsUInteger32(out_value);
 }
 
-bool ArrayValue::GetLongInteger(size_t index, long* out_value) const {
+bool ArrayValue::GetInteger64(size_t index, long* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -527,7 +527,7 @@ bool ArrayValue::GetLongInteger(size_t index, long* out_value) const {
   return value->GetAsInteger64(out_value);
 }
 
-bool ArrayValue::GetULongInteger(size_t index, unsigned long* out_value) const {
+bool ArrayValue::GetUInteger64(size_t index, unsigned long* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
