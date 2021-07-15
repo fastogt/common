@@ -518,7 +518,7 @@ bool ArrayValue::GetUInteger32(size_t index, unsigned int* out_value) const {
   return value->GetAsUInteger32(out_value);
 }
 
-bool ArrayValue::GetInteger64(size_t index, long* out_value) const {
+bool ArrayValue::GetInteger64(size_t index, int64_t* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -527,7 +527,7 @@ bool ArrayValue::GetInteger64(size_t index, long* out_value) const {
   return value->GetAsInteger64(out_value);
 }
 
-bool ArrayValue::GetUInteger64(size_t index, unsigned long* out_value) const {
+bool ArrayValue::GetUInteger64(size_t index, uint64_t* out_value) const {
   const Value* value;
   if (!Get(index, &value)) {
     return false;
@@ -1097,12 +1097,12 @@ std::ostream& operator<<(std::ostream& out, const Value& value) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_INTEGER64) {
-    long res;
+    int64_t res;
     if (value.GetAsInteger64(&res)) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_UINTEGER64) {
-    unsigned long res;
+    uint64_t res;
     if (value.GetAsUInteger64(&res)) {
       return out << res;
     }
