@@ -84,7 +84,7 @@ class Value {
   static FundamentalValue* CreateUInteger64Value(uint64_t in_value);
   static FundamentalValue* CreateDoubleValue(double in_value);
 
-  static TimeValue* CreateTimeValue(time_t time);
+  static TimeValue* CreateTimeValue(utctime_t time);
 
   static StringValue* CreateEmptyStringValue();
   static StringValue* CreateStringValue(const string_t& in_value);
@@ -110,7 +110,7 @@ class Value {
   virtual bool GetAsInteger64(int64_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsUInteger64(uint64_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsDouble(double* out_value) const WARN_UNUSED_RESULT;
-  virtual bool GetAsTime(time_t* out_value) const WARN_UNUSED_RESULT;
+  virtual bool GetAsTime(utctime_t* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsString(string_t* out_value) const WARN_UNUSED_RESULT;
   bool GetAsBasicString(std::string* out_value) const WARN_UNUSED_RESULT;
   virtual bool GetAsList(ArrayValue** out_value) WARN_UNUSED_RESULT;
@@ -172,13 +172,13 @@ class FundamentalValue : public Value {
 
 class TimeValue : public Value {
  public:
-  explicit TimeValue(time_t time);
+  explicit TimeValue(utctime_t time);
 
   ~TimeValue() override;
 
   TimeValue* DeepCopy() const override;
   bool Equals(const Value* other) const override;
-  bool GetAsTime(time_t* out_value) const override;
+  bool GetAsTime(utctime_t* out_value) const override;
 
  private:
   utctime_t value_;

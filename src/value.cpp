@@ -81,7 +81,7 @@ FundamentalValue* Value::CreateDoubleValue(double in_value) {
   return new FundamentalValue(in_value);
 }
 
-TimeValue* Value::CreateTimeValue(time_t time) {
+TimeValue* Value::CreateTimeValue(utctime_t time) {
   return new TimeValue(time);
 }
 
@@ -158,7 +158,7 @@ bool Value::GetAsDouble(double* out_value) const {
   return false;
 }
 
-bool Value::GetAsTime(time_t* out_value) const {
+bool Value::GetAsTime(utctime_t* out_value) const {
   UNUSED(out_value);
 
   return false;
@@ -391,7 +391,7 @@ bool FundamentalValue::Equals(const Value* other) const {
   return false;
 }
 
-TimeValue::TimeValue(time_t time) : Value(TYPE_TIME), value_(time) {}
+TimeValue::TimeValue(utctime_t time) : Value(TYPE_TIME), value_(time) {}
 
 TimeValue::~TimeValue() {}
 
@@ -399,7 +399,7 @@ TimeValue* TimeValue::DeepCopy() const {
   return CreateTimeValue(value_);
 }
 
-bool TimeValue::GetAsTime(time_t* out_value) const {
+bool TimeValue::GetAsTime(utctime_t* out_value) const {
   if (out_value) {
     *out_value = value_;
   }
@@ -412,7 +412,7 @@ bool TimeValue::Equals(const Value* other) const {
     return false;
   }
 
-  time_t lhs, rhs;
+  utctime_t lhs, rhs;
   return GetAsTime(&lhs) && other->GetAsTime(&rhs) && lhs == rhs;
 }
 
@@ -1112,7 +1112,7 @@ std::ostream& operator<<(std::ostream& out, const Value& value) {
       return out << res;
     }
   } else if (value_type == Value::TYPE_TIME) {
-    time_t res;
+    utctime_t res;
     if (value.GetAsTime(&res)) {
       return out << res;
     }
