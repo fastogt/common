@@ -29,6 +29,7 @@
 
 #include <gtest/gtest.h>
 
+#include <common/file_system/file_system.h>
 #include <common/http/http2.h>
 #include <common/net/http_client.h>
 
@@ -512,10 +513,17 @@ TEST(https_client, get) {
 }
 
 TEST(https_client, post) {
-  Error err2 =
-      net::PostHttpsFile(file_system::ascii_file_string_path("/home/sasha/1.txt"),
+  auto const path = common::file_system::prepare_path("~/1.txt");
+  ErrnoError errn = common::file_system::create_node(path);
+  ASSERT_TRUE(!errn);
+
+  common::Error err =
+      net::PostHttpsFile(common::file_system::ascii_file_string_path(path),
                          common::uri::GURL("https://fastocloud.com/panel_pro/api/server/log/5f301ee271a51735471bc7e9"));
-  ASSERT_FALSE(err2);
+  ASSERT_FALSE(err);
+
+  errn = common::file_system::remove_file(path);
+  ASSERT_TRUE(!errn);
 }
 
 #endif

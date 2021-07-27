@@ -57,6 +57,8 @@
 #define HTTPS_LINK "https://github.com/fastogt/fastotvlite_mobile"
 #define HTTP_QUERY_LINK "http://www.permadi.com/tutorial/urlEncoding/example.html?var=This+is+a+simple+%26+short+test"
 
+#define SRT_WITH_QUERY "srt://196.202.177.146:9710?streamid=broadcast/golive/push"
+
 TEST(Url, IsValid) {
   common::uri::GURL invalid;
   ASSERT_FALSE(invalid.is_valid());
@@ -142,6 +144,14 @@ TEST(Url, IsValid) {
   ASSERT_EQ(srt_query.host(), "");
   ASSERT_EQ(srt_query.port(), "7001");
   ASSERT_EQ(srt_query.spec(), SRT_LINK2);
+
+  common::uri::GURL srt_query_streamid(SRT_WITH_QUERY);
+  ASSERT_TRUE(srt_query_streamid.is_valid());
+  ASSERT_TRUE(srt_query_streamid.SchemeIsSrt());
+  ASSERT_EQ(srt_query_streamid.host(), "196.202.177.146");
+  ASSERT_EQ(srt_query_streamid.port(), "9710");
+  ASSERT_EQ(srt_query_streamid.GetOrigin(), "srt://196.202.177.146:9710/");
+  ASSERT_EQ(srt_query_streamid.query(), "streamid=broadcast/golive/push");
 
   common::uri::GURL tcp(TCP_LINK);
   ASSERT_TRUE(tcp.is_valid());

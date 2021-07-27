@@ -119,7 +119,6 @@ SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse_dev.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse_udp.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse_rtp.cpp
-  ${CMAKE_SOURCE_DIR}/src/uri/url_parse_sdp.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_parse_tcp.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_fileurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_devurl.cpp

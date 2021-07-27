@@ -55,18 +55,14 @@ TEST(Value, create_and_get_simple_type) {
 
   CheckValue(&common::Value::CreateBooleanValue, &common::FundamentalValue::GetAsBoolean, true,
              common::Value::TYPE_BOOLEAN);
-  CheckValue(&common::Value::CreateIntegerValue, &common::FundamentalValue::GetAsInteger, 11,
-             common::Value::TYPE_INTEGER);
-  CheckValue(&common::Value::CreateUIntegerValue, &common::FundamentalValue::GetAsUInteger, 321U,
-             common::Value::TYPE_UINTEGER);
-  CheckValue(&common::Value::CreateLongIntegerValue, &common::FundamentalValue::GetAsLongInteger, 1341L,
-             common::Value::TYPE_LONG_INTEGER);
-  CheckValue(&common::Value::CreateULongIntegerValue, &common::FundamentalValue::GetAsULongInteger, 3231UL,
-             common::Value::TYPE_ULONG_INTEGER);
-  CheckValue(&common::Value::CreateLongLongIntegerValue, &common::FundamentalValue::GetAsLongLongInteger, 161LL,
-             common::Value::TYPE_LONG_LONG_INTEGER);
-  CheckValue(&common::Value::CreateULongLongIntegerValue, &common::FundamentalValue::GetAsULongLongInteger, 3211ULL,
-             common::Value::TYPE_ULONG_LONG_INTEGER);
+  CheckValue(&common::Value::CreateInteger32Value, &common::FundamentalValue::GetAsInteger32, 11,
+             common::Value::TYPE_INTEGER32);
+  CheckValue(&common::Value::CreateUInteger32Value, &common::FundamentalValue::GetAsUInteger32, 321U,
+             common::Value::TYPE_UINTEGER32);
+  CheckValue(&common::Value::CreateInteger64Value, &common::FundamentalValue::GetAsInteger64, 1341L,
+             common::Value::TYPE_INTEGER64);
+  CheckValue(&common::Value::CreateUInteger64Value, &common::FundamentalValue::GetAsUInteger64, 3231UL,
+             common::Value::TYPE_UINTEGER64);
   CheckValue(&common::Value::CreateDoubleValue, &common::FundamentalValue::GetAsDouble, 11.5,
              common::Value::TYPE_DOUBLE);
 }

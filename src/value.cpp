@@ -282,7 +282,7 @@ FundamentalValue::FundamentalValue(uint32_t in_value)
 FundamentalValue::FundamentalValue(int64_t in_value) : Value(TYPE_INTEGER64), long_integer_value_(in_value) {}
 
 FundamentalValue::FundamentalValue(uint64_t in_value)
-    : Value(TYPE_INTEGER64), long_integer_value_(static_cast<int64_t>(in_value)) {}
+    : Value(TYPE_UINTEGER64), long_integer_value_(static_cast<int64_t>(in_value)) {}
 
 FundamentalValue::FundamentalValue(double in_value) : Value(TYPE_DOUBLE), double_value_(in_value) {}
 

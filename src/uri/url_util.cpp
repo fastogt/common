@@ -64,7 +64,7 @@ struct SchemeRegistry {
       {kDevScheme, SCHEME_WITH_HOST},
       {kUdpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtpScheme, SCHEME_WITH_HOST_AND_PORT},
-      {kSrtScheme, SCHEME_WITH_HOST_AND_PORT},
+      {kSrtScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
       {kTcpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtmpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtmpsScheme, SCHEME_WITH_HOST_AND_PORT},
