@@ -284,7 +284,7 @@ bool DoCanonicalize(const CHAR* spec,
     ParseRtmpURL(spec, spec_len, &parsed_input);
     success = CanonicalizeRtmpURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, uri::kRtspScheme)) {
-    // Rtmp URLs are special.
+    // Rtsp URLs are special.
     ParseRtspURL(spec, spec_len, &parsed_input);
     success = CanonicalizeRtspURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoIsStandard(spec, scheme, &scheme_type)) {

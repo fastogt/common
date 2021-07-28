@@ -71,7 +71,7 @@ bool DoCanonicalizeSrtURL(const URLComponentSource<CHAR>& source,
     // or something following the path. The only time we allow an empty
     // output path is when there is nothing else.
     new_parsed->path = Component(output->length(), 1);
-    output->push_back('/');
+    // output->push_back('/');
   } else {
     // No path at all
     new_parsed->path.reset();

@@ -58,6 +58,7 @@
 #define HTTP_QUERY_LINK "http://www.permadi.com/tutorial/urlEncoding/example.html?var=This+is+a+simple+%26+short+test"
 
 #define SRT_WITH_QUERY "srt://196.202.177.146:9710?streamid=broadcast/golive/push"
+#define SRT_TEMPLATE "srt://161.97.174.127:9998?streamid=#!::r=fastocloud"
 
 TEST(Url, IsValid) {
   common::uri::GURL invalid;
@@ -152,6 +153,16 @@ TEST(Url, IsValid) {
   ASSERT_EQ(srt_query_streamid.port(), "9710");
   ASSERT_EQ(srt_query_streamid.GetOrigin(), "srt://196.202.177.146:9710/");
   ASSERT_EQ(srt_query_streamid.query(), "streamid=broadcast/golive/push");
+  ASSERT_EQ(srt_query_streamid.spec(), SRT_WITH_QUERY);
+
+  common::uri::GURL srt_template(SRT_TEMPLATE);
+  ASSERT_TRUE(srt_template.is_valid());
+  ASSERT_TRUE(srt_template.SchemeIsSrt());
+  ASSERT_EQ(srt_template.host(), "161.97.174.127");
+  ASSERT_EQ(srt_template.port(), "9998");
+  ASSERT_EQ(srt_template.GetOrigin(), "srt://161.97.174.127:9998/");
+  // ASSERT_EQ(srt_template.query(), "streamid=#!::r=fastocloud");
+  ASSERT_EQ(srt_template.spec(), SRT_TEMPLATE);
 
   common::uri::GURL tcp(TCP_LINK);
   ASSERT_TRUE(tcp.is_valid());
