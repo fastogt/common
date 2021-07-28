@@ -161,7 +161,8 @@ TEST(Url, IsValid) {
   ASSERT_EQ(srt_template.host(), "161.97.174.127");
   ASSERT_EQ(srt_template.port(), "9998");
   ASSERT_EQ(srt_template.GetOrigin(), "srt://161.97.174.127:9998/");
-  // ASSERT_EQ(srt_template.query(), "streamid=#!::r=fastocloud");
+  ASSERT_EQ(srt_template.query(), "streamid=");
+  ASSERT_EQ(srt_template.ref(), "!::r=fastocloud");
   ASSERT_EQ(srt_template.spec(), SRT_TEMPLATE);
 
   common::uri::GURL tcp(TCP_LINK);
