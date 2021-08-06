@@ -60,6 +60,9 @@
 #define SRT_WITH_QUERY "srt://196.202.177.146:9710?streamid=broadcast/golive/push"
 #define SRT_TEMPLATE "srt://161.97.174.127:9998?streamid=#!::r=fastocloud"
 
+#define AUDIO_QUERY "audio=default"
+#define DEV_VIDEO_AUDIO_PATH DEV_VIDEO_PATH "?" AUDIO_QUERY
+
 TEST(Url, IsValid) {
   common::uri::GURL invalid;
   ASSERT_FALSE(invalid.is_valid());
@@ -114,6 +117,14 @@ TEST(Url, IsValid) {
   ASSERT_TRUE(path6.SchemeIsDev());
   ASSERT_EQ(DEV_VIDEO_PATH, path6.path());
   ASSERT_EQ(originDev, path6.spec());
+
+  const std::string originDevAudio = "dev://" + std::string(DEV_VIDEO_AUDIO_PATH);
+  common::uri::GURL pathdev(originDevAudio);
+  ASSERT_TRUE(pathdev.is_valid());
+  ASSERT_TRUE(pathdev.SchemeIsDev());
+  ASSERT_EQ(DEV_VIDEO_PATH, pathdev.path());
+  ASSERT_EQ(pathdev.query(), AUDIO_QUERY);
+  ASSERT_EQ(originDevAudio, pathdev.spec());
 
   common::uri::GURL http_path(HTTP_PATH);
   ASSERT_FALSE(http_path.is_valid());
