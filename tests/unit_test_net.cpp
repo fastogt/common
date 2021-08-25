@@ -40,6 +40,12 @@ TEST(HostAndPort, methods) {
 
   const common::net::HostAndPort fastotv("fastotv.com", 5999);
   ASSERT_TRUE(fastotv.IsSameHost("2a03:b0c0:2:d0::383:2001"));
+
+  const common::net::HostAndPort defa("134.17.5.92", 3333);
+  ASSERT_FALSE(defa.IsSameHost("0.0.0.0"));
+
+  const common::net::HostAndPort defa2("0.0.0.0", 3333);
+  ASSERT_FALSE(defa2.IsSameHost("135.17.5.93"));
 }
 
 TEST(HostAndPort, ConvertToString) {

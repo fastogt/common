@@ -127,21 +127,22 @@ ssize_t sendfile(common::net::socket_descr_t out_fd, descriptor_t in_fd, off_t* 
 #endif
 
 namespace {
-int compare_addr(const struct addrinfo* a, const struct addrinfo* b) {
+bool compare_addr(const struct addrinfo* a, const struct addrinfo* b) {
   if (a->ai_family != b->ai_family) {
-    return 1;
+    return false;
   }
 
   if (a->ai_family == AF_INET) {
-    return (((const struct sockaddr_in*)a)->sin_addr.s_addr != ((const struct sockaddr_in*)b)->sin_addr.s_addr);
+    return (((const struct sockaddr_in*)a)->sin_addr.s_addr != ((const struct sockaddr_in*)b)->sin_addr.s_addr) == 0;
   }
 
   if (a->ai_family == AF_INET6) {
     const uint8_t* s6_addr_a = ((const struct sockaddr_in6*)a)->sin6_addr.s6_addr;
     const uint8_t* s6_addr_b = ((const struct sockaddr_in6*)b)->sin6_addr.s6_addr;
-    return memcmp(s6_addr_a, s6_addr_b, 16);
+    return memcmp(s6_addr_a, s6_addr_b, 16) == 0;
   }
-  return 1;
+
+  return false;
 }
 }  // namespace
 
@@ -879,6 +880,14 @@ bool HostAndPort::IsSameHost(const host_t& host) const {
     return IsDefaultRoute();
   }
 
+  if (IsLocalHost()) {
+    return net::IsLocalHost(host);
+  }
+
+  if (IsDefaultRoute()) {
+    return net::IsDefaultRoute(host);
+  }
+
   socket_info src;
   ErrnoError err = resolve_raw(host_.c_str(), port_, 1, &src);
   if (err) {
@@ -905,7 +914,7 @@ bool HostAndPort::IsSameHost(const host_t& host) const {
     }
   }
 
-  return compare_addr(src.addr_info(), dst.addr_info()) == 0;
+  return compare_addr(src.addr_info(), dst.addr_info());
 }
 
 }  // namespace net
