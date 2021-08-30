@@ -474,7 +474,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
       char pathBuffer[PATH_MAX] = {0};
       SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
 #if defined(OS_WIN)
-      const std::string dir_str = make_path(folder_str, dent->d_name);
+      const std::string dir_str = make_path(folder_str, p->d_name);
       tribool is_dir_tr = is_directory(dir_str);
       if (is_dir_tr == INDETERMINATE) {
         continue;
