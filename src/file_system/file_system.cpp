@@ -464,7 +464,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
   if (is_recursive) {
     DIR* dirp = opendir(pr_path_ptr);
     if (!dirp) {
-      return ErrnoError();
+      return make_error_perror("opendir", errno);
     }
 
     struct dirent* p;
