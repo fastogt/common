@@ -51,9 +51,6 @@ int ftruncate(int fd, int64_t length) {
   }
   return SetEndOfFile(fh) ? 0 : -1;
 }
-#if !defined(S_ISDIR)
-#define S_ISDIR(mode) ((mode & S_IFMT) == S_IFDIR)
-#endif
 #endif
 
 #include <common/sprintf.h>
@@ -476,23 +473,28 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
 
       char pathBuffer[PATH_MAX] = {0};
       SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
-      struct stat statbuf;
-      if (::stat(pathBuffer, &statbuf) == 0) {
-        if (S_ISDIR(statbuf.st_mode)) {
-          ErrnoError err = remove_directory(pathBuffer, is_recursive);
-          if (err) {
-            closedir(dirp);
-            return err;
-          }
-        } else {
-          ErrnoError err = remove_file(pathBuffer);
-          if (err) {
-            closedir(dirp);
-            return err;
-          }
+#if defined(OS_WIN)
+      const std::string dir_str = make_path(folder_str, dent->d_name);
+      tribool is_dir_tr = is_directory(dir_str);
+      if (is_dir_tr == INDETERMINATE) {
+        continue;
+      }
+      bool is_dir = is_dir_tr == SUCCESS;
+#else
+      bool is_dir = p->d_type == DT_DIR;
+#endif
+      if (is_dir) {
+        ErrnoError err = remove_directory(pathBuffer, is_recursive);
+        if (err) {
+          closedir(dirp);
+          return err;
         }
       } else {
-        return make_error_perror("stat", errno);
+        ErrnoError err = remove_file(pathBuffer);
+        if (err) {
+          closedir(dirp);
+          return err;
+        }
       }
     }
     closedir(dirp);
