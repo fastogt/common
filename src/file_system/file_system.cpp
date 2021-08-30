@@ -477,7 +477,7 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
       char pathBuffer[PATH_MAX] = {0};
       SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
       struct stat statbuf;
-      if (!::stat(pathBuffer, &statbuf)) {
+      if (::stat(pathBuffer, &statbuf) == 0) {
         if (S_ISDIR(statbuf.st_mode)) {
           ErrnoError err = remove_directory(pathBuffer, is_recursive);
           if (err) {
@@ -491,6 +491,8 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
             return err;
           }
         }
+      } else {
+        return make_error_perror("stat", errno);
       }
     }
     closedir(dirp);
