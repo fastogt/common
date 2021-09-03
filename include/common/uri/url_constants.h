@@ -37,6 +37,7 @@ namespace uri {
 extern const char kDataScheme[];
 extern const char kFileScheme[];
 extern const char kDevScheme[];
+extern const char kUnknownScheme[];
 extern const char kUdpScheme[];
 extern const char kRtpScheme[];
 extern const char kSrtScheme[];

@@ -266,6 +266,10 @@ void ParseDevURL(const char* url, int url_len, Parsed* parsed);
 
 void ParseDevURL(const char16* url, int url_len, Parsed* parsed);
 
+void ParseUnknownURL(const char* url, int url_len, Parsed* parsed);
+
+void ParseUnknownURL(const char16* url, int url_len, Parsed* parsed);
+
 void ParseUdpURL(const char* url, int url_len, Parsed* parsed);
 
 void ParseUdpURL(const char16* url, int url_len, Parsed* parsed);

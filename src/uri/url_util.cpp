@@ -62,6 +62,7 @@ struct SchemeRegistry {
       // canonicalization.
       {kFileScheme, SCHEME_WITH_HOST},
       {kDevScheme, SCHEME_WITH_HOST},
+      {kUnknownScheme, SCHEME_WITH_HOST},
       {kUdpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kSrtScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
@@ -92,7 +93,7 @@ struct SchemeRegistry {
 
   // Schemes that normal pages cannot link to or access (i.e., with the same
   // security rules as those applied to "file" URLs).
-  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme};
+  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme, kUnknownScheme};
 
   // Schemes that cause pages loaded with them to not have access to pages
   // loaded with any other URL scheme.
@@ -259,6 +260,10 @@ bool DoCanonicalize(const CHAR* spec,
     // Dev URLs are special.
     ParseDevURL(spec, spec_len, &parsed_input);
     success = CanonicalizeDevURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, uri::kUnknownScheme)) {
+    // Unknown URLs are special.
+    ParseUnknownURL(spec, spec_len, &parsed_input);
+    success = CanonicalizeUnknownURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, uri::kUdpScheme)) {
     // Udp URLs are special.
     ParseUdpURL(spec, spec_len, &parsed_input);

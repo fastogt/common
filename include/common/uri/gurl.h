@@ -218,6 +218,8 @@ class GURL {
 
   bool SchemeIsDev() const { return SchemeIs(uri::kDevScheme); }
 
+  bool SchemeIsUnknown() const { return SchemeIs(uri::kUnknownScheme); }
+
   bool SchemeIsUdp() const { return SchemeIs(uri::kUdpScheme); }
 
   bool SchemeIsRtp() const { return SchemeIs(uri::kRtpScheme); }

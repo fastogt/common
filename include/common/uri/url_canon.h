@@ -596,6 +596,22 @@ bool CanonicalizeDevURL(const char16* spec,
                         CanonOutput* output,
                         Parsed* new_parsed);
 
+// Use for unknown URLs.
+
+bool CanonicalizeUnknownURL(const char* spec,
+                            int spec_len,
+                            const Parsed& parsed,
+                            CharsetConverter* query_converter,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+
+bool CanonicalizeUnknownURL(const char16* spec,
+                            int spec_len,
+                            const Parsed& parsed,
+                            CharsetConverter* query_converter,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+
 // Use for udp URLs.
 bool CanonicalizeUdpURL(const char* spec,
                         int spec_len,

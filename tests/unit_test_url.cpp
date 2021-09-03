@@ -35,6 +35,7 @@
 #define HTTP_PATH "/home/index.html"
 #define FILE_PATH "/home/sasha/1.mp4"
 #define DEV_VIDEO_PATH "/dev/video3"
+#define SCREEN_PATH "screen"
 #define UDP_LINK "udp://239.0.3.3:3003"
 #define RTP_LINK "rtp://0.0.0.0:5555"
 #define SRT_LINK "srt://239.0.3.3:3003"
@@ -62,6 +63,8 @@
 
 #define AUDIO_QUERY "audio=default"
 #define DEV_VIDEO_AUDIO_PATH DEV_VIDEO_PATH "?" AUDIO_QUERY
+
+#define UNKNOWN_VIDEO_AUDIO_PATH SCREEN_PATH "?" AUDIO_QUERY
 
 TEST(Url, IsValid) {
   common::uri::GURL invalid;
@@ -125,6 +128,21 @@ TEST(Url, IsValid) {
   ASSERT_EQ(DEV_VIDEO_PATH, pathdev.path());
   ASSERT_EQ(pathdev.query(), AUDIO_QUERY);
   ASSERT_EQ(originDevAudio, pathdev.spec());
+
+  const std::string unknownScreen = "unknown://" + std::string(SCREEN_PATH);
+  common::uri::GURL path7(unknownScreen);
+  ASSERT_TRUE(path7.is_valid());
+  ASSERT_TRUE(path7.SchemeIsUnknown());
+  ASSERT_EQ(SCREEN_PATH, path7.path());
+  ASSERT_EQ(unknownScreen, path7.spec());
+
+  const std::string unknownAudio = "unknown://" + std::string(UNKNOWN_VIDEO_AUDIO_PATH);
+  common::uri::GURL pathunk(unknownAudio);
+  ASSERT_TRUE(pathunk.is_valid());
+  ASSERT_TRUE(pathunk.SchemeIsUnknown());
+  ASSERT_EQ(SCREEN_PATH, pathunk.path());
+  ASSERT_EQ(pathunk.query(), AUDIO_QUERY);
+  ASSERT_EQ(unknownAudio, pathunk.spec());
 
   common::uri::GURL http_path(HTTP_PATH);
   ASSERT_FALSE(http_path.is_valid());

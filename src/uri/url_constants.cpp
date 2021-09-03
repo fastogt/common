@@ -35,6 +35,7 @@ namespace uri {
 const char kDataScheme[] = "data";
 const char kFileScheme[] = "file";
 const char kDevScheme[] = "dev";
+const char kUnknownScheme[] = "unknown";
 const char kUdpScheme[] = "udp";
 const char kRtpScheme[] = "rtp";
 const char kSrtScheme[] = "srt";
