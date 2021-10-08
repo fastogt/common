@@ -29,6 +29,7 @@
 
 #include <gtest/gtest.h>
 
+#include <common/file_system/file.h>
 #include <common/file_system/file_system.h>
 #include <common/http/http2.h>
 #include <common/net/http_client.h>
@@ -497,6 +498,17 @@ TEST(http_client, get) {
 }
 
 #if defined(HAVE_OPENSSL)
+TEST(https_client, get_file) {
+  auto const path = common::file_system::prepare_path("~/1.png");
+
+  common::Error err = common::net::GetHttpsFile(common::uri::GURL("https://fastogt.com/static/projects/todd.png"),
+                                                common::file_system::ascii_file_string_path(path));
+  ASSERT_FALSE(err);
+
+  ErrnoError errn = common::file_system::remove_file(path);
+  ASSERT_FALSE(errn);
+}
+
 TEST(https_client, get) {
   net::HostAndPort example("example.com", 443);
   net::HttpsClient cl(example);
@@ -523,7 +535,7 @@ TEST(https_client, post) {
   ASSERT_FALSE(err);
 
   errn = common::file_system::remove_file(path);
-  ASSERT_TRUE(!errn);
+  ASSERT_FALSE(errn);
 }
 
 #endif

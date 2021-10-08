@@ -494,6 +494,60 @@ HostAndPort HttpClient::GetHost() const {
   return sock->GetHost();
 }
 
+Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path) {
+  if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
+    return common::make_error_inval();
+  }
+
+  HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
+  HttpClient cl(http_server_address);
+  ErrnoError errn = cl.Connect();
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  const auto path = url.PathForRequest();
+  Error err = cl.Get(path);
+  if (err) {
+    cl.Disconnect();
+    return err;
+  }
+
+  http::HttpResponse lresp;
+  err = cl.ReadResponse(&lresp);
+  cl.Disconnect();
+  if (err) {
+    return err;
+  }
+
+  errn = file_system::remove_file(file_path.GetPath());
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  file_system::File file;
+  errn = file.Open(file_path, file_system::File::FLAG_CREATE | file_system::File::FLAG_WRITE);
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  size_t out;
+  auto body = lresp.GetBody();
+  errn = file.WriteBuffer(body, &out);
+  file.Close();
+
+  if (out != body.size()) {
+    file_system::remove_file(file_path.GetPath());
+    return common::make_error("failed to save file");
+  }
+
+  if (errn) {
+    file_system::remove_file(file_path.GetPath());
+    return make_error_from_errno(errn);
+  }
+  return err;
+}
+
 Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
     return common::make_error_inval();
@@ -545,6 +599,60 @@ common::net::HostAndPort HttpsClient::GetHost() const {
 ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
   SocketTls* sock = static_cast<SocketTls*>(GetSocket());
   return sock->SendFile(file_fd, file_size);
+}
+
+Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path) {
+  if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
+    return common::make_error_inval();
+  }
+
+  HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
+  HttpsClient cl(http_server_address);
+  ErrnoError errn = cl.Connect();
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  const auto path = url.PathForRequest();
+  Error err = cl.Get(path);
+  if (err) {
+    cl.Disconnect();
+    return err;
+  }
+
+  http::HttpResponse lresp;
+  err = cl.ReadResponse(&lresp);
+  cl.Disconnect();
+  if (err) {
+    return err;
+  }
+
+  errn = file_system::remove_file(file_path.GetPath());
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  file_system::File file;
+  errn = file.Open(file_path, file_system::File::FLAG_CREATE | file_system::File::FLAG_WRITE);
+  if (errn) {
+    return make_error_from_errno(errn);
+  }
+
+  size_t out;
+  auto body = lresp.GetBody();
+  errn = file.WriteBuffer(body, &out);
+  file.Close();
+
+  if (out != body.size()) {
+    file_system::remove_file(file_path.GetPath());
+    return common::make_error("failed to save file");
+  }
+
+  if (errn) {
+    file_system::remove_file(file_path.GetPath());
+    return make_error_from_errno(errn);
+  }
+  return err;
 }
 
 Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url) {

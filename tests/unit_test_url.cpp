@@ -30,6 +30,7 @@
 #include <gtest/gtest.h>
 
 #include <common/string_split.h>
+#include <common/string_util.h>
 #include <common/uri/gurl.h>
 
 #define HTTP_PATH "/home/index.html"
@@ -66,7 +67,13 @@
 
 #define UNKNOWN_VIDEO_AUDIO_PATH SCREEN_PATH "?" AUDIO_QUERY
 
+#define MDP_URL "http://41.76.110.249:200/index.mpd?id=1"
+
 TEST(Url, IsValid) {
+  common::uri::GURL mdp(MDP_URL);
+  auto req = mdp.path();
+  ASSERT_TRUE(common::EndsWith(req, "mpd", false));
+
   common::uri::GURL invalid;
   ASSERT_FALSE(invalid.is_valid());
 
