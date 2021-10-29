@@ -712,27 +712,23 @@ Optional<HttpRequest> MakePostRequest(const std::string& path,
   return req;
 }
 
-std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
-  if (request.empty() || !req_out) {
+std::pair<http_status, Error> parse_http_request(const char* request, size_t len, HttpRequest* req_out) {
+  if (!request || !req_out) {
     return std::make_pair(HS_FORBIDDEN, make_error_inval());
   }
-
-  typedef std::string::size_type string_size_t;
-
-  const string_size_t len = request.size();
 
   http_method lmethod = HM_GET;
   std::string lpath;
   http_protocol lprotocol = HP_1_0;
   headers_t lheaders;
 
-  string_size_t pos = 0;
-  string_size_t start = 0;
+  const char* pos = nullptr;
+  size_t start = 0;
   uint8_t line_count = 0;
-  while ((pos = request.find("\r\n", start)) != std::string::npos) {
-    std::string line = request.substr(start, pos - start);
+  while ((pos = strstr(request + start, "\r\n"))) {
+    const std::string line(request + start, pos);
     if (line_count == 0) {  // GET //POST //HEAD
-      string_size_t space = line.find_first_of(' ');
+      size_t space = line.find_first_of(' ');
       if (space != std::string::npos) {
         std::string method = line.substr(0, space);
         if (method == "GET" || method == "HEAD" || method == "POST") {
@@ -781,12 +777,12 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
       }
     }
     line_count++;
-    start = pos + 2;
+    start = pos - request + 2;
   }
 
   uri::RawCanonOutputT<char16> unescaped;
   if (len != start && line_count != 0) {
-    const char* request_str = request.c_str() + start;
+    const char* request_str = request + start;
     uri::DecodeURLEscapeSequences(request_str, strlen(request_str), uri::DecodeURLMode::kUTF8OrIsomorphic, &unescaped);
   }
 
@@ -797,6 +793,14 @@ std::pair<http_status, Error> parse_http_request(const std::string& request, Htt
   *req_out =
       HttpRequest(lmethod, lpath, lprotocol, lheaders, MAKE_CHAR_BUFFER_SIZE(unescaped.data(), unescaped.length()));
   return std::make_pair(HS_OK, Error());
+}
+
+std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) {
+  if (request.empty() || !req_out) {
+    return std::make_pair(HS_FORBIDDEN, make_error_inval());
+  }
+
+  return parse_http_request(request.data(), request.size(), req_out);
 }
 
 HttpResponse::HttpResponse() : protocol_(), status_(), headers_(), body_() {}

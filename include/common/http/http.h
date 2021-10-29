@@ -172,6 +172,9 @@ Optional<HttpRequest> MakePostRequest(const std::string& path,
                                       const headers_t& headers,
                                       const HttpRequest::body_t& body = HttpRequest::body_t());
 
+std::pair<http_status, Error> parse_http_request(const char* request,
+                                                 size_t len,
+                                                 HttpRequest* req_out) WARN_UNUSED_RESULT;
 std::pair<http_status, Error> parse_http_request(const std::string& request, HttpRequest* req_out) WARN_UNUSED_RESULT;
 
 class HttpResponse {
