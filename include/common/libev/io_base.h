@@ -32,6 +32,7 @@
 #include <common/patterns/crtp_pattern.h>
 
 #include <common/sprintf.h>
+#include <common/time.h>
 
 namespace common {
 namespace libev {
@@ -40,11 +41,14 @@ template <typename T>
 class IoBase : IMetaClassInfo {
  public:
   typedef patterns::id_counter<T> id_t;
-  explicit IoBase() : name_(), id_() {}
+  explicit IoBase() : name_(), id_(), created_time_(time::current_utc_mstime()) {}
   virtual ~IoBase() {}
 
   void SetName(const std::string& name) { name_ = name; }
   std::string GetName() const { return name_; }
+
+  time64_t GetCreatedTime() const { return created_time_; }
+  time64_t GetTTL() const { return time::current_utc_mstime() - created_time_; }
 
   typename id_t::type_t GetId() const { return id_.get_id(); }
 
@@ -54,6 +58,7 @@ class IoBase : IMetaClassInfo {
  private:
   std::string name_;
   const id_t id_;
+  const time64_t created_time_;
 };
 
 }  // namespace libev

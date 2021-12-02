@@ -113,7 +113,7 @@ TEST(Url, IsValid) {
   ASSERT_EQ(originFile, path5.spec());
 
   const std::string templateFile = "file:///home/sasha/object_%m_%d_%Y_%H:%M:%S.mp4";
-  time_t now = time(nullptr);
+  time_t now = ::time(nullptr);
   char timebuf[1024];
   strftime(timebuf, sizeof(timebuf), templateFile.c_str(), gmtime(&now));
   common::uri::GURL path51(templateFile);

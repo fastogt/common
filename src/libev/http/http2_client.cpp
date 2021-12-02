@@ -187,7 +187,7 @@ ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
     nvs.push_back(nvstatus);
 
     char timebuf[100];
-    time_t now = time(nullptr);
+    time_t now = ::time(nullptr);
     strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
     http2::http2_nv nvdate;
     nvdate.name = MAKE_BUFFER("date");
@@ -273,7 +273,7 @@ ErrnoError Http2Client::SendRequest(common::http::http_method method,
     nvs.push_back(nvhost);
 
     char timebuf[100];
-    time_t now = time(nullptr);
+    time_t now = ::time(nullptr);
     strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
     http2::http2_nv nvdate;
     nvdate.name = MAKE_BUFFER("date");

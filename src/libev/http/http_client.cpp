@@ -135,7 +135,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
   CHECK(protocol <= common::http::HP_1_1);
   const std::string title = ConvertToString(status);
 
-  time_t now = time(nullptr);
+  time_t now = ::time(nullptr);
   char timebuf[100];
   strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
 
@@ -196,7 +196,7 @@ ErrnoError HttpClient::SendResponse(common::http::http_protocol protocol,
   CHECK(protocol <= common::http::HP_1_1);
   const std::string title = ConvertToString(status);
 
-  time_t now = time(nullptr);
+  time_t now = ::time(nullptr);
   char timebuf[100];
   strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
 
@@ -258,7 +258,7 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
   }
 
   const std::string method_str = ConvertToString(method);
-  time_t now = time(nullptr);
+  time_t now = ::time(nullptr);
   char timebuf[100];
   strftime(timebuf, sizeof(timebuf), RFC1123FMT, gmtime(&now));
 
