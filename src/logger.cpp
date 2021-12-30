@@ -111,6 +111,7 @@ class LoggerInternal {
 
 std::unique_ptr<std::ofstream> kLoggerFileHelper = std::unique_ptr<std::ofstream>(new std::ofstream);
 std::ostream* kLogger = &std::cout;
+std::mutex kMutex;
 }  // namespace
 
 void INIT_LOGGER(const std::string& project_name, LOG_LEVEL level) {
@@ -189,8 +190,10 @@ LogMessage::~LogMessage() {
     stream_ << "\n";
   }
 
+  kMutex.lock();
   *kLogger << stream_.str();
   kLogger->flush();
+  kMutex.unlock();
   if (level_ <= logging::LOG_LEVEL_CRIT) {
 #if defined(NDEBUG)
     immediate_exit();
