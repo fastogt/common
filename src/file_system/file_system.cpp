@@ -471,11 +471,9 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
         continue;
       }
 
-      char pathBuffer[PATH_MAX] = {0};
-      SNPrintf(pathBuffer, sizeof(pathBuffer), "%s/%s", path, p->d_name);
+      const std::string current_path = make_path(pr_path_ptr, p->d_name);
 #if defined(OS_WIN)
-      const std::string dir_str = make_path(folder_str, p->d_name);
-      tribool is_dir_tr = is_directory(dir_str);
+      tribool is_dir_tr = is_directory(current_path);
       if (is_dir_tr == INDETERMINATE) {
         continue;
       }
@@ -484,13 +482,13 @@ ErrnoError remove_directory(const std::string& path, bool is_recursive) {
       bool is_dir = p->d_type == DT_DIR;
 #endif
       if (is_dir) {
-        ErrnoError err = remove_directory(pathBuffer, is_recursive);
+        ErrnoError err = remove_directory(current_path, is_recursive);
         if (err) {
           closedir(dirp);
           return err;
         }
       } else {
-        ErrnoError err = remove_file(pathBuffer);
+        ErrnoError err = remove_file(current_path);
         if (err) {
           closedir(dirp);
           return err;
