@@ -9,14 +9,14 @@ SET(CMAKE_C_STANDARD_REQUIRED ON)
 #SET(CMAKE_C_EXTENSIONS OFF) commented for libev
 
 SET(PROJECT_NAME_TITLE ${PROJECT_NAME} CACHE STRING "Title for ${PROJECT_NAME}")
-SET(PROJECT_DOMAIN "www.fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
+SET(PROJECT_DOMAIN "fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
 SET(PROJECT_COMPANYNAME "FastoGT" CACHE STRING "Company name for ${PROJECT_NAME}")
-SET(PROJECT_COPYRIGHT "Copyright (C) 2014-2021 ${PROJECT_COMPANYNAME}. All Rights Reserved.")
-SET(PROJECT_COMPANYNAME_DOMAIN "www.fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
+SET(PROJECT_COPYRIGHT "Copyright (C) 2014-2022 ${PROJECT_COMPANYNAME}. All Rights Reserved.")
+SET(PROJECT_COMPANYNAME_DOMAIN "fastogt.com" CACHE STRING "Internet domain name for ${PROJECT_NAME}")
 SET(PROJECT_MAINTAINER_MAIL "atopilski@fastogt.com" CACHE STRING "Internet mail address for ${PROJECT_NAME} mainteiner")
 SET(PROJECT_MAINTAINER_NAME "Alexandr Topilski" CACHE STRING "Name of ${PROJECT_NAME} mainteiner")
-SET(PROJECT_GITHUB_FORK "www.github.com/fastogt/common" CACHE STRING "Git fork of ${PROJECT_NAME}")
-SET(PROJECT_GITHUB_ISSUES "www.github.com/fastogt/common/issues" CACHE STRING "Git issue link for ${PROJECT_NAME}")
+SET(PROJECT_GITHUB_FORK "github.com/fastogt/common" CACHE STRING "Git fork of ${PROJECT_NAME}")
+SET(PROJECT_GITHUB_ISSUES "github.com/fastogt/common/issues" CACHE STRING "Git issue link for ${PROJECT_NAME}")
 SET(PROJECT_BUILD_TYPE_VERSION "release") #alfa, beta, rc, release
 
 STRING(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWERCASE)

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -158,7 +158,7 @@ class SocketTls : public common::net::ISocketFd {
     const SSL_METHOD* method = TLS_client_method();
 #endif
     if (!method) {
-      hs.Disconnect();
+      ignore_result(hs.Disconnect());
       return common::make_errno_error_inval();
     }
 
@@ -537,12 +537,12 @@ Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_pat
   file.Close();
 
   if (out != body.size()) {
-    file_system::remove_file(file_path.GetPath());
+    ignore_result(file_system::remove_file(file_path.GetPath()));
     return common::make_error("failed to save file");
   }
 
   if (errn) {
-    file_system::remove_file(file_path.GetPath());
+    ignore_result(file_system::remove_file(file_path.GetPath()));
     return make_error_from_errno(errn);
   }
   return err;
@@ -644,12 +644,12 @@ Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_pa
   file.Close();
 
   if (out != body.size()) {
-    file_system::remove_file(file_path.GetPath());
+    ignore_result(file_system::remove_file(file_path.GetPath()));
     return common::make_error("failed to save file");
   }
 
   if (errn) {
-    file_system::remove_file(file_path.GetPath());
+    ignore_result(file_system::remove_file(file_path.GetPath()));
     return make_error_from_errno(errn);
   }
   return err;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -28,6 +28,8 @@
 */
 
 #pragma once
+
+#include <string>
 
 #include <common/draw/point.h>
 #include <common/draw/vector2d_f.h>

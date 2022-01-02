@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -43,7 +43,6 @@
 
 namespace {
 
-typedef std::unique_lock<std::mutex> lock_t;
 std::mutex g_exists_loops_mutex;
 std::vector<common::libev::IoLoop*> g_exists_loops;
 
@@ -231,7 +230,7 @@ IoLoop* IoLoop::FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred) {
     return nullptr;
   }
 
-  lock_t loc(g_exists_loops_mutex);
+  std::unique_lock<std::mutex> loc(g_exists_loops_mutex);
   for (size_t i = 0; i < g_exists_loops.size(); ++i) {
     IoLoop* loop = g_exists_loops[i];
     if (loop && pred(loop)) {
@@ -309,7 +308,7 @@ void IoLoop::ChildStatus(LibEvLoop* loop, IoChild* child, int status, int signal
 void IoLoop::PreLooped(LibEvLoop* loop) {
   UNUSED(loop);
   {
-    lock_t loc(g_exists_loops_mutex);
+    std::unique_lock<std::mutex> loc(g_exists_loops_mutex);
     g_exists_loops.push_back(this);
   }
 
@@ -345,7 +344,7 @@ void IoLoop::Stopped(LibEvLoop* loop) {
 void IoLoop::PostLooped(LibEvLoop* loop) {
   UNUSED(loop);
   {
-    lock_t loc(g_exists_loops_mutex);
+    std::unique_lock<std::mutex> loc(g_exists_loops_mutex);
     g_exists_loops.erase(std::remove(g_exists_loops.begin(), g_exists_loops.end(), this), g_exists_loops.end());
   }
 

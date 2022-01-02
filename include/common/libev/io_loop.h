@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -76,11 +76,11 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
  protected:
   virtual IoChild* CreateChild() = 0;
 
-  virtual void PreLooped(LibEvLoop* loop) override;
-  virtual void Started(LibEvLoop* loop) override;
-  virtual void Stopped(LibEvLoop* loop) override;
-  virtual void PostLooped(LibEvLoop* loop) override;
-  virtual void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
+  void PreLooped(LibEvLoop* loop) override;
+  void Started(LibEvLoop* loop) override;
+  void Stopped(LibEvLoop* loop) override;
+  void PostLooped(LibEvLoop* loop) override;
+  void TimerEmited(LibEvLoop* loop, timer_id_t id) override;
 
   LibEvLoop* const loop_;
 

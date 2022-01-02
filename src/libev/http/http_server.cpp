@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -37,8 +37,6 @@ namespace http {
 
 HttpServer::HttpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer)
     : TcpServer(host, is_default, observer) {}
-
-HttpServer::~HttpServer() {}
 
 tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info) {
   return new HttpClient(this, info);

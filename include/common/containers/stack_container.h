@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -31,6 +31,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
 #include <common/macros.h>

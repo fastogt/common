@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -98,7 +98,7 @@ class IListenerEx : public IListener {
   virtual ~IListenerEx() {}
 
  private:
-  virtual void HandleEvent(IEvent* event) final {
+  void HandleEvent(IEvent* event) final {
     event_t* ev = static_cast<event_t*>(event);
     HandleEvent(ev);
   }

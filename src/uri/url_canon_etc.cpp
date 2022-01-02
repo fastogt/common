@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -254,8 +254,9 @@ bool DoPort(const CHAR* spec,
   // Append the port number to the output, preceded by a colon.
   output->push_back(':');
   out_port->begin = output->length();
-  for (int i = 0; i < buf_size && buf[i]; i++)
+  for (int i = 0; i < buf_size && buf[i]; i++) {
     output->push_back(buf[i]);
+  }
 
   out_port->len = output->length() - out_port->begin;
   return true;

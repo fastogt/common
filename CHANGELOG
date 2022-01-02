@@ -1,3 +1,7 @@
+1.30.0 / January 2, 2021
+[Alexandr Topilski]
+- Json serializer for array
+
 1.26.0 / October 17, 2019
 [Alexandr Topilski]
 - Json serializer for array

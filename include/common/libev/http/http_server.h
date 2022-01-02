@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2021 FastoGT. All right reserved.
+/*  Copyright (C) 2014-2022 FastoGT. All right reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -38,12 +38,11 @@ namespace http {
 class HttpServer : public libev::tcp::TcpServer {
  public:
   HttpServer(const net::HostAndPort& host, bool is_default, libev::IoLoopObserver* observer);
-  virtual ~HttpServer() override;
 
-  virtual const char* ClassName() const override;
+  const char* ClassName() const override;
 
  protected:
-  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
+  libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
 };
 
 }  // namespace http
