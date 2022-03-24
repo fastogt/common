@@ -42,6 +42,11 @@ namespace system_info {
 // system
 Optional<size_t> AmountOfPhysicalMemory();
 Optional<size_t> AmountOfAvailablePhysicalMemory();
+
+// total and available like calculated in top utils
+Optional<size_t> AmountOfTotalRAM();
+Optional<size_t> AmountOfAvailableRAM();
+
 Optional<size_t> AmountOfFreeDiskSpace(const std::string& path);
 Optional<size_t> AmountOfTotalDiskSpace(const std::string& path);
 

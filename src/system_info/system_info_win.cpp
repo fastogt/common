@@ -106,6 +106,14 @@ Optional<size_t> AmountOfAvailablePhysicalMemory() {
   return memory;
 }
 
+Optional<size_t> AmountOfTotalRAM() {
+  return AmountOfPhysicalMemory();
+}
+
+Optional<size_t> AmountOfAvailableRAM() {
+  return AmountOfAvailablePhysicalMemory();
+}
+
 Optional<size_t> AmountOfFreeDiskSpace(const std::string& path) {
   size_t available;
   if (!GetDiskSpaceInfo(path, &available, nullptr)) {

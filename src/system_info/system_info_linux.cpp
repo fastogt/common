@@ -133,21 +133,25 @@ Optional<size_t> AmountOfPhysicalMemory() {
 }
 
 Optional<size_t> AmountOfAvailablePhysicalMemory() {
-#if 0
   size_t res;
   if (!AmountOfMemory(_SC_AVPHYS_PAGES, &res)) {
     return Optional<size_t>();
   }
 
   return res;
-#else
+}
+
+Optional<size_t> AmountOfAvailableRAM() {
   SystemMemoryInfoKB mem;
   if (!GetSystemMemoryInfo(&mem)) {
     return Optional<size_t>();
   }
 
   return mem.available * 1024;
-#endif
+}
+
+Optional<size_t> AmountOfTotalRAM() {
+  return AmountOfPhysicalMemory();
 }
 
 }  // namespace system_info

@@ -71,5 +71,13 @@ Optional<size_t> AmountOfAvailablePhysicalMemory() {
   return res;
 }
 
+Optional<size_t> AmountOfTotalRAM() {
+  return AmountOfPhysicalMemory();
+}
+
+Optional<size_t> AmountOfAvailableRAM() {
+  return AmountOfAvailablePhysicalMemory();
+}
+
 }  // namespace system_info
 }  // namespace common

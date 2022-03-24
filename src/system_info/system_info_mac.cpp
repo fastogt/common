@@ -66,5 +66,14 @@ Optional<size_t> AmountOfAvailablePhysicalMemory() {
 
   return (vm_info.free_count - vm_info.speculative_count) * PAGE_SIZE;
 }
+
+Optional<size_t> AmountOfTotalRAM() {
+  return AmountOfPhysicalMemory();
+}
+
+Optional<size_t> AmountOfAvailableRAM() {
+  return AmountOfAvailablePhysicalMemory();
+}
+
 }  // namespace system_info
 }  // namespace common
