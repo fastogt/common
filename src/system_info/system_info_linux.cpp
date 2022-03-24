@@ -31,7 +31,12 @@
 
 #include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
 
+#include <common/file_system/file_system.h>
 #include <common/macros.h>  // for DNOTREACHED
+#include <common/string_number_conversions.h>
+#include <common/string_piece.h>
+#include <common/string_split.h>
+#include <common/string_util.h>
 
 namespace {
 
@@ -50,7 +55,73 @@ bool AmountOfMemory(int pages_name, size_t* size) {
 }  // namespace
 
 namespace common {
+namespace {
+struct SystemMemoryInfoKB {
+  int total = 0;
+  int free = 0;
+  int available = 0;
+  int buffers = 0;
+  int cached = 0;
+};
+
+bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
+  // The format of /proc/meminfo is:
+  //
+  // MemTotal:      8235324 kB
+  // MemFree:       1628304 kB
+  // Buffers:        429596 kB
+  // Cached:        4728232 kB
+  // ...
+  // There is no guarantee on the ordering or position
+  // though it doesn't appear to change very often
+
+  // As a basic sanity check at the end, make sure the MemTotal value will be at
+  // least non-zero. So start off with a zero total.
+  meminfo->total = 0;
+
+  for (const StringPiece& line : SplitStringPiece(meminfo_data, "\n", KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY)) {
+    std::vector<StringPiece> tokens = SplitStringPiece(line, kWhitespaceASCII, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    // HugePages_* only has a number and no suffix so there may not be exactly 3
+    // tokens.
+    if (tokens.size() <= 1) {
+      continue;
+    }
+
+    int* target = nullptr;
+    if (tokens[0] == "MemTotal:")
+      target = &meminfo->total;
+    else if (tokens[0] == "MemFree:")
+      target = &meminfo->free;
+    else if (tokens[0] == "MemAvailable:")
+      target = &meminfo->available;
+    else if (tokens[0] == "Buffers:")
+      target = &meminfo->buffers;
+    else if (tokens[0] == "Cached:")
+      target = &meminfo->cached;
+
+    if (target)
+      StringToInt(tokens[1], target);
+  }
+
+  // Make sure the MemTotal is valid.
+  return meminfo->total > 0;
+}
+
+}  // namespace
 namespace system_info {
+
+bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
+  std::string meminfo_data;
+  if (!file_system::read_file_to_string("/proc/meminfo", &meminfo_data)) {
+    return false;
+  }
+
+  if (!ParseProcMeminfo(meminfo_data, meminfo)) {
+    return false;
+  }
+
+  return true;
+}
 
 Optional<size_t> AmountOfPhysicalMemory() {
   size_t res;
@@ -62,12 +133,21 @@ Optional<size_t> AmountOfPhysicalMemory() {
 }
 
 Optional<size_t> AmountOfAvailablePhysicalMemory() {
+#if 0
   size_t res;
   if (!AmountOfMemory(_SC_AVPHYS_PAGES, &res)) {
     return Optional<size_t>();
   }
 
   return res;
+#else
+  SystemMemoryInfoKB mem;
+  if (!GetSystemMemoryInfo(&mem)) {
+    return Optional<size_t>();
+  }
+
+  return mem.available * 1024;
+#endif
 }
 
 }  // namespace system_info
