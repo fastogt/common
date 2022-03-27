@@ -147,7 +147,7 @@ Optional<size_t> AmountOfAvailableRAM() {
     return Optional<size_t>();
   }
 
-  return mem.available * 1024;
+  return size_t(mem.available) * 1024;
 }
 
 Optional<size_t> AmountOfTotalRAM() {
