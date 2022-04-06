@@ -62,7 +62,9 @@ class HttpClient : public libev::tcp::TcpClient {
                                const char* text,
                                bool is_keep_alive,
                                const HttpServerInfo& info) WARN_UNUSED_RESULT;
-  virtual ErrnoError SendFileByFd(common::http::http_protocol protocol, int fdesc, off_t size) WARN_UNUSED_RESULT;
+  virtual ErrnoError SendFileByFd(common::http::http_protocol protocol,
+                                  descriptor_t fdesc,
+                                  size_t size) WARN_UNUSED_RESULT;
   virtual ErrnoError SendHeaders(common::http::http_protocol protocol,
                                  common::http::http_status status,
                                  const common::http::headers_t& extra_headers,

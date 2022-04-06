@@ -53,7 +53,7 @@ extern ErrnoError create_node(const std::string& path) WARN_UNUSED_RESULT;
 ErrnoError set_blocking_descriptor(descriptor_t descr, bool blocking);
 ErrnoError touch(const std::string& path) WARN_UNUSED_RESULT;
 typedef ErrnoError (*read_cb)(const char* buff, size_t buff_len, void* user_data, size_t* processed);
-ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) WARN_UNUSED_RESULT;
+ErrnoError read_file_cb(descriptor_t in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) WARN_UNUSED_RESULT;
 
 ErrnoError copy_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;
 ErrnoError move_file(const std::string& path_from, const std::string& path_to) WARN_UNUSED_RESULT;

@@ -141,7 +141,7 @@ ErrnoError Http2Client::SendError(common::http::http_protocol protocol,
   return HttpClient::SendError(protocol, status, extra_headers, text, is_keep_alive, info);
 }
 
-ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protocol, int fdesc, off_t size) {
+ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
     if (!header_stream) {

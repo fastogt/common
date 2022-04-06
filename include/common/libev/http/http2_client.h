@@ -57,7 +57,9 @@ class Http2Client : public HttpClient {
                        const char* text,
                        bool is_keep_alive,
                        const HttpServerInfo& info) override WARN_UNUSED_RESULT;
-  ErrnoError SendFileByFd(common::http::http_protocol protocol, int fdesc, off_t size) override WARN_UNUSED_RESULT;
+  ErrnoError SendFileByFd(common::http::http_protocol protocol,
+                          descriptor_t fdesc,
+                          size_t size) override WARN_UNUSED_RESULT;
   ErrnoError SendHeaders(common::http::http_protocol protocol,
                          common::http::http_status status,
                          const common::http::headers_t& extra_headers,

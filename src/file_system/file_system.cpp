@@ -271,7 +271,7 @@ ErrnoError set_blocking_descriptor(descriptor_t descr, bool blocking) {
 #endif
 }
 
-ErrnoError read_file_cb(int in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
+ErrnoError read_file_cb(descriptor_t in_fd, off_t* offset, size_t count, read_cb cb, void* user_data) {
   if (!cb || in_fd == INVALID_DESCRIPTOR) {
     return make_error_perror("read_file_cb", EINVAL);
   }
