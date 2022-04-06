@@ -178,7 +178,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     memcpy(header_data + cur_pos, CONNECTION_CLOSE, last_len);
     cur_pos += last_len;
   } else {
-#define CONNECTION_KEEP_ALIVE "Keep-Alive: timeout=15, max=100\r\n" CARET_MARKER
+#define CONNECTION_KEEP_ALIVE "Connection: keep-alive\r\n" CARET_MARKER
     const int last_len = sizeof(CONNECTION_KEEP_ALIVE) - 1;
     memcpy(header_data + cur_pos, CONNECTION_KEEP_ALIVE, last_len);
     cur_pos += last_len;
