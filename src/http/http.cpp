@@ -215,7 +215,7 @@ int MimeTypes::strcmpi(const char* s1, const char* s2) {
   return 1;
 }
 
-MimeTypes::entry MimeTypes::types[347] = {
+MimeTypes::entry MimeTypes::types[348] = {
     {"*3gpp", "audio/3gpp"},
     {"*jpm", "video/jpm"},
     {"*mp3", "audio/mp3"},
@@ -357,6 +357,7 @@ MimeTypes::entry MimeTypes::types[347] = {
     {"m2a", "audio/mpeg"},
     {"m2v", "video/mpeg"},
     {"m3a", "audio/mpeg"},
+    {"m3u8", "application/vnd.apple.mpegurl"},
     {"m4a", "audio/mp4"},
     {"m4p", "application/mp4"},
     {"ma", "application/mathematica"},
