@@ -49,8 +49,6 @@
 #if defined(OS_MACOSX) || defined(OS_FREEBSD)
 #include <sys/types.h>
 #include <sys/uio.h>
-#elif defined(OS_LINUX)
-#include <sys/sendfile.h>
 #endif
 
 #if defined(COMPILER_MSVC)
@@ -60,13 +58,13 @@
 #include <common/eintr_wrapper.h>
 #include <common/sprintf.h>
 
-#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD) || defined(OS_IOS)
+#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX)
 
 #define BUF_SIZE 8192
 
 namespace {
 
-ssize_t sendfile(common::net::socket_descr_t out_fd, descriptor_t in_fd, off_t* offset, size_t count) {
+ssize_t sendfile_ex(common::net::socket_descr_t out_fd, descriptor_t in_fd, off_t* offset, size_t count) {
   off_t orig = 0;
   char buf[BUF_SIZE] = {0};
 
@@ -826,7 +824,7 @@ ErrnoError send_file_to_fd(socket_descr_t sock, descriptor_t fd, off_t offset, s
 
   for (size_t size_to_send = size; size_to_send > 0;) {
     off_t off = offset;
-    ssize_t sent = sendfile(sock, fd, &off, size_to_send);
+    ssize_t sent = sendfile_ex(sock, fd, &off, size_to_send);
     if (sent == ERROR_RESULT_VALUE) {
       return make_error_perror("sendfile", errno);
     } else if (sent == 0) {
