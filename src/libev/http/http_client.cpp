@@ -184,6 +184,11 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     cur_pos += last_len;
   }
 
+#define ACCEPT_RANGES "Accept-Ranges: none\r\n" CARET_MARKER
+  const int last_len = sizeof(ACCEPT_RANGES) - 1;
+  memcpy(header_data + cur_pos, ACCEPT_RANGES, last_len);
+  cur_pos += last_len;
+
   DCHECK(strlen(header_data) == static_cast<size_t>(cur_pos));
   size_t nwrite = 0;
   return Write(header_data, cur_pos, &nwrite);
@@ -237,7 +242,7 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
   if (!is_keep_alive) {
     copy.push_back(common::http::HttpHeader("Connection", "close"));
   } else {
-    copy.push_back(common::http::HttpHeader("Keep-Alive", "timeout=15, max=100"));
+    copy.push_back(common::http::HttpHeader("Connection", "keep-alive"));
   }
 
   return SendRequest(method, url, protocol, copy);
