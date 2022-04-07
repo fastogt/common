@@ -145,7 +145,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n"
-                                                          : HTTP_1_1_PROTOCOL_NAME
+                                                          : HTTP_1_0_PROTOCOL_NAME
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n",
@@ -211,7 +211,7 @@ ErrnoError HttpClient::SendResponse(common::http::http_protocol protocol,
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n"
-                                                          : HTTP_1_1_PROTOCOL_NAME
+                                                          : HTTP_1_0_PROTOCOL_NAME
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n",
@@ -275,7 +275,7 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
                                                             "\r\n"
                                                             "Host: %s\r\n"
                                                             "Date: %s\r\n"
-                                                          : "%s %s " HTTP_1_1_PROTOCOL_NAME
+                                                          : "%s %s " HTTP_1_0_PROTOCOL_NAME
                                                             "\r\n"
                                                             "Host: %s\r\n"
                                                             "Date: %s\r\n",
