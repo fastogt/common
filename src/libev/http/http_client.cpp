@@ -172,6 +172,11 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     cur_pos += mlen;
   }
 
+#define ACCEPT_RANGES "Accept-Ranges: none\r\n"
+  const int last_len = sizeof(ACCEPT_RANGES) - 1;
+  memcpy(header_data + cur_pos, ACCEPT_RANGES, last_len);
+  cur_pos += last_len;
+
   if (!is_keep_alive) {
 #define CONNECTION_CLOSE "Connection: close\r\n" CARET_MARKER
     const int last_len = sizeof(CONNECTION_CLOSE) - 1;
@@ -183,11 +188,6 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     memcpy(header_data + cur_pos, CONNECTION_KEEP_ALIVE, last_len);
     cur_pos += last_len;
   }
-
-#define ACCEPT_RANGES "Accept-Ranges: none\r\n" CARET_MARKER
-  const int last_len = sizeof(ACCEPT_RANGES) - 1;
-  memcpy(header_data + cur_pos, ACCEPT_RANGES, last_len);
-  cur_pos += last_len;
 
   DCHECK(strlen(header_data) == static_cast<size_t>(cur_pos));
   size_t nwrite = 0;
