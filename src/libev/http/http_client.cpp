@@ -172,10 +172,12 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     cur_pos += mlen;
   }
 
+#if 0
 #define ACCEPT_RANGES "Accept-Ranges: none\r\n"
   const int last_len = sizeof(ACCEPT_RANGES) - 1;
   memcpy(header_data + cur_pos, ACCEPT_RANGES, last_len);
   cur_pos += last_len;
+#endif
 
   if (!is_keep_alive) {
 #define CONNECTION_CLOSE "Connection: close\r\n" CARET_MARKER
