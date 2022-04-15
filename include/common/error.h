@@ -38,25 +38,39 @@ namespace common {
 std::string common_strerror(int err);
 extern std::string common_gai_strerror(int err);
 
-template <typename T, typename trait>
+template <typename T, typename Traits>
 class ErrorBase {
  public:
   typedef T error_code_type;
-  typedef trait trait_type;
+  typedef Traits traits_type;
   typedef void payload_type;
 
   explicit ErrorBase(error_code_type error_code) : error_code_(error_code), user_data_(nullptr) {}
-  std::string GetDescription() const { return trait_type::GetTextFromErrorCode(error_code_); }
+  std::string GetDescription() const { return traits_type::GetTextFromErrorCode(error_code_); }
   error_code_type GetErrorCode() const { return error_code_; }
 
   void SetPayload(payload_type* user_data) { user_data_ = user_data; }
 
   payload_type* GetPayload() const { return user_data_; }
 
+  bool Equals(const ErrorBase<T, Traits>& err) const {
+    return error_code_ == err.error_code_ && user_data_ == err.user_data_;
+  }
+
  private:
   error_code_type error_code_;
   payload_type* user_data_;
 };
+
+template <typename T, typename Traits>
+inline bool operator==(const ErrorBase<T, Traits>& left, const ErrorBase<T, Traits>& right) {
+  return left.Equals(right);
+}
+
+template <typename T, typename Traits>
+inline bool operator!=(const ErrorBase<T, Traits>& left, const ErrorBase<T, Traits>& right) {
+  return !(left == right);
+}
 
 // common error
 enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2, COMMON_EINTR = -3 };
@@ -77,12 +91,17 @@ class ErrorValue : public ErrorBase<CommonErrorCode, CommonErrorTraits> {
     if (IsTextError()) {
       return text_error_description_;
     }
-    return base_class::trait_type::GetTextFromErrorCode(GetErrorCode());
+    return base_class::traits_type::GetTextFromErrorCode(GetErrorCode());
+  }
+
+  bool Equals(const ErrorValue& err) const {
+    return base_class::Equals(err) && err.GetDescription() == GetDescription();
   }
 
  private:
   std::string text_error_description_;
 };
+
 typedef Optional<ErrorValue> Error;
 
 Error make_error_inval();
@@ -105,7 +124,11 @@ class ErrnoErrorValue : public ErrorBase<int, ErrnoTraits> {
     if (!text_error_description_.empty()) {
       return text_error_description_;
     }
-    return base_class::trait_type::GetTextFromErrorCode(GetErrorCode());
+    return base_class::traits_type::GetTextFromErrorCode(GetErrorCode());
+  }
+
+  bool Equals(const ErrnoErrorValue& err) const {
+    return base_class::Equals(err) && err.GetDescription() == GetDescription();
   }
 
  private:
