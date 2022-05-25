@@ -17,23 +17,19 @@
 namespace common {
 namespace threads {
 
-barrier::barrier(unsigned int count) : threshold_(count), count_(count), generation_(0) {}
+barrier::barrier(size_t count) : threshold_(count), count_(count), generation_(0) {}
 
-bool barrier::Wait() {
+void barrier::Wait() {
   std::unique_lock<std::mutex> lock(mutex_);
-  unsigned int gen = generation_;
+  size_t gen = generation_;
 
   if (--count_ == 0) {
     generation_++;
     count_ = threshold_;
     cond_.notify_all();
-    return true;
+  } else {
+    cond_.wait(lock, [this, gen] { return gen != generation_; });
   }
-
-  while (gen == generation_) {
-    cond_.wait(lock);
-  }
-  return false;
 }
 
 }  // namespace threads

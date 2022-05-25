@@ -22,16 +22,16 @@ namespace threads {
 
 class barrier {
  public:
-  explicit barrier(unsigned int count);
+  explicit barrier(size_t count);
 
-  bool Wait();
+  void Wait();
 
  private:
   std::mutex mutex_;
   std::condition_variable cond_;
-  const unsigned int threshold_;
-  unsigned int count_;
-  unsigned int generation_;
+  const size_t threshold_;
+  size_t count_;
+  size_t generation_;
 };
 
 }  // namespace threads
