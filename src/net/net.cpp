@@ -237,10 +237,6 @@ int socket_type_to_native(socket_t socktype) {
   return static_cast<int>(socktype);
 }
 
-socket_t native_to_socket_type(int socktype) {
-  return static_cast<socket_t>(socktype);
-}
-
 ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_t len, struct timeval* tv) {
   if (!addr || sock == INVALID_SOCKET_VALUE) {
     DNOTREACHED();

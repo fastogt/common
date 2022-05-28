@@ -184,7 +184,7 @@ struct OptionalStorage : OptionalStoragecommon<T> {
   // Define it explicitly.
   OptionalStorage() = default;
 
-  OptionalStorage(const OptionalStorage& other) {
+  OptionalStorage(const OptionalStorage& other) : OptionalStoragecommon<T>() {
     if (other.is_populated_) {
       Init(other.value_);
     }
