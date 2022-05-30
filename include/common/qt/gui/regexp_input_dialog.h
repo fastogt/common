@@ -34,7 +34,7 @@
 class QLabel;
 class QLineEdit;
 class QDialogButtonBox;
-class QRegExpValidator;
+class QRegularExpressionValidator;
 
 namespace common {
 namespace qt {
@@ -47,7 +47,7 @@ class RegExpInputDialog : public QDialog {
 
   void setLabelText(const QString& label);
   void setText(const QString& text);
-  void setRegExp(const QRegExp& regExp);
+  void setRegExp(const QRegularExpression& regExp);
 
   QString text();
 
@@ -60,7 +60,7 @@ class RegExpInputDialog : public QDialog {
   QLabel* label_;
   QLineEdit* text_;
   QDialogButtonBox* buttonBox_;
-  QRegExpValidator* validator_;
+  QRegularExpressionValidator* validator_;
 };
 
 }  // namespace gui

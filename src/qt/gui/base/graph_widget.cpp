@@ -345,12 +345,12 @@ void GraphWidget::keyPressEvent(QKeyEvent* event) {
 }
 
 void GraphWidget::wheelEvent(QWheelEvent* event) {
-  int numDegrees = event->delta() / 8;
-  int numTicks = numDegrees / 15;
-  if (event->orientation() == Qt::Horizontal) {
-    zoom_stack_[cur_zoom_].scroll(numTicks, 0);
+  QPoint numDegrees = event->angleDelta() / 8;
+  QPoint numTicks = numDegrees / 15;
+  if (numTicks.x() != 0) {
+    zoom_stack_[cur_zoom_].scroll(numTicks.x(), 0);
   } else {
-    zoom_stack_[cur_zoom_].scroll(0, numTicks);
+    zoom_stack_[cur_zoom_].scroll(0, numTicks.y());
   }
   update();
 }

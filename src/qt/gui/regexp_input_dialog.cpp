@@ -34,7 +34,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 
 #include <common/macros.h>
 
@@ -51,8 +51,8 @@ RegExpInputDialog::RegExpInputDialog(QWidget* parent, Qt::WindowFlags flags) : Q
 
   label_ = new QLabel;
 
-  QRegExp regExp("*");
-  validator_ = new QRegExpValidator(regExp);
+  QRegularExpression regExp("*");
+  validator_ = new QRegularExpressionValidator(regExp);
 
   text_ = new QLineEdit;
   text_->setValidator(validator_);
@@ -77,8 +77,8 @@ void RegExpInputDialog::setText(const QString& text) {
   text_->setText(text);
 }
 
-void RegExpInputDialog::setRegExp(const QRegExp& regExp) {
-  validator_->setRegExp(regExp);
+void RegExpInputDialog::setRegExp(const QRegularExpression &regExp) {
+  validator_->setRegularExpression(regExp);
   checkValid(text_->text());
 }
 
@@ -89,7 +89,7 @@ QString RegExpInputDialog::text() {
 void RegExpInputDialog::checkValid(const QString& text) {
   QString _text = text;
   int pos = 0;
-  bool valid = validator_->validate(_text, pos) == QRegExpValidator::Acceptable;
+  bool valid = validator_->validate(_text, pos) == QRegularExpressionValidator::Acceptable;
   buttonBox_->button(QDialogButtonBox::Ok)->setEnabled(valid);
 }
 
