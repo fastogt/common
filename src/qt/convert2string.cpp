@@ -47,7 +47,7 @@ bool ConvertFromString16(const string16& value, QString* out) {
   const QChar* unicode = reinterpret_cast<const QChar*>(value.c_str());
   *out = QString(unicode, value.size());
 #elif defined(WCHAR_T_IS_UTF32)
-  *out = QString::fromUtf16(reinterpret_cast<const char16*>(value.c_str()), value.size());
+  *out = QString::fromUtf16(reinterpret_cast<const char16_t*>(value.c_str()), value.size());
 #endif
   return true;
 }
