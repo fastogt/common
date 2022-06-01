@@ -72,6 +72,11 @@ inline bool operator!=(const ErrorBase<T, Traits>& left, const ErrorBase<T, Trai
   return !(left == right);
 }
 
+template <typename T, typename Traits>
+inline bool operator<(const ErrorBase<T, Traits>& left, const ErrorBase<T, Traits>& right) {
+  return left < right;
+}
+
 // common error
 enum CommonErrorCode { COMMON_INVALID_INPUT = -1, COMMON_TEXT_ERROR = -2, COMMON_EINTR = -3 };
 struct CommonErrorTraits {
