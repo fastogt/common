@@ -191,7 +191,7 @@ void IoLoop::RegisterChild(IoChild* child, process_handle_t pid) {
     observer_->Accepted(child);
   }
   childs_.push_back(child);
-  DEBUG_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
+  DEBUG_LOG() << "Successfully connected with child[" << formated_name << "], from server[" << GetFormatedName()
               << "], " << childs_.size() << " childs(s) connected.";
 }
 
@@ -213,8 +213,8 @@ void IoLoop::UnRegisterChild(IoChild* child) {
     observer_->Moved(this, child);
   }
   childs_.erase(std::remove(childs_.begin(), childs_.end(), child), childs_.end());
-  DEBUG_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-              << childs_.size() << " client(s) connected.";
+  DEBUG_LOG() << "Successfully unregister child[" << formated_name << "], from server[" << GetFormatedName() << "], "
+              << childs_.size() << " child(s) connected.";
 }
 
 void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
