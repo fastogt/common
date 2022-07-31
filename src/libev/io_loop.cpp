@@ -91,8 +91,8 @@ void IoLoop::UnRegisterClient(IoClient* client) {
   }
 
   clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
-  INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-             << clients_.size() << " client(s) connected.";
+  DEBUG_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+              << clients_.size() << " client(s) connected.";
 }
 
 bool IoLoop::RegisterClient(IoClient* client) {
@@ -127,8 +127,8 @@ bool IoLoop::RegisterClient(IoClient* client) {
   }
 
   clients_.push_back(client);
-  INFO_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
-             << "], " << clients_.size() << " client(s) connected.";
+  DEBUG_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
+              << "], " << clients_.size() << " client(s) connected.";
   return true;
 }
 
@@ -149,8 +149,8 @@ void IoLoop::CloseClient(IoClient* client) {
     observer_->Closed(client);
   }
   clients_.erase(std::remove(clients_.begin(), clients_.end(), client), clients_.end());
-  INFO_LOG() << "Successfully disconnected client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-             << clients_.size() << " client(s) connected.";
+  DEBUG_LOG() << "Successfully disconnected client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+              << clients_.size() << " client(s) connected.";
 }
 
 timer_id_t IoLoop::CreateTimer(double sec, bool repeat) {
@@ -191,8 +191,8 @@ void IoLoop::RegisterChild(IoChild* child, process_handle_t pid) {
     observer_->Accepted(child);
   }
   childs_.push_back(child);
-  INFO_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
-             << "], " << childs_.size() << " childs(s) connected.";
+  DEBUG_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
+              << "], " << childs_.size() << " childs(s) connected.";
 }
 
 void IoLoop::UnRegisterChild(IoChild* child) {
@@ -213,8 +213,8 @@ void IoLoop::UnRegisterChild(IoChild* child) {
     observer_->Moved(this, child);
   }
   childs_.erase(std::remove(childs_.begin(), childs_.end(), child), childs_.end());
-  INFO_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-             << childs_.size() << " client(s) connected.";
+  DEBUG_LOG() << "Successfully unregister client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+              << childs_.size() << " client(s) connected.";
 }
 
 void IoLoop::ExecInLoopThread(custom_loop_exec_function_t func) {
