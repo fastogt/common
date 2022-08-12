@@ -104,6 +104,8 @@ TEST(Url, IsValid) {
   ASSERT_TRUE(http_query.is_valid());
   ASSERT_TRUE(http_query.SchemeIsHTTPOrHTTPS());
   ASSERT_EQ(http_query.spec(), HTTP_QUERY_LINK);
+  ASSERT_EQ(http_query.ExtractFileName(), "example.html");
+  ASSERT_EQ(http_query.path(), "/tutorial/urlEncoding/example.html");
 
   const std::string originFile = "file://" + std::string(FILE_PATH);
   common::uri::GURL path5(originFile);
