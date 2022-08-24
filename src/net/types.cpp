@@ -27,11 +27,10 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/convert2string.h>  // for ConvertFromString
 #include <common/net/types.h>
 
 #include <algorithm>
-
-#include <common/convert2string.h>  // for ConvertFromString
 
 namespace {
 const char kLocalhostText[] = "localhost";
@@ -177,13 +176,15 @@ bool ConvertFromString(const std::string& from, net::HostAndPort* out) {
 
   net::HostAndPort res;
   size_t del = from.find_last_of(':');
-  if (del != std::string::npos) {
-    res.SetHost(from.substr(0, del));
-    uint16_t lport;
-    bool ok = ConvertFromString(from.substr(del + 1), &lport);
-    if (ok) {
-      res.SetPort(lport);
-    }
+  if (del == std::string::npos) {
+    return false;
+  }
+
+  res.SetHost(from.substr(0, del));
+  uint16_t lport;
+  bool ok = ConvertFromString(from.substr(del + 1), &lport);
+  if (ok) {
+    res.SetPort(lport);
   }
 
   *out = res;
@@ -207,27 +208,29 @@ bool ConvertFromString(const std::string& from, net::HostAndPortAndSlot* out) {
 
   net::HostAndPortAndSlot lout;
   size_t del = from.find_last_of(':');
-  if (del != std::string::npos) {
-    lout.SetHost(from.substr(0, del));
-    size_t del_s = from.find_last_of('@');
-    if (del_s != std::string::npos) {
-      uint16_t lport;
-      bool res = ConvertFromString(from.substr(del + 1, del_s - del - 1), &lport);
-      if (res) {
-        lout.SetPort(lport);
-      }
+  if (del == std::string::npos) {
+    return false;
+  }
 
-      uint16_t lslot;
-      res = ConvertFromString(from.substr(del_s + 1), &lslot);
-      if (res) {
-        lout.SetSlot(lslot);
-      }
-    } else {
-      uint16_t lport;
-      bool res = ConvertFromString(from.substr(del + 1), &lport);
-      if (res) {
-        lout.SetPort(lport);
-      }
+  lout.SetHost(from.substr(0, del));
+  size_t del_s = from.find_last_of('@');
+  if (del_s != std::string::npos) {
+    uint16_t lport;
+    bool res = ConvertFromString(from.substr(del + 1, del_s - del - 1), &lport);
+    if (res) {
+      lout.SetPort(lport);
+    }
+
+    uint16_t lslot;
+    res = ConvertFromString(from.substr(del_s + 1), &lslot);
+    if (res) {
+      lout.SetSlot(lslot);
+    }
+  } else {
+    uint16_t lport;
+    bool res = ConvertFromString(from.substr(del + 1), &lport);
+    if (res) {
+      lout.SetPort(lport);
     }
   }
 
