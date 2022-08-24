@@ -42,7 +42,7 @@ bool DoCanonicalizeTcpURL(const URLComponentSource<CHAR>& source,
                           Parsed* new_parsed) {
   UNUSED(query_converter);
 
-  // Things we don't set in udp: URLs.
+  // Things we don't set in tcp: URLs.
   new_parsed->username = Component();
   new_parsed->password = Component();
   new_parsed->query = Component();

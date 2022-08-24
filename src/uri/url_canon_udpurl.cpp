@@ -44,7 +44,8 @@ bool DoCanonicalizeUdpURL(const URLComponentSource<CHAR>& source,
   // Things we don't set in udp: URLs.
   new_parsed->username = Component();
   new_parsed->password = Component();
-  new_parsed->query = Component();
+  new_parsed->path = Component();
+  // new_parsed->query = Component();
 
   // Scheme (known, so we don't bother running it through the more
   // complicated scheme canonicalizer).
@@ -55,6 +56,23 @@ bool DoCanonicalizeUdpURL(const URLComponentSource<CHAR>& source,
   bool success = CanonicalizeHost(source.host, parsed.host, output, &new_parsed->host);
   int default_port = DefaultPortForScheme(&output->data()[new_parsed->scheme.begin], new_parsed->scheme.len);
   success &= CanonicalizePort(source.port, parsed.port, default_port, output, &new_parsed->port);
+  // Path
+  if (parsed.path.is_valid()) {
+    success &= CanonicalizePath(source.path, parsed.path, output, &new_parsed->path);
+  } else if (parsed.query.is_valid() || parsed.ref.is_valid()) {
+    // When we have an empty path, make up a path when we have an authority
+    // or something following the path. The only time we allow an empty
+    // output path is when there is nothing else.
+    new_parsed->path = Component(output->length(), 1);
+    // output->push_back('/');
+  } else {
+    // No path at all
+    new_parsed->path.reset();
+  }
+
+  CanonicalizeQuery(source.query, parsed.query, query_converter, output, &new_parsed->query);
+  // Ignore failure for refs since the URL can probably still be loaded.
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
   return success;
 }
 

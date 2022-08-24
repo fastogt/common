@@ -27,17 +27,17 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <gtest/gtest.h>
-
 #include <common/string_split.h>
 #include <common/string_util.h>
 #include <common/uri/gurl.h>
+#include <gtest/gtest.h>
 
 #define HTTP_PATH "/home/index.html"
 #define FILE_PATH "/home/sasha/1.mp4"
 #define DEV_VIDEO_PATH "/dev/video3"
 #define SCREEN_PATH "screen"
 #define UDP_LINK "udp://239.0.3.3:3003"
+#define UDP_LINK_QUERY "udp://224.96.9.196:2777?localaddr=192.168.40.10"
 #define RTP_LINK "rtp://0.0.0.0:5555"
 #define SRT_LINK "srt://239.0.3.3:3003"
 #define SRT_LINK2 "srt://:7001"
@@ -162,6 +162,14 @@ TEST(Url, IsValid) {
   ASSERT_EQ(udp.host(), "239.0.3.3");
   ASSERT_EQ(udp.port(), "3003");
   ASSERT_EQ(udp.spec(), UDP_LINK);
+
+  common::uri::GURL udpq(UDP_LINK_QUERY);
+  ASSERT_TRUE(udpq.is_valid());
+  ASSERT_TRUE(udpq.SchemeIsUdp());
+  ASSERT_EQ(udpq.host(), "224.96.9.196");
+  ASSERT_EQ(udpq.port(), "2777");
+  ASSERT_EQ(udpq.spec(), UDP_LINK_QUERY);
+  ASSERT_EQ(udpq.query(), "localaddr=192.168.40.10");
 
   common::uri::GURL rtp(RTP_LINK);
   ASSERT_TRUE(rtp.is_valid());

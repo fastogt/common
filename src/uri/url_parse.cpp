@@ -28,10 +28,8 @@
 */
 
 #include <common/uri/url_parse.h>
-
-#include <stdlib.h>
-
 #include <common/uri/url_parse_internal.h>
+#include <stdlib.h>
 
 namespace common {
 namespace uri {
@@ -789,6 +787,14 @@ void ParseSrtURL(const char* url, int url_len, Parsed* parsed) {
 }
 
 void ParseSrtURL(const char16* url, int url_len, Parsed* parsed) {
+  DoParseRtmpURL(url, url_len, parsed);
+}
+
+void ParseUdpURL(const char* url, int url_len, Parsed* parsed) {
+  DoParseRtmpURL(url, url_len, parsed);
+}
+
+void ParseUdpURL(const char16* url, int url_len, Parsed* parsed) {
   DoParseRtmpURL(url, url_len, parsed);
 }
 
