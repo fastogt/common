@@ -1,9 +1,8 @@
-#include <gtest/gtest.h>
-
 #include <common/net/net.h>
 #include <common/net/socket_tcp.h>
 #include <common/sprintf.h>
 #include <common/threads/thread_manager.h>
+#include <gtest/gtest.h>
 
 void exec_serv(common::net::ServerSocketTcp* serv) {
   common::net::socket_info inf;
@@ -57,6 +56,9 @@ TEST(HostAndPort, ConvertToString) {
   ASSERT_TRUE(local_host.IsLocalHost());
   ASSERT_EQ(local_host.GetPort(), valid_port);
   ASSERT_EQ(host_str, common::ConvertToString(local_host));
+
+  common::net::HostAndPort inv;
+  ASSERT_FALSE(common::ConvertFromString("localhost", &inv));
 
   const std::string host_str2 = common::MemSPrintf("127.0.0.1:%u", valid_port);
   ASSERT_TRUE(common::ConvertFromString(host_str2, &local_host));
