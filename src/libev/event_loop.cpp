@@ -27,22 +27,20 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/event_loop.h>
-
-#include <stdlib.h>
-
-#include <ev.h>
-
-#include <mutex>
-
 #include <common/libev/event_async.h>
 #include <common/libev/event_child.h>
 #include <common/libev/event_io.h>
+#include <common/libev/event_loop.h>
 #include <common/libev/event_timer.h>
+#include <ev.h>
+#include <stdlib.h>
+
+#include <mutex>
 
 #if !EV_CHILD_ENABLE
 #if defined(OS_WIN)
 #include <windows.h>
+
 #include "fasto_ev_child_win.h"
 namespace {
 const DWORD kBasicProcessAccess = PROCESS_TERMINATE | PROCESS_QUERY_INFORMATION | SYNCHRONIZE;

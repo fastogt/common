@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/draw/point.h>
 #include <common/draw/vector2d_f.h>
+
+#include <string>
 
 namespace common {
 namespace draw {

@@ -29,13 +29,13 @@
 
 #pragma once
 
+#include <common/threads/event_dispatcher.h>
+#include <common/threads/thread_manager.h>  // for ThreadManager, etc
+
 #include <atomic>
 #include <condition_variable>
 #include <deque>   // for deque
 #include <memory>  // for shared_ptr, __shared_ptr
-
-#include <common/threads/event_dispatcher.h>
-#include <common/threads/thread_manager.h>  // for ThreadManager, etc
 
 namespace common {
 namespace threads {

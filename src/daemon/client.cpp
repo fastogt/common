@@ -13,7 +13,6 @@
 */
 
 #include <common/daemon/client.h>
-
 #include <common/time.h>
 
 namespace common {

@@ -84,6 +84,39 @@ bool DoCanonicalizeUnknownURL(const URLComponentSource<CHAR>& source,
   return success;
 }
 
+template <typename CHAR, typename UCHAR>
+bool DoCanonicalizeGsURL(const URLComponentSource<CHAR>& source,
+                         const Parsed& parsed,
+                         CharsetConverter* query_converter,
+                         CanonOutput* output,
+                         Parsed* new_parsed) {
+  // Things we don't set in dev: URLs.
+  new_parsed->host = Component();
+  new_parsed->port = Component();
+  new_parsed->username = Component();
+  new_parsed->password = Component();
+  new_parsed->port = Component();
+
+  // Scheme (known, so we don't bother running it through the more
+  // complicated scheme canonicalizer).
+  new_parsed->scheme.begin = output->length();
+  output->Append("gs://", 5);
+  new_parsed->scheme.len = 2;
+
+  // Append the host. For many dev URLs, this will be empty. For UNC, this
+  // will be present.
+  // TODO(brettw) This doesn't do any checking for host name validity. We
+  // should probably handle validity checking of UNC hosts differently than
+  // for regular IP hosts.
+  bool success = DounknownCanonicalizePath<CHAR, UCHAR>(source.path, parsed.path, output, &new_parsed->path);
+  CanonicalizeQuery(source.query, parsed.query, query_converter, output, &new_parsed->query);
+
+  // Ignore failure for refs since the URL can probably still be loaded.
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+
+  return success;
+}
+
 }  // namespace
 
 bool CanonicalizeUnknownURL(const char* spec,
@@ -106,6 +139,28 @@ bool CanonicalizeUnknownURL(const char16* spec,
   UNUSED(spec_len);
   return DoCanonicalizeUnknownURL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
                                                   new_parsed);
+}
+
+bool CanonicalizeGsURL(const char* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed) {
+  UNUSED(spec_len);
+  return DoCanonicalizeGsURL<char, unsigned char>(URLComponentSource<char>(spec), parsed, query_converter, output,
+                                                  new_parsed);
+}
+
+bool CanonicalizeGsURL(const char16* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed) {
+  UNUSED(spec_len);
+  return DoCanonicalizeGsURL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
+                                             new_parsed);
 }
 
 }  // namespace uri

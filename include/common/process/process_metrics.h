@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <memory>
-
 #include <common/optional.h>
 #include <common/time.h>
+
+#include <memory>
 
 namespace common {
 namespace process {

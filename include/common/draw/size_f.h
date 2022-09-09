@@ -29,10 +29,10 @@
 
 #pragma once
 
+#include <common/draw/size.h>
+
 #include <limits>
 #include <string>
-
-#include <common/draw/size.h>
 
 namespace common {
 namespace draw {

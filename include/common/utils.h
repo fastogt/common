@@ -29,12 +29,12 @@
 
 #pragma once
 
+#include <common/string_piece.h>
+#include <common/types.h>  // for buffer_t, byte_t
+
 #include <functional>
 #include <string>
 #include <utility>
-
-#include <common/string_piece.h>
-#include <common/types.h>  // for buffer_t, byte_t
 
 #define HAS_MEMBER(CLASS_NAME, FUNC_MUST_BE)                                                  \
   COMPILE_ASSERT(std::is_member_function_pointer<decltype(&CLASS_NAME::FUNC_MUST_BE)>::value, \

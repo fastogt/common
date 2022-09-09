@@ -29,13 +29,12 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include <common/file_system/types.h>
-
 #include <common/optional.h>
 #include <common/string16.h>
+
+#include <string>
+#include <vector>
 
 namespace common {
 namespace file_system {

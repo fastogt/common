@@ -28,10 +28,8 @@
 */
 
 #include <common/libev/event_io.h>
-
-#include <ev.h>
-
 #include <common/libev/event_loop.h>
+#include <ev.h>
 
 namespace common {
 namespace libev {

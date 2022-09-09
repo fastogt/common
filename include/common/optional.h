@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <type_traits>
-#include <utility>
-
 #include <common/macros.h>
 #include <common/template_util.h>
+
+#include <type_traits>
+#include <utility>
 
 namespace common {
 

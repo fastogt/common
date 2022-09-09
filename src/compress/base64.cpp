@@ -28,7 +28,6 @@
 */
 
 #include <common/compress/base64.h>
-
 #include <common/utils.h>
 
 namespace common {

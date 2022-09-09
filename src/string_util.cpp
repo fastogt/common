@@ -27,14 +27,13 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/icu_utf.h>                     // for UChar32, CBU8_NEXT, etc
+#include <common/patterns/singleton_pattern.h>  // for LazySingleton
 #include <common/string_util.h>
-
-#include <algorithm>
-
-#include <common/icu_utf.h>                      // for UChar32, CBU8_NEXT, etc
-#include <common/patterns/singleton_pattern.h>   // for LazySingleton
 #include <common/utf_string_conversion_utils.h>  // for IsValidCharacter, etc
 #include <common/utf_string_conversions.h>       // for ASCIIToUTF16
+
+#include <algorithm>
 
 namespace common {
 

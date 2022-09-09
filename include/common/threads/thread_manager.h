@@ -29,16 +29,14 @@
 
 #pragma once
 
-#include <stdint.h>  // for uintptr_t
-
-#include <memory>
-
 #include <common/bind_simple.h>                 // for bind_simple
 #include <common/patterns/singleton_pattern.h>  // for TSSingleton
 #include <common/system_info/types.h>           // for lcpu_count_t
-
-#include <common/threads/platform_thread.h>  // for PlatformThread, etc
+#include <common/threads/platform_thread.h>     // for PlatformThread, etc
 #include <common/threads/thread.h>
+#include <stdint.h>  // for uintptr_t
+
+#include <memory>
 
 namespace common {
 namespace threads {

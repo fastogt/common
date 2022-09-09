@@ -28,10 +28,8 @@
 */
 
 #include <common/log_levels.h>
-
-#include <string.h>
-
 #include <common/macros.h>
+#include <string.h>
 
 namespace common {
 namespace logging {

@@ -29,15 +29,15 @@
 
 #pragma once
 
+#include <common/macros.h>
+#include <common/types.h>  // for byte_array_t
+
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <common/macros.h>
-#include <common/types.h>  // for byte_array_t
 
 namespace common {
 

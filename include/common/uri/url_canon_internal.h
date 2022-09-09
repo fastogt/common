@@ -29,10 +29,9 @@
 
 #pragma once
 
+#include <common/uri/url_canon.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <common/uri/url_canon.h>
 
 namespace common {
 namespace uri {

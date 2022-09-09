@@ -1,11 +1,10 @@
 #pragma once
 
+#include <common/string16.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
-
-#include <common/string16.h>
 
 namespace common {
 

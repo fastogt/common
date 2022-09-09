@@ -28,7 +28,6 @@
 */
 
 #include <common/threads/platform_thread.h>
-
 #include <sched.h>  // for sched_get_priority_max, etc
 
 #if defined(OS_LINUX) || defined(OS_ANDROID)

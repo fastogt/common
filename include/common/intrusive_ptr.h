@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <atomic>
-
 #include <common/macros.h>
+
+#include <atomic>
 
 namespace common {
 

@@ -29,7 +29,6 @@
 #pragma once
 
 #include <common/libev/http/http_client.h>
-
 #include <common/uri/gurl.h>
 
 namespace common {

@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/macros.h>
 #include <common/media/types.h>  // for bandwidth_t
+
+#include <string>
 
 namespace common {
 namespace media {

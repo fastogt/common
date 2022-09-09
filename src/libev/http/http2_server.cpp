@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/http/http2_server.h>
-
 #include <common/libev/http/http2_client.h>
+#include <common/libev/http/http2_server.h>
 
 namespace common {
 namespace libev {

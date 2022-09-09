@@ -29,10 +29,9 @@
 
 #pragma once
 
+#include <common/uri/url_parse.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include <common/uri/url_parse.h>
 
 namespace common {
 namespace uri {
@@ -611,6 +610,22 @@ bool CanonicalizeUnknownURL(const char16* spec,
                             CharsetConverter* query_converter,
                             CanonOutput* output,
                             Parsed* new_parsed);
+
+// Use for gs URLs.
+
+bool CanonicalizeGsURL(const char* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed);
+
+bool CanonicalizeGsURL(const char16* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed);
 
 // Use for udp URLs.
 bool CanonicalizeUdpURL(const char* spec,

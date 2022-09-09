@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <initializer_list>
-
 #include <common/containers/span.h>
 #include <common/string16.h>
 #include <common/string_piece.h>
+
+#include <initializer_list>
 
 #if defined(OS_WIN)
 // Guard against conflict with Win32 API StrCat macro:

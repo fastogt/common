@@ -27,12 +27,10 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/loop_controller.h>
-
-#include <stdlib.h>
-
 #include <common/libev/io_loop.h>  // for IoLoop
 #include <common/libev/io_loop_observer.h>
+#include <common/libev/loop_controller.h>
+#include <stdlib.h>
 
 namespace common {
 namespace libev {

@@ -27,13 +27,12 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/uri/url_canon_internal.h>
 #include <common/uri/url_canon_ip.h>
-
 #include <stdint.h>
 #include <stdlib.h>
-#include <limits>
 
-#include <common/uri/url_canon_internal.h>
+#include <limits>
 
 namespace common {
 namespace uri {

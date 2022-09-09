@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/file_system/types.h>
+
+#include <string>
 
 namespace common {
 namespace file_system {

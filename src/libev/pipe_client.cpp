@@ -28,7 +28,6 @@
 */
 
 #include <common/libev/pipe_client.h>
-
 #include <unistd.h>
 
 #if defined(OS_WIN)

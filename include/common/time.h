@@ -30,9 +30,8 @@
 #pragma once
 
 #ifndef COMPILER_MSVC
-#include <sys/time.h>  // for timeval
-
 #include <common/types.h>  // for time64_t
+#include <sys/time.h>      // for timeval
 
 namespace common {
 namespace time {

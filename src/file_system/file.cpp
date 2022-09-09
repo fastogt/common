@@ -27,16 +27,14 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/file_system/descriptor_holder.h>
 #include <common/file_system/file.h>
-
-#include <limits>
-
+#include <common/file_system/file_system.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 
-#include <common/file_system/descriptor_holder.h>
-#include <common/file_system/file_system.h>
+#include <limits>
 
 namespace common {
 namespace file_system {

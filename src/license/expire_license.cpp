@@ -13,9 +13,7 @@
 */
 
 #include <common/license/expire_license.h>
-
 #include <common/license/hardware_hash.h>
-
 #include <common/string_number_conversions.h>
 
 namespace common {

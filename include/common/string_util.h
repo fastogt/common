@@ -29,12 +29,11 @@
 
 #pragma once
 
-#include <stdarg.h>  // for va_list, va_end, va_start
+#include <common/string_piece.h>  // for StringPiece, StringPiece16
+#include <stdarg.h>               // for va_list, va_end, va_start
 
 #include <string>
 #include <vector>
-
-#include <common/string_piece.h>  // for StringPiece, StringPiece16
 
 namespace common {
 

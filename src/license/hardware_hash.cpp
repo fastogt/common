@@ -12,9 +12,8 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <common/license/hardware_hash.h>
-
 #include <common/hash/md5.h>
+#include <common/license/hardware_hash.h>
 #include <common/license/utils.h>
 
 namespace common {

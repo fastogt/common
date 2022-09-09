@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/compress_bzip2_edcoder.h>
-
 #include <common/compress/bzip2_compress.h>
+#include <common/text_decoders/compress_bzip2_edcoder.h>
 
 namespace common {
 

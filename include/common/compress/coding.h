@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/types.h>
+
+#include <string>
 
 namespace common {
 namespace compress {

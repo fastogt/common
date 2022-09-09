@@ -28,7 +28,6 @@
 */
 
 #include <common/system_info/system_info.h>
-
 #include <sys/utsname.h>
 
 #include <limits>

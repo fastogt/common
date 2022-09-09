@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/error.h>  // for ErrnoError
 #include <common/types.h>
+
+#include <string>
 
 namespace common {
 namespace net {

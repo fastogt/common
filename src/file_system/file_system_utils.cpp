@@ -27,12 +27,10 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/file_system/file_system_utils.h>
-
-#include <dirent.h>  // for closedir, readdir, DIR, DT_REG, dirent
-
 #include <common/convert2string.h>
+#include <common/file_system/file_system_utils.h>
 #include <common/string_util.h>
+#include <dirent.h>  // for closedir, readdir, DIR, DT_REG, dirent
 
 #if defined(OS_WIN)
 #include <common/file_system/string_path_utils.h>

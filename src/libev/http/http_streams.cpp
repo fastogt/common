@@ -28,10 +28,8 @@
 */
 
 #include <common/libev/http/http_streams.h>
-
-#include <common/portable_endian.h>
-
 #include <common/net/socket_tcp.h>
+#include <common/portable_endian.h>
 
 namespace common {
 namespace libev {

@@ -27,12 +27,10 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/protocols/json_rpc/json_rpc_types.h>
-
-#include <string.h>
-
 #include <common/convert2string.h>
+#include <common/protocols/json_rpc/json_rpc_types.h>
 #include <common/sys_byteorder.h>
+#include <string.h>
 
 namespace common {
 namespace protocols {

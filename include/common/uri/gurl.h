@@ -29,13 +29,12 @@
 
 #pragma once
 
+#include <common/uri/url_canon_stdstring.h>
+#include <common/uri/url_constants.h>
 #include <stddef.h>
 
 #include <iosfwd>
 #include <string>
-
-#include <common/uri/url_canon_stdstring.h>
-#include <common/uri/url_constants.h>
 
 namespace common {
 namespace uri {
@@ -235,6 +234,8 @@ class GURL {
   bool SchemeIsRtmpBased() const;
 
   bool SchemeIsRtsp() const { return SchemeIs(uri::kRtspScheme); }
+
+  bool SchemeIsGs() const { return SchemeIs(uri::kGsScheme); }
 
   // Returns true if the scheme indicates a network connection that uses TLS or
   // some other cryptographic protocol (e.g. QUIC) for security.

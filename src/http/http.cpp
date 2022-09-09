@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/http/http.h>
-
 #include <common/convert2string.h>  // for ConvertFromString
+#include <common/http/http.h>
 #include <common/sprintf.h>
 #include <common/string_split.h>
 #include <common/uri/gurl.h>

@@ -29,12 +29,11 @@
 
 #pragma once
 
+#include <common/optional.h>
 #include <stdint.h>  // for int64_t
 #include <unistd.h>
 
 #include <string>  // for string
-
-#include <common/optional.h>
 
 namespace common {
 namespace system_info {

@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/system_info/system_info.h>
-
 #include <common/patterns/singleton_pattern.h>
+#include <common/system_info/system_info.h>
 
 namespace common {
 namespace system_info {

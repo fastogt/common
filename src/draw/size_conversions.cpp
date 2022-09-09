@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/draw/size_conversions.h>
-
 #include <common/draw/safe_integer_conversions.h>
+#include <common/draw/size_conversions.h>
 
 namespace common {
 namespace draw {

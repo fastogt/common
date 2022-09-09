@@ -28,7 +28,6 @@
 */
 
 #include <common/compress/xhex.h>
-
 #include <common/convert2string.h>
 
 namespace common {

@@ -28,7 +28,6 @@
 */
 
 #include <common/daemon/commands/ping_info.h>
-
 #include <common/time.h>
 
 #define SERVER_INFO_TIMESTAMP_FIELD "timestamp"

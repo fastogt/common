@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <common/numerics/safe_conversions.h>
+#include <common/numerics/safe_math_shared_impl.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -37,9 +39,6 @@
 #include <cstdlib>
 #include <limits>
 #include <type_traits>
-
-#include <common/numerics/safe_conversions.h>
-#include <common/numerics/safe_math_shared_impl.h>
 
 namespace common {
 namespace internal {

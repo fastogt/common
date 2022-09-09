@@ -28,7 +28,6 @@
 */
 
 #include <common/text_decoders/html_edcoder.h>
-
 #include <common/utils.h>
 
 namespace common {

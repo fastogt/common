@@ -28,7 +28,6 @@
 */
 
 #include <common/libev/tcp/tcp_client.h>
-
 #include <common/net/socket_tcp.h>
 
 namespace common {

@@ -28,7 +28,6 @@
 */
 
 #include <common/parse_number.h>
-
 #include <common/string_number_conversions.h>
 #include <common/string_util.h>
 

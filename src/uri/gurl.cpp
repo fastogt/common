@@ -27,16 +27,14 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/string_util.h>
 #include <common/uri/gurl.h>
-
+#include <common/uri/url_util.h>
 #include <stddef.h>
 
 #include <algorithm>
 #include <ostream>
 #include <utility>
-
-#include <common/string_util.h>
-#include <common/uri/url_util.h>
 
 namespace common {
 namespace uri {

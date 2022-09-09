@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/license/types.h>
+
+#include <string>
 
 namespace common {
 namespace license {

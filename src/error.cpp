@@ -28,11 +28,9 @@
 */
 
 #include <common/error.h>
-
+#include <common/sprintf.h>
 #include <errno.h>
 #include <string.h>
-
-#include <common/sprintf.h>
 
 namespace common {
 

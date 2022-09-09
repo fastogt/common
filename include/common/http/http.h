@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <string>   // for string, basic_string
-#include <utility>  // for pair
-#include <vector>   // for vector
-
 #include <common/error.h>  // for Error
 #include <common/types.h>  // for buffer_t
 #include <common/uri/gurl.h>
+
+#include <string>   // for string, basic_string
+#include <utility>  // for pair
+#include <vector>   // for vector
 
 #define HTTP_1_0_PROTOCOL_NAME "HTTP/1.0"
 #define HTTP_1_0_PROTOCOL_NAME_LEN (sizeof(HTTP_1_0_PROTOCOL_NAME) - 1)

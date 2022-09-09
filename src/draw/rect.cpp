@@ -37,11 +37,11 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#include <algorithm>
-
 #include <common/draw/vector2d.h>
 #include <common/numerics/clamped_math.h>
 #include <common/sprintf.h>
+
+#include <algorithm>
 
 namespace common {
 namespace draw {

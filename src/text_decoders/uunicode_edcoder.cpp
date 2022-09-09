@@ -27,11 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/uunicode_edcoder.h>
-
 #include <common/compress/uunicode.h>
-
 #include <common/convert2string.h>
+#include <common/text_decoders/uunicode_edcoder.h>
 
 namespace common {
 

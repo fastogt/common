@@ -29,10 +29,9 @@
 
 #pragma once
 
-#include <stdint.h>     // for uint8_t, uint32_t
-#include <sys/types.h>  // for ssize_t
-
 #include <common/types.h>  // for buffer_t
+#include <stdint.h>        // for uint8_t, uint32_t
+#include <sys/types.h>     // for ssize_t
 
 namespace common {
 namespace http2 {

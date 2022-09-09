@@ -29,16 +29,13 @@
 
 #pragma once
 
+#include <common/http/http.h>
+#include <common/libev/http/http_server_info.h>
+#include <common/libev/tcp/tcp_client.h>
+#include <common/uri/gurl.h>
 #include <time.h>
 
 #include <vector>
-
-#include <common/http/http.h>
-
-#include <common/uri/gurl.h>
-
-#include <common/libev/http/http_server_info.h>
-#include <common/libev/tcp/tcp_client.h>
 
 namespace common {
 namespace libev {

@@ -30,9 +30,9 @@
 #include <common/compress/snappy_compress.h>
 
 #if defined(HAVE_SNAPPY)
-#include <limits>
-
 #include <snappy.h>
+
+#include <limits>
 
 namespace common {
 namespace {

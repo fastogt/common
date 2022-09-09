@@ -25,7 +25,6 @@
 #define MODP_B64
 
 #include <stddef.h>
-
 #include <sys/types.h>
 
 #ifdef __cplusplus

@@ -31,11 +31,10 @@
 
 #if defined(HAVE_LZ4)
 
+#include <common/compress/coding.h>
 #include <lz4.h>
 
 #include <limits>
-
-#include <common/compress/coding.h>
 
 namespace common {
 namespace {

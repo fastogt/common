@@ -27,12 +27,10 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/http/http2.h>
-
-#include <string.h>
-
 #include <common/convert2string.h>  // for ConvertToString, etc
+#include <common/http/http2.h>
 #include <common/portable_endian.h>
+#include <string.h>
 
 #define MAKE_STATIC_ENT(N, V, T, H) \
   { {MAKE_BUFFER(N), MAKE_BUFFER(V), 0}, nullptr, 0, (H), (T) }

@@ -28,7 +28,6 @@
 */
 
 #include <common/system/system.h>
-
 #include <unistd.h>  // for sync
 
 #define SYSTEM_CALL 1

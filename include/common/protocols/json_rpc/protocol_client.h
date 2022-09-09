@@ -14,16 +14,15 @@
 
 #pragma once
 
+#include <common/libev/io_client.h>
+#include <common/protocols/json_rpc/json_rpc.h>
+#include <common/text_decoders/iedcoder.h>
+
 #include <limits>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
-
-#include <common/libev/io_client.h>
-#include <common/text_decoders/iedcoder.h>
-
-#include <common/protocols/json_rpc/json_rpc.h>
 
 namespace common {
 namespace protocols {

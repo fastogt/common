@@ -28,10 +28,8 @@
 */
 
 #include <common/system_info/cpu_info.h>
-
-#include <string.h>
-
 #include <common/types.h>
+#include <string.h>
 
 #if defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
 #include <asm/hwcap.h>

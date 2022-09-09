@@ -27,18 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/file_system/file_system.h>
+#include <common/file_system/types.h>
 #include <common/logger.h>
-
+#include <common/patterns/singleton_pattern.h>
+#include <common/sprintf.h>
 #include <errno.h>
 
 #include <fstream>
 #include <iostream>
 #include <memory>
-
-#include <common/file_system/file_system.h>
-#include <common/file_system/types.h>
-#include <common/patterns/singleton_pattern.h>
-#include <common/sprintf.h>
 
 #if defined(OS_MACOSX)
 #include <mach/clock.h>

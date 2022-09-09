@@ -27,11 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/media/bandwidth_estimation.h>
-
-#include <common/macros.h>  // for DNOTREACHED
-
 #include <common/convert2string.h>
+#include <common/macros.h>  // for DNOTREACHED
+#include <common/media/bandwidth_estimation.h>
 
 #define KBITS_TO_BYTES(X) (X * 1024 / 8)
 

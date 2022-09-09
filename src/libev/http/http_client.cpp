@@ -27,18 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/convert2string.h>
+#include <common/file_system/file_system.h>
 #include <common/libev/http/http_client.h>
-
+#include <common/logger.h>
+#include <common/net/net.h>
+#include <common/sprintf.h>
 #include <errno.h>
 #include <inttypes.h>
 
 #include <string>
-
-#include <common/convert2string.h>
-#include <common/file_system/file_system.h>
-#include <common/logger.h>
-#include <common/net/net.h>
-#include <common/sprintf.h>
 
 #define RFC1123FMT "%a, %d %b %Y %H:%M:%S GMT"
 #define CARET_MARKER "\r\n"

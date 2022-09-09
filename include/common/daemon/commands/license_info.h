@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/license/types.h>
 #include <common/optional.h>
 #include <common/serializer/json_serializer.h>
+
+#include <string>
 
 namespace common {
 namespace daemon {

@@ -29,14 +29,13 @@
 
 #pragma once
 
+#include <common/containers/span.h>
+#include <common/string_piece.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
 #include <vector>
-
-#include <common/containers/span.h>
-#include <common/string_piece.h>
 
 // ----------------------------------------------------------------------------
 // IMPORTANT MESSAGE FROM YOUR SPONSOR

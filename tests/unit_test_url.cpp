@@ -69,7 +69,15 @@
 
 #define MDP_URL "http://41.76.110.249:200/index.mpd?id=1"
 
+#define GS_URL "gs://some-test-41728.appspot.com/reqc/00oobdpgSivUgfFo4EPG-1616700089.webp"
+
 TEST(Url, IsValid) {
+  common::uri::GURL gs(GS_URL);
+  ASSERT_TRUE(gs.is_valid());
+  ASSERT_TRUE(gs.SchemeIsGs());
+  ASSERT_EQ(gs.spec(), GS_URL);
+  ASSERT_EQ(gs.ExtractFileName(), "00oobdpgSivUgfFo4EPG-1616700089.webp");
+
   common::uri::GURL mdp(MDP_URL);
   auto req = mdp.path();
   ASSERT_TRUE(common::EndsWith(req, "mpd", false));

@@ -27,8 +27,6 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/iedcoder_factory.h>
-
 #include <common/text_decoders/base64_edcoder.h>
 #include <common/text_decoders/compress_bzip2_edcoder.h>
 #include <common/text_decoders/compress_lz4_edcoder.h>
@@ -36,6 +34,7 @@
 #include <common/text_decoders/compress_zlib_edcoder.h>
 #include <common/text_decoders/hex_edcoder.h>
 #include <common/text_decoders/html_edcoder.h>
+#include <common/text_decoders/iedcoder_factory.h>
 #include <common/text_decoders/none_edcoder.h>
 #include <common/text_decoders/unicode_edcoder.h>
 #include <common/text_decoders/uunicode_edcoder.h>

@@ -28,7 +28,6 @@
 */
 
 #include <common/net/isocket_fd.h>
-
 #include <common/net/net.h>
 
 namespace common {

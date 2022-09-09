@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/io_client.h>
-
 #include <common/libev/event_io.h>
+#include <common/libev/io_client.h>
 #include <common/libev/io_loop.h>
 
 namespace common {

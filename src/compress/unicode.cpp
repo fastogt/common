@@ -28,7 +28,6 @@
 */
 
 #include <common/compress/unicode.h>
-
 #include <common/convert2string.h>
 
 namespace common {

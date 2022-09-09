@@ -27,10 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/websocket/websocket_client.h>
-
 #include <common/convert2string.h>
 #include <common/hash/sha1.h>
+#include <common/libev/websocket/websocket_client.h>
 #include <common/utils.h>
 
 namespace common {

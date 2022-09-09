@@ -29,11 +29,10 @@
 
 #pragma once
 
-#include <functional>  // for function
-
-#include <common/macros.h>  // for DISALLOW_COPY_AND_ASSIGN
-
+#include <common/macros.h>                 // for DISALLOW_COPY_AND_ASSIGN
 #include <common/patterns/crtp_pattern.h>  // for id_counter
+
+#include <functional>  // for function
 
 #define INVALID_TIMER_ID -1
 

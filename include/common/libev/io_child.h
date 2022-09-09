@@ -29,9 +29,8 @@
 
 #pragma once
 
-#include <common/libev/types.h>
-
 #include <common/libev/io_base.h>
+#include <common/libev/types.h>
 
 namespace common {
 namespace libev {

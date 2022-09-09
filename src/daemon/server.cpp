@@ -12,9 +12,8 @@
     along with fastocloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <common/daemon/server.h>
-
 #include <common/daemon/client.h>
+#include <common/daemon/server.h>
 
 namespace common {
 namespace daemon {

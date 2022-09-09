@@ -31,11 +31,11 @@
 
 #if defined(OS_LINUX)
 
-#include <vector>
-
 #include <common/file_system/path.h>
 #include <common/libev/descriptor_client.h>
 #include <common/libev/inotify/types.h>
+
+#include <vector>
 
 namespace common {
 namespace libev {

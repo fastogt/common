@@ -29,14 +29,13 @@
 
 #pragma once
 
+#include <common/string_piece.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 #include <string>
 #include <vector>
-
-#include <common/string_piece.h>
 
 namespace common {
 namespace net {

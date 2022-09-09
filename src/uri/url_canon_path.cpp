@@ -27,10 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <limits.h>
-
 #include <common/uri/url_canon_internal.h>
 #include <common/uri/url_parse_internal.h>
+#include <limits.h>
 
 namespace common {
 namespace uri {

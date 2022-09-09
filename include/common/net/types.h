@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/macros.h>
+
+#include <string>
 
 namespace common {
 namespace net {

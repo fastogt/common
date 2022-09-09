@@ -27,16 +27,14 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/tcp/tcp_server.h>
-
-#include <errno.h>
-#include <signal.h>
-#include <stdlib.h>
-
 #include <common/libev/default_event_loop.h>
 #include <common/libev/event_io.h>
 #include <common/libev/io_child.h>
 #include <common/libev/io_loop.h>
+#include <common/libev/tcp/tcp_server.h>
+#include <errno.h>
+#include <signal.h>
+#include <stdlib.h>
 
 namespace {
 

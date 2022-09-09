@@ -17,10 +17,8 @@
 */
 
 #include <common/application/application.h>
-
-#include <stdlib.h>  // for EXIT_FAILURE
-
 #include <common/file_system/string_path_utils.h>
+#include <stdlib.h>  // for EXIT_FAILURE
 
 namespace common {
 namespace application {

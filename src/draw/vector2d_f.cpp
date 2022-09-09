@@ -28,10 +28,9 @@
 */
 
 #include <common/draw/vector2d_f.h>
+#include <common/sprintf.h>
 
 #include <cmath>
-
-#include <common/sprintf.h>
 
 namespace common {
 namespace draw {

@@ -27,8 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/sprintf.h>
 #include <common/string_number_conversions.h>
-
+#include <common/utf_string_conversions.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -36,9 +37,6 @@
 
 #include <limits>
 #include <type_traits>
-
-#include <common/sprintf.h>
-#include <common/utf_string_conversions.h>
 
 namespace common {
 

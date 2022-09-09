@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include <array>
-#include <string>
-
 #include <common/error.h>  // for Error
 #include <common/string_piece.h>
 #include <common/types.h>
+
+#include <array>
+#include <string>
 
 namespace common {
 

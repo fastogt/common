@@ -31,9 +31,8 @@
 
 #if defined(HAVE_ZLIB)
 
-#include <string.h>
-
 #include <common/compress/coding.h>
+#include <string.h>
 
 #include <limits>
 

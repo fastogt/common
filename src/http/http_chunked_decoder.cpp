@@ -28,12 +28,10 @@
 */
 
 #include <common/http/http_chunked_decoder.h>
-
+#include <common/string_number_conversions.h>
 #include <string.h>
 
 #include <algorithm>
-
-#include <common/string_number_conversions.h>
 
 namespace common {
 namespace http {

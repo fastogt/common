@@ -28,7 +28,6 @@
 */
 
 #include <common/string_piece.h>
-
 #include <limits.h>
 #include <string.h>
 

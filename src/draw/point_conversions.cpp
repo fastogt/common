@@ -28,7 +28,6 @@
 */
 
 #include <common/draw/point_conversions.h>
-
 #include <common/draw/safe_integer_conversions.h>
 
 namespace common {

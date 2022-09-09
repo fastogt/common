@@ -28,7 +28,6 @@
 */
 
 #include <common/compress/hex.h>
-
 #include <common/convert2string.h>
 
 namespace common {

@@ -29,12 +29,11 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/error.h>
-
 #include <common/protocols/json_rpc/json_rpc_request.h>
 #include <common/protocols/json_rpc/json_rpc_response.h>
+
+#include <string>
 
 struct json_object;
 

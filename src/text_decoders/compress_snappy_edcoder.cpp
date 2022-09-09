@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/compress_snappy_edcoder.h>
-
 #include <common/compress/snappy_compress.h>
+#include <common/text_decoders/compress_snappy_edcoder.h>
 
 namespace common {
 

@@ -27,11 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/event_timer.h>
-
-#include <ev.h>
-
 #include <common/libev/event_loop.h>
+#include <common/libev/event_timer.h>
+#include <ev.h>
 
 namespace common {
 namespace libev {

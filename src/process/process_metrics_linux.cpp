@@ -27,15 +27,13 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/process/process_metrics.h>
-
-#include <unistd.h>
-
 #include <common/convert2string.h>
 #include <common/file_system/file_system.h>
 #include <common/file_system/path.h>
+#include <common/process/process_metrics.h>
 #include <common/string_util.h>
 #include <common/time.h>
+#include <unistd.h>
 
 namespace {
 const char kProcDir[] = "/proc";

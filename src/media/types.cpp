@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/media/types.h>
-
 #include <common/convert2string.h>
+#include <common/media/types.h>
 #include <common/sprintf.h>
 
 namespace common {

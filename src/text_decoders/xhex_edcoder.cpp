@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/xhex_edcoder.h>
-
 #include <common/compress/xhex.h>
+#include <common/text_decoders/xhex_edcoder.h>
 
 namespace common {
 

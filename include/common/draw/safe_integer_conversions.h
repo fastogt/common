@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <limits>
-
 #include <common/numerics/checked_math.h>
+
+#include <limits>
 
 namespace common {
 namespace draw {

@@ -29,16 +29,15 @@
 
 #pragma once
 
+#include <common/error.h>      // for Error
+#include <common/http/http.h>  // for HttpRequest (ptr only), etc
+#include <common/http/http2_huffman.h>
 #include <stdint.h>     // for uint32_t, uint8_t
 #include <sys/types.h>  // for ssize_t
 
 #include <string>   // for string
 #include <utility>  // for pair
 #include <vector>   // for vector
-
-#include <common/error.h>      // for Error
-#include <common/http/http.h>  // for HttpRequest (ptr only), etc
-#include <common/http/http2_huffman.h>
 
 #define PREFACE_STARTS "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
 #define PREFACE_STARTS_LEN (sizeof(PREFACE_STARTS) - 1)

@@ -33,9 +33,8 @@
 #include <sys/wait.h>
 #endif
 
-#include <ev.h>
-
 #include <common/libev/event_loop.h>
+#include <ev.h>
 
 #if EV_CHILD_ENABLE
 using fasto_ev_child = ev_child;

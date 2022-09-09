@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/protocols/json_rpc/json_rpc_types.h>
+
+#include <string>
 
 namespace common {
 namespace protocols {

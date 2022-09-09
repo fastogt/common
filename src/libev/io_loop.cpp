@@ -27,19 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/libev/event_child.h>
+#include <common/libev/event_io.h>
+#include <common/libev/io_child.h>
+#include <common/libev/io_client.h>
 #include <common/libev/io_loop.h>
+#include <common/libev/io_loop_observer.h>
+#include <common/sprintf.h>
 
 #include <algorithm>
 #include <mutex>
-
-#include <common/sprintf.h>
-
-#include <common/libev/event_io.h>
-#include <common/libev/io_client.h>
-#include <common/libev/io_loop_observer.h>
-
-#include <common/libev/event_child.h>
-#include <common/libev/io_child.h>
 
 namespace {
 

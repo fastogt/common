@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/serializer/json_serializer.h>
 #include <common/time.h>
+
+#include <string>
 
 namespace common {
 namespace daemon {

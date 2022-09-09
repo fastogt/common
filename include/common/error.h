@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/optional.h>
+
+#include <string>
 
 namespace common {
 

@@ -28,7 +28,6 @@
 */
 
 #include <common/net/net.h>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>

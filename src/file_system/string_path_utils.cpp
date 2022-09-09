@@ -34,10 +34,9 @@
 #else
 #include <sys/stat.h>
 #endif
-#include <unistd.h>
-
 #include <common/convert2string.h>
 #include <common/string_util.h>
+#include <unistd.h>
 
 namespace common {
 namespace file_system {

@@ -39,9 +39,8 @@
 
 #pragma once
 
-#include <stddef.h>  // for size_t, NULL, ptrdiff_t
-
 #include <common/string16.h>
+#include <stddef.h>  // for size_t, NULL, ptrdiff_t
 
 namespace common {
 

@@ -27,14 +27,12 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/protocols/json_rpc/json_rpc.h>
-
-#include <json-c/json_object.h>
-#include <json-c/json_tokener.h>
-
 #include <common/convert2string.h>
+#include <common/protocols/json_rpc/json_rpc.h>
 #include <common/sprintf.h>
 #include <common/system_info/system_info.h>  // for SystemInfo, etc
+#include <json-c/json_object.h>
+#include <json-c/json_tokener.h>
 
 #define JSONRPC_FIELD "jsonrpc"
 #define JSONRPC_METHOD_FIELD "method"

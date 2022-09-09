@@ -27,13 +27,13 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
-
 #include <common/string_util.h>
 #include <common/uri/url_canon_internal.h>
 #include <common/uri/url_parse_internal.h>
 #include <common/uri/url_util.h>
 #include <common/uri/url_util_internal.h>
+
+#include <algorithm>
 
 namespace common {
 namespace uri {

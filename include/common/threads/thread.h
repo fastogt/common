@@ -29,12 +29,11 @@
 
 #pragma once
 
-#include <stdint.h>  // for uintptr_t
-
-#include <functional>  // for function
-
 #include <common/threads/event.h>            // for Event
 #include <common/threads/platform_thread.h>  // for PlatformThread, etc
+#include <stdint.h>                          // for uintptr_t
+
+#include <functional>  // for function
 
 namespace common {
 namespace threads {

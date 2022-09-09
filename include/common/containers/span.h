@@ -29,6 +29,9 @@
 
 #pragma once
 
+#include <common/containers/checked_iterators.h>
+#include <common/template_util.h>
+#include <common/types.h>
 #include <stddef.h>
 
 #include <algorithm>
@@ -37,10 +40,6 @@
 #include <limits>
 #include <type_traits>
 #include <utility>
-
-#include <common/containers/checked_iterators.h>
-#include <common/template_util.h>
-#include <common/types.h>
 
 namespace common {
 

@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/base64_edcoder.h>
-
 #include <common/compress/base64.h>
+#include <common/text_decoders/base64_edcoder.h>
 
 namespace common {
 

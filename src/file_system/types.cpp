@@ -27,11 +27,9 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/file_system/types.h>
-
-#include <stdlib.h>
-
 #include <common/convert2string.h>
+#include <common/file_system/types.h>
+#include <stdlib.h>
 
 namespace common {
 namespace file_system {

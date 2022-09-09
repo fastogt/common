@@ -28,7 +28,6 @@
 */
 
 #include <common/hash/sha256.h>
-
 #include <memory.h>
 #include <stdlib.h>
 

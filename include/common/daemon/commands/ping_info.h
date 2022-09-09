@@ -29,9 +29,8 @@
 
 #pragma once
 
-#include <common/time.h>
-
 #include <common/serializer/json_serializer.h>
+#include <common/time.h>
 
 namespace common {
 namespace daemon {

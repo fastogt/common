@@ -28,7 +28,6 @@
 */
 
 #include <common/threads/thread.h>
-
 #include <common/threads/thread_manager.h>
 
 namespace common {

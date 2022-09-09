@@ -13,7 +13,6 @@
 */
 
 #include <common/serializer/json_serializer.h>
-
 #include <common/sprintf.h>
 
 namespace common {

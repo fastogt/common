@@ -28,11 +28,9 @@
 */
 
 #include <common/hash/sha1.h>
-
+#include <common/portable_endian.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <common/portable_endian.h>
 
 /* code */
 #define SHA1_K0 0x5a827999

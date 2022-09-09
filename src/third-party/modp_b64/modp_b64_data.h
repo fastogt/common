@@ -1,6 +1,5 @@
-#include <stdint.h>
-
 #include <common/macros.h>
+#include <stdint.h>
 
 #define CHAR62 '+'
 #define CHAR63 '/'

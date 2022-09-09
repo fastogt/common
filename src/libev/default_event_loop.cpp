@@ -28,7 +28,6 @@
 */
 
 #include <common/libev/default_event_loop.h>
-
 #include <ev.h>
 
 namespace common {

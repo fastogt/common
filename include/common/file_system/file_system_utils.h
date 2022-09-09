@@ -29,11 +29,11 @@
 
 #pragma once
 
+#include <common/file_system/path.h>
+
 #include <functional>
 #include <string>
 #include <vector>
-
-#include <common/file_system/path.h>
 
 namespace common {
 namespace file_system {

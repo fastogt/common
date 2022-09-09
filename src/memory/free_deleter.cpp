@@ -28,7 +28,6 @@
 */
 
 #include <common/memory/free_deleter.h>
-
 #include <common/utils.h>
 
 namespace common {

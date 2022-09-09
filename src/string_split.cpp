@@ -28,10 +28,8 @@
 */
 
 #include <common/string_split.h>
-
-#include <stddef.h>
-
 #include <common/string_util.h>
+#include <stddef.h>
 
 namespace common {
 

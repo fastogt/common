@@ -29,12 +29,11 @@
 
 #pragma once
 
+#include <common/error.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
-
-#include <common/error.h>
 
 namespace common {
 namespace http {

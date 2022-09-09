@@ -28,7 +28,6 @@
 */
 
 #include <common/net/http_client.h>
-
 #include <string.h>
 #include <unistd.h>
 
@@ -37,12 +36,11 @@
 #include <openssl/ssl.h>
 #endif
 
-#include <common/net/socket_tcp.h>
-
 #include <common/convert2string.h>
 #include <common/file_system/file.h>
 #include <common/file_system/file_system.h>
 #include <common/http/http_chunked_decoder.h>
+#include <common/net/socket_tcp.h>
 
 #undef SetPort
 

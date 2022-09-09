@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/utf_string_conversions.h>
-
 #include <common/utf_string_conversion_utils.h>
+#include <common/utf_string_conversions.h>
 
 namespace common {
 

@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/draw/size_f.h>
-
 #include <common/convert2string.h>
+#include <common/draw/size_f.h>
 #include <common/numerics/clamped_math.h>
 #include <common/sprintf.h>
 

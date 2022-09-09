@@ -27,16 +27,14 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/system_info/system_info.h>
-
-#include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
-
 #include <common/file_system/file_system.h>
 #include <common/macros.h>  // for DNOTREACHED
 #include <common/string_number_conversions.h>
 #include <common/string_piece.h>
 #include <common/string_split.h>
 #include <common/string_util.h>
+#include <common/system_info/system_info.h>
+#include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
 
 namespace {
 

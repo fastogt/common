@@ -13,7 +13,6 @@
 */
 
 #include <common/license/utils.h>
-
 #include <sys/stat.h>
 
 #if defined(HAVE_UDEV)

@@ -28,17 +28,15 @@
 */
 
 #include <common/convert2string.h>
-
-#include <math.h>
-
-#include <algorithm>
-#include <limits>
-
 #include <common/portable_endian.h>
 #include <common/sprintf.h>
 #include <common/string_number_conversions.h>
 #include <common/string_util.h>
 #include <common/utf_string_conversions.h>  // for UTF16ToUTF8
+#include <math.h>
+
+#include <algorithm>
+#include <limits>
 
 namespace common {
 

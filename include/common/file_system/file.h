@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/error.h>  // for ErrnoError, Error
 #include <common/file_system/path.h>
 #include <common/sprintf.h>
+
+#include <string>
 
 namespace common {
 namespace file_system {

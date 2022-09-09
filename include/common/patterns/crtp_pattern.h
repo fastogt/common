@@ -29,10 +29,10 @@
 
 #pragma once
 
+#include <common/types.h>
+
 #include <atomic>
 #include <limits>
-
-#include <common/types.h>
 
 namespace common {
 namespace patterns {

@@ -30,13 +30,11 @@
 #include <common/compress/bzip2_compress.h>
 
 #if defined(HAVE_BZIP2)
+#include <bzlib.h>
+#include <common/compress/coding.h>
 #include <string.h>
 
 #include <limits>
-
-#include <bzlib.h>
-
-#include <common/compress/coding.h>
 
 namespace common {
 namespace {

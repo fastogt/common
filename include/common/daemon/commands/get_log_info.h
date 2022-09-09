@@ -14,9 +14,8 @@
 
 #pragma once
 
-#include <common/uri/gurl.h>
-
 #include <common/serializer/json_serializer.h>
+#include <common/uri/gurl.h>
 
 namespace common {
 namespace daemon {

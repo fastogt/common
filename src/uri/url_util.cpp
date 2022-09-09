@@ -27,16 +27,15 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/string_util.h>
+#include <common/uri/url_canon_internal.h>
+#include <common/uri/url_constants.h>
+#include <common/uri/url_parse_internal.h>
 #include <common/uri/url_util.h>
 
 #include <algorithm>
 #include <atomic>
 #include <vector>
-
-#include <common/string_util.h>
-#include <common/uri/url_canon_internal.h>
-#include <common/uri/url_constants.h>
-#include <common/uri/url_parse_internal.h>
 
 namespace common {
 namespace uri {
@@ -62,6 +61,7 @@ struct SchemeRegistry {
       // canonicalization.
       {kFileScheme, SCHEME_WITH_HOST},
       {kDevScheme, SCHEME_WITH_HOST},
+      {kGsScheme, SCHEME_WITH_HOST},
       {kUnknownScheme, SCHEME_WITH_HOST},
       {kUdpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtpScheme, SCHEME_WITH_HOST_AND_PORT},
@@ -93,7 +93,7 @@ struct SchemeRegistry {
 
   // Schemes that normal pages cannot link to or access (i.e., with the same
   // security rules as those applied to "file" URLs).
-  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme, kUnknownScheme};
+  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme, kGsScheme, kUnknownScheme};
 
   // Schemes that cause pages loaded with them to not have access to pages
   // loaded with any other URL scheme.
@@ -260,6 +260,10 @@ bool DoCanonicalize(const CHAR* spec,
     // Dev URLs are special.
     ParseDevURL(spec, spec_len, &parsed_input);
     success = CanonicalizeDevURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, uri::kGsScheme)) {
+    // Gs URLs are special.
+    ParseGsURL(spec, spec_len, &parsed_input);
+    success = CanonicalizeGsURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, uri::kUnknownScheme)) {
     // Unknown URLs are special.
     ParseUnknownURL(spec, spec_len, &parsed_input);

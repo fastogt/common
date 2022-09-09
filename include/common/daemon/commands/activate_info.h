@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/daemon/commands/license_info.h>
+
+#include <string>
 
 namespace common {
 namespace daemon {

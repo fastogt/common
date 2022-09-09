@@ -28,7 +28,6 @@
 */
 
 #include <common/file_system/file_system.h>
-
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>     // for open, SEEK_CUR, SEEK_SET, etc
@@ -53,9 +52,8 @@ int ftruncate(int fd, int64_t length) {
 }
 #endif
 
-#include <common/sprintf.h>
-
 #include <common/file_system/string_path_utils.h>
+#include <common/sprintf.h>
 
 #define FS_BUF_SIZE 1024 * 4
 

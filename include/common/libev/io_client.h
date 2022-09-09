@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/error.h>
 #include <common/libev/io_base.h>
 #include <common/libev/types.h>
+
+#include <string>
 
 namespace common {
 namespace libev {

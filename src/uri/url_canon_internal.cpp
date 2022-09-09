@@ -28,12 +28,10 @@
 */
 
 #include <common/uri/url_canon_internal.h>
-
+#include <common/utf_string_conversion_utils.h>
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
-
-#include <common/utf_string_conversion_utils.h>
 
 namespace common {
 namespace uri {

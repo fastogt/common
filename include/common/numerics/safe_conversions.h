@@ -29,13 +29,12 @@
 
 #pragma once
 
+#include <common/numerics/safe_conversions_impl.h>
 #include <stddef.h>
 
 #include <cmath>
 #include <limits>
 #include <type_traits>
-
-#include <common/numerics/safe_conversions_impl.h>
 
 #if !defined(__native_client__) && (defined(__ARMEL__) || defined(__arch64__))
 #include <common/numerics/safe_conversions_arm_impl.h>

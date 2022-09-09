@@ -27,17 +27,16 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/net/ip_address.h>
-
-#include <algorithm>
-
 #include <common/containers/stack_container.h>
+#include <common/net/ip_address.h>
 #include <common/parse_number.h>
 #include <common/sprintf.h>
 #include <common/strcat.h>
 #include <common/string_split.h>
 #include <common/uri/url_canon_ip.h>
 #include <common/uri/url_canon_stdstring.h>
+
+#include <algorithm>
 
 namespace common {
 namespace net {

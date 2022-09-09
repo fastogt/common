@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/websocket/websocket_server.h>
-
 #include <common/libev/websocket/websocket_client.h>
+#include <common/libev/websocket/websocket_server.h>
 
 namespace common {
 namespace libev {

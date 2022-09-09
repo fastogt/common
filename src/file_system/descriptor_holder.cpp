@@ -28,7 +28,6 @@
 */
 
 #include <common/file_system/descriptor_holder.h>
-
 #include <common/file_system/file_system.h>
 
 namespace common {

@@ -28,7 +28,6 @@
 */
 
 #include <common/value.h>
-
 #include <string.h>
 
 #include <algorithm>

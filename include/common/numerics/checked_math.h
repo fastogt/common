@@ -29,12 +29,11 @@
 
 #pragma once
 
+#include <common/numerics/checked_math_impl.h>
 #include <stddef.h>
 
 #include <limits>
 #include <type_traits>
-
-#include <common/numerics/checked_math_impl.h>
 
 namespace common {
 namespace internal {

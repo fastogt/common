@@ -14,11 +14,11 @@
 
 #pragma once
 
+#include <common/optional.h>
+
 #include <algorithm>
 #include <array>
 #include <string>
-
-#include <common/optional.h>
 
 namespace common {
 namespace license {

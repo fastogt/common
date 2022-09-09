@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/draw/point_conversions.h>
-
 #include <common/convert2string.h>
+#include <common/draw/point_conversions.h>
 #include <common/draw/safe_integer_conversions.h>
 #include <common/sprintf.h>
 

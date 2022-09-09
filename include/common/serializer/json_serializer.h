@@ -14,13 +14,12 @@
 
 #pragma once
 
+#include <common/serializer/iserializer.h>  // for ISerializer
 #include <json-c/json_object.h>
 #include <json-c/json_tokener.h>  // for json_tokener_parse
 
 #include <string>
 #include <vector>
-
-#include <common/serializer/iserializer.h>  // for ISerializer
 
 namespace common {
 namespace serializer {

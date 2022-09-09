@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <memory>
-
 #include <common/http/http2.h>
 #include <common/net/isocket.h>
 #include <common/net/socket_info.h>
+
+#include <memory>
 
 namespace common {
 namespace libev {

@@ -30,7 +30,6 @@
 #pragma once
 
 #include <common/libev/event_loop.h>
-
 #include <common/libev/io_base.h>
 
 namespace common {

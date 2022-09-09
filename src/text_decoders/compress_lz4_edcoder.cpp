@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/text_decoders/compress_lz4_edcoder.h>
-
 #include <common/compress/lz4_compress.h>
+#include <common/text_decoders/compress_lz4_edcoder.h>
 
 namespace common {
 

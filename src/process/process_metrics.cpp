@@ -28,7 +28,6 @@
 */
 
 #include <common/process/process_metrics.h>
-
 #include <common/time.h>
 
 namespace common {

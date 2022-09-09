@@ -28,7 +28,6 @@
 */
 
 #include <common/utils.h>
-
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>

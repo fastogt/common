@@ -29,12 +29,12 @@
 
 #pragma once
 
+#include <common/string16.h>
+#include <common/string_piece.h>
+
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <common/string16.h>
-#include <common/string_piece.h>
 
 namespace common {
 

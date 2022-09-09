@@ -29,10 +29,10 @@
 
 #pragma once
 
+#include <common/log_levels.h>
+
 #include <sstream>
 #include <string>
-
-#include <common/log_levels.h>
 
 namespace common {
 namespace logging {

@@ -36,7 +36,6 @@
 #undef SetPort
 
 #include <common/net/socket_tcp.h>
-
 #include <errno.h>
 #include <string.h>
 

@@ -28,7 +28,6 @@
 */
 
 #include <common/hash/md5.h>
-
 #include <string.h>
 
 /*

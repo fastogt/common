@@ -30,7 +30,6 @@
 #pragma once
 
 #include <common/patterns/crtp_pattern.h>
-
 #include <common/sprintf.h>
 #include <common/time.h>
 

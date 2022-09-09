@@ -29,13 +29,11 @@
 
 #pragma once
 
+#include <common/libev/http/http_client.h>
+#include <common/libev/http/http_streams.h>
 #include <time.h>
 
 #include <vector>
-
-#include <common/libev/http/http_client.h>
-
-#include <common/libev/http/http_streams.h>
 
 namespace common {
 namespace libev {

@@ -13,11 +13,10 @@
 */
 
 #include <common/protocols/json_rpc/protocol_client.h>
-
-#include <string>
-
 #include <common/sprintf.h>
 #include <common/sys_byteorder.h>
+
+#include <string>
 
 namespace common {
 namespace protocols {

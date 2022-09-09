@@ -28,10 +28,9 @@
 */
 
 #include <common/draw/vector2d.h>
+#include <common/numerics/clamped_math.h>
 
 #include <cmath>
-
-#include <common/numerics/clamped_math.h>
 
 namespace common {
 namespace draw {

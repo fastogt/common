@@ -29,13 +29,12 @@
 
 #pragma once
 
-#include <unistd.h>  // for socklen_t, ssize_t, off_t
-
-#include <string>
-
 #include <common/error.h>  // for ErrnoError
 #include <common/net/socket_info.h>
 #include <common/net/types.h>
+#include <unistd.h>  // for socklen_t, ssize_t, off_t
+
+#include <string>
 
 namespace common {
 namespace net {

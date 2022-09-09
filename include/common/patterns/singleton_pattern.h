@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <mutex>
-
 #include <common/macros.h>
+
+#include <mutex>
 
 namespace common {
 namespace patterns {

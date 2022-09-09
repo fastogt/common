@@ -29,11 +29,10 @@
 
 #pragma once
 
-#include <vector>
-
+#include <common/libev/types.h>
 #include <common/threads/platform_thread.h>
 
-#include <common/libev/types.h>
+#include <vector>
 
 struct ev_loop;
 struct ev_io;

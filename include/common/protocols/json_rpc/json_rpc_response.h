@@ -29,10 +29,10 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/optional.h>
 #include <common/protocols/json_rpc/json_rpc_types.h>
+
+#include <string>
 
 #define JSONRPC_OK_RESULT "OK"
 

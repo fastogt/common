@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <string>
-
 #include <common/event.h>
+#include <stdint.h>
+
+#include <string>
 
 namespace common {
 namespace application {

@@ -29,12 +29,11 @@
 
 #pragma once
 
+#include <common/optional.h>
 #include <stdint.h>
 
 #include <memory>
 #include <string>
-
-#include <common/optional.h>
 
 namespace common {
 namespace protocols {

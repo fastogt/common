@@ -27,9 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/macros.h>
-
 #include <assert.h>
+#include <common/macros.h>
 #include <stdlib.h>  // for exit, EXIT_FAILURE
 
 void immediate_assert() {

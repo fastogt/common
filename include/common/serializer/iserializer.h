@@ -29,9 +29,9 @@
 
 #pragma once
 
-#include <string>
-
 #include <common/error.h>
+
+#include <string>
 
 namespace common {
 namespace serializer {

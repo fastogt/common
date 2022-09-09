@@ -29,11 +29,11 @@
 
 #pragma once
 
-#include <memory>
-#include <string>  // for string
-
 #include <common/macros.h>
 #include <common/system_info/types.h>  // for lcpu_count_t, core_count_t
+
+#include <memory>
+#include <string>  // for string
 
 namespace common {
 namespace system_info {

@@ -29,11 +29,11 @@
 
 #pragma once
 
+#include <common/macros.h>
+
 #include <iterator>
 #include <memory>
 #include <type_traits>
-
-#include <common/macros.h>
 
 namespace common {
 

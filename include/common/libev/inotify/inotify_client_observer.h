@@ -31,10 +31,10 @@
 
 #if defined(OS_LINUX)
 
-#include <string>
-
 #include <common/file_system/path.h>
 #include <common/libev/inotify/types.h>
+
+#include <string>
 
 namespace common {
 namespace libev {
