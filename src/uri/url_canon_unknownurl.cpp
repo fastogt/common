@@ -91,11 +91,10 @@ bool DoCanonicalizeGsURL(const URLComponentSource<CHAR>& source,
                          CanonOutput* output,
                          Parsed* new_parsed) {
   // Things we don't set in dev: URLs.
-  new_parsed->host = Component();
+  // new_parsed->host = Component();
   new_parsed->port = Component();
   new_parsed->username = Component();
   new_parsed->password = Component();
-  new_parsed->port = Component();
 
   // Scheme (known, so we don't bother running it through the more
   // complicated scheme canonicalizer).
@@ -103,17 +102,23 @@ bool DoCanonicalizeGsURL(const URLComponentSource<CHAR>& source,
   output->Append("gs://", 5);
   new_parsed->scheme.len = 2;
 
-  // Append the host. For many dev URLs, this will be empty. For UNC, this
-  // will be present.
-  // TODO(brettw) This doesn't do any checking for host name validity. We
-  // should probably handle validity checking of UNC hosts differently than
-  // for regular IP hosts.
-  bool success = DounknownCanonicalizePath<CHAR, UCHAR>(source.path, parsed.path, output, &new_parsed->path);
-  CanonicalizeQuery(source.query, parsed.query, query_converter, output, &new_parsed->query);
+  bool success = CanonicalizeHost(source.host, parsed.host, output, &new_parsed->host);
+  // Path
+  if (parsed.path.is_valid()) {
+    success &= CanonicalizePath(source.path, parsed.path, output, &new_parsed->path);
+  } else if (parsed.query.is_valid() || parsed.ref.is_valid()) {
+    // When we have an empty path, make up a path when we have an authority
+    // or something following the path. The only time we allow an empty
+    // output path is when there is nothing else.
+    new_parsed->path = Component(output->length(), 1);
+    // output->push_back('/');
+  } else {
+    // No path at all
+    new_parsed->path.reset();
+  }
 
   // Ignore failure for refs since the URL can probably still be loaded.
   CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
-
   return success;
 }
 

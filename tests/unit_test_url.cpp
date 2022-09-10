@@ -75,6 +75,8 @@ TEST(Url, IsValid) {
   common::uri::GURL gs(GS_URL);
   ASSERT_TRUE(gs.is_valid());
   ASSERT_TRUE(gs.SchemeIsGs());
+  ASSERT_EQ(gs.path(), "/reqc/00oobdpgSivUgfFo4EPG-1616700089.webp");
+  ASSERT_EQ(gs.host(), "some-test-41728.appspot.com");
   ASSERT_EQ(gs.spec(), GS_URL);
   ASSERT_EQ(gs.ExtractFileName(), "00oobdpgSivUgfFo4EPG-1616700089.webp");
 

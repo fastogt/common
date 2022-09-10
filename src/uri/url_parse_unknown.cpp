@@ -115,13 +115,5 @@ void ParseUnknownURL(const char16* url, int url_len, Parsed* parsed) {
   DoParseUnknownURL(url, url_len, parsed);
 }
 
-void ParseGsURL(const char* url, int url_len, Parsed* parsed) {
-  DoParseUnknownURL(url, url_len, parsed);
-}
-
-void ParseGsURL(const char16* url, int url_len, Parsed* parsed) {
-  DoParseUnknownURL(url, url_len, parsed);
-}
-
 }  // namespace uri
 }  // namespace common
