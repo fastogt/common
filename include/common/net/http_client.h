@@ -76,8 +76,12 @@ class HttpClient : public IHttpClient {
   HostAndPort GetHost() const override;
 };
 
-Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path);
-Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url);
+Error GetHttpFile(const uri::GURL& url,
+                  const file_system::ascii_file_string_path& file_path,
+                  struct timeval* tv = nullptr);
+Error PostHttpFile(const file_system::ascii_file_string_path& file_path,
+                   const uri::GURL& url,
+                   struct timeval* tv = nullptr);
 
 class HttpsClient : public common::net::IHttpClient {
  public:
@@ -90,8 +94,12 @@ class HttpsClient : public common::net::IHttpClient {
   ErrnoError SendFile(descriptor_t file_fd, size_t file_size) override;
 };
 
-Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path);
-Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url);
+Error GetHttpsFile(const uri::GURL& url,
+                   const file_system::ascii_file_string_path& file_path,
+                   struct timeval* tv = nullptr);
+Error PostHttpsFile(const file_system::ascii_file_string_path& file_path,
+                    const uri::GURL& url,
+                    struct timeval* tv = nullptr);
 
 }  // namespace net
 }  // namespace common

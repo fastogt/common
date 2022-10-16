@@ -27,12 +27,11 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <gtest/gtest.h>
-
 #include <common/file_system/file.h>
 #include <common/file_system/file_system.h>
 #include <common/http/http2.h>
 #include <common/net/http_client.h>
+#include <gtest/gtest.h>
 
 using namespace common;
 

@@ -492,14 +492,14 @@ HostAndPort HttpClient::GetHost() const {
   return sock->GetHost();
 }
 
-Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path) {
+Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
     return common::make_error_inval();
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
   HttpClient cl(http_server_address);
-  ErrnoError errn = cl.Connect();
+  ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);
   }
@@ -546,14 +546,14 @@ Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_pat
   return err;
 }
 
-Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url) {
+Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
     return common::make_error_inval();
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
   HttpClient cl(http_server_address);
-  ErrnoError errn = cl.Connect();
+  ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);
   }
@@ -599,14 +599,14 @@ ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
   return sock->SendFile(file_fd, file_size);
 }
 
-Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path) {
+Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
   HttpsClient cl(http_server_address);
-  ErrnoError errn = cl.Connect();
+  ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);
   }
@@ -653,14 +653,14 @@ Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_pa
   return err;
 }
 
-Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url) {
+Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
   HttpsClient cl(http_server_address);
-  ErrnoError errn = cl.Connect();
+  ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);
   }
