@@ -58,6 +58,7 @@
 
 #include <common/eintr_wrapper.h>
 #include <common/sprintf.h>
+#include <common/time.h>
 
 #if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MACOSX) || defined(OS_FREEBSD) || defined(OS_IOS)
 
@@ -254,13 +255,13 @@ ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_
   // async connect
   UnBlockAndBlockSocket blocker(sock);
   int res = ::connect(sock, addr, len);
-  if (res < 0) {
+  if (res == ERROR_RESULT_VALUE) {
     if (errno == EINPROGRESS) {
 #if defined(OS_POSIX)
       struct pollfd fds[1];
       fds[0].fd = sock;
       fds[0].events = POLLOUT;
-      int msec = (tv->tv_sec * 1000) + ((tv->tv_usec + 999) / 1000);
+      time64_t msec = time::timeval2mstime(tv);
       res = poll(fds, 1, msec);
 #else
       fd_set master_set;
@@ -268,7 +269,7 @@ ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_
       FD_SET(sock, &master_set);
       res = select(sock + 1, &master_set, nullptr, nullptr, tv);
 #endif
-      if (res == -1) {
+      if (res == ERROR_RESULT_VALUE) {
         return make_error_perror("async_connect poll", errno);
       } else if (res == 0) {
         return make_error_perror("async_connect timeout", ETIMEDOUT);
@@ -285,6 +286,7 @@ ErrnoError do_connect(socket_descr_t sock, const struct sockaddr* addr, socklen_
       if (so_error) {
         return make_error_perror("async_connect", so_error);
       }
+      return ErrnoError();
     }
     return make_error_perror("async_connect", errno);
   }

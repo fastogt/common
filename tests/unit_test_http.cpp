@@ -35,6 +35,15 @@
 
 using namespace common;
 
+TEST(Http, post) {
+  struct timeval tv = {1, 0};
+  auto err = common::net::PostHttpsFile(
+      file_system::ascii_file_string_path("/home/fastocloud/dump.html"),
+      uri::GURL("https://api.fastocloud.com/media/stream/pipeline/upload/634b73204d946566900b7c13"), &tv);
+
+  ASSERT_FALSE(err);
+}
+
 TEST(Http, parse) {
   http::HttpRequest r1;
   ASSERT_FALSE(r1.IsValid());
