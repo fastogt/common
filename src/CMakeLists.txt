@@ -69,6 +69,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/daemon/server.h
 
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/stop_info.h
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/restart_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/ping_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/license_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/activate_info.h
@@ -79,6 +80,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/src/daemon/server.cpp
 
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/stop_info.cpp
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/restart_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/ping_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/license_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/activate_info.cpp
