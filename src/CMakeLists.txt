@@ -72,6 +72,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/restart_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/ping_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/license_info.h
+    ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/hhash_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/activate_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/get_log_info.h
     ${CMAKE_SOURCE_DIR}/include/common/daemon/commands/get_hhash_info.h
@@ -84,6 +85,7 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/restart_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/ping_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/license_info.cpp
+    ${CMAKE_SOURCE_DIR}/src/daemon/commands/hhash_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/activate_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/get_log_info.cpp
     ${CMAKE_SOURCE_DIR}/src/daemon/commands/get_hhash_info.cpp
