@@ -44,6 +44,7 @@ namespace http {
 class HttpClient : public libev::tcp::TcpClient {
  public:
   HttpClient(libev::IoLoop* server, const net::socket_info& info);
+  HttpClient(libev::IoLoop* server, net::TcpSocketHolder* sock);
 
   virtual ErrnoError Get(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;
   virtual ErrnoError Head(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;

@@ -64,6 +64,8 @@ namespace http {
 
 HttpClient::HttpClient(IoLoop* server, const net::socket_info& info) : TcpClient(server, info), isAuth_(false) {}
 
+HttpClient::HttpClient(libev::IoLoop* server, net::TcpSocketHolder* sock) : TcpClient(server, sock), isAuth_(false) {}
+
 const char* HttpClient::ClassName() const {
   return "HttpClient";
 }
