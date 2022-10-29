@@ -29,73 +29,72 @@
 
 #pragma once
 
-#include <common/net/isocket_fd.h>
-#include <common/net/types.h>
+#include <common/net/socket_tcp.h>
+
+typedef struct ssl_st SSL;
 
 namespace common {
 namespace net {
 
-class TcpSocketHolder : public ISocketFd {
+#if defined(HAVE_OPENSSL)
+class TcpTlsSocketHolder : public TcpSocketHolder {
  public:
-  explicit TcpSocketHolder(const socket_info& info);
-  explicit TcpSocketHolder(socket_descr_t fd);
+  typedef TcpSocketHolder base_class;
 
-  ~TcpSocketHolder() override;
-
-  socket_info GetInfo() const;
-  void SetInfo(const socket_info& info);
+  explicit TcpTlsSocketHolder(const socket_info& info);
+  explicit TcpTlsSocketHolder(socket_descr_t fd);
 
   socket_descr_t GetFd() const override;
-  void SetFd(socket_descr_t fd) override;
+
+  bool IsValid() const override;
 
  protected:
-  ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
-  ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  void SetSSL(SSL* ssl);
+
+  ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override;
+  ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override;
+
+  ErrnoError SendFileImpl(descriptor_t file_fd, size_t file_size) override;
+
+  ErrnoError CloseImpl() override;
 
  private:
-  socket_info info_;
+  void SetFd(socket_descr_t fd) override;
 
-  DISALLOW_COPY_AND_ASSIGN(TcpSocketHolder);
+  SSL* ssl_;
+
+  DISALLOW_COPY_AND_ASSIGN(TcpTlsSocketHolder);
 };
 
-class SocketTcp : public TcpSocketHolder {
+class SocketTcpTls : public TcpTlsSocketHolder {
  public:
-  explicit SocketTcp(const HostAndPort& host);
+  explicit SocketTcpTls(const HostAndPort& host);
 
   HostAndPort GetHost() const;
   void SetHost(const HostAndPort& host);
 
-  ~SocketTcp() override;
+  ~SocketTcpTls() override;
 
  private:
   HostAndPort host_;
 
-  DISALLOW_COPY_AND_ASSIGN(SocketTcp);
+  DISALLOW_COPY_AND_ASSIGN(SocketTcpTls);
 };
 
-class ClientSocketTcp : public SocketTcp {
+class ClientSocketTcpTls : public SocketTcpTls {
  public:
-  explicit ClientSocketTcp(const HostAndPort& host);
+  typedef SocketTcpTls base_class;
+
+  explicit ClientSocketTcpTls(const HostAndPort& host);
 
   ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
   bool IsConnected() const;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
+  DISALLOW_COPY_AND_ASSIGN(ClientSocketTcpTls);
 };
-
-class ServerSocketTcp : public SocketTcp {
- public:
-  explicit ServerSocketTcp(const HostAndPort& host);
-
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
-  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
-};
+#endif
 
 }  // namespace net
 }  // namespace common

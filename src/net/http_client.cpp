@@ -37,6 +37,10 @@
 #include <common/http/http_chunked_decoder.h>
 #include <common/net/socket_tcp.h>
 
+#if defined(HAVE_OPENSSL)
+#include <common/net/socket_tcp_tls.h>
+#endif
+
 #undef SetPort
 
 namespace common {
