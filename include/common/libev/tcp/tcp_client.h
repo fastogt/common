@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include <common/libev/io_client.h>  // for IoClient
 #include <common/net/socket_info.h>
 
@@ -58,7 +60,7 @@ class TcpClient : public IoClient {
 
   ErrnoError DoClose() override;
 
-  net::TcpSocketHolder* sock_;
+  std::unique_ptr<net::TcpSocketHolder> sock_;
 };
 
 }  // namespace tcp

@@ -32,6 +32,8 @@
 #include <common/net/isocket_fd.h>
 #include <common/net/types.h>
 
+typedef struct ssl_st SSL;
+
 namespace common {
 namespace net {
 
@@ -48,10 +50,11 @@ class TcpSocketHolder : public ISocketFd {
   socket_descr_t GetFd() const override;
   void SetFd(socket_descr_t fd) override;
 
- private:
+ protected:
   ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
   ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
 
+ private:
   socket_info info_;
 
   DISALLOW_COPY_AND_ASSIGN(TcpSocketHolder);
@@ -95,6 +98,42 @@ class ServerSocketTcp : public SocketTcp {
  private:
   DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
 };
+
+#if defined(HAVE_OPENSSL)
+
+class SocketTcpTls : public SocketTcp {
+ public:
+  typedef SocketTcp base_class;
+
+  explicit SocketTcpTls(const HostAndPort& host);
+
+  socket_descr_t GetFd() const override;
+
+  bool IsValid() const override;
+
+ protected:
+  ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override;
+  ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override;
+
+  ErrnoError SendFileImpl(descriptor_t file_fd, size_t file_size) override;
+
+  ErrnoError CloseImpl() override;
+
+ protected:
+  SSL* ssl_;
+};
+
+class ClientSocketTcpTls : public SocketTcpTls {
+ public:
+  typedef SocketTcpTls base_class;
+
+  explicit ClientSocketTcpTls(const HostAndPort& host);
+
+  ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
+  ErrnoError Disconnect() WARN_UNUSED_RESULT;
+  bool IsConnected() const;
+};
+#endif
 
 }  // namespace net
 }  // namespace common

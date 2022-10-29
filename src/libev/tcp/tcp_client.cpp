@@ -40,9 +40,7 @@ TcpClient::TcpClient(IoLoop* server, const net::socket_info& info, flags_t flags
 TcpClient::TcpClient(IoLoop* server, net::TcpSocketHolder* sock, flags_t flags)
     : IoClient(server, flags), sock_(sock) {}
 
-TcpClient::~TcpClient() {
-  destroy(&sock_);
-}
+TcpClient::~TcpClient() {}
 
 net::socket_info TcpClient::GetInfo() const {
   return sock_->GetInfo();
