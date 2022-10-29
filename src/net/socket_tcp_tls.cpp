@@ -207,6 +207,8 @@ void SocketTcpTls::SetHost(const HostAndPort& host) {
 
 SocketTcpTls::~SocketTcpTls() {}
 
+ClientSocketTcpTls::ClientSocketTcpTls(const HostAndPort& host) : base_class(host) {}
+
 common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
   common::net::ClientSocketTcp hs(GetHost());
   common::ErrnoError err = hs.Connect(tv);
