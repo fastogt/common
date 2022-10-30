@@ -56,6 +56,9 @@ class TcpServer : public IoLoop {
 
   static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
 
+ protected:
+  net::IServerSocketEv* GetSocket() const;
+
  private:
   virtual IoClient* CreateClient(const net::socket_info& info, void* user);
   IoChild* CreateChild() override;

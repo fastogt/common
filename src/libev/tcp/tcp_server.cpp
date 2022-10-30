@@ -109,7 +109,12 @@ IoClient* TcpServer::RegisterClient(const net::socket_info& info, void* user) {
   return nullptr;
 }
 
+net::IServerSocketEv* TcpServer::GetSocket() const {
+  return sock_.get();
+}
+
 IoClient* TcpServer::CreateClient(const net::socket_info& info, void* user) {
+  UNUSED(user);
   return new TcpClient(this, info);
 }
 
