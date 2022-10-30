@@ -42,7 +42,7 @@ class Http2Server : public HttpServer {
   const char* ClassName() const override;
 
  protected:
-  libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
+  libev::tcp::TcpClient* CreateClient(const net::socket_info& info, void* user) override;
 };
 
 }  // namespace http

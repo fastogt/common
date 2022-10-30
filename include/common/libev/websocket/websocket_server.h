@@ -41,7 +41,7 @@ class WebSocketServer : public libev::tcp::TcpServer {
   const char* ClassName() const override;
 
  protected:
-  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info) override;
+  virtual libev::tcp::TcpClient* CreateClient(const net::socket_info& info, void* user) override;
 };
 
 }  // namespace websocket

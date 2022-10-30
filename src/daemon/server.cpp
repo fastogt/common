@@ -21,7 +21,8 @@ namespace daemon {
 DaemonServer::DaemonServer(net::IServerSocketEv* sock, bool is_default, common::libev::IoLoopObserver* observer)
     : base_class(sock, is_default, observer) {}
 
-common::libev::tcp::TcpClient* DaemonServer::CreateClient(const common::net::socket_info& info) {
+common::libev::tcp::TcpClient* DaemonServer::CreateClient(const common::net::socket_info& info, void* user) {
+  UNUSED(user);
   return new DaemonClient(this, info);
 }
 

@@ -98,8 +98,8 @@ IoLoop* TcpServer::FindExistServerByHost(const net::HostAndPort& host) {
   return FindExistLoopByPredicate(find_by_host);
 }
 
-IoClient* TcpServer::RegisterClient(const net::socket_info& info) {
-  IoClient* client = CreateClient(info);
+IoClient* TcpServer::RegisterClient(const net::socket_info& info, void* user) {
+  IoClient* client = CreateClient(info, user);
   bool registered = base_class::RegisterClient(client);
   if (registered) {
     return client;
@@ -109,7 +109,7 @@ IoClient* TcpServer::RegisterClient(const net::socket_info& info) {
   return nullptr;
 }
 
-IoClient* TcpServer::CreateClient(const net::socket_info& info) {
+IoClient* TcpServer::CreateClient(const net::socket_info& info, void* user) {
   return new TcpClient(this, info);
 }
 
@@ -165,8 +165,8 @@ bool TcpServer::IsCanBeRegistered(IoClient* client) const {
   return true;
 }
 
-ErrnoError TcpServer::Accept(net::socket_info* info) {
-  return sock_->Accept(info);
+ErrnoError TcpServer::Accept(net::socket_info* info, void** user) {
+  return sock_->Accept(info, user);
 }
 
 void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
@@ -183,13 +183,14 @@ void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {
   }
 
   net::socket_info sinfo;
-  ErrnoError err = pserver->Accept(&sinfo);
+  void* user = nullptr;
+  ErrnoError err = pserver->Accept(&sinfo, &user);
   if (err) {
     DNOTREACHED() << err->GetDescription();
     return;
   }
 
-  ignore_result(pserver->RegisterClient(sinfo));
+  ignore_result(pserver->RegisterClient(sinfo, user));
 }
 
 }  // namespace tcp

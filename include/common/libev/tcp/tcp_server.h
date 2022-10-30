@@ -52,12 +52,12 @@ class TcpServer : public IoLoop {
   bool IsCanBeRegistered(IoClient* client) const override WARN_UNUSED_RESULT;
 
   using IoLoop::RegisterClient;
-  IoClient* RegisterClient(const net::socket_info& info) WARN_UNUSED_RESULT;
+  IoClient* RegisterClient(const net::socket_info& info, void* user) WARN_UNUSED_RESULT;
 
   static IoLoop* FindExistServerByHost(const net::HostAndPort& host);
 
  private:
-  virtual IoClient* CreateClient(const net::socket_info& info);
+  virtual IoClient* CreateClient(const net::socket_info& info, void* user);
   IoChild* CreateChild() override;
   void PreLooped(LibEvLoop* loop) override;
   void PostLooped(LibEvLoop* loop) override;
@@ -66,7 +66,7 @@ class TcpServer : public IoLoop {
 
   static void accept_cb(LibEvLoop* loop, LibevIO* io, int revents);
 
-  ErrnoError Accept(net::socket_info* info) WARN_UNUSED_RESULT;
+  ErrnoError Accept(net::socket_info* info, void** user) WARN_UNUSED_RESULT;
 
   const std::unique_ptr<net::IServerSocketEv> sock_;
   LibevIO* accept_io_;

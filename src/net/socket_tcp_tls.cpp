@@ -178,9 +178,9 @@ namespace common {
 namespace net {
 
 #if defined(HAVE_OPENSSL)
-TcpTlsSocketHolder::TcpTlsSocketHolder(const socket_info& info) : base_class(info), ssl_(nullptr) {}
+TcpTlsSocketHolder::TcpTlsSocketHolder(const socket_info& info, SSL* ssl) : base_class(info), ssl_(ssl) {}
 
-TcpTlsSocketHolder::TcpTlsSocketHolder(socket_descr_t fd) : base_class(fd), ssl_(nullptr) {}
+TcpTlsSocketHolder::TcpTlsSocketHolder(socket_descr_t fd, SSL* ssl) : base_class(fd), ssl_(ssl) {}
 
 bool TcpTlsSocketHolder::IsValid() const {
   return ssl_ != nullptr && IsValid();
@@ -248,7 +248,7 @@ common::ErrnoError TcpTlsSocketHolder::CloseImpl() {
   return base_class::CloseImpl();
 }
 
-SocketTcpTls::SocketTcpTls(const HostAndPort& host) : TcpTlsSocketHolder(INVALID_SOCKET_VALUE), host_(host) {}
+SocketTcpTls::SocketTcpTls(const HostAndPort& host) : TcpTlsSocketHolder(INVALID_SOCKET_VALUE, nullptr), host_(host) {}
 
 HostAndPort SocketTcpTls::GetHost() const {
   return host_;
@@ -372,7 +372,7 @@ ErrnoError ServerSocketTcpTls::Listen(int backlog) {
   return listen(GetInfo(), backlog);
 }
 
-ErrnoError ServerSocketTcpTls::Accept(socket_info* info) {
+ErrnoError ServerSocketTcpTls::Accept(socket_info* info, SSL** out) {
   DCHECK(IsValid());
   ErrnoError err = accept(GetInfo(), info);
   if (err) {
@@ -389,6 +389,7 @@ ErrnoError ServerSocketTcpTls::Accept(socket_info* info) {
     return common::make_errno_error(str, EINTR);
   }
 
+  *out = ssl;
   return ErrnoError();
 }
 
@@ -421,8 +422,14 @@ ErrnoError ServerSocketEvTcpTls::Listen(int backlog) {
   return sock_.Listen(backlog);
 }
 
-ErrnoError ServerSocketEvTcpTls::Accept(socket_info* info) {
-  return sock_.Accept(info);
+ErrnoError ServerSocketEvTcpTls::Accept(socket_info* info, void** user) {
+  SSL* out = nullptr;
+  ErrnoError err = sock_.Accept(info, &out);
+  if (err) {
+    return err;
+  }
+  *user = out;
+  return ErrnoError();
 }
 
 ErrnoError ServerSocketEvTcpTls::LoadCertificates(const std::string& cert, const std::string& key) {

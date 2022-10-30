@@ -93,7 +93,7 @@ class IServerSocketEv {
 
   virtual ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT = 0;
   virtual ErrnoError Listen(int backlog) WARN_UNUSED_RESULT = 0;
-  virtual ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Accept(socket_info* info, void** user) WARN_UNUSED_RESULT = 0;
 
   virtual ~IServerSocketEv();
 };
@@ -124,7 +124,7 @@ class ServerSocketEvTcp : public IServerSocketEv {
 
   ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT;
 
-  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT;
+  ErrnoError Accept(socket_info* info, void** user) override WARN_UNUSED_RESULT;
 
  private:
   ServerSocketTcp sock_;

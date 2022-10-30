@@ -37,7 +37,8 @@ namespace http {
 Http2Server::Http2Server(net::IServerSocketEv* sock, bool is_default, libev::IoLoopObserver* observer)
     : HttpServer(sock, is_default, observer) {}
 
-tcp::TcpClient* Http2Server::CreateClient(const net::socket_info& info) {
+tcp::TcpClient* Http2Server::CreateClient(const net::socket_info& info, void* user) {
+  UNUSED(user);
   return new Http2Client(this, info);
 }
 

@@ -186,7 +186,8 @@ ErrnoError ServerSocketEvTcp::Listen(int backlog) {
   return sock_.Listen(backlog);
 }
 
-ErrnoError ServerSocketEvTcp::Accept(socket_info* info) {
+ErrnoError ServerSocketEvTcp::Accept(socket_info* info, void** user) {
+  UNUSED(user);
   return sock_.Accept(info);
 }
 

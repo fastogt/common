@@ -25,7 +25,7 @@ class DaemonServer : public libev::tcp::TcpServer {
   explicit DaemonServer(net::IServerSocketEv* sock, bool is_default, libev::IoLoopObserver* observer = nullptr);
 
  private:
-  libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
+  libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info, void* user) override;
 };
 
 }  // namespace daemon

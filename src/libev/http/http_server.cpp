@@ -37,7 +37,8 @@ namespace http {
 HttpServer::HttpServer(net::IServerSocketEv* sock, bool is_default, IoLoopObserver* observer)
     : TcpServer(sock, is_default, observer) {}
 
-tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info) {
+tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info, void* user) {
+  UNUSED(user);
   return new HttpClient(this, info);
 }
 

@@ -42,8 +42,8 @@ class TcpTlsSocketHolder : public TcpSocketHolder {
  public:
   typedef TcpSocketHolder base_class;
 
-  explicit TcpTlsSocketHolder(const socket_info& info);
-  explicit TcpTlsSocketHolder(socket_descr_t fd);
+  explicit TcpTlsSocketHolder(const socket_info& info, SSL* ssl);
+  explicit TcpTlsSocketHolder(socket_descr_t fd, SSL* ssl);
 
   socket_descr_t GetFd() const override;
 
@@ -104,7 +104,7 @@ class ServerSocketTcpTls : public SocketTcpTls {
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
-  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
+  ErrnoError Accept(socket_info* info, SSL** out) WARN_UNUSED_RESULT;
 
   ~ServerSocketTcpTls() override;
 
@@ -128,7 +128,7 @@ class ServerSocketEvTcpTls : public IServerSocketEv {
 
   ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT;
 
-  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT;
+  ErrnoError Accept(socket_info* info, void** user) override WARN_UNUSED_RESULT;
 
   ErrnoError LoadCertificates(const std::string& cert, const std::string& key);
 
