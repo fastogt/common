@@ -326,18 +326,7 @@ bool ClientSocketTcpTls::IsConnected() const {
   return IsValid();
 }
 
-ServerSocketTcpTls::ServerSocketTcpTls(const HostAndPort& host) : SocketTcpTls(host), ctx_(nullptr) {}
-
-common::net::socket_descr_t ServerSocketTcpTls::GetFd() const {
-  if (!ctx_) {
-    return INVALID_SOCKET_VALUE;
-  }
-  return base_class::GetFd();
-}
-
-bool ServerSocketTcpTls::IsValid() const {
-  return ctx_ != nullptr && TcpSocketHolder::IsValid();
-}
+ServerSocketTcpTls::ServerSocketTcpTls(const HostAndPort& host) : base_class(host), ctx_(nullptr) {}
 
 ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const std::string& key) {
   auto ctx = InitServerContext();
@@ -349,57 +338,17 @@ ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const s
     return common::make_errno_error("Failed to setup key/cert for ssl context", EAGAIN);
   }
 
+  if (ctx_) {
+    SSL_CTX_free(ctx_);
+    ctx_ = nullptr;
+  }
+
   ctx_ = ctx;
   return ErrnoError();
 }
 
-ErrnoError ServerSocketTcpTls::Bind(bool reuseaddr) {
-  socket_info linfo;
-  const HostAndPort hs = GetHost();
-  ErrnoError err = resolve(hs, ST_SOCK_STREAM, &linfo);  // init fd
-  if (err) {
-    return err;
-  }
-
-  socket_descr_t fd = linfo.fd();
-  addrinfo* ainf = linfo.addr_info();
-  socket_info lbinfo;
-  err = bind(fd, ainf, reuseaddr, &lbinfo);  // init sockaddr
-  if (err) {
-    return err;
-  }
-
-  bool is_random_port = linfo.port() == 0;
-  if (is_random_port) {                    // random port
-    err = getsockname(fd, ainf, &lbinfo);  // init sockaddr
-    if (err) {
-      return err;
-    }
-
-    HostAndPort new_hs = hs;
-    uint16_t port = 0;
-    ErrnoError errn = get_in_port(lbinfo.addr_info(), &port);
-    if (!errn) {
-      new_hs.SetPort(port);
-    }
-
-    SetInfo(lbinfo);
-    SetHost(new_hs);
-    return ErrnoError();
-  }
-
-  SetInfo(lbinfo);
-  return ErrnoError();
-}
-
-ErrnoError ServerSocketTcpTls::Listen(int backlog) {
-  DCHECK(IsValid());
-  return listen(GetInfo(), backlog);
-}
-
 ErrnoError ServerSocketTcpTls::Accept(socket_info* info, SSL** out) {
-  DCHECK(IsValid());
-  ErrnoError err = accept(GetInfo(), info);
+  ErrnoError err = base_class::Accept(info);
   if (err) {
     return err;
   }

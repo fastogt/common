@@ -98,15 +98,26 @@ class IServerSocketEv {
   virtual ~IServerSocketEv();
 };
 
-class ServerSocketTcp : public SocketTcp {
+class ServerSocketTcp : public TcpSocketHolder {
  public:
+  typedef TcpSocketHolder base_class;
+
   explicit ServerSocketTcp(const HostAndPort& host);
+
+  HostAndPort GetHost() const;
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
   ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
 
  private:
+  using TcpSocketHolder::Read;
+  using TcpSocketHolder::ReadToBuffer;
+  using TcpSocketHolder::Write;
+  using TcpSocketHolder::WriteBuffer;
+
+  HostAndPort host_;
+
   DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
 };
 

@@ -96,17 +96,14 @@ class ClientSocketTcpTls : public SocketTcpTls {
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcpTls);
 };
 
-class ServerSocketTcpTls : public SocketTcpTls {
+class ServerSocketTcpTls : public ServerSocketTcp {
  public:
-  explicit ServerSocketTcpTls(const HostAndPort& host);
+  typedef ServerSocketTcp base_class;
 
-  bool IsValid() const override;
-  socket_descr_t GetFd() const override;
+  explicit ServerSocketTcpTls(const HostAndPort& host);
 
   ErrnoError LoadCertificates(const std::string& cert, const std::string& key);
 
-  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
-  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
   ErrnoError Accept(socket_info* info, SSL** out) WARN_UNUSED_RESULT;
 
   ~ServerSocketTcpTls() override;

@@ -111,12 +111,15 @@ bool ClientSocketTcp::IsConnected() const {
   return IsValid();
 }
 
-ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : SocketTcp(host) {}
+ServerSocketTcp::ServerSocketTcp(const HostAndPort& host) : base_class(INVALID_SOCKET_VALUE), host_(host) {}
+
+HostAndPort ServerSocketTcp::GetHost() const {
+  return host_;
+}
 
 ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
   socket_info linfo;
-  const HostAndPort hs = GetHost();
-  ErrnoError err = resolve(hs, ST_SOCK_STREAM, &linfo);  // init fd
+  ErrnoError err = resolve(host_, ST_SOCK_STREAM, &linfo);  // init fd
   if (err) {
     return err;
   }
@@ -136,7 +139,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
       return err;
     }
 
-    HostAndPort new_hs = hs;
+    HostAndPort new_hs = host_;
     uint16_t port = 0;
     ErrnoError errn = get_in_port(lbinfo.addr_info(), &port);
     if (!errn) {
@@ -144,7 +147,7 @@ ErrnoError ServerSocketTcp::Bind(bool reuseaddr) {
     }
 
     SetInfo(lbinfo);
-    SetHost(new_hs);
+    host_ = new_hs;
     return ErrnoError();
   }
 
