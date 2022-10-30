@@ -60,7 +60,7 @@ class TcpClient : public IoClient {
 
   ErrnoError DoClose() override;
 
-  std::unique_ptr<net::TcpSocketHolder> sock_;
+  const std::unique_ptr<net::TcpSocketHolder> sock_;
 };
 
 }  // namespace tcp

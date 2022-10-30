@@ -32,6 +32,7 @@
 #include <common/net/socket_tcp.h>
 
 typedef struct ssl_st SSL;
+typedef struct ssl_ctx_st SSL_CTX;
 
 namespace common {
 namespace net {
@@ -94,6 +95,25 @@ class ClientSocketTcpTls : public SocketTcpTls {
  private:
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcpTls);
 };
+
+class ServerSocketTcpTls : public SocketTcpTls {
+ public:
+  explicit ServerSocketTcpTls(const HostAndPort& host);
+
+  ErrnoError LoadCertificates(const std::string& cert, const std::string& key);
+
+  ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
+  ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
+  ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
+
+  ~ServerSocketTcpTls() override;
+
+ private:
+  SSL_CTX* ctx_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServerSocketTcpTls);
+};
+
 #endif
 
 }  // namespace net

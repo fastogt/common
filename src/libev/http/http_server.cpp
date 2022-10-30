@@ -34,8 +34,8 @@ namespace common {
 namespace libev {
 namespace http {
 
-HttpServer::HttpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer)
-    : TcpServer(host, is_default, observer) {}
+HttpServer::HttpServer(net::IServerSocket* sock, bool is_default, IoLoopObserver* observer)
+    : TcpServer(sock, is_default, observer) {}
 
 tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info) {
   return new HttpClient(this, info);

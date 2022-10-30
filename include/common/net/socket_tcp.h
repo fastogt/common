@@ -85,6 +85,19 @@ class ClientSocketTcp : public SocketTcp {
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
 };
 
+class IServerSocket {
+ public:
+  virtual socket_descr_t GetFd() const = 0;
+  virtual ErrnoError Close() WARN_UNUSED_RESULT = 0;
+  virtual HostAndPort GetHost() const = 0;
+
+  virtual ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Listen(int backlog) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT = 0;
+
+  virtual ~IServerSocket();
+};
+
 class ServerSocketTcp : public SocketTcp {
  public:
   explicit ServerSocketTcp(const HostAndPort& host);
@@ -92,6 +105,8 @@ class ServerSocketTcp : public SocketTcp {
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
   ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
+
+  static IServerSocket* CreateSocket(const HostAndPort& host);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);

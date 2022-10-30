@@ -137,7 +137,8 @@ void ExitWebServer(common::libev::tcp::TcpServer* ser) {
 
 TEST(Libev, Webscoket) {
   ServerWebHandler hand(kHinf);
-  common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(g_hs, false, &hand);
+  auto sock = common::net::ServerSocketTcp::CreateSocket(g_hs);
+  common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(sock, false, &hand);
   common::ErrnoError err = serv->Bind(true);
   ASSERT_FALSE(err);
 

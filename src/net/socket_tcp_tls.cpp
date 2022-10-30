@@ -41,6 +41,67 @@
 
 namespace {
 
+SSL_CTX* InitContext() {
+  SSL_library_init();
+  SSLeay_add_ssl_algorithms();
+  SSL_load_error_strings();
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  const SSL_METHOD* method = TLSv1_2_client_method();
+#else
+  const SSL_METHOD* method = TLS_client_method();
+#endif
+  if (!method) {
+    return nullptr;
+  }
+
+  return SSL_CTX_new(method);
+}
+
+SSL_CTX* InitServerContext() {
+  SSL_CTX* ctx = InitContext();
+  if (!ctx) {
+    return nullptr;
+  }
+
+  SSL_CTX_set_cipher_list(ctx, "ALL:eNULL");
+  return ctx;
+}
+
+bool LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert, const std::string& key) {
+  if (cert.empty() || key.empty()) {
+    return false;
+  }
+
+  const char* c = cert.c_str();
+  const char* k = key.c_str();
+  // New lines
+  if (SSL_CTX_load_verify_locations(ctx, c, k) != 1) {
+    return false;
+  }
+
+  if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
+    return false;
+  }
+
+  /* set the local certificate from CertFile */
+  if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) <= 0) {
+    return false;
+  }
+
+  /* set the private key from KeyFile (may be the same as CertFile) */
+  if (SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM) <= 0) {
+    return false;
+  }
+
+  /* verify private key */
+  if (!SSL_CTX_check_private_key(ctx)) {
+    return false;
+  }
+
+  return true;
+}
+
 common::ErrnoError SSLWrite(SSL* ssl, const void* data, size_t size, size_t* nwrite_out) {
   int len = SSL_write(ssl, data, size);
   if (len < 0) {
@@ -117,17 +178,9 @@ namespace common {
 namespace net {
 
 #if defined(HAVE_OPENSSL)
-TcpTlsSocketHolder::TcpTlsSocketHolder(const socket_info& info) : base_class(info), ssl_(nullptr) {
-  SSL_library_init();
-  SSLeay_add_ssl_algorithms();
-  SSL_load_error_strings();
-}
+TcpTlsSocketHolder::TcpTlsSocketHolder(const socket_info& info) : base_class(info), ssl_(nullptr) {}
 
-TcpTlsSocketHolder::TcpTlsSocketHolder(socket_descr_t fd) : base_class(fd), ssl_(nullptr) {
-  SSL_library_init();
-  SSLeay_add_ssl_algorithms();
-  SSL_load_error_strings();
-}
+TcpTlsSocketHolder::TcpTlsSocketHolder(socket_descr_t fd) : base_class(fd), ssl_(nullptr) {}
 
 bool TcpTlsSocketHolder::IsValid() const {
   return ssl_ != nullptr && IsValid();
@@ -216,17 +269,7 @@ common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
     return err;
   }
 
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-  const SSL_METHOD* method = TLSv1_2_client_method();
-#else
-  const SSL_METHOD* method = TLS_client_method();
-#endif
-  if (!method) {
-    ignore_result(hs.Disconnect());
-    return common::make_errno_error_inval();
-  }
-
-  SSL_CTX* ctx = SSL_CTX_new(method);
+  auto ctx = InitContext();
   if (!ctx) {
     ignore_result(hs.Disconnect());
     return common::make_errno_error_inval();
@@ -234,7 +277,6 @@ common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
 
   SSL* ssl = SSL_new(ctx);
   SSL_CTX_free(ctx);
-  ctx = nullptr;
   if (!ssl) {
     SSL_free(ssl);
     ignore_result(hs.Disconnect());
@@ -269,6 +311,92 @@ common::ErrnoError ClientSocketTcpTls::Disconnect() {
 
 bool ClientSocketTcpTls::IsConnected() const {
   return IsValid();
+}
+
+ServerSocketTcpTls::ServerSocketTcpTls(const HostAndPort& host) : SocketTcpTls(host), ctx_(nullptr) {}
+
+ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const std::string& key) {
+  auto ctx = InitServerContext();
+  if (!ctx) {
+    return common::make_errno_error_inval();
+  }
+
+  if (!LoadCertificatesContext(ctx, cert, key)) {
+    return common::make_errno_error_inval();
+  }
+
+  return ErrnoError();
+}
+
+ErrnoError ServerSocketTcpTls::Bind(bool reuseaddr) {
+  socket_info linfo;
+  const HostAndPort hs = GetHost();
+  ErrnoError err = resolve(hs, ST_SOCK_STREAM, &linfo);  // init fd
+  if (err) {
+    return err;
+  }
+
+  socket_descr_t fd = linfo.fd();
+  addrinfo* ainf = linfo.addr_info();
+  socket_info lbinfo;
+  err = bind(fd, ainf, reuseaddr, &lbinfo);  // init sockaddr
+  if (err) {
+    return err;
+  }
+
+  bool is_random_port = linfo.port() == 0;
+  if (is_random_port) {                    // random port
+    err = getsockname(fd, ainf, &lbinfo);  // init sockaddr
+    if (err) {
+      return err;
+    }
+
+    HostAndPort new_hs = hs;
+    uint16_t port = 0;
+    ErrnoError errn = get_in_port(lbinfo.addr_info(), &port);
+    if (!errn) {
+      new_hs.SetPort(port);
+    }
+
+    SetInfo(lbinfo);
+    SetHost(new_hs);
+    return ErrnoError();
+  }
+
+  SetInfo(lbinfo);
+  return ErrnoError();
+}
+
+ErrnoError ServerSocketTcpTls::Listen(int backlog) {
+  DCHECK(IsValid());
+  return listen(GetInfo(), backlog);
+}
+
+ErrnoError ServerSocketTcpTls::Accept(socket_info* info) {
+  DCHECK(IsValid());
+  ErrnoError err = accept(GetInfo(), info);
+  if (err) {
+    return err;
+  }
+
+  auto ssl = SSL_new(ctx_);
+  SSL_set_fd(ssl, info->fd());
+  int e = SSL_accept(ssl);
+  if (e < 0) {
+    int err = SSL_get_error(ssl, e);
+    char* str = ERR_error_string(err, nullptr);
+    SSL_free(ssl);
+    return common::make_errno_error(str, EINTR);
+  }
+
+  return ErrnoError();
+}
+
+ServerSocketTcpTls::~ServerSocketTcpTls() {
+  if (ctx_) {
+    SSL_CTX_free(ctx_);
+    ctx_ = nullptr;
+  }
 }
 
 #endif

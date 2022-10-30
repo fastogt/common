@@ -40,7 +40,7 @@ namespace tcp {
 class TcpServer : public IoLoop {
  public:
   typedef IoLoop base_class;
-  explicit TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer = nullptr);
+  explicit TcpServer(net::IServerSocket* sock, bool is_default, IoLoopObserver* observer = nullptr);
   ~TcpServer() override;
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
@@ -68,7 +68,7 @@ class TcpServer : public IoLoop {
 
   ErrnoError Accept(net::socket_info* info) WARN_UNUSED_RESULT;
 
-  net::ServerSocketTcp sock_;
+  const std::unique_ptr<net::IServerSocket> sock_;
   LibevIO* accept_io_;
 };
 

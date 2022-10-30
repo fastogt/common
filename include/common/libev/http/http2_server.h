@@ -37,7 +37,7 @@ namespace http {
 
 class Http2Server : public HttpServer {
  public:
-  Http2Server(const net::HostAndPort& host, bool is_default, libev::IoLoopObserver* observer);
+  Http2Server(net::IServerSocket* sock, bool is_default, libev::IoLoopObserver* observer);
 
   const char* ClassName() const override;
 

@@ -72,8 +72,8 @@ namespace libev {
 namespace tcp {
 
 // server
-TcpServer::TcpServer(const net::HostAndPort& host, bool is_default, IoLoopObserver* observer)
-    : IoLoop(is_default ? new LibEvDefaultLoop : new LibEvLoop, observer), sock_(host), accept_io_(new LibevIO) {
+TcpServer::TcpServer(net::IServerSocket* sock, bool is_default, IoLoopObserver* observer)
+    : IoLoop(is_default ? new LibEvDefaultLoop : new LibEvLoop, observer), sock_(sock), accept_io_(new LibevIO) {
   accept_io_->SetUserData(this);
 }
 
@@ -118,7 +118,7 @@ IoChild* TcpServer::CreateChild() {
 }
 
 void TcpServer::PreLooped(LibEvLoop* loop) {
-  net::socket_descr_t fd = sock_.GetFd();
+  net::socket_descr_t fd = sock_->GetFd();
   bool is_inited = accept_io_->Init(loop, accept_cb, fd, EV_READ);
   if (!is_inited) {
     DNOTREACHED();
@@ -138,16 +138,16 @@ void TcpServer::Stopped(LibEvLoop* loop) {
   loop->StopIO(accept_io_);
   IoLoop::Stopped(loop);
 
-  ErrnoError err = sock_.Close();
+  ErrnoError err = sock_->Close();
   DCHECK(!err) << err->GetDescription();
 }
 
 ErrnoError TcpServer::Bind(bool reuseaddr) {
-  return sock_.Bind(reuseaddr);
+  return sock_->Bind(reuseaddr);
 }
 
 ErrnoError TcpServer::Listen(int backlog) {
-  return sock_.Listen(backlog);
+  return sock_->Listen(backlog);
 }
 
 const char* TcpServer::ClassName() const {
@@ -155,7 +155,7 @@ const char* TcpServer::ClassName() const {
 }
 
 net::HostAndPort TcpServer::GetHost() const {
-  return sock_.GetHost();
+  return sock_->GetHost();
 }
 
 bool TcpServer::IsCanBeRegistered(IoClient* client) const {
@@ -166,7 +166,7 @@ bool TcpServer::IsCanBeRegistered(IoClient* client) const {
 }
 
 ErrnoError TcpServer::Accept(net::socket_info* info) {
-  return sock_.Accept(info);
+  return sock_->Accept(info);
 }
 
 void TcpServer::accept_cb(LibEvLoop* loop, LibevIO* io, int revents) {

@@ -22,9 +22,7 @@ namespace daemon {
 class DaemonServer : public libev::tcp::TcpServer {
  public:
   typedef libev::tcp::TcpServer base_class;
-  explicit DaemonServer(const common::net::HostAndPort& host,
-                        bool is_default,
-                        libev::IoLoopObserver* observer = nullptr);
+  explicit DaemonServer(net::IServerSocket* sock, bool is_default, libev::IoLoopObserver* observer = nullptr);
 
  private:
   libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
