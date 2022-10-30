@@ -37,7 +37,7 @@ namespace websocket {
 
 class WebSocketServer : public libev::tcp::TcpServer {
  public:
-  explicit WebSocketServer(net::IServerSocket* sock, bool is_default, libev::IoLoopObserver* observer = nullptr);
+  explicit WebSocketServer(net::IServerSocketEv* sock, bool is_default, libev::IoLoopObserver* observer = nullptr);
   const char* ClassName() const override;
 
  protected:

@@ -18,7 +18,7 @@
 namespace common {
 namespace daemon {
 
-DaemonServer::DaemonServer(net::IServerSocket* sock, bool is_default, common::libev::IoLoopObserver* observer)
+DaemonServer::DaemonServer(net::IServerSocketEv* sock, bool is_default, common::libev::IoLoopObserver* observer)
     : base_class(sock, is_default, observer) {}
 
 common::libev::tcp::TcpClient* DaemonServer::CreateClient(const common::net::socket_info& info) {

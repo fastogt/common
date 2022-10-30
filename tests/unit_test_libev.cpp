@@ -108,7 +108,7 @@ void ExitServer(common::libev::tcp::TcpServer* ser) {
 
 TEST(Libev, IoServer) {
   ServerHandler hand;
-  auto sock = common::net::ServerSocketTcp::CreateSocket(g_hs);
+  auto sock = new common::net::ServerSocketEvTcp(g_hs);
   common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(sock, false, &hand);
   common::ErrnoError err = serv->Bind(true);
   ASSERT_FALSE(err);
@@ -227,7 +227,7 @@ void ExitHttpServer(common::libev::tcp::TcpServer* ser) {
 
 TEST(Libev, Http) {
   ServerWebHandler hand(kHinf);
-  auto sock = common::net::ServerSocketTcp::CreateSocket(g_hs);
+  auto sock = new common::net::ServerSocketEvTcp(g_hs);
   common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(sock, false, &hand);
   common::ErrnoError err = serv->Bind(true);
   ASSERT_FALSE(err);

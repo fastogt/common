@@ -72,7 +72,7 @@ namespace libev {
 namespace tcp {
 
 // server
-TcpServer::TcpServer(net::IServerSocket* sock, bool is_default, IoLoopObserver* observer)
+TcpServer::TcpServer(net::IServerSocketEv* sock, bool is_default, IoLoopObserver* observer)
     : IoLoop(is_default ? new LibEvDefaultLoop : new LibEvLoop, observer), sock_(sock), accept_io_(new LibevIO) {
   accept_io_->SetUserData(this);
 }

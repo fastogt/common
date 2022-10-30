@@ -34,7 +34,7 @@ namespace common {
 namespace libev {
 namespace websocket {
 
-WebSocketServer::WebSocketServer(net::IServerSocket* sock, bool is_default, IoLoopObserver* observer)
+WebSocketServer::WebSocketServer(net::IServerSocketEv* sock, bool is_default, IoLoopObserver* observer)
     : TcpServer(sock, is_default, observer) {}
 
 const char* WebSocketServer::ClassName() const {

@@ -162,32 +162,32 @@ ErrnoError ServerSocketTcp::Accept(socket_info* info) {
   return accept(GetInfo(), info);
 }
 
-IServerSocket::~IServerSocket() {}
+IServerSocketEv::~IServerSocketEv() {}
 
-namespace {
-class ServerSocket : public IServerSocket {
- public:
-  ServerSocket(const HostAndPort& host) : sock_(host) {}
+ServerSocketEvTcp::ServerSocketEvTcp(const HostAndPort& host) : sock_(host) {}
 
-  socket_descr_t GetFd() const override { return sock_.GetFd(); }
+socket_descr_t ServerSocketEvTcp::GetFd() const {
+  return sock_.GetFd();
+}
 
-  ErrnoError Close() override WARN_UNUSED_RESULT { return sock_.Close(); }
+ErrnoError ServerSocketEvTcp::Close() {
+  return sock_.Close();
+}
 
-  HostAndPort GetHost() const override { return sock_.GetHost(); }
+HostAndPort ServerSocketEvTcp::GetHost() const {
+  return sock_.GetHost();
+}
 
-  ErrnoError Bind(bool reuseaddr) override WARN_UNUSED_RESULT { return sock_.Bind(reuseaddr); }
+ErrnoError ServerSocketEvTcp::Bind(bool reuseaddr) {
+  return sock_.Bind(reuseaddr);
+}
 
-  ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT { return sock_.Listen(backlog); }
+ErrnoError ServerSocketEvTcp::Listen(int backlog) {
+  return sock_.Listen(backlog);
+}
 
-  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT { return sock_.Accept(info); }
-
- private:
-  ServerSocketTcp sock_;
-};
-}  // namespace
-
-IServerSocket* ServerSocketTcp::CreateSocket(const HostAndPort& host) {
-  return new ServerSocket(host);
+ErrnoError ServerSocketEvTcp::Accept(socket_info* info) {
+  return sock_.Accept(info);
 }
 
 }  // namespace net

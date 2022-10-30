@@ -108,15 +108,32 @@ class ServerSocketTcpTls : public SocketTcpTls {
 
   ~ServerSocketTcpTls() override;
 
-  static ErrnoError CreateSocket(const HostAndPort& host,
-                                 const std::string& cert,
-                                 const std::string& key,
-                                 IServerSocket** out);
-
  private:
   SSL_CTX* ctx_;
 
   DISALLOW_COPY_AND_ASSIGN(ServerSocketTcpTls);
+};
+
+class ServerSocketEvTcpTls : public IServerSocketEv {
+ public:
+  ServerSocketEvTcpTls(const HostAndPort& host);
+
+  socket_descr_t GetFd() const override;
+
+  ErrnoError Close() override WARN_UNUSED_RESULT;
+
+  HostAndPort GetHost() const override;
+
+  ErrnoError Bind(bool reuseaddr) override WARN_UNUSED_RESULT;
+
+  ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT;
+
+  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT;
+
+  ErrnoError LoadCertificates(const std::string& cert, const std::string& key);
+
+ private:
+  ServerSocketTcpTls sock_;
 };
 
 #endif

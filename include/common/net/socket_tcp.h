@@ -85,7 +85,7 @@ class ClientSocketTcp : public SocketTcp {
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcp);
 };
 
-class IServerSocket {
+class IServerSocketEv {
  public:
   virtual socket_descr_t GetFd() const = 0;
   virtual ErrnoError Close() WARN_UNUSED_RESULT = 0;
@@ -95,7 +95,7 @@ class IServerSocket {
   virtual ErrnoError Listen(int backlog) WARN_UNUSED_RESULT = 0;
   virtual ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT = 0;
 
-  virtual ~IServerSocket();
+  virtual ~IServerSocketEv();
 };
 
 class ServerSocketTcp : public SocketTcp {
@@ -106,10 +106,28 @@ class ServerSocketTcp : public SocketTcp {
   ErrnoError Listen(int backlog) WARN_UNUSED_RESULT;
   ErrnoError Accept(socket_info* info) WARN_UNUSED_RESULT;
 
-  static IServerSocket* CreateSocket(const HostAndPort& host);
-
  private:
   DISALLOW_COPY_AND_ASSIGN(ServerSocketTcp);
+};
+
+class ServerSocketEvTcp : public IServerSocketEv {
+ public:
+  ServerSocketEvTcp(const HostAndPort& host);
+
+  socket_descr_t GetFd() const override;
+
+  ErrnoError Close() override;
+
+  HostAndPort GetHost() const override;
+
+  ErrnoError Bind(bool reuseaddr) override WARN_UNUSED_RESULT;
+
+  ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT;
+
+  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT;
+
+ private:
+  ServerSocketTcp sock_;
 };
 
 }  // namespace net
