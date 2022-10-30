@@ -318,11 +318,11 @@ ServerSocketTcpTls::ServerSocketTcpTls(const HostAndPort& host) : SocketTcpTls(h
 ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const std::string& key) {
   auto ctx = InitServerContext();
   if (!ctx) {
-    return common::make_errno_error_inval();
+    return common::make_errno_error("Failed to init ssl context", EAGAIN);
   }
 
   if (!LoadCertificatesContext(ctx, cert, key)) {
-    return common::make_errno_error_inval();
+    return common::make_errno_error("Failed to setup key/cert for ssl context", EAGAIN);
   }
 
   return ErrnoError();
