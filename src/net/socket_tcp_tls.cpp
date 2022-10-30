@@ -399,6 +399,47 @@ ServerSocketTcpTls::~ServerSocketTcpTls() {
   }
 }
 
+namespace {
+class ServerSocket : public IServerSocket {
+ public:
+  ServerSocket(const HostAndPort& host) : sock_(host) {}
+
+  socket_descr_t GetFd() const override { return sock_.GetFd(); }
+
+  ErrnoError Close() override WARN_UNUSED_RESULT { return sock_.Close(); }
+
+  HostAndPort GetHost() const override { return sock_.GetHost(); }
+
+  ErrnoError Bind(bool reuseaddr) override WARN_UNUSED_RESULT { return sock_.Bind(reuseaddr); }
+
+  ErrnoError Listen(int backlog) override WARN_UNUSED_RESULT { return sock_.Listen(backlog); }
+
+  ErrnoError Accept(socket_info* info) override WARN_UNUSED_RESULT { return sock_.Accept(info); }
+
+  ErrnoError LoadCertificates(const std::string& cert, const std::string& key) {
+    return sock_.LoadCertificates(cert, key);
+  }
+
+ private:
+  ServerSocketTcpTls sock_;
+};
+}  // namespace
+
+ErrnoError ServerSocketTcpTls::CreateSocket(const HostAndPort& host,
+                                            const std::string& cert,
+                                            const std::string& key,
+                                            IServerSocket** out) {
+  auto server = new ServerSocket(host);
+  auto err = server->LoadCertificates(cert, key);
+  if (err) {
+    delete server;
+    return err;
+  }
+
+  *out = server;
+  return ErrnoError();
+}
+
 #endif
 
 }  // namespace net

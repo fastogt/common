@@ -108,6 +108,11 @@ class ServerSocketTcpTls : public SocketTcpTls {
 
   ~ServerSocketTcpTls() override;
 
+  static ErrnoError CreateSocket(const HostAndPort& host,
+                                 const std::string& cert,
+                                 const std::string& key,
+                                 IServerSocket** out);
+
  private:
   SSL_CTX* ctx_;
 
