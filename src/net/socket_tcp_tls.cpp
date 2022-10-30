@@ -41,7 +41,7 @@
 
 namespace {
 
-SSL_CTX* InitContext() {
+SSL_CTX* InitClientContext() {
   SSL_library_init();
   SSLeay_add_ssl_algorithms();
   SSL_load_error_strings();
@@ -59,7 +59,20 @@ SSL_CTX* InitContext() {
 }
 
 SSL_CTX* InitServerContext() {
-  SSL_CTX* ctx = InitContext();
+  SSL_library_init();
+  SSLeay_add_ssl_algorithms();
+  SSL_load_error_strings();
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+  const SSL_METHOD* method = TLSv1_2_server_method();
+#else
+  const SSL_METHOD* method = TLS_server_method();
+#endif
+  if (!method) {
+    return nullptr;
+  }
+
+  SSL_CTX* ctx = SSL_CTX_new(method);
   if (!ctx) {
     return nullptr;
   }
@@ -183,7 +196,7 @@ TcpTlsSocketHolder::TcpTlsSocketHolder(const socket_info& info, SSL* ssl) : base
 TcpTlsSocketHolder::TcpTlsSocketHolder(socket_descr_t fd, SSL* ssl) : base_class(fd), ssl_(ssl) {}
 
 bool TcpTlsSocketHolder::IsValid() const {
-  return ssl_ != nullptr && IsValid();
+  return ssl_ != nullptr && base_class::IsValid();
 }
 
 common::net::socket_descr_t TcpTlsSocketHolder::GetFd() const {
@@ -269,7 +282,7 @@ common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
     return err;
   }
 
-  auto ctx = InitContext();
+  auto ctx = InitClientContext();
   if (!ctx) {
     ignore_result(hs.Disconnect());
     return common::make_errno_error_inval();
@@ -315,6 +328,17 @@ bool ClientSocketTcpTls::IsConnected() const {
 
 ServerSocketTcpTls::ServerSocketTcpTls(const HostAndPort& host) : SocketTcpTls(host), ctx_(nullptr) {}
 
+common::net::socket_descr_t ServerSocketTcpTls::GetFd() const {
+  if (!ctx_) {
+    return INVALID_SOCKET_VALUE;
+  }
+  return base_class::GetFd();
+}
+
+bool ServerSocketTcpTls::IsValid() const {
+  return ctx_ != nullptr && TcpSocketHolder::IsValid();
+}
+
 ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const std::string& key) {
   auto ctx = InitServerContext();
   if (!ctx) {
@@ -325,6 +349,7 @@ ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const s
     return common::make_errno_error("Failed to setup key/cert for ssl context", EAGAIN);
   }
 
+  ctx_ = ctx;
   return ErrnoError();
 }
 

@@ -100,6 +100,9 @@ class ServerSocketTcpTls : public SocketTcpTls {
  public:
   explicit ServerSocketTcpTls(const HostAndPort& host);
 
+  bool IsValid() const override;
+  socket_descr_t GetFd() const override;
+
   ErrnoError LoadCertificates(const std::string& cert, const std::string& key);
 
   ErrnoError Bind(bool reuseaddr) WARN_UNUSED_RESULT;
