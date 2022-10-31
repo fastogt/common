@@ -49,6 +49,7 @@ class DescriptorClient : public IoClient {
  private:
   ErrnoError DoSingleWrite(const void* data, size_t size, size_t* nwrite_out) override WARN_UNUSED_RESULT;
   ErrnoError DoSingleRead(void* out_data, size_t max_size, size_t* nread_out) override WARN_UNUSED_RESULT;
+  ErrnoError DoSendFile(descriptor_t file_fd, size_t file_size) override WARN_UNUSED_RESULT;
 
   file_system::DescriptorHolder desc_;
 };

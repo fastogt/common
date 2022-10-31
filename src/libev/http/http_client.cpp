@@ -121,7 +121,7 @@ ErrnoError HttpClient::SendError(common::http::http_protocol protocol,
 
 ErrnoError HttpClient::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
   CHECK(protocol <= common::http::HP_1_1);
-  return net::send_file_to_fd(GetFd(), fdesc, 0, size);
+  return SendFile(fdesc, size);
 }
 
 ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
