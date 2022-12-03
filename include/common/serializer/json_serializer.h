@@ -211,7 +211,7 @@ class JsonSerializerArray : public JsonSerializerBase<T> {
   typedef JsonSerializerBase<T> base_class;
   typedef typename base_class::serialize_type serialize_type;
 
-  container_t Get() const { return array_; }
+  T Get(size_t index) const { return array_[index]; }
 
   bool Empty() const { return array_.empty(); }
 
