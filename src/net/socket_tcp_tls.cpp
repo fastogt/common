@@ -113,9 +113,8 @@ common::ErrnoError LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert
   }
 
   /* verify private key */
-  res = SSL_CTX_check_private_key(ctx);
-  if (!res) {
-    return common::make_errno_error(common::MemSPrintf("SSL verify location failed err: %d", res), EAGAIN);
+  if (!SSL_CTX_check_private_key(ctx)) {
+    return common::make_errno_error("Private key does not match the certificate", EAGAIN);
   }
 
   return common::ErrnoError();
