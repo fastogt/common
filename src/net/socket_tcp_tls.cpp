@@ -94,11 +94,9 @@ common::ErrnoError LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert
     return common::make_errno_error("SSL verify location failed", EAGAIN);
   }
 
-  /*
-    if (SSL_CTX_set_default_verify_paths(ctx) <= 0) {
-      return common::make_errno_error("SSL set default verify path failed", EAGAIN);
-    }
-  */
+  if (SSL_CTX_set_default_verify_paths(ctx) <= 0) {
+    return common::make_errno_error("SSL set default verify path failed", EAGAIN);
+  }
 
   /* set the local certificate from CertFile */
   if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) <= 0) {
