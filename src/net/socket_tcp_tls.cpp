@@ -90,29 +90,38 @@ common::ErrnoError LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert
   const char* c = cert.c_str();
   const char* k = key.c_str();
   // New lines
-  if (SSL_CTX_load_verify_locations(ctx, c, k) <= 0) {
-    return common::make_errno_error("SSL verify location failed", EAGAIN);
+  if (SSL_CTX_load_verify_locations(ctx, c, k) != 1) {
+    unsigned long err = ERR_get_error();
+    char* str = ERR_error_string(err, nullptr);
+    return common::make_errno_error(common::MemSPrintf("SSL verify location failed, err: %s", str), EAGAIN);
   }
 
-  if (SSL_CTX_set_default_verify_paths(ctx) <= 0) {
-    return common::make_errno_error("SSL set default verify path failed", EAGAIN);
+  if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
+    unsigned long err = ERR_get_error();
+    char* str = ERR_error_string(err, nullptr);
+    return common::make_errno_error(common::MemSPrintf("SSL set default verify path failed, err: %s", str), EAGAIN);
   }
 
   /* set the local certificate from CertFile */
-  if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) <= 0) {
-    return common::make_errno_error("SSL set certificate failed", EAGAIN);
+  if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) != 1) {
+    unsigned long err = ERR_get_error();
+    char* str = ERR_error_string(err, nullptr);
+    return common::make_errno_error(common::MemSPrintf("SSL set certificate failed, err: %s", str), EAGAIN);
   }
 
   /* set the private key from KeyFile (may be the same as CertFile) */
-  if (SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM) != 1) {
     unsigned long err = ERR_get_error();
     char* str = ERR_error_string(err, nullptr);
-    return common::make_errno_error(common::MemSPrintf("SSL set private key failed err: %s", str), EAGAIN);
+    return common::make_errno_error(common::MemSPrintf("SSL set private key failed, err: %s", str), EAGAIN);
   }
 
   /* verify private key */
-  if (SSL_CTX_check_private_key(ctx) <= 0) {
-    return common::make_errno_error("SSL private key does not match the certificate public key", EAGAIN);
+  if (SSL_CTX_check_private_key(ctx) != 1) {
+    unsigned long err = ERR_get_error();
+    char* str = ERR_error_string(err, nullptr);
+    return common::make_errno_error(
+        common::MemSPrintf("SSL private key doesn't match the certificate public key, err: %s", str), EAGAIN);
   }
 
   return common::ErrnoError();
