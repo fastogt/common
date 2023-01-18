@@ -90,31 +90,31 @@ common::ErrnoError LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert
   const char* c = cert.c_str();
   const char* k = key.c_str();
   // New lines
-  int res = SSL_CTX_load_verify_locations(ctx, c, k);
-  if (res != 1) {
-    return common::make_errno_error(common::MemSPrintf("SSL verify location failed err: %d", res), EAGAIN);
+  if (SSL_CTX_load_verify_locations(ctx, c, k) <= 0) {
+    return common::make_errno_error("SSL verify location failed", EAGAIN);
   }
 
-  res = SSL_CTX_set_default_verify_paths(ctx);
-  if (res != 1) {
-    return common::make_errno_error(common::MemSPrintf("SSL set default verify paths failed err: %d", res), EAGAIN);
-  }
+  /*
+    if (SSL_CTX_set_default_verify_paths(ctx) <= 0) {
+      return common::make_errno_error("SSL set default verify path failed", EAGAIN);
+    }
+  */
 
   /* set the local certificate from CertFile */
-  res = SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM);
-  if (res <= 0) {
-    return common::make_errno_error(common::MemSPrintf("SSL set certificate failed: %d", res), EAGAIN);
+  if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) <= 0) {
+    return common::make_errno_error("SSL set certificate failed", EAGAIN);
   }
 
   /* set the private key from KeyFile (may be the same as CertFile) */
-  res = SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM);
-  if (res <= 0) {
-    return common::make_errno_error(common::MemSPrintf("SSL set private key failed err: %d", res), EAGAIN);
+  if (SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM) <= 0) {
+    unsigned long err = ERR_get_error();
+    char* str = ERR_error_string(err, nullptr);
+    return common::make_errno_error(common::MemSPrintf("SSL set private key failed err: %s", str), EAGAIN);
   }
 
   /* verify private key */
-  if (!SSL_CTX_check_private_key(ctx)) {
-    return common::make_errno_error("Private key does not match the certificate", EAGAIN);
+  if (SSL_CTX_check_private_key(ctx) <= 0) {
+    return common::make_errno_error("SSL private key does not match the certificate public key", EAGAIN);
   }
 
   return common::ErrnoError();
