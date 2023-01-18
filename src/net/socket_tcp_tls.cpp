@@ -81,38 +81,38 @@ SSL_CTX* InitServerContext() {
   return ctx;
 }
 
-bool LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert, const std::string& key) {
+common::ErrnoError LoadCertificatesContext(SSL_CTX* ctx, const std::string& cert, const std::string& key) {
   if (cert.empty() || key.empty()) {
-    return false;
+    return common::make_errno_error_inval();
   }
 
   const char* c = cert.c_str();
   const char* k = key.c_str();
   // New lines
   if (SSL_CTX_load_verify_locations(ctx, c, k) != 1) {
-    return false;
+    return common::make_errno_error("SSL verify location failed", EAGAIN);
   }
 
   if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
-    return false;
+    return common::make_errno_error("SSL set default verify path failed", EAGAIN);
   }
 
   /* set the local certificate from CertFile */
   if (SSL_CTX_use_certificate_file(ctx, c, SSL_FILETYPE_PEM) <= 0) {
-    return false;
+    return common::make_errno_error("SSL set certificate failed", EAGAIN);
   }
 
   /* set the private key from KeyFile (may be the same as CertFile) */
   if (SSL_CTX_use_PrivateKey_file(ctx, k, SSL_FILETYPE_PEM) <= 0) {
-    return false;
+    return common::make_errno_error("SSL set private key failed", EAGAIN);
   }
 
   /* verify private key */
   if (!SSL_CTX_check_private_key(ctx)) {
-    return false;
+    return common::make_errno_error("SSL verify location failed", EAGAIN);
   }
 
-  return true;
+  return common::ErrnoError();
 }
 
 common::ErrnoError SSLWrite(SSL* ssl, const void* data, size_t size, size_t* nwrite_out) {
@@ -334,8 +334,9 @@ ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const s
     return common::make_errno_error("Failed to init ssl context", EAGAIN);
   }
 
-  if (!LoadCertificatesContext(ctx, cert, key)) {
-    return common::make_errno_error("Failed to setup key/cert for ssl context", EAGAIN);
+  auto err = LoadCertificatesContext(ctx, cert, key);
+  if (err) {
+    return err;
   }
 
   if (ctx_) {
