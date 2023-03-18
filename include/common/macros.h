@@ -166,7 +166,9 @@ typedef int descriptor_t;
 #define PRINTF_FORMAT(format_param, dots_param)
 #endif
 
+#ifndef CHAR_BIT
 #define CHAR_BIT __CHAR_BIT__
+#endif
 
 // Macro for hinting that an expression is likely to be false.
 #if !defined(UNLIKELY)
