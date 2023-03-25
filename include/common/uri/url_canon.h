@@ -702,6 +702,21 @@ bool CanonicalizeRtmpURL(const char16* spec,
                          CanonOutput* output,
                          Parsed* new_parsed);
 
+// Use for WebRTC URLs.
+bool CanonicalizeWebRTCURL(const char* spec,
+                           int spec_len,
+                           const Parsed& parsed,
+                           CharsetConverter* query_converter,
+                           CanonOutput* output,
+                           Parsed* new_parsed);
+
+bool CanonicalizeWebRTCURL(const char16* spec,
+                           int spec_len,
+                           const Parsed& parsed,
+                           CharsetConverter* query_converter,
+                           CanonOutput* output,
+                           Parsed* new_parsed);
+
 // Use for rtsp URLs.
 bool CanonicalizeRtspURL(const char* spec,
                          int spec_len,

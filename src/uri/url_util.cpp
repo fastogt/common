@@ -67,6 +67,8 @@ struct SchemeRegistry {
       {kRtpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kSrtScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
       {kTcpScheme, SCHEME_WITH_HOST_AND_PORT},
+      {kWebRTCScheme, SCHEME_WITH_HOST_AND_PORT},
+      {kWebRTCsScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtmpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtmpsScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtmpeScheme, SCHEME_WITH_HOST_AND_PORT},
@@ -292,6 +294,11 @@ bool DoCanonicalize(const CHAR* spec,
     // Rtmp/rtmps URLs are special.
     ParseRtmpURL(spec, spec_len, &parsed_input);
     success = CanonicalizeRtmpURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, uri::kWebRTCScheme) ||
+             DoCompareSchemeComponent(spec, scheme, uri::kWebRTCsScheme)) {
+    // WebRTC/WebRTCs URLs are special.
+    ParseWebRTCURL(spec, spec_len, &parsed_input);
+    success = CanonicalizeWebRTCURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, uri::kRtspScheme)) {
     // Rtsp URLs are special.
     ParseRtspURL(spec, spec_len, &parsed_input);
@@ -301,7 +308,6 @@ bool DoCanonicalize(const CHAR* spec,
     ParseStandardURL(spec, spec_len, &parsed_input);
     success =
         CanonicalizeStandardURL(spec, spec_len, parsed_input, scheme_type, charset_converter, output, output_parsed);
-
   } else {
     // "Weird" URLs like data: and javascript:.
     ParsePathURL(spec, spec_len, trim_path_end, &parsed_input);

@@ -35,14 +35,14 @@ namespace uri {
 namespace {
 
 template <typename CHAR, typename UCHAR>
-bool DoCanonicalizeSrtURL(const URLComponentSource<CHAR>& source,
-                          const Parsed& parsed,
-                          CharsetConverter* query_converter,
-                          CanonOutput* output,
-                          Parsed* new_parsed) {
+bool DoCanonicalizeWebRTCURL(const URLComponentSource<CHAR>& source,
+                             const Parsed& parsed,
+                             CharsetConverter* query_converter,
+                             CanonOutput* output,
+                             Parsed* new_parsed) {
   UNUSED(query_converter);
 
-  // Things we don't set in srt: URLs.
+  // Things we don't set in webrtc: URLs.
   new_parsed->username = Component();
   new_parsed->password = Component();
   // new_parsed->query = Component();
@@ -57,8 +57,8 @@ bool DoCanonicalizeSrtURL(const URLComponentSource<CHAR>& source,
     output->push_back('/');
   }
 
-  // output->Append("srt://", 6);
-  // new_parsed->scheme.len = 3;
+  // output->Append("webrtc://", 9);
+  // new_parsed->scheme.len = 6;
 
   success = CanonicalizeHost(source.host, parsed.host, output, &new_parsed->host);
   int default_port = DefaultPortForScheme(&output->data()[new_parsed->scheme.begin], new_parsed->scheme.len);
@@ -71,7 +71,7 @@ bool DoCanonicalizeSrtURL(const URLComponentSource<CHAR>& source,
     // or something following the path. The only time we allow an empty
     // output path is when there is nothing else.
     new_parsed->path = Component(output->length(), 1);
-    // output->push_back('/');
+    output->push_back('/');
   } else {
     // No path at all
     new_parsed->path.reset();
@@ -85,26 +85,26 @@ bool DoCanonicalizeSrtURL(const URLComponentSource<CHAR>& source,
 
 }  // namespace
 
-bool CanonicalizeSrtURL(const char* spec,
-                        int spec_len,
-                        const Parsed& parsed,
-                        CharsetConverter* query_converter,
-                        CanonOutput* output,
-                        Parsed* new_parsed) {
+bool CanonicalizeWebRTCURL(const char* spec,
+                           int spec_len,
+                           const Parsed& parsed,
+                           CharsetConverter* query_converter,
+                           CanonOutput* output,
+                           Parsed* new_parsed) {
   UNUSED(spec_len);
-  return DoCanonicalizeSrtURL<char, unsigned char>(URLComponentSource<char>(spec), parsed, query_converter, output,
-                                                   new_parsed);
+  return DoCanonicalizeWebRTCURL<char, unsigned char>(URLComponentSource<char>(spec), parsed, query_converter, output,
+                                                      new_parsed);
 }
 
-bool CanonicalizeSrtURL(const char16* spec,
-                        int spec_len,
-                        const Parsed& parsed,
-                        CharsetConverter* query_converter,
-                        CanonOutput* output,
-                        Parsed* new_parsed) {
+bool CanonicalizeWebRTCURL(const char16* spec,
+                           int spec_len,
+                           const Parsed& parsed,
+                           CharsetConverter* query_converter,
+                           CanonOutput* output,
+                           Parsed* new_parsed) {
   UNUSED(spec_len);
-  return DoCanonicalizeSrtURL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
-                                              new_parsed);
+  return DoCanonicalizeWebRTCURL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
+                                                 new_parsed);
 }
 
 }  // namespace uri

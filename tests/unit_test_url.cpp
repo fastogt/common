@@ -36,6 +36,10 @@
 #define FILE_PATH "/home/sasha/1.mp4"
 #define DEV_VIDEO_PATH "/dev/video3"
 #define SCREEN_PATH "screen"
+#define WEBRTC_LINK "webrtc://239.0.3.3:3003/12345"
+#define WEBRTCS_LINK                   \
+  "webrtcs://live-api-s.facebook.com/" \
+  "1696076320540361?s_bl=1&s_psm=1&s_sc=1696076367207023&s_sw=0&s_vt=api-s&a=AbxU0Q-pRKZw0-0r"
 #define UDP_LINK "udp://239.0.3.3:3003"
 #define UDP_LINK_QUERY "udp://224.96.9.196:2777?localaddr=192.168.40.10"
 #define RTP_LINK "rtp://0.0.0.0:5555"
@@ -165,6 +169,21 @@ TEST(Url, IsValid) {
 
   common::uri::GURL http_path(HTTP_PATH);
   ASSERT_FALSE(http_path.is_valid());
+
+  common::uri::GURL webrtc(WEBRTC_LINK);
+  ASSERT_TRUE(webrtc.is_valid());
+  ASSERT_TRUE(webrtc.SchemeIsWebRTC());
+  ASSERT_EQ(webrtc.host(), "239.0.3.3");
+  ASSERT_EQ(webrtc.port(), "3003");
+  ASSERT_EQ(webrtc.spec(), WEBRTC_LINK);
+
+  common::uri::GURL webrtcs(WEBRTCS_LINK);
+  ASSERT_TRUE(webrtcs.is_valid());
+  ASSERT_TRUE(webrtcs.SchemeIsWebRTCBased());
+  ASSERT_EQ(webrtcs.host(), "live-api-s.facebook.com");
+  ASSERT_EQ(webrtcs.EffectiveIntPort(), 443);
+  ASSERT_EQ(webrtcs.path(), "/1696076320540361");
+  ASSERT_EQ(webrtcs.spec(), WEBRTCS_LINK);
 
   common::uri::GURL udp(UDP_LINK);
   ASSERT_TRUE(udp.is_valid());

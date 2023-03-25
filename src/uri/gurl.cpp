@@ -271,6 +271,10 @@ bool GURL::SchemeIsRtmpBased() const {
          SchemeIs(kRtmfpScheme);
 }
 
+bool GURL::SchemeIsWebRTCBased() const {
+  return SchemeIs(kWebRTCScheme) || SchemeIs(kWebRTCsScheme);
+}
+
 bool GURL::SchemeIsValidForReferrer() const {
   return is_valid_ && IsReferrerScheme(spec_.data(), parsed_.scheme);
 }

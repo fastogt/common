@@ -42,6 +42,10 @@ extern const char kUdpScheme[];
 extern const char kRtpScheme[];
 extern const char kSrtScheme[];
 extern const char kTcpScheme[];
+
+extern const char kWebRTCScheme[];
+extern const char kWebRTCsScheme[];
+
 extern const char kRtmpScheme[];
 extern const char kRtmpsScheme[];
 extern const char kRtmptScheme[];

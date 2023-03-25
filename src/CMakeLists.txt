@@ -134,6 +134,7 @@ SET(URI_SOURCES
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_srturl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_tcpurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_rtmpurl.cpp
+  ${CMAKE_SOURCE_DIR}/src/uri/url_canon_webrtcurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_rtspurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_pathurl.cpp
   ${CMAKE_SOURCE_DIR}/src/uri/url_canon_path.cpp

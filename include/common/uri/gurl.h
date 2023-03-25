@@ -233,6 +233,12 @@ class GURL {
 
   bool SchemeIsRtmpBased() const;
 
+  bool SchemeIsWebRTC() const { return SchemeIs(uri::kWebRTCScheme); }
+
+  bool SchemeIsWebRTCs() const { return SchemeIs(uri::kWebRTCsScheme); }
+
+  bool SchemeIsWebRTCBased() const;
+
   bool SchemeIsRtsp() const { return SchemeIs(uri::kRtspScheme); }
 
   bool SchemeIsGs() const { return SchemeIs(uri::kGsScheme); }

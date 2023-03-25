@@ -514,6 +514,56 @@ void DoParseRtmpURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   }
 }
 
+// webrtc
+template <typename CHAR>
+void DoParseWebRTCURL(const CHAR* spec, int spec_len, Parsed* parsed) {
+  parsed->username.reset();
+  parsed->password.reset();
+  // parsed->query.reset();
+  // parsed->ref.reset();
+
+  // Strip leading & trailing spaces and control characters.
+  // Strip leading & trailing spaces and control characters.
+  int scheme_begin = 0;
+  TrimURL(spec, &scheme_begin, &spec_len);
+
+  // Handle empty specs or ones that contain only whitespace or control chars.
+  if (scheme_begin == spec_len) {
+    return;
+  }
+
+  if (ExtractScheme(&spec[scheme_begin], spec_len - scheme_begin, &parsed->scheme)) {
+    // Offset the results since we gave ExtractScheme a substring.
+    parsed->scheme.begin += scheme_begin;
+    int after_scheme = parsed->scheme.end() + 1;
+    int num_slashes = CountConsecutiveSlashes(spec, after_scheme, spec_len);
+    int after_slashes = after_scheme + num_slashes;
+
+    // First split into two main parts, the authority (username, password, host,
+    // and port) and the full path (path, query, and reference).
+    Component authority;
+    Component full_path;
+
+    // Found "//<some data>", looks like an authority section. Treat everything
+    // from there to the next slash (or end of spec) to be the authority. Note
+    // that we ignore the number of slashes and treat it as the authority.
+    int end_auth = FindNextAuthorityTerminator(spec, after_slashes, spec_len);
+    authority = Component(after_slashes, end_auth - after_slashes);
+
+    if (end_auth == spec_len)  // No beginning of path found.
+      full_path = Component();
+    else  // Everything starting from the slash to the end is the path.
+      full_path = Component(end_auth, spec_len - end_auth);
+
+    Component username;
+    Component password;
+    DoParseAuthority(spec, authority, &username, &password, &parsed->host, &parsed->port);
+    // Component query;
+    // Component ref;
+    ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
+  }
+}
+
 // rtsp
 template <typename CHAR>
 void DoParseRtspURL(const CHAR* spec, int spec_len, Parsed* parsed) {
@@ -772,6 +822,14 @@ void ParseRtmpURL(const char* url, int url_len, Parsed* parsed) {
 
 void ParseRtmpURL(const char16* url, int url_len, Parsed* parsed) {
   DoParseRtmpURL(url, url_len, parsed);
+}
+
+void ParseWebRTCURL(const char* url, int url_len, Parsed* parsed) {
+  DoParseWebRTCURL(url, url_len, parsed);
+}
+
+void ParseWebRTCURL(const char16* url, int url_len, Parsed* parsed) {
+  DoParseWebRTCURL(url, url_len, parsed);
 }
 
 void ParseRtspURL(const char* url, int url_len, Parsed* parsed) {

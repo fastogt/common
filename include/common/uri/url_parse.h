@@ -298,6 +298,10 @@ void ParseRtmpURL(const char* url, int url_len, Parsed* parsed);
 
 void ParseRtmpURL(const char16* url, int url_len, Parsed* parsed);
 
+void ParseWebRTCURL(const char* url, int url_len, Parsed* parsed);
+
+void ParseWebRTCURL(const char16* url, int url_len, Parsed* parsed);
+
 void ParseRtspURL(const char* url, int url_len, Parsed* parsed);
 
 void ParseRtspURL(const char16* url, int url_len, Parsed* parsed);
