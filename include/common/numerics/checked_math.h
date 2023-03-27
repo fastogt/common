@@ -166,7 +166,9 @@ class CheckedNumeric {
     return CheckedNumeric<decltype(InvertWrapper(T()))>(InvertWrapper(state_.value()), IsValid());
   }
 
-  constexpr CheckedNumeric Abs() const { return !IsValueNegative(state_.value()) ? *this : -*this; }
+  constexpr CheckedNumeric Abs() const {
+    return !IsValueNegative(state_.value()) ? *this : -*this;
+  }
 
   template <typename U>
   constexpr CheckedNumeric<typename MathWrapper<CheckedMaxOp, T, U>::type> Max(const U rhs) const {

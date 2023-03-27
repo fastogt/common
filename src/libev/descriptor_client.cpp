@@ -64,7 +64,7 @@ ErrnoError DescriptorClient::DoSingleRead(void* out_data, size_t max_size, size_
 ErrnoError DescriptorClient::DoSendFile(descriptor_t file_fd, size_t file_size) {
   UNUSED(file_fd);
   UNUSED(file_size);
-  return common::make_errno_error("Not Implemented", EAGAIN); // need to implement desc_.SendFile()
+  return common::make_errno_error("Not Implemented", EAGAIN);  // need to implement desc_.SendFile()
 }
 
 ErrnoError DescriptorClient::DoClose() {

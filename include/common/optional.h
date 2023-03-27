@@ -613,9 +613,13 @@ class OPTIONAL_DECLSPEC_EMPTY_commonS Optional
     return std::move(storage_.value_);
   }
 
-  constexpr explicit operator bool() const { return storage_.is_populated_; }
+  constexpr explicit operator bool() const {
+    return storage_.is_populated_;
+  }
 
-  constexpr bool has_value() const { return storage_.is_populated_; }
+  constexpr bool has_value() const {
+    return storage_.is_populated_;
+  }
 
   constexpr T& value() & {
     CHECK(storage_.is_populated_);
@@ -675,7 +679,9 @@ class OPTIONAL_DECLSPEC_EMPTY_commonS Optional
     swap(**this, *other);
   }
 
-  void reset() { FreeIfNeeded(); }
+  void reset() {
+    FreeIfNeeded();
+  }
 
   template <class... Args>
   T& emplace(Args&&... args) {

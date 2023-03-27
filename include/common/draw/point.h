@@ -69,10 +69,18 @@ class Point {
   CGPoint ToCGPoint() const;
 #endif
 
-  constexpr int x() const { return x_; }
-  constexpr int y() const { return y_; }
-  void set_x(int x) { x_ = x; }
-  void set_y(int y) { y_ = y; }
+  constexpr int x() const {
+    return x_;
+  }
+  constexpr int y() const {
+    return y_;
+  }
+  void set_x(int x) {
+    x_ = x;
+  }
+  void set_y(int y) {
+    y_ = y;
+  }
 
   void SetPoint(int x, int y) {
     x_ = x;
@@ -97,9 +105,13 @@ class Point {
   void SetToMin(const Point& other);
   void SetToMax(const Point& other);
 
-  bool IsOrigin() const { return x_ == 0 && y_ == 0; }
+  bool IsOrigin() const {
+    return x_ == 0 && y_ == 0;
+  }
 
-  Vector2d OffsetFromOrigin() const { return Vector2d(x_, y_); }
+  Vector2d OffsetFromOrigin() const {
+    return Vector2d(x_, y_);
+  }
 
   // A point is less than another point if its y-value is closer
   // to the origin. If the y-values are the same, then point with
@@ -107,7 +119,9 @@ class Point {
   // other.
   // This comparison is required to use Point in sets, or sorted
   // vectors.
-  bool operator<(const Point& rhs) const { return std::tie(y_, x_) < std::tie(rhs.y_, rhs.x_); }
+  bool operator<(const Point& rhs) const {
+    return std::tie(y_, x_) < std::tie(rhs.y_, rhs.x_);
+  }
 
   // Returns a string representation of point.
   std::string ToString() const;

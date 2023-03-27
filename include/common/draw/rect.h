@@ -70,27 +70,41 @@ class Rect {
   CGRect ToCGRect() const;
 #endif
 
-  constexpr int x() const { return origin_.x(); }
+  constexpr int x() const {
+    return origin_.x();
+  }
   // Sets the X position while preserving the width.
   void set_x(int x) {
     origin_.set_x(x);
     size_.set_width(GetClampedValue(x, width()));
   }
 
-  constexpr int y() const { return origin_.y(); }
+  constexpr int y() const {
+    return origin_.y();
+  }
   // Sets the Y position while preserving the height.
   void set_y(int y) {
     origin_.set_y(y);
     size_.set_height(GetClampedValue(y, height()));
   }
 
-  constexpr int width() const { return size_.width(); }
-  void set_width(int width) { size_.set_width(GetClampedValue(x(), width)); }
+  constexpr int width() const {
+    return size_.width();
+  }
+  void set_width(int width) {
+    size_.set_width(GetClampedValue(x(), width));
+  }
 
-  constexpr int height() const { return size_.height(); }
-  void set_height(int height) { size_.set_height(GetClampedValue(y(), height)); }
+  constexpr int height() const {
+    return size_.height();
+  }
+  void set_height(int height) {
+    size_.set_height(GetClampedValue(y(), height));
+  }
 
-  constexpr const Point& origin() const { return origin_; }
+  constexpr const Point& origin() const {
+    return origin_;
+  }
   void set_origin(const Point& origin) {
     origin_ = origin;
     // Ensure that width and height remain valid.
@@ -98,25 +112,47 @@ class Rect {
     set_height(height());
   }
 
-  constexpr const Size& size() const { return size_; }
+  constexpr const Size& size() const {
+    return size_;
+  }
   void set_size(const Size& size) {
     set_width(size.width());
     set_height(size.height());
   }
 
-  constexpr int right() const { return x() + width(); }
-  constexpr int bottom() const { return y() + height(); }
+  constexpr int right() const {
+    return x() + width();
+  }
+  constexpr int bottom() const {
+    return y() + height();
+  }
 
-  constexpr Point top_right() const { return Point(right(), y()); }
-  constexpr Point bottom_left() const { return Point(x(), bottom()); }
-  constexpr Point bottom_right() const { return Point(right(), bottom()); }
+  constexpr Point top_right() const {
+    return Point(right(), y());
+  }
+  constexpr Point bottom_left() const {
+    return Point(x(), bottom());
+  }
+  constexpr Point bottom_right() const {
+    return Point(right(), bottom());
+  }
 
-  constexpr Point left_center() const { return Point(x(), y() + height() / 2); }
-  constexpr Point top_center() const { return Point(x() + width() / 2, y()); }
-  constexpr Point right_center() const { return Point(right(), y() + height() / 2); }
-  constexpr Point bottom_center() const { return Point(x() + width() / 2, bottom()); }
+  constexpr Point left_center() const {
+    return Point(x(), y() + height() / 2);
+  }
+  constexpr Point top_center() const {
+    return Point(x() + width() / 2, y());
+  }
+  constexpr Point right_center() const {
+    return Point(right(), y() + height() / 2);
+  }
+  constexpr Point bottom_center() const {
+    return Point(x() + width() / 2, bottom());
+  }
 
-  Vector2d OffsetFromOrigin() const { return Vector2d(x(), y()); }
+  Vector2d OffsetFromOrigin() const {
+    return Vector2d(x(), y());
+  }
 
   void SetRect(int x, int y, int width, int height) {
     origin_.SetPoint(x, y);
@@ -131,19 +167,25 @@ class Rect {
   void SetByBounds(int left, int top, int right, int bottom);
 
   // Shrink the rectangle by a horizontal and vertical distance on all sides.
-  void Inset(int horizontal, int vertical) { Inset(horizontal, vertical, horizontal, vertical); }
+  void Inset(int horizontal, int vertical) {
+    Inset(horizontal, vertical, horizontal, vertical);
+  }
 
   // Shrink the rectangle by the specified amount on each side.
   void Inset(int left, int top, int right, int bottom);
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(int horizontal, int vertical);
-  void Offset(const Vector2d& distance) { Offset(distance.x(), distance.y()); }
+  void Offset(const Vector2d& distance) {
+    Offset(distance.x(), distance.y());
+  }
   void operator+=(const Vector2d& offset);
   void operator-=(const Vector2d& offset);
 
   // Returns true if the area of the rectangle is zero.
-  bool IsEmpty() const { return size_.IsEmpty(); }
+  bool IsEmpty() const {
+    return size_.IsEmpty();
+  }
 
   // A rect is less than another rect if its origin is less than
   // the other rect's origin. If the origins are equal, then the
@@ -159,7 +201,9 @@ class Rect {
   bool Contains(int point_x, int point_y) const;
 
   // Returns true if the specified point is contained by this rectangle.
-  bool Contains(const Point& point) const { return Contains(point.x(), point.y()); }
+  bool Contains(const Point& point) const {
+    return Contains(point.x(), point.y());
+  }
 
   // Returns true if this rectangle contains the specified rectangle.
   bool Contains(const Rect& rect) const;

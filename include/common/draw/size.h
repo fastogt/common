@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <limits>
 #include <string>
 
@@ -66,11 +67,19 @@ class Size {
   CGSize ToCGSize() const;
 #endif
 
-  constexpr int width() const { return width_; }
-  constexpr int height() const { return height_; }
+  constexpr int width() const {
+    return width_;
+  }
+  constexpr int height() const {
+    return height_;
+  }
 
-  void set_width(int width) { width_ = std::max(0, width); }
-  void set_height(int height) { height_ = std::max(0, height); }
+  void set_width(int width) {
+    width_ = std::max(0, width);
+  }
+  void set_height(int height) {
+    height_ = std::max(0, height);
+  }
 
   // This call will CHECK if the area of this size would overflow int.
   int GetArea() const;
@@ -87,7 +96,9 @@ class Size {
   void SetToMin(const Size& other);
   void SetToMax(const Size& other);
 
-  bool IsEmpty() const { return !width() || !height(); }
+  bool IsEmpty() const {
+    return !width() || !height();
+  }
 
   std::string ToString() const;
 

@@ -100,7 +100,9 @@ class LoggerInternal {
     return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, project_name_, log_level_to_text(level));
   }
 
-  static LoggerInternal* GetInstance() { return &patterns::LazySingleton<LoggerInternal>::GetInstance(); }
+  static LoggerInternal* GetInstance() {
+    return &patterns::LazySingleton<LoggerInternal>::GetInstance();
+  }
 
  private:
   std::string project_name_;
