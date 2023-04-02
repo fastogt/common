@@ -265,12 +265,13 @@ ErrnoError TcpTlsSocketHolder::SendFileImpl(descriptor_t file_fd, size_t file_si
 }
 
 common::ErrnoError TcpTlsSocketHolder::CloseImpl() {
+  common::ErrnoError err = base_class::CloseImpl();
   if (ssl_) {
     SSL_free(ssl_);
     ssl_ = nullptr;
   }
 
-  return base_class::CloseImpl();
+  return err;
 }
 
 SocketTcpTls::SocketTcpTls(const HostAndPort& host) : TcpTlsSocketHolder(INVALID_SOCKET_VALUE, nullptr), host_(host) {}
