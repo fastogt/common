@@ -38,7 +38,7 @@ using namespace common;
 TEST(Http, post) {
   struct timeval tv = {1, 0};
   auto err = common::net::PostHttpsFile(
-      file_system::ascii_file_string_path("/home/fastocloud/dump.html"),
+      file_system::ascii_file_string_path(PROJECT_TEST_SOURCES_DIR "/unit_test_http.cpp"),
       uri::GURL("https://api.fastocloud.com/media/stream/pipeline/upload/634b73204d946566900b7c13"), &tv);
 
   ASSERT_FALSE(err);
