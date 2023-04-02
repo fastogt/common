@@ -31,7 +31,6 @@
 #include <common/file_system/file_system.h>
 #include <common/http/http2.h>
 #include <common/net/http_client.h>
-#include <common/string_split.h>
 #include <gtest/gtest.h>
 
 using namespace common;
