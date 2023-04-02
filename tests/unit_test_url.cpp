@@ -95,6 +95,7 @@ TEST(Url, IsValid) {
   ASSERT_TRUE(http_common.is_valid());
   ASSERT_TRUE(http_common.SchemeIsHTTPOrHTTPS());
   ASSERT_EQ(http_common.EffectiveIntPort(), 80);
+  ASSERT_EQ(http_common.IntPort(), common::uri::PORT_UNSPECIFIED);
   ASSERT_EQ(http_common.spec(), HTTP_COMMON_LINK);
 
   common::uri::GURL http_port(HTTP_PORT_LINK);
@@ -102,6 +103,7 @@ TEST(Url, IsValid) {
   ASSERT_TRUE(http_port.SchemeIsHTTPOrHTTPS());
   ASSERT_EQ(http_port.port(), "81");
   ASSERT_EQ(http_port.IntPort(), 81);
+  ASSERT_EQ(http_port.EffectiveIntPort(), 81);
   ASSERT_EQ(http_port.spec(), HTTP_PORT_LINK);
 
   common::uri::GURL http_long(HTTP_LONG_LINK);

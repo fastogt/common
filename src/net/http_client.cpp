@@ -464,7 +464,47 @@ Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const 
   cl.Disconnect();
   return err;
 }
+#else
+HttpsClient::HttpsClient(const common::net::HostAndPort& host) : base_class(new ClientSocketTcp(host)) {}
 
+common::ErrnoError HttpsClient::Connect(struct timeval* tv) {
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
+  return sock->Connect(tv);
+}
+
+bool HttpsClient::IsConnected() const {
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
+  return sock->IsConnected();
+}
+
+common::ErrnoError HttpsClient::Disconnect() {
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
+  return sock->Disconnect();
+}
+
+common::net::HostAndPort HttpsClient::GetHost() const {
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
+  return sock->GetHost();
+}
+
+ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
+  ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
+  return sock->SendFile(file_fd, file_size);
+}
+
+Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
+  if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
+    return common::make_error_inval();
+  }
+  return make_error("Library build without OPENSSL");
+}
+
+Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
+  if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
+    return common::make_error_inval();
+  }
+  return make_error("Library build without OPENSSL");
+}
 #endif
 
 }  // namespace net
