@@ -54,11 +54,11 @@ ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url, const http::Htt
     return make_errno_error_inval();
   }
 
-  common::http::headers_t headers = {common::http::HttpHeader("Upgrade", "websocket"),
-                                     common::http::HttpHeader("User-Agent", USER_AGENT_VALUE),
-                                     common::http::HttpHeader("Connection", "Upgrade"),
-                                     common::http::HttpHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ=="),
-                                     common::http::HttpHeader("Sec-WebSocket-Version", "13")};
+  auto headers = {common::http::HttpHeader("Upgrade", "websocket"),
+                  common::http::HttpHeader("User-Agent", USER_AGENT_VALUE),
+                  common::http::HttpHeader("Connection", "Upgrade"),
+                  common::http::HttpHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ=="),
+                  common::http::HttpHeader("Sec-WebSocket-Version", "13")};
   return SendRequest(common::http::HM_GET, url, common::http::HP_1_1, headers);
 }
 

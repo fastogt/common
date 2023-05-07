@@ -39,7 +39,7 @@ TEST(Http, post) {
   struct timeval tv = {1, 0};
   auto err = common::net::PostHttpsFile(
       file_system::ascii_file_string_path(PROJECT_TEST_SOURCES_DIR "/unit_test_http.cpp"),
-      uri::GURL("https://api.fastocloud.com/media/stream/pipeline/upload/634b73204d946566900b7c13"), &tv);
+      uri::GURL("https://api.fastocloud.com/media/stream/pipeline/upload/634b73204d946566900b7c13"), {}, &tv);
 
   ASSERT_FALSE(err);
 }
@@ -480,7 +480,7 @@ TEST(http_client, head) {
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Head("/");
+  Error err2 = cl.Head("/", {});
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);
@@ -495,7 +495,7 @@ TEST(http_client, get) {
   net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Get("/");
+  Error err2 = cl.Get("/", {});
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);
@@ -510,7 +510,7 @@ TEST(https_client, get_file) {
   auto const path = common::file_system::prepare_path("~/1.png");
 
   common::Error err = common::net::GetHttpsFile(common::uri::GURL("https://fastogt.com/static/projects/todd.png"),
-                                                common::file_system::ascii_file_string_path(path));
+                                                common::file_system::ascii_file_string_path(path), {});
   ASSERT_FALSE(err);
 
   ErrnoError errn = common::file_system::remove_file(path);
@@ -522,7 +522,7 @@ TEST(https_client, get) {
   net::HttpsClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
-  Error err2 = cl.Get("/");
+  Error err2 = cl.Get("/", {});
   ASSERT_FALSE(err2);
   http::HttpResponse resp;
   err2 = cl.ReadResponse(&resp);
@@ -537,9 +537,9 @@ TEST(https_client, post) {
   ErrnoError errn = common::file_system::create_node(path);
   ASSERT_TRUE(!errn);
 
-  common::Error err =
-      net::PostHttpsFile(common::file_system::ascii_file_string_path(path),
-                         common::uri::GURL("https://fastocloud.com/panel_pro/api/server/log/5f301ee271a51735471bc7e9"));
+  common::Error err = net::PostHttpsFile(
+      common::file_system::ascii_file_string_path(path),
+      common::uri::GURL("https://fastocloud.com/panel_pro/api/server/log/5f301ee271a51735471bc7e9"), {});
   ASSERT_FALSE(err);
 
   errn = common::file_system::remove_file(path);

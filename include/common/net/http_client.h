@@ -47,9 +47,11 @@ class IHttpClient {
   virtual HostAndPort GetHost() const = 0;
   virtual ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT = 0;
 
-  Error PostFile(const url_t& path, const file_system::ascii_file_string_path& file_path) WARN_UNUSED_RESULT;
-  Error Get(const url_t& path) WARN_UNUSED_RESULT;
-  Error Head(const url_t& path) WARN_UNUSED_RESULT;
+  Error PostFile(const url_t& path,
+                 const file_system::ascii_file_string_path& file_path,
+                 const http::headers_t& extra_headers) WARN_UNUSED_RESULT;
+  Error Get(const url_t& path, const http::headers_t& extra_headers) WARN_UNUSED_RESULT;
+  Error Head(const url_t& path, const http::headers_t& extra_headers) WARN_UNUSED_RESULT;
 
   Error ReadResponse(http::HttpResponse* response) WARN_UNUSED_RESULT;
   virtual ~IHttpClient();
@@ -78,9 +80,11 @@ class HttpClient : public IHttpClient {
 
 Error GetHttpFile(const uri::GURL& url,
                   const file_system::ascii_file_string_path& file_path,
+                  const http::headers_t& extra_headers,
                   struct timeval* tv = nullptr);
 Error PostHttpFile(const file_system::ascii_file_string_path& file_path,
                    const uri::GURL& url,
+                   const http::headers_t& extra_headers,
                    struct timeval* tv = nullptr);
 
 class HttpsClient : public common::net::IHttpClient {
@@ -96,9 +100,11 @@ class HttpsClient : public common::net::IHttpClient {
 
 Error GetHttpsFile(const uri::GURL& url,
                    const file_system::ascii_file_string_path& file_path,
+                   const http::headers_t& extra_headers,
                    struct timeval* tv = nullptr);
 Error PostHttpsFile(const file_system::ascii_file_string_path& file_path,
                     const uri::GURL& url,
+                    const http::headers_t& extra_headers,
                     struct timeval* tv = nullptr);
 
 }  // namespace net

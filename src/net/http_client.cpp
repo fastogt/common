@@ -46,7 +46,9 @@
 namespace common {
 namespace net {
 
-Error IHttpClient::PostFile(const url_t& path, const file_system::ascii_file_string_path& file_path) {
+Error IHttpClient::PostFile(const url_t& path,
+                            const file_system::ascii_file_string_path& file_path,
+                            const http::headers_t& extra_headers) {
   file_system::File file;
   ErrnoError errn = file.Open(file_path, file_system::File::FLAG_OPEN | file_system::File::FLAG_READ);
   if (errn) {
@@ -68,7 +70,9 @@ Error IHttpClient::PostFile(const url_t& path, const file_system::ascii_file_str
   http::HttpHeader cont("Content-Length", ConvertToString(file_size));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
 
-  auto req = http::MakePostRequest(path, http::HP_1_1, {header, type, disp, cont, user});
+  http::headers_t headers = {header, type, disp, cont, user};
+  std::copy(extra_headers.begin(), extra_headers.end(), std::back_inserter(headers));
+  auto req = http::MakePostRequest(path, http::HP_1_1, headers);
   if (!req) {
     return make_error("Can't make request.");
   }
@@ -87,22 +91,26 @@ Error IHttpClient::PostFile(const url_t& path, const file_system::ascii_file_str
   return Error();
 }
 
-Error IHttpClient::Get(const url_t& path) {
+Error IHttpClient::Get(const url_t& path, const http::headers_t& extra_headers) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
-  auto req = http::MakeGetRequest(path, http::HP_1_1, {header, user});
+  http::headers_t headers = {header, user};
+  std::copy(extra_headers.begin(), extra_headers.end(), std::back_inserter(headers));
+  auto req = http::MakeGetRequest(path, http::HP_1_1, headers);
   if (!req) {
     return make_error("Can't make request.");
   }
   return SendRequest(*req);
 }
 
-Error IHttpClient::Head(const url_t& path) {
+Error IHttpClient::Head(const url_t& path, const http::headers_t& extra_headers) {
   const HostAndPort hs = GetHost();
   http::HttpHeader header("Host", ConvertToString(hs));
   http::HttpHeader user("User-Agent", USER_AGENT_VALUE);
-  auto req = http::MakeHeadRequest(path, http::HP_1_1, {header, user});
+  http::headers_t headers = {header, user};
+  std::copy(extra_headers.begin(), extra_headers.end(), std::back_inserter(headers));
+  auto req = http::MakeHeadRequest(path, http::HP_1_1, headers);
   if (!req) {
     return make_error("Can't make request.");
   }
@@ -279,7 +287,10 @@ HostAndPort HttpClient::GetHost() const {
   return sock->GetHost();
 }
 
-Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
+Error GetHttpFile(const uri::GURL& url,
+                  const file_system::ascii_file_string_path& file_path,
+                  const http::headers_t& extra_headers,
+                  struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
     return common::make_error_inval();
   }
@@ -292,7 +303,7 @@ Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_pat
   }
 
   const auto path = url.PathForRequest();
-  Error err = cl.Get(path);
+  Error err = cl.Get(path, extra_headers);
   if (err) {
     cl.Disconnect();
     return err;
@@ -333,7 +344,10 @@ Error GetHttpFile(const uri::GURL& url, const file_system::ascii_file_string_pat
   return err;
 }
 
-Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
+Error PostHttpFile(const file_system::ascii_file_string_path& file_path,
+                   const uri::GURL& url,
+                   const http::headers_t& extra_headers,
+                   struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("http")) {
     return common::make_error_inval();
   }
@@ -346,7 +360,7 @@ Error PostHttpFile(const file_system::ascii_file_string_path& file_path, const u
   }
 
   const auto path = url.PathForRequest();
-  Error err = cl.PostFile(path, file_path);
+  Error err = cl.PostFile(path, file_path, extra_headers);
   if (err) {
     cl.Disconnect();
     return err;
@@ -386,7 +400,10 @@ ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
   return sock->SendFile(file_fd, file_size);
 }
 
-Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
+Error GetHttpsFile(const uri::GURL& url,
+                   const file_system::ascii_file_string_path& file_path,
+                   const http::headers_t& extra_headers,
+                   struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
@@ -399,7 +416,7 @@ Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_pa
   }
 
   const auto path = url.PathForRequest();
-  Error err = cl.Get(path);
+  Error err = cl.Get(path, extra_headers);
   if (err) {
     cl.Disconnect();
     return err;
@@ -440,7 +457,10 @@ Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_pa
   return err;
 }
 
-Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
+Error PostHttpsFile(const file_system::ascii_file_string_path& file_path,
+                    const uri::GURL& url,
+                    const http::headers_t& extra_headers,
+                    struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
@@ -453,7 +473,7 @@ Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const 
   }
 
   const auto path = url.PathForRequest();
-  Error err = cl.PostFile(path, file_path);
+  Error err = cl.PostFile(path, file_path, extra_headers);
   if (err) {
     cl.Disconnect();
     return err;
@@ -492,14 +512,20 @@ ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
   return sock->SendFile(file_fd, file_size);
 }
 
-Error GetHttpsFile(const uri::GURL& url, const file_system::ascii_file_string_path& file_path, struct timeval* tv) {
+Error GetHttpsFile(const uri::GURL& url,
+                   const file_system::ascii_file_string_path& file_path,
+                   const http::headers_t& extra_headers,
+                   struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
   return make_error("Library build without OPENSSL");
 }
 
-Error PostHttpsFile(const file_system::ascii_file_string_path& file_path, const uri::GURL& url, struct timeval* tv) {
+Error PostHttpsFile(const file_system::ascii_file_string_path& file_path,
+                    const uri::GURL& url,
+                    const http::headers_t& extra_headers,
+                    struct timeval* tv) {
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
