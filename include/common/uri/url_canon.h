@@ -627,6 +627,22 @@ bool CanonicalizeGsURL(const char16* spec,
                        CanonOutput* output,
                        Parsed* new_parsed);
 
+// Use for gs URLs.
+
+bool CanonicalizeS3URL(const char* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed);
+
+bool CanonicalizeS3URL(const char16* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed);
+
 // Use for udp URLs.
 bool CanonicalizeUdpURL(const char* spec,
                         int spec_len,

@@ -243,6 +243,8 @@ class GURL {
 
   bool SchemeIsGs() const { return SchemeIs(uri::kGsScheme); }
 
+  bool SchemeIsS3() const { return SchemeIs(uri::kS3Scheme); }
+
   // Returns true if the scheme indicates a network connection that uses TLS or
   // some other cryptographic protocol (e.g. QUIC) for security.
   //

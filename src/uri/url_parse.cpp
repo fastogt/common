@@ -864,5 +864,13 @@ void ParseGsURL(const char16* url, int url_len, Parsed* parsed) {
   DoParseRtmpURL(url, url_len, parsed);
 }
 
+void ParseS3URL(const char* url, int url_len, Parsed* parsed) {
+  DoParseRtmpURL(url, url_len, parsed);
+}
+
+void ParseS3URL(const char16* url, int url_len, Parsed* parsed) {
+  DoParseRtmpURL(url, url_len, parsed);
+}
+
 }  // namespace uri
 }  // namespace common

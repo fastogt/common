@@ -52,6 +52,7 @@ const char kRtmfpScheme[] = "rtmfp";
 const char kRtspScheme[] = "rtsp";
 const char kFtpScheme[] = "ftp";
 const char kGsScheme[] = "gs";
+const char kS3Scheme[] = "s3";
 const char kHttpScheme[] = "http";
 const char kHttpsScheme[] = "https";
 const char kTelScheme[] = "tel";

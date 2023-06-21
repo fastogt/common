@@ -62,6 +62,7 @@ struct SchemeRegistry {
       {kFileScheme, SCHEME_WITH_HOST},
       {kDevScheme, SCHEME_WITH_HOST},
       {kGsScheme, SCHEME_WITH_HOST},
+      {kS3Scheme, SCHEME_WITH_HOST},
       {kUnknownScheme, SCHEME_WITH_HOST},
       {kUdpScheme, SCHEME_WITH_HOST_AND_PORT},
       {kRtpScheme, SCHEME_WITH_HOST_AND_PORT},
@@ -95,7 +96,7 @@ struct SchemeRegistry {
 
   // Schemes that normal pages cannot link to or access (i.e., with the same
   // security rules as those applied to "file" URLs).
-  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme, kGsScheme, kUnknownScheme};
+  std::vector<std::string> local_schemes = {kFileScheme, kDevScheme, kGsScheme, kS3Scheme, kUnknownScheme};
 
   // Schemes that cause pages loaded with them to not have access to pages
   // loaded with any other URL scheme.
@@ -266,6 +267,10 @@ bool DoCanonicalize(const CHAR* spec,
     // Gs URLs are special.
     ParseGsURL(spec, spec_len, &parsed_input);
     success = CanonicalizeGsURL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
+  } else if (DoCompareSchemeComponent(spec, scheme, uri::kS3Scheme)) {
+    // S3 URLs are special.
+    ParseS3URL(spec, spec_len, &parsed_input);
+    success = CanonicalizeS3URL(spec, spec_len, parsed_input, charset_converter, output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, uri::kUnknownScheme)) {
     // Unknown URLs are special.
     ParseUnknownURL(spec, spec_len, &parsed_input);

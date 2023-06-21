@@ -74,8 +74,18 @@
 #define MDP_URL "http://41.76.110.249:200/index.mpd?id=1"
 
 #define GS_URL "gs://some-test-41728.appspot.com/reqc/00oobdpgSivUgfFo4EPG-1616700089.webp"
+#define S3_URL "s3://us-west-1/example-bucket/my/file.ogv?version=my-optional-version"
 
 TEST(Url, IsValid) {
+  common::uri::GURL s3(S3_URL);
+  ASSERT_TRUE(s3.is_valid());
+  ASSERT_TRUE(s3.SchemeIsS3());
+  ASSERT_EQ(s3.path(), "/example-bucket/my/file.ogv");
+  ASSERT_EQ(s3.host(), "us-west-1");
+  ASSERT_EQ(s3.spec(), S3_URL);
+  ASSERT_EQ(s3.query(), "version=my-optional-version");
+  ASSERT_EQ(s3.ExtractFileName(), "file.ogv");
+
   common::uri::GURL gs(GS_URL);
   ASSERT_TRUE(gs.is_valid());
   ASSERT_TRUE(gs.SchemeIsGs());

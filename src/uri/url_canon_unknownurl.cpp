@@ -122,6 +122,45 @@ bool DoCanonicalizeGsURL(const URLComponentSource<CHAR>& source,
   return success;
 }
 
+template <typename CHAR, typename UCHAR>
+bool DoCanonicalizeS3URL(const URLComponentSource<CHAR>& source,
+                         const Parsed& parsed,
+                         CharsetConverter* query_converter,
+                         CanonOutput* output,
+                         Parsed* new_parsed) {
+  // Things we don't set in dev: URLs.
+  // new_parsed->host = Component();
+  new_parsed->port = Component();
+  new_parsed->username = Component();
+  new_parsed->password = Component();
+
+  // Scheme (known, so we don't bother running it through the more
+  // complicated scheme canonicalizer).
+  new_parsed->scheme.begin = output->length();
+  output->Append("s3://", 5);
+  new_parsed->scheme.len = 2;
+
+  bool success = CanonicalizeHost(source.host, parsed.host, output, &new_parsed->host);
+  // Path
+  if (parsed.path.is_valid()) {
+    success &= CanonicalizePath(source.path, parsed.path, output, &new_parsed->path);
+  } else if (parsed.query.is_valid() || parsed.ref.is_valid()) {
+    // When we have an empty path, make up a path when we have an authority
+    // or something following the path. The only time we allow an empty
+    // output path is when there is nothing else.
+    new_parsed->path = Component(output->length(), 1);
+    // output->push_back('/');
+  } else {
+    // No path at all
+    new_parsed->path.reset();
+  }
+
+  CanonicalizeQuery(source.query, parsed.query, query_converter, output, &new_parsed->query);
+  // Ignore failure for refs since the URL can probably still be loaded.
+  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  return success;
+}
+
 }  // namespace
 
 bool CanonicalizeUnknownURL(const char* spec,
@@ -165,6 +204,28 @@ bool CanonicalizeGsURL(const char16* spec,
                        Parsed* new_parsed) {
   UNUSED(spec_len);
   return DoCanonicalizeGsURL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
+                                             new_parsed);
+}
+
+bool CanonicalizeS3URL(const char* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed) {
+  UNUSED(spec_len);
+  return DoCanonicalizeS3URL<char, unsigned char>(URLComponentSource<char>(spec), parsed, query_converter, output,
+                                                  new_parsed);
+}
+
+bool CanonicalizeS3URL(const char16* spec,
+                       int spec_len,
+                       const Parsed& parsed,
+                       CharsetConverter* query_converter,
+                       CanonOutput* output,
+                       Parsed* new_parsed) {
+  UNUSED(spec_len);
+  return DoCanonicalizeS3URL<char16, char16>(URLComponentSource<char16>(spec), parsed, query_converter, output,
                                              new_parsed);
 }
 
