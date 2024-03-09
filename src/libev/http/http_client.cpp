@@ -100,7 +100,7 @@ ErrnoError HttpClient::SendError(common::http::http_protocol protocol,
                                  const char* text,
                                  bool is_keep_alive,
                                  const HttpServerInfo& info) {
-  CHECK(protocol <= common::http::HP_1_1);
+  DCHECK(protocol <= common::http::HP_1_1);
   const std::string title = ConvertToString(status);
 
   char err_data[1024] = {0};
@@ -120,7 +120,7 @@ ErrnoError HttpClient::SendError(common::http::http_protocol protocol,
 }
 
 ErrnoError HttpClient::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
-  CHECK(protocol <= common::http::HP_1_1);
+  DCHECK(protocol <= common::http::HP_1_1);
   return SendFile(fdesc, size);
 }
 
@@ -132,7 +132,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
                                    time_t* mod,
                                    bool is_keep_alive,
                                    const HttpServerInfo& info) {
-  CHECK(protocol <= common::http::HP_1_1);
+  DCHECK(protocol <= common::http::HP_1_1);
   const std::string title = ConvertToString(status);
 
   time_t now = ::time(nullptr);
@@ -200,7 +200,7 @@ ErrnoError HttpClient::SendResponse(common::http::http_protocol protocol,
                                     common::http::http_status status,
                                     const common::http::headers_t& extra_headers,
                                     const HttpServerInfo& info) {
-  CHECK(protocol <= common::http::HP_1_1);
+  DCHECK(protocol <= common::http::HP_1_1);
   const std::string title = ConvertToString(status);
 
   time_t now = ::time(nullptr);
@@ -254,7 +254,7 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
                                    const uri::GURL& url,
                                    common::http::http_protocol protocol,
                                    const common::http::headers_t& extra_headers) {
-  CHECK(protocol <= common::http::HP_1_1);
+  DCHECK(protocol <= common::http::HP_1_1);
 
   if (!url.is_valid()) {
     return make_errno_error_inval();
