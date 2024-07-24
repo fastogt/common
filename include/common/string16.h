@@ -50,6 +50,8 @@
 // libc functions with custom, 2-byte-char compatible routines. It is capable
 // of carrying UTF-16-encoded data.
 
+#include <stdint.h>
+
 #include <common/macros.h>  // for COMPILE_ASSERT, etc
 
 #if defined(WCHAR_T_IS_UTF16)
