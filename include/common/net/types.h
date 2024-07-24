@@ -29,6 +29,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <common/macros.h>
 
 #include <string>
