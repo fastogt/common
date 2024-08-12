@@ -516,6 +516,8 @@ Error GetHttpsFile(const uri::GURL& url,
                    const file_system::ascii_file_string_path& file_path,
                    const http::headers_t& extra_headers,
                    struct timeval* tv) {
+  UNUSED(extra_headers);
+  UNUSED(tv);
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }
@@ -526,6 +528,8 @@ Error PostHttpsFile(const file_system::ascii_file_string_path& file_path,
                     const uri::GURL& url,
                     const http::headers_t& extra_headers,
                     struct timeval* tv) {
+  UNUSED(extra_headers);
+  UNUSED(tv);
   if (!url.is_valid() || !file_path.IsValid() || !url.SchemeIs("https")) {
     return common::make_error_inval();
   }

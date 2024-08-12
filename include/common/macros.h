@@ -31,8 +31,6 @@
 
 #include <common/logger.h>
 
-#include <ostream>
-
 #define INVALID_PID -1
 #define INVALID_DESCRIPTOR -1
 #define ERROR_RESULT_VALUE -1
