@@ -45,6 +45,16 @@ struct CurrentSystemInfo {
 
 }  // namespace
 
+#if !defined(OS_LINUX)
+std::string VirtualizationSystem() {
+  return std::string();
+}
+
+std::string VirtualizationRole() {
+  return std::string();
+}
+#endif
+
 SystemInfo::SystemInfo(const std::string& name, const std::string& version, const std::string& arch)
     : name_(name), version_(version), arch_(arch) {}
 

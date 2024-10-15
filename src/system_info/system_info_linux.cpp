@@ -28,6 +28,8 @@
 */
 
 #include <common/file_system/file_system.h>
+#include <common/file_system/path.h>
+#include <common/file_system/string_path_utils.h>
 #include <common/macros.h>  // for DNOTREACHED
 #include <common/string_number_conversions.h>
 #include <common/string_piece.h>
@@ -37,6 +39,212 @@
 #include <unistd.h>  // for sysconf, _SC_AVPHYS_PAGES, etc
 
 namespace {
+const char kProcDir[] = "/proc";
+
+std::string HostRootWithContext(const std::string& path) {
+  return common::file_system::make_path("/", path);
+}
+
+std::string HostEtcWithContext(const std::string& path) {
+  return common::file_system::make_path("/etc", path);
+}
+
+common::Optional<common::file_system::ascii_file_string_path> HostProcFile(const std::string& path) {
+  common::file_system::ascii_directory_string_path proc_dir(kProcDir);
+  return proc_dir.MakeFileStringPath(path);
+}
+
+common::Optional<common::file_system::ascii_directory_string_path> HostProcDir(const std::string& path) {
+  common::file_system::ascii_directory_string_path proc_dir(kProcDir);
+  return proc_dir.MakeDirectoryStringPath(path);
+}
+
+common::Optional<common::file_system::ascii_file_string_path> HostProcConcatFile(const std::string& path) {
+  common::file_system::ascii_directory_string_path proc_dir(kProcDir);
+  return proc_dir.MakeConcatFileStringPath(path);
+}
+
+std::pair<std::string, std::string> GetVirtualizationSystemAndRole() {
+  std::string system, role;
+  auto filedir = HostProcDir("xen");
+  if (filedir && common::file_system::is_directory_exist(filedir->GetPath())) {
+    system = "xen";
+    role = "guest";  // assume guest
+    auto cap = filedir->MakeFileStringPath("capabilities");
+    if (cap && common::file_system::is_file_exist(cap->GetPath())) {
+      std::string contents;
+      if (common::file_system::read_file_to_string(cap->GetPath(), &contents)) {
+        std::istringstream iss(contents);
+        std::string line;
+        while (std::getline(iss, line)) {
+          if (line.find("control_d") != std::string::npos) {
+            role = "host";
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  auto filename = HostProcFile("modules");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("kvm") != std::string::npos) {
+          system = "kvm";
+          role = "host";
+          break;
+        } else if (line.find("hv_util") != std::string::npos) {
+          system = "hyperv";
+          role = "guest";
+          break;
+        } else if (line.find("vboxdrv") != std::string::npos) {
+          system = "vbox";
+          role = "host";
+          break;
+        } else if (line.find("vboxguest") != std::string::npos) {
+          system = "vbox";
+          role = "guest";
+          break;
+        } else if (line.find("vmware") != std::string::npos) {
+          system = "vmware";
+          role = "guest";
+          break;
+        }
+      }
+    }
+  }
+
+  filename = HostProcFile("cpuinfo");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("QEMU Virtual CPU") != std::string::npos) {
+          system = "kvm";
+          role = "guest";
+          break;
+        } else if (line.find("Common KVM processor") != std::string::npos) {
+          system = "kvm";
+          role = "guest";
+          break;
+        } else if (line.find("Common 32-bit KVM processor") != std::string::npos) {
+          system = "kvm";
+          role = "guest";
+          break;
+        }
+      }
+    }
+  }
+
+  filename = HostProcConcatFile("bus/pci/devices");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("virtio-pci") != std::string::npos) {
+          role = "guest";
+          break;
+        }
+      }
+    }
+  }
+
+  filename = HostProcConcatFile("/bc/0");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    system = "openvz";
+    role = "host";
+  }
+  filename = HostProcFile("vz");
+  if (common::file_system::is_file_exist(filename->GetPath())) {
+    system = "openvz";
+    role = "guest";
+  }
+
+  filename = HostProcConcatFile("/self/status");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("s_context") != std::string::npos) {
+          system = "linux-vserver";
+          break;
+        } else if (line.find("VxID:") != std::string::npos) {
+          system = "linux-vserver";
+          break;
+        }
+      }
+    }
+  }
+
+  filename = HostProcConcatFile("/1/environ");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("container=lxc") != std::string::npos) {
+          system = "lxc";
+          role = "guest";
+          break;
+        }
+      }
+    }
+  }
+
+  filename = HostProcConcatFile("/self/cgroup");
+  if (filename && common::file_system::is_file_exist(filename->GetPath())) {
+    std::string contents;
+    if (common::file_system::read_file_to_string(filename->GetPath(), &contents)) {
+      std::istringstream iss(contents);
+      std::string line;
+      while (std::getline(iss, line)) {
+        if (line.find("lxc") != std::string::npos) {
+          system = "lxc";
+          role = "guest";
+          break;
+        } else if (line.find("docker") != std::string::npos) {
+          system = "docker";
+          role = "guest";
+          break;
+        } else if (line.find("machine-rkt") != std::string::npos) {
+          system = "rkt";
+          role = "guest";
+          break;
+        }
+      }
+
+      if (common::file_system::is_file_exist("/usr/bin/lxc-version")) {
+        system = "lxc";
+        role = "host";
+      }
+    }
+  }
+
+  if (filename && common::file_system::is_file_exist(HostEtcWithContext("os-release"))) {
+    if (common::system_info::OperatingSystemName() == "coreos") {
+      system = "rkt";  // Is it true?
+      role = "host";
+    }
+  }
+
+  if (filename && common::file_system::is_file_exist(HostRootWithContext(".dockerenv"))) {
+    system = "docker";
+    role = "guest";
+  }
+
+  return {system, role};
+}
 
 bool AmountOfMemory(int pages_name, size_t* size) {
   long pages = sysconf(pages_name);
@@ -150,6 +358,14 @@ Optional<size_t> AmountOfAvailableRAM() {
 
 Optional<size_t> AmountOfTotalRAM() {
   return AmountOfPhysicalMemory();
+}
+
+std::string VirtualizationSystem() {
+  return GetVirtualizationSystemAndRole().first;
+}
+
+std::string VirtualizationRole() {
+  return GetVirtualizationSystemAndRole().second;
 }
 
 }  // namespace system_info

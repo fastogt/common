@@ -53,6 +53,9 @@ std::string OperatingSystemName();
 std::string OperatingSystemVersion();
 std::string OperatingSystemArchitecture();
 
+std::string VirtualizationSystem();
+std::string VirtualizationRole();
+
 class SystemInfo {
  public:
   SystemInfo(const std::string& name, const std::string& version, const std::string& arch);
