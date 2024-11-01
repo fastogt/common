@@ -18,6 +18,7 @@
 
 #include <common/system_info/cpu_info.h>
 #include <common/system_info/system_info.h>
+#include <common/time.h>
 
 #define HELP_TEXT "Usage: system_info [options]\n"
 
@@ -63,6 +64,8 @@ int main(int argc, char** argv) {
   static const std::string vrole = common::system_info::VirtualizationRole();
   static const auto cpu = common::system_info::CPU();
 
+  
+  std::cout << "UTC: " << common::time::current_utc_mstime() << std::endl;
   std::cout << "Operation system: " << name << std::endl;
   std::cout << "Version: " << version << std::endl;
   std::cout << "Architecture: " << arch << std::endl;
