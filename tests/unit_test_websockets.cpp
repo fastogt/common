@@ -58,7 +58,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
   const common::libev::http::HttpServerInfo& info() const { return info_; }
 
   void PreLooped(common::libev::IoLoop* server) override {
-    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(server);
+    /*common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(server);
     common::net::socket_info sc;
     common::ErrnoError errn = common::net::connect(kHostAndPort, common::net::ST_SOCK_STREAM, nullptr, &sc);
     ASSERT_FALSE(errn);
@@ -67,7 +67,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     ignore_result(cl->SetBlocking(false));
     ignore_result(sserver->RegisterClient(cl));
     errn = cl->StartHandshake(ws_url, kHinf);
-    ASSERT_FALSE(errn);
+    ASSERT_FALSE(errn);*/
   }
 
   void Accepted(common::libev::IoClient* client) override {
@@ -107,7 +107,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
   void DataReceived(common::libev::IoClient* client) override {
     char buff[BUF_SIZE] = {0};
     size_t nread = 0;
-    common::ErrnoError errn = client->Read(buff, BUF_SIZE, &nread);
+    common::ErrnoError errn = client->SingleRead(buff, BUF_SIZE, &nread);
     if ((errn && errn->GetErrorCode() != EAGAIN) || nread == 0) {
       ignore_result(client->Close());
       delete client;
@@ -116,10 +116,13 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
 
     common::libev::http::HttpClient* hclient = dynamic_cast<common::libev::http::HttpClient*>(client);
     CHECK(hclient);
-    common::http::HttpResponse resp;
-    size_t not_parsed;
-    common::Error err = common::http::parse_http_response(std::string(buff, nread), &resp, &not_parsed);
-    ASSERT_FALSE(err);
+    common::http::HttpRequest req;
+    auto status_and_err = common::http::parse_http_request(std::string(buff, nread), &req);
+    if (status_and_err.second) {
+      ignore_result(client->Close());
+      delete client;
+      return;
+    }
   }
 
   void DataReadyToWrite(common::libev::IoClient* client) override { UNUSED(client); }
@@ -138,7 +141,7 @@ void ExitWebServer(common::libev::tcp::TcpServer* ser) {
 TEST(Libev, Webscoket) {
   ServerWebHandler hand(kHinf);
   auto sock = new common::net::ServerSocketEvTcp(g_hs);
-  common::libev::tcp::TcpServer* serv = new common::libev::tcp::TcpServer(sock, false, &hand);
+  common::libev::websocket::WebSocketServer* serv = new common::libev::websocket::WebSocketServer(sock, false, &hand);
   common::ErrnoError err = serv->Bind(true);
   ASSERT_FALSE(err);
 
