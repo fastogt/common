@@ -62,7 +62,7 @@ class Http2Client : public HttpClient {
                          common::http::http_status status,
                          const common::http::headers_t& extra_headers,
                          const char* mime_type,
-                         off_t* length,
+                         size_t* length,
                          time_t* mod,
                          bool is_keep_alive,
                          const HttpServerInfo& info) override WARN_UNUSED_RESULT;

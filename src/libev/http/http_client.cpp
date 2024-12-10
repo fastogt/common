@@ -86,6 +86,28 @@ ErrnoError HttpClient::Head(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_HEAD, url, common::http::HP_1_1, {}, is_keep_alive);
 }
 
+ErrnoError HttpClient::SendJson(common::http::http_protocol protocol,
+                                common::http::http_status status,
+                                const common::http::headers_t& extra_headers,
+                                const char* text,
+                                size_t len,
+                                bool is_keep_alive,
+                                const HttpServerInfo& info) {
+  DCHECK(protocol <= common::http::HP_1_1);
+
+  ErrnoError err = SendHeaders(protocol, status, extra_headers, "application/json", &len, nullptr, is_keep_alive, info);
+  if (err) {
+    DEBUG_MSG_ERROR(err, logging::LOG_LEVEL_ERR);
+  }
+
+  size_t nwrite = 0;
+  err = Write(text, len, &nwrite);
+  if (err) {
+    DEBUG_MSG_ERROR(err, logging::LOG_LEVEL_ERR);
+  }
+  return err;
+}
+
 ErrnoError HttpClient::SendOk(common::http::http_protocol protocol,
                               const common::http::headers_t& extra_headers,
                               const char* text,
@@ -104,9 +126,10 @@ ErrnoError HttpClient::SendError(common::http::http_protocol protocol,
   const std::string title = ConvertToString(status);
 
   char err_data[1024] = {0};
-  off_t err_len = SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title, text,
-                           info.server_url, info.server_name);
-  ErrnoError err = SendHeaders(protocol, status, extra_headers, "text/html", &err_len, nullptr, is_keep_alive, info);
+  ssize_t err_len = SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title, text,
+                         info.server_url, info.server_name);
+  size_t cast = err_len;
+  ErrnoError err = SendHeaders(protocol, status, extra_headers, "text/html", &cast, nullptr, is_keep_alive, info);
   if (err) {
     DEBUG_MSG_ERROR(err, logging::LOG_LEVEL_ERR);
   }
@@ -128,7 +151,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
                                    common::http::http_status status,
                                    const common::http::headers_t& extra_headers,
                                    const char* mime_type,
-                                   off_t* length,
+                                   size_t* length,
                                    time_t* mod,
                                    bool is_keep_alive,
                                    const HttpServerInfo& info) {
@@ -162,8 +185,7 @@ ErrnoError HttpClient::SendHeaders(common::http::http_protocol protocol,
     cur_pos += mim_t;
   }
   if (length) {
-    int len =
-        SNPrintf(header_data + cur_pos, sizeof(header_data) - cur_pos, "Content-Length: %" PRId32 "\r\n", *length);
+    int len = SNPrintf(header_data + cur_pos, sizeof(header_data) - cur_pos, "Content-Length: %zu\r\n", *length);
     cur_pos += len;
   }
   if (mod) {

@@ -116,9 +116,10 @@ ErrnoError Http2Client::SendError(common::http::http_protocol protocol,
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     const std::string title = ConvertToString(status);
     char err_data[1024] = {0};
-    off_t err_len = SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title, text,
-                             info.server_url, info.server_name);
-    ErrnoError err = SendHeaders(protocol, status, extra_headers, "text/html", &err_len, nullptr, is_keep_alive, info);
+    ssize_t err_len = SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title, text,
+                              info.server_url, info.server_name);
+    size_t cast = err_len;
+    ErrnoError err = SendHeaders(protocol, status, extra_headers, "text/html", &cast, nullptr, is_keep_alive, info);
     if (err) {
       DEBUG_MSG_ERROR(err, logging::LOG_LEVEL_ERR);
       return err;
@@ -166,7 +167,7 @@ ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
                                     common::http::http_status status,
                                     const common::http::headers_t& extra_headers,
                                     const char* mime_type,
-                                    off_t* length,
+                                    size_t* length,
                                     time_t* mod,
                                     bool is_keep_alive,
                                     const HttpServerInfo& info) {

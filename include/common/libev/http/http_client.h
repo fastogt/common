@@ -49,6 +49,14 @@ class HttpClient : public libev::tcp::TcpClient {
   virtual ErrnoError Get(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;
   virtual ErrnoError Head(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;
 
+  ErrnoError SendJson(common::http::http_protocol protocol,
+                      common::http::http_status status,
+                      const common::http::headers_t& extra_headers,
+                      const char* text,
+                      size_t len,
+                      bool is_keep_alive,
+                      const HttpServerInfo& info) WARN_UNUSED_RESULT;
+
   ErrnoError SendOk(common::http::http_protocol protocol,
                     const common::http::headers_t& extra_headers,
                     const char* text,
@@ -67,7 +75,7 @@ class HttpClient : public libev::tcp::TcpClient {
                                  common::http::http_status status,
                                  const common::http::headers_t& extra_headers,
                                  const char* mime_type,
-                                 off_t* length,
+                                 size_t* length,
                                  time_t* mod,
                                  bool is_keep_alive,
                                  const HttpServerInfo& info) WARN_UNUSED_RESULT;
