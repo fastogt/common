@@ -213,7 +213,8 @@ ErrnoError HttpClient::SendResponse(common::http::http_protocol protocol,
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n"
-                                                          : HTTP_1_0_PROTOCOL_NAME
+                         : protocol == common::http::HP_1_0 ? HTTP_1_0_PROTOCOL_NAME
+                                                            : HTTP_1_1_PROTOCOL_NAME
                              " %d %s\r\n"
                              "Server: %s\r\n"
                              "Date: %s\r\n",
@@ -260,7 +261,9 @@ ErrnoError HttpClient::SendRequest(common::http::http_method method,
     return make_errno_error_inval();
   }
 
-  if (!url.SchemeIsHTTPOrHTTPS()) {
+  bool isHttp = url.SchemeIsHTTPOrHTTPS();
+  bool isWS = url.SchemeIsWSOrWSS();
+  if (!(isHttp || isWS)) {
     return make_errno_error_inval();
   }
 

@@ -39,11 +39,10 @@
 #include <common/net/net.h>
 
 #define BUF_SIZE 4096
-#define HOST "demos.kaazing.com"
+#define HOST "127.0.0.1"
 namespace {
-const common::uri::GURL ws_url("ws://" HOST "/echo");
-const common::net::HostAndPort g_hs("localhost", 8011);
-const common::net::HostAndPort kHostAndPort(HOST, 80);
+const common::uri::GURL ws_url("ws://" HOST ":8011/echo");
+const common::net::HostAndPort g_hs(HOST, 8011);
 const common::libev::http::HttpServerInfo kHinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);
 }  // namespace
 
@@ -63,11 +62,9 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     common::ErrnoError errn = common::net::connect(kHostAndPort, common::net::ST_SOCK_STREAM, nullptr, &sc);
     ASSERT_FALSE(errn);
 
-    common::libev::websocket::WebSocketClient* cl = new common::libev::websocket::WebSocketClient(sserver, sc);
-    ignore_result(cl->SetBlocking(false));
-    ignore_result(sserver->RegisterClient(cl));
-    errn = cl->StartHandshake(ws_url, kHinf);
-    ASSERT_FALSE(errn);*/
+    common::libev::websocket::WebSocketServerClient* cl = new common::libev::websocket::WebSocketServerClient(sserver,
+    sc); ignore_result(cl->SetBlocking(false)); ignore_result(sserver->RegisterClient(cl)); errn =
+    cl->StartHandshake(ws_url, kHinf); ASSERT_FALSE(errn);*/
   }
 
   void Accepted(common::libev::IoClient* client) override {
@@ -105,23 +102,50 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
   }
 
   void DataReceived(common::libev::IoClient* client) override {
-    char buff[BUF_SIZE] = {0};
-    size_t nread = 0;
-    common::ErrnoError errn = client->SingleRead(buff, BUF_SIZE, &nread);
-    if ((errn && errn->GetErrorCode() != EAGAIN) || nread == 0) {
-      ignore_result(client->Close());
-      delete client;
-      return;
-    }
+    common::libev::websocket::WebSocketServerClient* wclient =
+        dynamic_cast<common::libev::websocket::WebSocketServerClient*>(client);
+    if (wclient) {
+      auto step = wclient->Step();
+      if (step == common::libev::websocket::ZERO) {
+        char buff[BUF_SIZE] = {0};
+        size_t nread = 0;
+        common::ErrnoError errn = client->SingleRead(buff, BUF_SIZE, &nread);
+        if (errn || nread == 0) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
 
-    common::libev::http::HttpClient* hclient = dynamic_cast<common::libev::http::HttpClient*>(client);
-    CHECK(hclient);
-    common::http::HttpRequest req;
-    auto status_and_err = common::http::parse_http_request(std::string(buff, nread), &req);
-    if (status_and_err.second) {
-      ignore_result(client->Close());
-      delete client;
-      return;
+        auto data = std::string(buff, nread);
+        common::http::HttpRequest req;
+        auto status_and_err = common::http::parse_http_request(data, &req);
+        if (status_and_err.second) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        common::http::header_t head;
+        if (!req.FindHeaderByKey("Sec-WebSocket-Key", false, &head)) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        common::http::headers_t extra_headers = {{"Access-Control-Allow-Origin", "*"}};
+        common::ErrnoError err = wclient->SendSwitchProtocolsResponse(head.value, extra_headers, info());
+        ASSERT_FALSE(err);
+        return;
+      }
+
+      auto print = [wclient](char* data, size_t len) -> void { wclient->SendFrame(data, len); };
+
+      common::ErrnoError errn = wclient->ProcessFrame(print);
+      if (errn) {
+        ignore_result(client->Close());
+        delete client;
+        return;
+      }
     }
   }
 
@@ -133,12 +157,23 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
   }
 };
 
-void ExitWebServer(common::libev::tcp::TcpServer* ser) {
+void DanceAndExitWebServer(common::libev::tcp::TcpServer* ser) {
+  common::threads::PlatformThread::Sleep(1000);
+  common::net::socket_info sc;
+  common::ErrnoError errn = common::net::connect(g_hs, common::net::ST_SOCK_STREAM, nullptr, &sc);
+  ASSERT_FALSE(errn);
+
+  common::libev::websocket::WebSocketClient* cl = new common::libev::websocket::WebSocketClient(ser, sc);
+  errn = cl->StartHandshake(ws_url, kHinf);
+  ASSERT_FALSE(errn);
+  common::threads::PlatformThread::Sleep(1000);
+  errn = cl->SendFrame("hello", SIZEOFMASS("hello") - 1);
+  ASSERT_FALSE(errn);
   common::threads::PlatformThread::Sleep(1000);
   ser->Stop();
 }
 
-TEST(Libev, Webscoket) {
+TEST(Libev, Websoсket) {
   ServerWebHandler hand(kHinf);
   auto sock = new common::net::ServerSocketEvTcp(g_hs);
   common::libev::websocket::WebSocketServer* serv = new common::libev::websocket::WebSocketServer(sock, false, &hand);
@@ -148,7 +183,7 @@ TEST(Libev, Webscoket) {
   err = serv->Listen(5);
   ASSERT_FALSE(err);
 
-  auto tp = THREAD_MANAGER()->CreateThread(&ExitWebServer, serv);
+  auto tp = THREAD_MANAGER()->CreateThread(&DanceAndExitWebServer, serv);
   GTEST_ASSERT_EQ(tp->GetHandle(), common::threads::invalid_thread_handle());
   bool res_start = tp->Start();
   ASSERT_TRUE(res_start);

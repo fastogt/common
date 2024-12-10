@@ -43,7 +43,7 @@ const char* WebSocketServer::ClassName() const {
 
 tcp::TcpClient* WebSocketServer::CreateClient(const net::socket_info& info, void* user) {
   UNUSED(user);
-  return new WebSocketClient(this, info);
+  return new WebSocketServerClient(this, info);
 }
 
 }  // namespace websocket

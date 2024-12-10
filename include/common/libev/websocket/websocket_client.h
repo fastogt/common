@@ -35,6 +35,23 @@ namespace common {
 namespace libev {
 namespace websocket {
 
+enum WsStep {
+  ZERO,   // before websocket handshake
+  ONE,    // 0-2 bytes, fin, opcode, mask, payload length
+  TWO,    // extended payload length
+  THREE,  // masking-key
+  FOUR,   // payload data
+  UNKNOWN
+};
+
+typedef struct Frame {
+  uint8_t fin;
+  uint8_t opcode;
+  uint8_t mask;
+  uint64_t payload_len;
+  unsigned char masking_key[4];
+} frame_t;
+
 class WebSocketClient : public http::HttpClient {
  public:
   WebSocketClient(libev::IoLoop* server, const net::socket_info& info);
@@ -42,10 +59,34 @@ class WebSocketClient : public http::HttpClient {
 
   const char* ClassName() const override;
 
-  ErrnoError SendSwitchProtocolsResponse(const std::string& key,
-                                         const std::string& protocol,
-                                         const http::HttpServerInfo& info) WARN_UNUSED_RESULT;
+  virtual ErrnoError SendFrame(const char* data, size_t size) WARN_UNUSED_RESULT;
+  ErrnoError SendEOS() WARN_UNUSED_RESULT;
   ErrnoError StartHandshake(const uri::GURL& url, const http::HttpServerInfo& info) WARN_UNUSED_RESULT;
+};
+
+class WebSocketServerClient : public WebSocketClient {
+ public:
+  WebSocketServerClient(libev::IoLoop* server, const net::socket_info& info);
+  virtual ~WebSocketServerClient();
+
+  const char* ClassName() const override;
+
+  ErrnoError SendSwitchProtocolsResponse(const std::string& key,
+                                         const common::http::headers_t& extra_headers,
+                                         const http::HttpServerInfo& info) WARN_UNUSED_RESULT;
+
+  WsStep Step() const;
+
+  ErrnoError SendFrame(const char* data, size_t size) override WARN_UNUSED_RESULT;
+
+  ErrnoError ProcessFrame(std::function<void(char*, size_t)> pred) WARN_UNUSED_RESULT;
+
+ private:
+  ErrnoError SendPong() WARN_UNUSED_RESULT;
+
+  frame_t frame_;
+  size_t ntoread_;
+  WsStep step_;
 };
 
 }  // namespace websocket
