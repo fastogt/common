@@ -110,11 +110,11 @@ common::Error ParseHttpHeaders(const std::string& headers_data, HttpResponse* ou
   }
 
   std::string first_line = result[0];
-  size_t spaceP = first_line.find_first_of(" ");
+  size_t spaceP = first_line.find_first_of(' ');
   if (spaceP != std::string::npos) {
     std::string status_str = first_line.substr(spaceP + 1);
     std::string protocol_str = first_line.substr(0, spaceP);
-    size_t http_sep = protocol_str.find_first_of("/");
+    size_t http_sep = protocol_str.find_first_of('/');
     if (http_sep == std::string::npos) {
       return make_error_inval();
     }
@@ -123,7 +123,7 @@ common::Error ParseHttpHeaders(const std::string& headers_data, HttpResponse* ou
       DNOTREACHED() << "Unknown protocol: " << protocol_str;
     }
 
-    size_t status_sep = status_str.find_first_of(" ");
+    size_t status_sep = status_str.find_first_of(' ');
     if (status_sep == std::string::npos) {
       return make_error_inval();
     }
@@ -741,7 +741,7 @@ std::pair<http_status, Error> parse_http_request(const char* request, size_t len
           }
 
           std::string protcolAndPath = line.substr(space + 1);
-          size_t space_protocol = protcolAndPath.find_first_of("HTTP");
+          size_t space_protocol = protcolAndPath.find("HTTP");
           if (space_protocol != std::string::npos) {
             std::string path = protcolAndPath.substr(0, space_protocol - 1);
             if (protcolAndPath[0] != '/') {  // must start with /

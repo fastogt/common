@@ -61,7 +61,9 @@ class WebSocketClient : public http::HttpClient {
 
   virtual ErrnoError SendFrame(const char* data, size_t size) WARN_UNUSED_RESULT;
   ErrnoError SendEOS() WARN_UNUSED_RESULT;
-  ErrnoError StartHandshake(const uri::GURL& url, const http::HttpServerInfo& info) WARN_UNUSED_RESULT;
+  ErrnoError StartHandshake(const uri::GURL& url,
+                            const common::http::headers_t& extra_headers,
+                            const http::HttpServerInfo& info) WARN_UNUSED_RESULT;
 };
 
 class WebSocketServerClient : public WebSocketClient {

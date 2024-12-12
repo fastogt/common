@@ -238,7 +238,9 @@ ErrnoError WebSocketClient::SendFrame(const char* data, size_t size) {
   return errn;
 }
 
-ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url, const http::HttpServerInfo& info) {
+ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url,
+                                           const common::http::headers_t& extra_headers,
+                                           const http::HttpServerInfo& info) {
   UNUSED(info);
   if (!url.is_valid()) {
     return make_errno_error_inval();
@@ -260,10 +262,15 @@ ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url, const http::Htt
     return make_errno_error("can't decode key to base64", EAGAIN);
   }
 
-  auto headers = {
+  common::http::headers_t headers = {
       common::http::HttpHeader("Upgrade", "websocket"), common::http::HttpHeader("User-Agent", USER_AGENT_VALUE),
       common::http::HttpHeader("Connection", "Upgrade"), common::http::HttpHeader("Sec-WebSocket-Key", base64),
       common::http::HttpHeader("Sec-WebSocket-Version", "13")};
+
+  for (size_t i = 0; i < extra_headers.size(); ++i) {
+    const auto header = extra_headers[i];
+    headers.push_back(header);
+  }
   return SendRequest(common::http::HM_GET, url, common::http::HP_1_1, headers);
 }
 

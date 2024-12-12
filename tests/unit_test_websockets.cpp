@@ -40,19 +40,22 @@
 
 #define BUF_SIZE 4096
 #define HOST "127.0.0.1"
+#define ROUTE "/updates"
+#define KEY "0019c93c6b0000beea359300003e9f947b01904e583aba03009cc80bd909d0b13ead040ab04d61cd824703e9eafd3d470"
+#define API_KEY_PARAM "API-KEY"
 namespace {
-const common::uri::GURL ws_url("ws://" HOST ":8011/echo");
+const common::uri::GURL ws_url("ws://" HOST ":8011" ROUTE "?" API_KEY_PARAM "=" KEY);
 const common::net::HostAndPort g_hs(HOST, 8011);
 const common::libev::http::HttpServerInfo kHinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);
 }  // namespace
 
-class ServerWebHandler : public common::libev::IoLoopObserver {
+class ServerWebsockHandler : public common::libev::IoLoopObserver {
   const common::libev::http::HttpServerInfo info_;
 
  public:
-  explicit ServerWebHandler(const common::libev::http::HttpServerInfo& info) : info_(info) {}
+  explicit ServerWebsockHandler(const common::libev::http::HttpServerInfo& info) : info_(info) {}
 
-  ~ServerWebHandler() {}
+  ~ServerWebsockHandler() {}
 
   const common::libev::http::HttpServerInfo& info() const { return info_; }
 
@@ -132,6 +135,58 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
           return;
         }
 
+        common::http::header_t found_key_in_headers;
+        if (!req.FindHeaderByKey(API_KEY_PARAM, false, &found_key_in_headers)) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        if (found_key_in_headers.value != KEY) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        auto url = req.GetURL();
+        auto route = url.path();
+        if (route != ROUTE) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        if (!url.has_query()) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        auto query_str = url.query();
+        common::uri::Component key, value;
+        common::uri::Component query(0, query_str.length());
+        common::Optional<std::string> found_key_in_params;
+        while (common::uri::ExtractQueryKeyValue(query_str.c_str(), &query, &key, &value)) {
+          std::string key_string(query_str.substr(key.begin, key.len));
+          std::string param_text(query_str.substr(value.begin, value.len));
+          if (common::EqualsASCII(key_string, API_KEY_PARAM, false)) {
+            found_key_in_params = param_text;
+            break;
+          }
+        }
+
+        if (!found_key_in_params) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
+        if (*found_key_in_params != KEY) {
+          ignore_result(client->Close());
+          delete client;
+          return;
+        }
+
         common::http::headers_t extra_headers = {{"Access-Control-Allow-Origin", "*"}};
         common::ErrnoError err = wclient->SendSwitchProtocolsResponse(head.value, extra_headers, info());
         ASSERT_FALSE(err);
@@ -164,7 +219,8 @@ void DanceAndExitWebServer(common::libev::tcp::TcpServer* ser) {
   ASSERT_FALSE(errn);
 
   common::libev::websocket::WebSocketClient* cl = new common::libev::websocket::WebSocketClient(ser, sc);
-  errn = cl->StartHandshake(ws_url, kHinf);
+  common::http::headers_t extra_headers = {{API_KEY_PARAM, KEY}};
+  errn = cl->StartHandshake(ws_url, extra_headers, kHinf);
   ASSERT_FALSE(errn);
   common::threads::PlatformThread::Sleep(1000);
   errn = cl->SendFrame("hello", SIZEOFMASS("hello") - 1);
@@ -174,7 +230,7 @@ void DanceAndExitWebServer(common::libev::tcp::TcpServer* ser) {
 }
 
 TEST(Libev, Websoсket) {
-  ServerWebHandler hand(kHinf);
+  ServerWebsockHandler hand(kHinf);
   auto sock = new common::net::ServerSocketEvTcp(g_hs);
   common::libev::websocket::WebSocketServer* serv = new common::libev::websocket::WebSocketServer(sock, false, &hand);
   common::ErrnoError err = serv->Bind(true);

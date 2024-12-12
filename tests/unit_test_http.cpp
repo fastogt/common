@@ -535,7 +535,7 @@ TEST(https_client, get) {
 TEST(https_client, post) {
   auto const path = common::file_system::prepare_path("~/1.txt");
   ErrnoError errn = common::file_system::create_node(path);
-  ASSERT_TRUE(!errn);
+  ASSERT_FALSE(errn);
 
   common::Error err = net::PostHttpsFile(
       common::file_system::ascii_file_string_path(path),

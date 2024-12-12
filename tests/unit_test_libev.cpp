@@ -41,7 +41,7 @@
 #include <common/net/net.h>
 
 namespace {
-const common::net::HostAndPort g_hs("localhost", 8010);
+const common::net::HostAndPort g_hs("localhost", 8013);
 }
 
 class ServerHandler : public common::libev::IoLoopObserver {
@@ -50,14 +50,7 @@ class ServerHandler : public common::libev::IoLoopObserver {
 
   ~ServerHandler() {}
 
-  void PreLooped(common::libev::IoLoop* server) override {
-    common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(server);
-    timeval tv = {1, 0};
-    common::net::socket_info sc;
-    ASSERT_EQ(g_hs, sserver->GetHost());
-    common::ErrnoError err = common::net::connect(g_hs, common::net::ST_SOCK_STREAM, &tv, &sc);
-    ASSERT_TRUE(err);
-  }
+  void PreLooped(common::libev::IoLoop* server) override {}
 
   void Accepted(common::libev::IoClient* client) override {
     common::libev::tcp::TcpServer* sserver = static_cast<common::libev::tcp::TcpServer*>(client->GetServer());
@@ -102,6 +95,12 @@ class ServerHandler : public common::libev::IoLoopObserver {
 };
 
 void ExitServer(common::libev::tcp::TcpServer* ser) {
+  common::threads::PlatformThread::Sleep(1000);
+  timeval tv = {1, 0};
+  common::net::socket_info sc;
+  ASSERT_EQ(g_hs, ser->GetHost());
+  common::ErrnoError err = common::net::connect(g_hs, common::net::ST_SOCK_STREAM, &tv, &sc);
+  ASSERT_FALSE(err);
   common::threads::PlatformThread::Sleep(1000);
   ser->Stop();
 }
