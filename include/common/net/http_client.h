@@ -67,9 +67,9 @@ class IHttpClient {
   Optional<http::HttpRequest> last_request_;
 };
 
-class HttpServerClient : public IHttpClient {
+class HttpClient : public IHttpClient {
  public:
-  explicit HttpServerClient(const HostAndPort& host);
+  explicit HttpClient(const HostAndPort& host);
   ErrnoError Connect(struct timeval* tv = nullptr) override;
   bool IsConnected() const override;
   ErrnoError Disconnect() override;

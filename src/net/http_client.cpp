@@ -260,29 +260,29 @@ ISocket* IHttpClient::GetSocket() const {
   return sock_;
 }
 
-HttpServerClient::HttpServerClient(const HostAndPort& host) : IHttpClient(new ClientSocketTcp(host)) {}
+HttpClient::HttpClient(const HostAndPort& host) : IHttpClient(new ClientSocketTcp(host)) {}
 
-ErrnoError HttpServerClient::Connect(struct timeval* tv) {
+ErrnoError HttpClient::Connect(struct timeval* tv) {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->Connect(tv);
 }
 
-bool HttpServerClient::IsConnected() const {
+bool HttpClient::IsConnected() const {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->IsConnected();
 }
 
-ErrnoError HttpServerClient::Disconnect() {
+ErrnoError HttpClient::Disconnect() {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->Disconnect();
 }
 
-ErrnoError HttpServerClient::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError HttpClient::SendFile(descriptor_t file_fd, size_t file_size) {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->SendFile(file_fd, file_size);
 }
 
-HostAndPort HttpServerClient::GetHost() const {
+HostAndPort HttpClient::GetHost() const {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
   return sock->GetHost();
 }
@@ -296,7 +296,7 @@ Error GetHttpFile(const uri::GURL& url,
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
-  HttpServerClient cl(http_server_address);
+  HttpClient cl(http_server_address);
   ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);
@@ -353,7 +353,7 @@ Error PostHttpFile(const file_system::ascii_file_string_path& file_path,
   }
 
   HostAndPort http_server_address(url.host(), url.EffectiveIntPort());
-  HttpServerClient cl(http_server_address);
+  HttpClient cl(http_server_address);
   ErrnoError errn = cl.Connect(tv);
   if (errn) {
     return make_error_from_errno(errn);

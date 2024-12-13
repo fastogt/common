@@ -477,7 +477,7 @@ TEST(Http2, frame_goaway) {
 
 TEST(http_client, head) {
   net::HostAndPort example("example.com", 80);
-  net::HttpServerClient cl(example);
+  net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
   Error err2 = cl.Head("/", {});
@@ -492,7 +492,7 @@ TEST(http_client, head) {
 
 TEST(http_client, get) {
   net::HostAndPort example("example.com", 80);
-  net::HttpServerClient cl(example);
+  net::HttpClient cl(example);
   ErrnoError err = cl.Connect();
   ASSERT_FALSE(err);
   Error err2 = cl.Get("/", {});
