@@ -222,7 +222,7 @@ const char masking_key[4] = {0x12, 0x34, 0x56, 0x78};
 }  // namespace
 
 WebSocketClient::WebSocketClient(libev::IoLoop* server, const net::socket_info& info)
-    : http::HttpClient(server, info) {}
+    : http::HttpServerClient(server, info) {}
 
 WebSocketClient::~WebSocketClient() {}
 
@@ -238,10 +238,7 @@ ErrnoError WebSocketClient::SendFrame(const char* data, size_t size) {
   return errn;
 }
 
-ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url,
-                                           const common::http::headers_t& extra_headers,
-                                           const http::HttpServerInfo& info) {
-  UNUSED(info);
+ErrnoError WebSocketClient::StartHandshake(const uri::GURL& url, const common::http::headers_t& extra_headers) {
   if (!url.is_valid()) {
     return make_errno_error_inval();
   }

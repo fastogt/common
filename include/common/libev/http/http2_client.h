@@ -39,12 +39,12 @@ namespace common {
 namespace libev {
 namespace http {
 
-class Http2Client : public HttpClient {
+class Http2ServerClient : public HttpServerClient {
  public:
   typedef StreamSPtr stream_t;
   typedef std::vector<stream_t> streams_t;
 
-  Http2Client(IoLoop* server, const net::socket_info& info);
+  Http2ServerClient(IoLoop* server, const net::socket_info& info);
 
   ErrnoError Get(const uri::GURL& url, bool is_keep_alive) override WARN_UNUSED_RESULT;
   ErrnoError Head(const uri::GURL& url, bool is_keep_alive) override WARN_UNUSED_RESULT;

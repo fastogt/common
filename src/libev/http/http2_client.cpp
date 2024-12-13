@@ -88,36 +88,37 @@ ErrnoError send_data_frame(const char* buff, size_t buff_len, void* user_data, s
 namespace libev {
 namespace http {
 
-Http2Client::Http2Client(libev::IoLoop* server, const net::socket_info& info) : HttpClient(server, info), streams_() {}
+Http2ServerClient::Http2ServerClient(libev::IoLoop* server, const net::socket_info& info)
+    : HttpServerClient(server, info), streams_() {}
 
-ErrnoError Http2Client::Get(const uri::GURL& url, bool is_keep_alive) {
+ErrnoError Http2ServerClient::Get(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_GET, url, common::http::HP_2_0, {}, is_keep_alive);
 }
 
-ErrnoError Http2Client::Head(const uri::GURL& url, bool is_keep_alive) {
+ErrnoError Http2ServerClient::Head(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_HEAD, url, common::http::HP_2_0, {}, is_keep_alive);
 }
 
-const char* Http2Client::ClassName() const {
-  return "Http2Client";
+const char* Http2ServerClient::ClassName() const {
+  return "Http2ServerClient";
 }
 
-bool Http2Client::IsHttp2() const {
+bool Http2ServerClient::IsHttp2() const {
   StreamSPtr main_stream = FindStreamByStreamID(0);
   return main_stream.get();
 }
 
-ErrnoError Http2Client::SendError(common::http::http_protocol protocol,
-                                  common::http::http_status status,
-                                  const common::http::headers_t& extra_headers,
-                                  const char* text,
-                                  bool is_keep_alive,
-                                  const HttpServerInfo& info) {
+ErrnoError Http2ServerClient::SendError(common::http::http_protocol protocol,
+                                        common::http::http_status status,
+                                        const common::http::headers_t& extra_headers,
+                                        const char* text,
+                                        bool is_keep_alive,
+                                        const HttpServerInfo& info) {
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     const std::string title = ConvertToString(status);
     char err_data[1024] = {0};
     ssize_t err_len = SNPrintf(err_data, sizeof(err_data), HTML_PATTERN_ISISSSS7, status, title, status, title, text,
-                              info.server_url, info.server_name);
+                               info.server_url, info.server_name);
     size_t cast = err_len;
     ErrnoError err = SendHeaders(protocol, status, extra_headers, "text/html", &cast, nullptr, is_keep_alive, info);
     if (err) {
@@ -137,10 +138,10 @@ ErrnoError Http2Client::SendError(common::http::http_protocol protocol,
     return header_stream->SendFrame(fdata);
   }
 
-  return HttpClient::SendError(protocol, status, extra_headers, text, is_keep_alive, info);
+  return HttpServerClient::SendError(protocol, status, extra_headers, text, is_keep_alive, info);
 }
 
-ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
+ErrnoError Http2ServerClient::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
     if (!header_stream) {
@@ -160,17 +161,17 @@ ErrnoError Http2Client::SendFileByFd(common::http::http_protocol protocol, descr
     return ErrnoError();
   }
 
-  return HttpClient::SendFileByFd(protocol, fdesc, size);
+  return HttpServerClient::SendFileByFd(protocol, fdesc, size);
 }
 
-ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
-                                    common::http::http_status status,
-                                    const common::http::headers_t& extra_headers,
-                                    const char* mime_type,
-                                    size_t* length,
-                                    time_t* mod,
-                                    bool is_keep_alive,
-                                    const HttpServerInfo& info) {
+ErrnoError Http2ServerClient::SendHeaders(common::http::http_protocol protocol,
+                                          common::http::http_status status,
+                                          const common::http::headers_t& extra_headers,
+                                          const char* mime_type,
+                                          size_t* length,
+                                          time_t* mod,
+                                          bool is_keep_alive,
+                                          const HttpServerInfo& info) {
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
     if (!header_stream) {
@@ -235,14 +236,14 @@ ErrnoError Http2Client::SendHeaders(common::http::http_protocol protocol,
     return header_stream->SendFrame(fhdr);
   }
 
-  return HttpClient::SendHeaders(protocol, status, extra_headers, mime_type, length, mod, is_keep_alive, info);
+  return HttpServerClient::SendHeaders(protocol, status, extra_headers, mime_type, length, mod, is_keep_alive, info);
 }
 
-ErrnoError Http2Client::SendRequest(common::http::http_method method,
-                                    const uri::GURL& url,
-                                    common::http::http_protocol protocol,
-                                    const common::http::headers_t& extra_headers,
-                                    bool is_keep_alive) {
+ErrnoError Http2ServerClient::SendRequest(common::http::http_method method,
+                                          const uri::GURL& url,
+                                          common::http::http_protocol protocol,
+                                          const common::http::headers_t& extra_headers,
+                                          bool is_keep_alive) {
   if (IsHttp2() && protocol == common::http::HP_2_0) {
     StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
     if (!header_stream) {
@@ -290,10 +291,10 @@ ErrnoError Http2Client::SendRequest(common::http::http_method method,
     return header_stream->SendFrame(fhdr);
   }
 
-  return HttpClient::SendRequest(method, url, protocol, extra_headers, is_keep_alive);
+  return HttpServerClient::SendRequest(method, url, protocol, extra_headers, is_keep_alive);
 }
 
-StreamSPtr Http2Client::FindStreamByStreamID(IStream::stream_id_t stream_id) const {
+StreamSPtr Http2ServerClient::FindStreamByStreamID(IStream::stream_id_t stream_id) const {
   for (size_t i = 0; i < streams_.size(); ++i) {
     StreamSPtr stream = streams_[i];
     if (stream->GetSid() == stream_id) {
@@ -304,7 +305,7 @@ StreamSPtr Http2Client::FindStreamByStreamID(IStream::stream_id_t stream_id) con
   return StreamSPtr();
 }
 
-StreamSPtr Http2Client::FindStreamByType(http2::frame_t type) const {
+StreamSPtr Http2ServerClient::FindStreamByType(http2::frame_t type) const {
   for (size_t i = 0; i < streams_.size(); ++i) {
     StreamSPtr stream = streams_[i];
     if (stream->GetType() == type) {
@@ -315,7 +316,7 @@ StreamSPtr Http2Client::FindStreamByType(http2::frame_t type) const {
   return StreamSPtr();
 }
 
-bool Http2Client::IsSettingNegotiated() const {
+bool Http2ServerClient::IsSettingNegotiated() const {
   StreamSPtr settings = FindStreamByStreamID(0);
   if (!settings || settings->GetType() != http2::HTTP2_SETTINGS) {
     return false;
@@ -329,7 +330,7 @@ bool Http2Client::IsSettingNegotiated() const {
   return false;
 }
 
-void Http2Client::ProcessFrames(const http2::frames_t& frames) {
+void Http2ServerClient::ProcessFrames(const http2::frames_t& frames) {
   const net::socket_descr_t fd = GetFd();
   for (size_t i = 0; i < frames.size(); ++i) {
     http2::frame_base frame = frames[i];

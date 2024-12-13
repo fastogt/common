@@ -35,8 +35,6 @@
 #include <common/uri/gurl.h>
 #include <time.h>
 
-#include <vector>
-
 namespace common {
 namespace libev {
 namespace http {
@@ -47,7 +45,26 @@ class HttpClient : public libev::tcp::TcpClient {
   HttpClient(libev::IoLoop* server, net::TcpSocketHolder* sock);
 
   virtual ErrnoError Get(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;
+  virtual ErrnoError Post(const uri::GURL& url, const char* mime_type, const char* text, size_t len, bool is_keep_alive)
+      WARN_UNUSED_RESULT;
   virtual ErrnoError Head(const uri::GURL& url, bool is_keep_alive) WARN_UNUSED_RESULT;
+
+  virtual ErrnoError SendRequest(common::http::http_method method,
+                                 const uri::GURL& url,
+                                 common::http::http_protocol protocol,
+                                 const common::http::headers_t& extra_headers,
+                                 bool is_keep_alive) WARN_UNUSED_RESULT;
+
+  virtual ErrnoError SendRequest(common::http::http_method method,
+                                 const uri::GURL& url,
+                                 common::http::http_protocol protocol,
+                                 const common::http::headers_t& extra_headers) WARN_UNUSED_RESULT;
+};
+
+class HttpServerClient : public HttpClient {
+ public:
+  HttpServerClient(libev::IoLoop* server, const net::socket_info& info);
+  HttpServerClient(libev::IoLoop* server, net::TcpSocketHolder* sock);
 
   ErrnoError SendJson(common::http::http_protocol protocol,
                       common::http::http_status status,
@@ -62,6 +79,7 @@ class HttpClient : public libev::tcp::TcpClient {
                     const char* text,
                     bool is_keep_alive,
                     const HttpServerInfo& info) WARN_UNUSED_RESULT;
+
   virtual ErrnoError SendError(common::http::http_protocol protocol,
                                common::http::http_status status,
                                const common::http::headers_t& extra_headers,
@@ -79,16 +97,6 @@ class HttpClient : public libev::tcp::TcpClient {
                                  time_t* mod,
                                  bool is_keep_alive,
                                  const HttpServerInfo& info) WARN_UNUSED_RESULT;
-  virtual ErrnoError SendRequest(common::http::http_method method,
-                                 const uri::GURL& url,
-                                 common::http::http_protocol protocol,
-                                 const common::http::headers_t& extra_headers,
-                                 bool is_keep_alive) WARN_UNUSED_RESULT;
-
-  virtual ErrnoError SendRequest(common::http::http_method method,
-                                 const uri::GURL& url,
-                                 common::http::http_protocol protocol,
-                                 const common::http::headers_t& extra_headers) WARN_UNUSED_RESULT;
 
   ErrnoError SendResponse(common::http::http_protocol protocol,
                           common::http::http_status status,

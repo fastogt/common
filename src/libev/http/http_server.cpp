@@ -39,7 +39,7 @@ HttpServer::HttpServer(net::IServerSocketEv* sock, bool is_default, IoLoopObserv
 
 tcp::TcpClient* HttpServer::CreateClient(const net::socket_info& info, void* user) {
   UNUSED(user);
-  return new HttpClient(this, info);
+  return new HttpServerClient(this, info);
 }
 
 const char* HttpServer::ClassName() const {

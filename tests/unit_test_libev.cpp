@@ -152,7 +152,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
     common::ErrnoError errn = common::net::connect(kHostAndPort, common::net::ST_SOCK_STREAM, nullptr, &sc);
     ASSERT_FALSE(errn);
 
-    common::libev::http::HttpClient* cl = new common::libev::http::HttpClient(sserver, sc);
+    common::libev::http::HttpServerClient* cl = new common::libev::http::HttpServerClient(sserver, sc);
     ignore_result(cl->SetBlocking(false));
     ignore_result(sserver->RegisterClient(cl));
     errn = cl->Get(http_url, true);
@@ -203,7 +203,7 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
       return;
     }
 
-    common::libev::http::HttpClient* hclient = dynamic_cast<common::libev::http::HttpClient*>(client);
+    common::libev::http::HttpServerClient* hclient = dynamic_cast<common::libev::http::HttpServerClient*>(client);
     CHECK(hclient);
     common::http::HttpResponse resp;
     size_t not_parsed;

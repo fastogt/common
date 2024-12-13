@@ -220,7 +220,7 @@ void DanceAndExitWebServer(common::libev::tcp::TcpServer* ser) {
 
   common::libev::websocket::WebSocketClient* cl = new common::libev::websocket::WebSocketClient(ser, sc);
   common::http::headers_t extra_headers = {{API_KEY_PARAM, KEY}};
-  errn = cl->StartHandshake(ws_url, extra_headers, kHinf);
+  errn = cl->StartHandshake(ws_url, extra_headers);
   ASSERT_FALSE(errn);
   common::threads::PlatformThread::Sleep(1000);
   errn = cl->SendFrame("hello", SIZEOFMASS("hello") - 1);
