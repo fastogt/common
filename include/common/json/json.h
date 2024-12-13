@@ -34,15 +34,15 @@
 namespace common {
 namespace json {
 
-class ErrorJson : public common::serializer::JsonSerializer<ErrorJson> {
+class ErrorJsonMessage : public common::serializer::JsonSerializer<ErrorJsonMessage> {
  public:
   typedef int code_t;
-  typedef common::serializer::JsonSerializer<ErrorJson> base_class;
+  typedef common::serializer::JsonSerializer<ErrorJsonMessage> base_class;
 
-  ErrorJson();
-  ErrorJson(code_t code, const std::string& message);
+  ErrorJsonMessage();
+  ErrorJsonMessage(code_t code, const std::string& message);
 
-  bool Equals(const ErrorJson& errj) const;
+  bool Equals(const ErrorJsonMessage& errj) const;
 
   code_t GetCode() const;
   std::string GetMessage() const;
@@ -54,6 +54,26 @@ class ErrorJson : public common::serializer::JsonSerializer<ErrorJson> {
  private:
   code_t code_;
   std::string message_;
+};
+
+ErrorJsonMessage MakeErrorJsonMessage(ErrorJsonMessage::code_t code, Error err);
+
+class ErrorJson : public common::serializer::JsonSerializer<ErrorJson> {
+ public:
+  typedef common::serializer::JsonSerializer<ErrorJson> base_class;
+
+  ErrorJson();
+
+  ErrorJsonMessage GetError() const;
+
+  bool Equals(const ErrorJson& data) const;
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* deserialized) const override;
+
+ private:
+  ErrorJsonMessage error_;
 };
 
 class DataJson : public common::serializer::JsonSerializer<DataJson> {

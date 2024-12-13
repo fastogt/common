@@ -29,41 +29,48 @@
 
 #include <common/json/json.h>
 
-#define ERROR_JSON_CODE_FIELD "code"
-#define ERROR_JSON_MESSAGE_FIELD "message"
+#define ERROR_JSON_MESSAGE_CODE_FIELD "code"
+#define ERROR_JSON_MESSAGE_MESSAGE_FIELD "message"
+
+#define ERROR_JSON_ERROR_FIELD "error"
 
 #define DATA_JSON_DATA_FIELD "data"
 
 namespace common {
 namespace json {
 
-ErrorJson::ErrorJson() : ErrorJson(0, std::string()) {}
+ErrorJsonMessage MakeErrorJsonMessage(ErrorJsonMessage::code_t code, Error err) {
+  return ErrorJsonMessage(code, err->GetDescription());
+}
 
-ErrorJson::ErrorJson(code_t code, const std::string& message) : base_class(), code_(code), message_(message) {}
+ErrorJsonMessage::ErrorJsonMessage() : ErrorJsonMessage(0, std::string()) {}
 
-bool ErrorJson::Equals(const ErrorJson& errj) const {
+ErrorJsonMessage::ErrorJsonMessage(code_t code, const std::string& message)
+    : base_class(), code_(code), message_(message) {}
+
+bool ErrorJsonMessage::Equals(const ErrorJsonMessage& errj) const {
   return code_ == errj.code_ && message_ == errj.message_;
 }
 
-ErrorJson::code_t ErrorJson::GetCode() const {
+ErrorJsonMessage::code_t ErrorJsonMessage::GetCode() const {
   return code_;
 }
 
-std::string ErrorJson::GetMessage() const {
+std::string ErrorJsonMessage::GetMessage() const {
   return message_;
 }
 
-common::Error ErrorJson::DoDeSerialize(json_object* serialized) {
-  ErrorJson inf;
+common::Error ErrorJsonMessage::DoDeSerialize(json_object* serialized) {
+  ErrorJsonMessage inf;
   json_object* jcode = nullptr;
-  json_bool jcode_exists = json_object_object_get_ex(serialized, ERROR_JSON_CODE_FIELD, &jcode);
+  json_bool jcode_exists = json_object_object_get_ex(serialized, ERROR_JSON_MESSAGE_CODE_FIELD, &jcode);
   if (!jcode_exists) {
     return make_error_inval();
   }
   inf.message_ = json_object_get_int(jcode);
 
   json_object* jmessage = nullptr;
-  json_bool jmessage_exists = json_object_object_get_ex(serialized, ERROR_JSON_MESSAGE_FIELD, &jmessage);
+  json_bool jmessage_exists = json_object_object_get_ex(serialized, ERROR_JSON_MESSAGE_MESSAGE_FIELD, &jmessage);
   if (!jmessage_exists) {
     return make_error_inval();
   }
@@ -73,9 +80,46 @@ common::Error ErrorJson::DoDeSerialize(json_object* serialized) {
   return common::Error();
 }
 
+common::Error ErrorJsonMessage::SerializeFields(json_object* out) const {
+  json_object_object_add(out, ERROR_JSON_MESSAGE_CODE_FIELD, json_object_new_int(code_));
+  json_object_object_add(out, ERROR_JSON_MESSAGE_MESSAGE_FIELD, json_object_new_string(message_.c_str()));
+  return common::Error();
+}
+
+ErrorJson::ErrorJson() : error_() {}
+
+ErrorJsonMessage ErrorJson::GetError() const {
+  return error_;
+}
+
+bool ErrorJson::Equals(const ErrorJson& data) const {
+  return error_.Equals(data.error_);
+}
+
+common::Error ErrorJson::DoDeSerialize(json_object* serialized) {
+  ErrorJson inf;
+  json_object* jerror = nullptr;
+  json_bool jerror_exists = json_object_object_get_ex(serialized, ERROR_JSON_ERROR_FIELD, &jerror);
+  if (!jerror_exists) {
+    return make_error_inval();
+  }
+
+  common::Error err = inf.error_.DeSerialize(jerror);
+  if (err) {
+    return err;
+  }
+
+  *this = inf;
+  return common::Error();
+}
+
 common::Error ErrorJson::SerializeFields(json_object* out) const {
-  json_object_object_add(out, ERROR_JSON_CODE_FIELD, json_object_new_int(code_));
-  json_object_object_add(out, ERROR_JSON_MESSAGE_FIELD, json_object_new_string(message_.c_str()));
+  json_object* jerror;
+  common::Error err = error_.Serialize(&jerror);
+  if (err) {
+    return err;
+  }
+  json_object_object_add(out, ERROR_JSON_ERROR_FIELD, jerror);
   return common::Error();
 }
 
@@ -92,7 +136,7 @@ bool DataJson::Equals(const DataJson& data) const {
 common::Error DataJson::DoDeSerialize(json_object* serialized) {
   DataJson inf;
   json_object* jdata = nullptr;
-  json_bool jdata_exists = json_object_object_get_ex(serialized, ERROR_JSON_CODE_FIELD, &jdata);
+  json_bool jdata_exists = json_object_object_get_ex(serialized, DATA_JSON_DATA_FIELD, &jdata);
   if (!jdata_exists) {
     return make_error_inval();
   };
