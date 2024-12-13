@@ -35,6 +35,7 @@
 #define DATA_JSON_DATA_FIELD "data"
 
 namespace common {
+namespace json {
 
 ErrorJson::ErrorJson() : ErrorJson(0, std::string()) {}
 
@@ -111,4 +112,5 @@ DataJson::~DataJson() {
   json_object_put(data_);
 }
 
+}  // namespace json
 }  // namespace common

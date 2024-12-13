@@ -32,6 +32,7 @@
 #include <common/serializer/json_serializer.h>
 
 namespace common {
+namespace json {
 
 class ErrorJson : public common::serializer::JsonSerializer<ErrorJson> {
  public:
@@ -74,4 +75,5 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   json_object* data_;
 };
 
+}  // namespace json
 }  // namespace common
