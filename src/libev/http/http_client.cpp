@@ -87,6 +87,10 @@ ErrnoError HttpClient::Post(const uri::GURL& url,
   return Write(text, len, &nwrite);
 }
 
+ErrnoError HttpClient::PostJson(const uri::GURL& url, const char* text, size_t len, bool is_keep_alive) {
+  return Post(url, "application/json", text, len, is_keep_alive);
+}
+
 ErrnoError HttpClient::Head(const uri::GURL& url, bool is_keep_alive) {
   return SendRequest(common::http::HM_HEAD, url, common::http::HP_1_1, {}, is_keep_alive);
 }
