@@ -156,5 +156,9 @@ DataJson::~DataJson() {
   json_object_put(data_);
 }
 
+DataJson MakeSuccessDataJson() {
+  return DataJson();
+}
+
 }  // namespace json
 }  // namespace common

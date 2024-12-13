@@ -95,5 +95,7 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   json_object* data_;
 };
 
+DataJson MakeSuccessDataJson();
+
 }  // namespace json
 }  // namespace common
