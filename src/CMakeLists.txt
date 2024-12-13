@@ -39,6 +39,9 @@ SET(SERIALIZER_SOURCES
 
 FIND_PACKAGE(JSON-C QUIET)
 IF(JSONC_FOUND)
+  SET(COMMON_JSON_HEADERS ${CMAKE_SOURCE_DIR}/include/common/json/json.h)
+  SET(COMMON_JSON_SOURCES ${CMAKE_SOURCE_DIR}/src/json/json.cpp)
+
   SET(PROTOCOLS_HEADERS ${PROTOCOLS_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc.h
     ${CMAKE_SOURCE_DIR}/include/common/protocols/json_rpc/json_rpc_response.h
@@ -55,12 +58,11 @@ IF(JSONC_FOUND)
     ${CMAKE_SOURCE_DIR}/src/protocols/json_rpc/protocol_client.cpp
   )
 
-  SET(SERIALIZER_HEADERS
-    ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
+  SET(SERIALIZER_HEADERS ${SERIALIZER_HEADERS}
     ${CMAKE_SOURCE_DIR}/include/common/serializer/json_serializer.h
   )
 
-  SET(SERIALIZER_SOURCES
+  SET(SERIALIZER_SOURCES ${SERIALIZER_SOURCES}
     ${CMAKE_SOURCE_DIR}/src/serializer/json_serializer.cpp
   )
 
@@ -648,7 +650,7 @@ ENDIF(OS_WINDOWS)
 SET(COMMON_CONFIG_GEN_PATH ${CMAKE_SOURCE_DIR}/include/common/config.h)
 CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/src/config.h.in ${COMMON_CONFIG_GEN_PATH} @ONLY IMMEDIATE)
 
-SET(COMMON_HEADERS
+SET(COMMON_HEADERS ${COMMON_HEADERS}
   ${CMAKE_SOURCE_DIR}/include/common/numerics/clamped_math.h
   ${CMAKE_SOURCE_DIR}/include/common/numerics/clamped_math_impl.h
   ${CMAKE_SOURCE_DIR}/include/common/numerics/checked_math.h
@@ -691,6 +693,7 @@ SET(COMMON_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/intrusive_ptr.h
   ${CMAKE_SOURCE_DIR}/include/common/time.h
 
+  ${COMMON_JSON_HEADERS}
   ${PATTERNS_HEADERS}
   ${CONTAINERS_HEADERS}
   ${SYSTEM_HEADERS}
@@ -718,7 +721,7 @@ SET(COMMON_HEADERS
   ${COMMON_CONFIG_GEN_PATH}
 )
 
-SET(COMMON_SOURCES
+SET(COMMON_SOURCES ${COMMON_SOURCES}
   ${CMAKE_SOURCE_DIR}/src/log_levels.cpp
   ${CMAKE_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_SOURCE_DIR}/src/parse_number.cpp
@@ -744,6 +747,7 @@ SET(COMMON_SOURCES
   ${CMAKE_SOURCE_DIR}/src/time.cpp
   ${CMAKE_SOURCE_DIR}/src/utils.cpp
 
+  ${COMMON_JSON_SOURCES}
   ${PATTERNS_SOURCES}
   ${APPLIATION_SOURCES}
   ${PROTOCOLS_SOURCES}  
