@@ -83,9 +83,10 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   DataJson();
   explicit DataJson(json_object* data);
 
-  virtual ~DataJson();
+  DataJson(const DataJson& other);
+  DataJson& operator=(const DataJson& other);
 
-  json_object* GetData() const;
+  virtual ~DataJson();
 
   bool Equals(const DataJson& data) const;
 
@@ -94,7 +95,6 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   common::Error SerializeFields(json_object* deserialized) const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DataJson);
   json_object* data_;
 };
 
@@ -107,6 +107,9 @@ class WsDataJson : public common::serializer::JsonSerializer<WsDataJson> {
   WsDataJson();
   explicit WsDataJson(std::string type, json_object* data);
 
+  WsDataJson(const WsDataJson& other);
+  WsDataJson& operator=(const WsDataJson& other);
+
   virtual ~WsDataJson();
 
   bool Equals(const WsDataJson& data) const;
@@ -116,8 +119,6 @@ class WsDataJson : public common::serializer::JsonSerializer<WsDataJson> {
   common::Error SerializeFields(json_object* deserialized) const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(WsDataJson);
-
   std::string type_;
   json_object* data_;
 };

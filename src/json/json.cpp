@@ -130,8 +130,27 @@ DataJson::DataJson() : DataJson(json_object_new_null()) {}
 
 DataJson::DataJson(json_object* data) : base_class(), data_(data) {}
 
-json_object* DataJson::GetData() const {
-  return data_;
+DataJson::DataJson(const DataJson& other) {
+  json_object* copy = nullptr;
+  json_object_deep_copy(other.data_, &copy, nullptr);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
+  data_ = copy;
+}
+
+DataJson& DataJson::operator=(const DataJson& other) {
+  if (this == &other) {
+    return *this;
+  }
+
+  json_object* copy = nullptr;
+  json_object_deep_copy(other.data_, &copy, nullptr);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
+  data_ = copy;
+  return *this;
 }
 
 bool DataJson::Equals(const DataJson& data) const {
@@ -144,7 +163,9 @@ common::Error DataJson::DoDeSerialize(json_object* serialized) {
   if (!jdata_exists) {
     return make_error_inval();
   };
-  json_object_put(data_);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
   data_ = jdata;
 
   return common::Error();
@@ -171,6 +192,31 @@ WsDataJson::WsDataJson() : WsDataJson(std::string(), json_object_new_null()) {}
 
 WsDataJson::WsDataJson(std::string type, json_object* data) : base_class(), type_(type), data_(data) {}
 
+WsDataJson::WsDataJson(const WsDataJson& other) {
+  json_object* copy = nullptr;
+  json_object_deep_copy(other.data_, &copy, nullptr);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
+  data_ = copy;
+  type_ = other.type_;
+}
+
+WsDataJson& WsDataJson::operator=(const WsDataJson& other) {
+  if (this == &other) {
+    return *this;
+  }
+
+  json_object* copy = nullptr;
+  json_object_deep_copy(other.data_, &copy, nullptr);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
+  data_ = copy;
+  type_ = other.type_;
+  return *this;
+}
+
 bool WsDataJson::Equals(const WsDataJson& data) const {
   return json_object_equal(data_, data.data_) == 1 && type_ == data.type_;
 }
@@ -188,7 +234,9 @@ common::Error WsDataJson::DoDeSerialize(json_object* serialized) {
   };
 
   type_ = json_object_get_string(jtype);
-  json_object_put(data_);
+  if (data_ != nullptr) {
+    json_object_put(data_);
+  }
   data_ = jdata;
 
   return common::Error();
