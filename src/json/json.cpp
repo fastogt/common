@@ -91,6 +91,8 @@ common::Error ErrorJsonMessage::SerializeFields(json_object* out) const {
 
 ErrorJson::ErrorJson() : error_() {}
 
+ErrorJson::ErrorJson(const ErrorJsonMessage& msg) : error_(msg) {}
+
 ErrorJsonMessage ErrorJson::GetError() const {
   return error_;
 }

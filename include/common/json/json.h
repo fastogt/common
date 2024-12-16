@@ -63,6 +63,7 @@ class ErrorJson : public common::serializer::JsonSerializer<ErrorJson> {
   typedef common::serializer::JsonSerializer<ErrorJson> base_class;
 
   ErrorJson();
+  explicit ErrorJson(const ErrorJsonMessage& msg);
 
   ErrorJsonMessage GetError() const;
 
