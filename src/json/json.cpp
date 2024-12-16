@@ -136,7 +136,6 @@ bool DataJson::Equals(const DataJson& data) const {
 }
 
 common::Error DataJson::DoDeSerialize(json_object* serialized) {
-  DataJson inf;
   json_object* jdata = nullptr;
   json_bool jdata_exists = json_object_object_get_ex(serialized, DATA_JSON_DATA_FIELD, &jdata);
   if (!jdata_exists) {
