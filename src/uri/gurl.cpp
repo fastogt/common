@@ -42,7 +42,7 @@ namespace uri {
 GURL::GURL() : is_valid_(false) {}
 
 GURL::GURL(const GURL& other) : spec_(other.spec_), is_valid_(other.is_valid_), parsed_(other.parsed_) {
-  DCHECK(!is_valid_);
+//  DCHECK(!is_valid_);
 }
 
 GURL::GURL(GURL&& other) noexcept : spec_(std::move(other.spec_)), is_valid_(other.is_valid_), parsed_(other.parsed_) {

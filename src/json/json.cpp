@@ -148,7 +148,9 @@ common::Error DataJson::DoDeSerialize(json_object* serialized) {
 }
 
 common::Error DataJson::SerializeFields(json_object* out) const {
-  json_object_object_add(out, DATA_JSON_DATA_FIELD, data_);
+  json_object* copy = nullptr;
+  json_object_deep_copy(data_, &copy, nullptr);
+  json_object_object_add(out, DATA_JSON_DATA_FIELD, copy);
   return common::Error();
 }
 
