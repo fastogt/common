@@ -141,8 +141,8 @@ ErrnoError Http2ServerClient::SendError(common::http::http_protocol protocol,
   return HttpServerClient::SendError(protocol, status, extra_headers, text, is_keep_alive, info);
 }
 
-ErrnoError Http2ServerClient::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
-  if (IsHttp2() && protocol == common::http::HP_2_0) {
+ErrnoError Http2ServerClient::SendFileByFd(descriptor_t fdesc, size_t size) {
+  if (IsHttp2()) {
     StreamSPtr header_stream = FindStreamByType(http2::HTTP2_HEADERS);
     if (!header_stream) {
       return DEBUG_MSG_PERROR("FindStreamByType", EAGAIN, logging::LOG_LEVEL_ERR);
@@ -161,7 +161,7 @@ ErrnoError Http2ServerClient::SendFileByFd(common::http::http_protocol protocol,
     return ErrnoError();
   }
 
-  return HttpServerClient::SendFileByFd(protocol, fdesc, size);
+  return HttpServerClient::SendFileByFd(fdesc, size);
 }
 
 ErrnoError Http2ServerClient::SendHeaders(common::http::http_protocol protocol,

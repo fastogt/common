@@ -221,8 +221,7 @@ ErrnoError HttpServerClient::SendError(common::http::http_protocol protocol,
   return Write(err_data, err_len, &nwrite);
 }
 
-ErrnoError HttpServerClient::SendFileByFd(common::http::http_protocol protocol, descriptor_t fdesc, size_t size) {
-  DCHECK(protocol <= common::http::HP_1_1);
+ErrnoError HttpServerClient::SendFileByFd(descriptor_t fdesc, size_t size) {
   return SendFile(fdesc, size);
 }
 
