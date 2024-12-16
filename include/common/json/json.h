@@ -81,6 +81,8 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   typedef common::serializer::JsonSerializer<DataJson> base_class;
 
   DataJson();
+  explicit DataJson(json_object* data);
+
   virtual ~DataJson();
 
   json_object* GetData() const;
@@ -92,10 +94,11 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
   common::Error SerializeFields(json_object* deserialized) const override;
 
  private:
+  DISALLOW_COPY_AND_ASSIGN(DataJson);
   json_object* data_;
 };
 
-DataJson MakeSuccessDataJson();
+DataJson MakeSuccessDataJson(json_object* data = json_object_new_null());
 
 }  // namespace json
 }  // namespace common

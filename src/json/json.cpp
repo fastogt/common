@@ -123,7 +123,9 @@ common::Error ErrorJson::SerializeFields(json_object* out) const {
   return common::Error();
 }
 
-DataJson::DataJson() : base_class(), data_(json_object_new_null()) {}
+DataJson::DataJson() : DataJson(json_object_new_null()) {}
+
+DataJson::DataJson(json_object* data) : base_class(), data_(data) {}
 
 json_object* DataJson::GetData() const {
   return data_;
@@ -141,9 +143,8 @@ common::Error DataJson::DoDeSerialize(json_object* serialized) {
     return make_error_inval();
   };
   json_object_put(data_);
-  inf.data_ = jdata;
+  data_ = jdata;
 
-  *this = inf;
   return common::Error();
 }
 
@@ -156,8 +157,8 @@ DataJson::~DataJson() {
   json_object_put(data_);
 }
 
-DataJson MakeSuccessDataJson() {
-  return DataJson();
+DataJson MakeSuccessDataJson(json_object* data) {
+  return DataJson(data);
 }
 
 }  // namespace json
