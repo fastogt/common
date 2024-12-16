@@ -37,7 +37,7 @@
 #define DATA_JSON_DATA_FIELD "data"
 
 #define WSDATA_JSON_DATA_FIELD "data"
-#define WSDATA_JSON_TYPE_FIELD "data"
+#define WSDATA_JSON_TYPE_FIELD "type"
 
 namespace common {
 namespace json {
