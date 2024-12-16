@@ -36,6 +36,9 @@
 
 #define DATA_JSON_DATA_FIELD "data"
 
+#define WSDATA_JSON_DATA_FIELD "data"
+#define WSDATA_JSON_TYPE_FIELD "data"
+
 namespace common {
 namespace json {
 
@@ -160,6 +163,47 @@ DataJson::~DataJson() {
 
 DataJson MakeSuccessDataJson(json_object* data) {
   return DataJson(data);
+}
+
+//
+
+WsDataJson::WsDataJson() : WsDataJson(std::string(), json_object_new_null()) {}
+
+WsDataJson::WsDataJson(std::string type, json_object* data) : base_class(), type_(type), data_(data) {}
+
+bool WsDataJson::Equals(const WsDataJson& data) const {
+  return json_object_equal(data_, data.data_) == 1 && type_ == data.type_;
+}
+
+common::Error WsDataJson::DoDeSerialize(json_object* serialized) {
+  json_object* jdata = nullptr;
+  json_bool jdata_exists = json_object_object_get_ex(serialized, WSDATA_JSON_DATA_FIELD, &jdata);
+  if (!jdata_exists) {
+    return make_error_inval();
+  };
+  json_object* jtype = nullptr;
+  json_bool jtype_exists = json_object_object_get_ex(serialized, WSDATA_JSON_TYPE_FIELD, &jtype);
+  if (!jtype_exists) {
+    return make_error_inval();
+  };
+
+  type_ = json_object_get_string(jtype);
+  json_object_put(data_);
+  data_ = jdata;
+
+  return common::Error();
+}
+
+common::Error WsDataJson::SerializeFields(json_object* out) const {
+  json_object* copy = nullptr;
+  json_object_deep_copy(data_, &copy, nullptr);
+  json_object_object_add(out, WSDATA_JSON_DATA_FIELD, copy);
+  json_object_object_add(out, WSDATA_JSON_TYPE_FIELD, json_object_new_string(type_.c_str()));
+  return common::Error();
+}
+
+WsDataJson::~WsDataJson() {
+  json_object_put(data_);
 }
 
 }  // namespace json

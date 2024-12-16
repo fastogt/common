@@ -100,5 +100,27 @@ class DataJson : public common::serializer::JsonSerializer<DataJson> {
 
 DataJson MakeSuccessDataJson(json_object* data = json_object_new_null());
 
+class WsDataJson : public common::serializer::JsonSerializer<WsDataJson> {
+ public:
+  typedef common::serializer::JsonSerializer<WsDataJson> base_class;
+
+  WsDataJson();
+  explicit WsDataJson(std::string type, json_object* data);
+
+  virtual ~WsDataJson();
+
+  bool Equals(const WsDataJson& data) const;
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* deserialized) const override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WsDataJson);
+
+  std::string type_;
+  json_object* data_;
+};
+
 }  // namespace json
 }  // namespace common
