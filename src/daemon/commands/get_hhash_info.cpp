@@ -35,10 +35,11 @@ common::Error GetHardwareHashInfo::DoDeSerialize(json_object* serialized) {
   GetHardwareHashInfo inf;
   json_object* jalgo = nullptr;
   json_bool jalgo_exists = json_object_object_get_ex(serialized, GET_ALGO_FIELD, &jalgo);
-  if (jalgo_exists) {
-    inf.algo_ = static_cast<algo_t>(json_object_get_int64(jalgo));
+  if (!jalgo_exists) {
+    return make_error_inval();
   }
 
+  inf.algo_ = static_cast<algo_t>(json_object_get_int64(jalgo));
   *this = inf;
   return common::Error();
 }
