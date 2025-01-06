@@ -36,7 +36,11 @@ namespace file_system {
 
 template <>
 std::string getenv(const char* env) {
-  return ::getenv(env);
+  char* res = ::getenv(env);
+  if (res) {
+    return res;
+  }
+  return std::string();
 }
 
 template <>

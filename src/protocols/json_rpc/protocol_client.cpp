@@ -118,6 +118,10 @@ ErrnoError ReadCommand(libev::IoClient* client, IEDcoder* compressor, std::strin
   }
 
   message_size = NetToHost32(message_size);  // stable
+  if (message_size == 0) {
+    return make_errno_error(MemSPrintf("Invalid buffer size of command: %u", message_size), EAGAIN);
+  }
+
   if (message_size > MAX_COMMAND_LENGTH) {
     return make_errno_error(MemSPrintf("Reached limit of command size: %u", message_size), EAGAIN);
   }
