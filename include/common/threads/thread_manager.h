@@ -34,7 +34,6 @@
 #include <common/system_info/types.h>           // for lcpu_count_t
 #include <common/threads/platform_thread.h>     // for PlatformThread, etc
 #include <common/threads/thread.h>
-#include <stdint.h>  // for uintptr_t
 
 #include <memory>
 

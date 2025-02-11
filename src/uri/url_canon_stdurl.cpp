@@ -138,6 +138,7 @@ int DefaultPortForScheme(const char* scheme, int scheme_len) {
     case 6:
       if (!strncmp(scheme, kWebRTCScheme, scheme_len))
         default_port = 80;
+      break;
     case 7:
       if (!strncmp(scheme, kWebRTCsScheme, scheme_len))
         default_port = 443;

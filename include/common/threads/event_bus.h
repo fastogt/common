@@ -30,7 +30,7 @@
 #pragma once
 
 #include <common/threads/event_dispatcher.h>
-#include <common/threads/thread_manager.h>  // for ThreadManager, etc
+#include <common/threads/thread_manager.h>
 
 #include <atomic>
 #include <condition_variable>

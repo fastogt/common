@@ -32,9 +32,7 @@
 #include <common/string_piece.h>
 #include <common/types.h>  // for buffer_t, byte_t
 
-#include <functional>
 #include <string>
-#include <utility>
 
 #define HAS_MEMBER(CLASS_NAME, FUNC_MUST_BE)                                                  \
   COMPILE_ASSERT(std::is_member_function_pointer<decltype(&CLASS_NAME::FUNC_MUST_BE)>::value, \
@@ -46,49 +44,6 @@ namespace hash {
 uint64_t crc64(uint64_t crc, const byte_t* data, size_t lenght);
 uint64_t crc64(uint64_t crc, const buffer_t& data);
 }  // namespace hash
-
-namespace delete_wrappers {
-
-template <typename T>
-struct default_delete : public std::unary_function<T, void> {
-  inline void operator()(T* ptr) const { destroy(&ptr); }
-};
-
-template <typename T>
-struct default_delete<T*> : public std::unary_function<T*, void> {
-  inline void operator()(T* ptr) const { destroy(&ptr); }
-};
-
-template <typename T, size_t N>
-struct default_delete<T[N]> : public std::unary_function<const T[N], void> {
-  inline void operator()(const T ptr) const { delete[] ptr; }
-};
-
-}  // namespace delete_wrappers
-
-namespace compare {
-template <typename T>
-struct RuntimeCmp : public std::binary_function<const T&, const T&, bool> {
-  inline bool operator()(const T& t1, const T& t2) const { return t1 < t2; }
-};
-
-template <typename T>
-struct RuntimeCmp<T*> : public std::binary_function<const T*, const T*, bool> {
-  inline bool operator()(const T* t1, const T* t2) const { return (*t1) < (*t2); }
-};
-
-template <typename T, typename U>
-struct RuntimeCmp<std::pair<T, U>> : public std::binary_function<const std::pair<T, U>, const std::pair<T, U>, bool> {
-  inline bool operator()(const std::pair<T, U>& t1, const std::pair<T, U>& t2) const {
-    if (t1.first == t2.first) {
-      return t1.second < t2.second;
-    }
-
-    return t1.first < t2.first;
-  }
-};
-
-}  // namespace compare
 
 namespace base64 {
 bool encode64(const StringPiece& input, char_buffer_t* out);
