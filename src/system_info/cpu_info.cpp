@@ -31,13 +31,17 @@
 #include <common/types.h>
 #include <string.h>
 
-#if defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(ARCH_CPU_ARM_FAMILY)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <asm/hwcap.h>
 #include <common/file_system/file_system.h>
 #include <sys/auxv.h>
 // Temporary definitions until a new hwcap.h is pulled in.
 #define HWCAP2_MTE (1 << 18)
 #define HWCAP2_BTI (1 << 17)
+#else
+#include <sys/sysctl.h>
+#endif
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -132,7 +136,8 @@ uint64_t xgetbv(uint32_t xcr) {
 
 #endif  // ARCH_CPU_X86_FAMILY
 
-#if defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if defined(ARCH_CPU_ARM_FAMILY)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 std::string* CpuInfoBrand() {
   static std::string* brand = []() {
     // This function finds the value from /proc/cpuinfo under the key "model
@@ -161,9 +166,29 @@ std::string* CpuInfoBrand() {
 
   return brand;
 }
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) ||
-        // defined(OS_LINUX) || defined(OS_CHROMEOS))
+#else
+std::string* CpuInfoBrand() {
+  static std::string* brand = []() {
+    size_t size;
+    if (sysctlbyname("machdep.cpu.brand_string", NULL, &size, NULL, 0) != 0) {
+      return new std::string();
+    }
 
+    char* machine_name = new char[size];
+    if (sysctlbyname("machdep.cpu.brand_string", machine_name, &size, NULL, 0) != 0) {
+      delete[] machine_name;
+      return new std::string();
+    }
+
+    auto copy = new std::string(machine_name);
+    delete[] machine_name;
+    return copy;
+  }();
+
+  return brand;
+}
+#endif
+#endif
 }  // namespace
 
 void CPU::Initialize() {
@@ -286,7 +311,12 @@ void CPU::Initialize() {
   has_mte_ = hwcap2 & HWCAP2_MTE;
   has_bti_ = hwcap2 & HWCAP2_BTI;
 #endif
-
+#elif defined(OS_MACOSX)
+  cpu_brand_ = *CpuInfoBrand();
+#if defined(ARCH_CPU_ARM64)
+  cpu_vendor_ = "Apple";
+#else
+#endif
 #elif defined(OS_WIN)
   // Windows makes high-resolution thread timing information available in
   // user-space.
