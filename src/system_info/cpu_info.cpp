@@ -121,19 +121,6 @@ void __cpuid(int cpu_info[4], int info_type) {
 #endif
 #endif  // !defined(COMPILER_MSVC)
 
-// xgetbv returns the value of an Intel Extended Control Register (XCR).
-// Currently only XCR0 is defined by Intel so |xcr| should always be zero.
-uint64_t xgetbv(uint32_t xcr) {
-#if defined(COMPILER_MSVC)
-  return _xgetbv(xcr);
-#else
-  uint32_t eax, edx;
-
-  __asm__ volatile("xgetbv" : "=a"(eax), "=d"(edx) : "c"(xcr));
-  return (static_cast<uint64_t>(edx) << 32) | eax;
-#endif  // defined(COMPILER_MSVC)
-}
-
 #endif  // ARCH_CPU_X86_FAMILY
 
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -223,18 +210,6 @@ void CPU::Initialize() {
     if (num_ids >= 7) {
       __cpuid(cpu_info7, 7);
     }
-    signature_ = cpu_info[0];
-    stepping_ = cpu_info[0] & 0xf;
-    type_ = (cpu_info[0] >> 12) & 0x3;
-    std::tie(family_, model_, ext_family_, ext_model_) = internal::ComputeX86FamilyAndModel(cpu_vendor_, signature_);
-    has_mmx_ = (cpu_info[3] & 0x00800000) != 0;
-    has_sse_ = (cpu_info[3] & 0x02000000) != 0;
-    has_sse2_ = (cpu_info[3] & 0x04000000) != 0;
-    has_sse3_ = (cpu_info[2] & 0x00000001) != 0;
-    has_ssse3_ = (cpu_info[2] & 0x00000200) != 0;
-    has_sse41_ = (cpu_info[2] & 0x00080000) != 0;
-    has_sse42_ = (cpu_info[2] & 0x00100000) != 0;
-    has_popcnt_ = (cpu_info[2] & 0x00800000) != 0;
 
     // "Hypervisor Present Bit: Bit 31 of ECX of CPUID leaf 0x1."
     // See https://lwn.net/Articles/301888/
@@ -242,21 +217,6 @@ void CPU::Initialize() {
     // announce themselves. Hypervisors trap CPUID and sometimes return
     // different results to underlying hardware.
     is_running_in_vm_ = (cpu_info[2] & 0x80000000) != 0;
-
-    // AVX instructions will generate an illegal instruction exception unless
-    //   a) they are supported by the CPU,
-    //   b) XSAVE is supported by the CPU and
-    //   c) XSAVE is enabled by the kernel.
-    // See http://software.intel.com/en-us/blogs/2011/04/14/is-avx-enabled
-    //
-    // In addition, we have observed some crashes with the xgetbv instruction
-    // even after following Intel's example code. (See crbug.com/375968.)
-    // Because of that, we also test the XSAVE bit because its description in
-    // the CPUID documentation suggests that it signals xgetbv support.
-    has_avx_ = (cpu_info[2] & 0x10000000) != 0 && (cpu_info[2] & 0x04000000) != 0 /* XSAVE */ &&
-               (cpu_info[2] & 0x08000000) != 0 /* OSXSAVE */ && (xgetbv(0) & 6) == 6 /* XSAVE enabled by kernel */;
-    has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
-    has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
   }
 
   // Get the brand string of the cpu.
@@ -278,39 +238,9 @@ void CPU::Initialize() {
     cpu_string[i] = '\0';
     cpu_brand_ = cpu_string;
   }
-
-  static constexpr int kParameterContainingNonStopTimeStampCounter = 0x80000007;
-  if (max_parameter >= kParameterContainingNonStopTimeStampCounter) {
-    __cpuid(cpu_info, kParameterContainingNonStopTimeStampCounter);
-    has_non_stop_time_stamp_counter_ = (cpu_info[3] & (1 << 8)) != 0;
-  }
-
-  if (!has_non_stop_time_stamp_counter_ && is_running_in_vm_) {
-    int cpu_info_hv[4] = {};
-    __cpuid(cpu_info_hv, 0x40000000);
-    if (cpu_info_hv[1] == 0x7263694D &&  // Micr
-        cpu_info_hv[2] == 0x666F736F &&  // osof
-        cpu_info_hv[3] == 0x76482074) {  // t Hv
-      // If CPUID says we have a variant TSC and a hypervisor has identified
-      // itself and the hypervisor says it is Microsoft Hyper-V, then treat
-      // TSC as invariant.
-      //
-      // Microsoft Hyper-V hypervisor reports variant TSC as there are some
-      // scenarios (eg. VM live migration) where the TSC is variant, but for
-      // our purposes we can treat it as invariant.
-      has_non_stop_time_stamp_counter_ = true;
-    }
-  }
 #elif defined(ARCH_CPU_ARM_FAMILY)
 #if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   cpu_brand_ = *CpuInfoBrand();
-
-#if defined(ARCH_CPU_ARM64)
-  // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
-  unsigned long hwcap2 = getauxval(AT_HWCAP2);
-  has_mte_ = hwcap2 & HWCAP2_MTE;
-  has_bti_ = hwcap2 & HWCAP2_BTI;
-#endif
 #elif defined(OS_MACOSX)
   cpu_brand_ = *CpuInfoBrand();
 #if defined(ARCH_CPU_ARM64)
@@ -323,26 +253,6 @@ void CPU::Initialize() {
   has_non_stop_time_stamp_counter_ = true;
 #endif
 #endif
-}
-
-CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
-  if (has_avx2())
-    return AVX2;
-  if (has_avx())
-    return AVX;
-  if (has_sse42())
-    return SSE42;
-  if (has_sse41())
-    return SSE41;
-  if (has_ssse3())
-    return SSSE3;
-  if (has_sse3())
-    return SSE3;
-  if (has_sse2())
-    return SSE2;
-  if (has_sse())
-    return SSE;
-  return PENTIUM;
 }
 
 }  // namespace system_info
