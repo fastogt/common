@@ -54,42 +54,6 @@
 namespace common {
 namespace system_info {
 
-#if defined(ARCH_CPU_X86_FAMILY)
-namespace internal {
-
-std::tuple<int, int, int, int> ComputeX86FamilyAndModel(const std::string& vendor, int signature) {
-  int family = (signature >> 8) & 0xf;
-  int model = (signature >> 4) & 0xf;
-  int ext_family = 0;
-  int ext_model = 0;
-
-  // The "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
-  // specifies the Extended Model is defined only when the Base Family is
-  // 06h or 0Fh.
-  // The "AMD CPUID Specification" specifies that the Extended Model is
-  // defined only when Base Family is 0Fh.
-  // Both manuals define the display model as
-  // {ExtendedModel[3:0],BaseModel[3:0]} in that case.
-  if (family == 0xf || (family == 0x6 && vendor == "GenuineIntel")) {
-    ext_model = (signature >> 16) & 0xf;
-    model += ext_model << 4;
-  }
-  // Both the "Intel 64 and IA-32 Architectures Developer's Manual: Vol. 2A"
-  // and the "AMD CPUID Specification" specify that the Extended Family is
-  // defined only when the Base Family is 0Fh.
-  // Both manuals define the display family as {0000b,BaseFamily[3:0]} +
-  // ExtendedFamily[7:0] in that case.
-  if (family == 0xf) {
-    ext_family = (signature >> 20) & 0xff;
-    family += ext_family;
-  }
-
-  return {family, model, ext_family, ext_model};
-}
-
-}  // namespace internal
-#endif  // defined(ARCH_CPU_X86_FAMILY)
-
 CPU::CPU() {
   Initialize();
 }
@@ -247,10 +211,6 @@ void CPU::Initialize() {
   cpu_vendor_ = "Apple";
 #else
 #endif
-#elif defined(OS_WIN)
-  // Windows makes high-resolution thread timing information available in
-  // user-space.
-  has_non_stop_time_stamp_counter_ = true;
 #endif
 #endif
 }
