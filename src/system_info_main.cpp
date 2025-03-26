@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
   std::cout << "Architecture: " << arch << std::endl;
   std::cout << "Vendor: " << cpu.vendor_name() << std::endl;
   std::cout << "Cpu brand: " << cpu.cpu_brand() << std::endl;
+  std::cout << "VM: " << cpu.is_running_in_vm() << std::endl;
   std::cout << "VSystem: " << vsystem << std::endl;
   std::cout << "VRole: " << vrole << std::endl;
   std::cout << "RAM bytes total: " << ram_bytes_total << std::endl;
