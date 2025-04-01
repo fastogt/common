@@ -91,7 +91,7 @@ class LoggerInternal {
 #else
     localtime_r(&spec.tv_sec, &info);
 #endif
-    strftime(buf, sizeof(buf), "%d/%b/%Y %H:%M:%S", &info);
+    strftime(buf, sizeof(buf), "%d/%m/%Y %H:%M:%S", &info);
 
     if (file) {
       return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, project_name_, log_level_to_text(level));
@@ -100,9 +100,7 @@ class LoggerInternal {
     return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, project_name_, log_level_to_text(level));
   }
 
-  static LoggerInternal* GetInstance() {
-    return &patterns::LazySingleton<LoggerInternal>::GetInstance();
-  }
+  static LoggerInternal* GetInstance() { return &patterns::LazySingleton<LoggerInternal>::GetInstance(); }
 
  private:
   std::string project_name_;
