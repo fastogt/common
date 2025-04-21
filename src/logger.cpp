@@ -95,9 +95,11 @@ class LoggerInternal {
 
     int color;
     if (level == LOG_LEVEL_DEBUG) {
-      color = 30;
-    } else if (level == LOG_LEVEL_INFO || level == LOG_LEVEL_NOTICE) {
+      color = 37;
+    } else if (level == LOG_LEVEL_INFO) {
       color = 36;
+    } else if (level == LOG_LEVEL_NOTICE) {
+      color = 30;
     } else if (level == LOG_LEVEL_WARNING) {
       color = 33;
     } else {
