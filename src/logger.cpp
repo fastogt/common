@@ -93,11 +93,23 @@ class LoggerInternal {
 #endif
     strftime(buf, sizeof(buf), "%d/%m/%Y %H:%M:%S", &info);
 
-    if (file) {
-      return MemSPrintf("%s:%d %s.%03ld %s [%s] ", file, line, buf, ms, project_name_, log_level_to_text(level));
+    int color;
+    if (level == LOG_LEVEL_DEBUG) {
+      color = 30;
+    } else if (level == LOG_LEVEL_INFO || level == LOG_LEVEL_NOTICE) {
+      color = 36;
+    } else if (level == LOG_LEVEL_WARNING) {
+      color = 33;
+    } else {
+      color = 31;
     }
 
-    return MemSPrintf("%s.%03ld %s [%s] ", buf, ms, project_name_, log_level_to_text(level));
+    if (file) {
+      return MemSPrintf("%s:%d %s.%03ld %s \x1b[%dm[%s]\x1b[0m ", file, line, buf, ms, project_name_, color,
+                        log_level_to_text(level));
+    }
+
+    return MemSPrintf("%s.%03ld %s \x1b[%dm[%s]\x1b[0m ", buf, ms, project_name_, color, log_level_to_text(level));
   }
 
   static LoggerInternal* GetInstance() { return &patterns::LazySingleton<LoggerInternal>::GetInstance(); }
