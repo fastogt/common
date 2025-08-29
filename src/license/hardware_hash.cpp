@@ -51,9 +51,9 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
 
   const std::string cpu_id = GetNativeCpuID();
   hardware_hash_t mixed;
-  mixed[hardware_hash_t::license_size - 1] = algo;
 
   if (algo == HDD) {
+    mixed[hardware_hash_t::license_size - 1] = '0';
     std::string hdd_id;
     if (!GetHddID(&hdd_id)) {
       return false;
@@ -69,6 +69,7 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
     *hash = mixed;
     return true;
   } else if (algo == MACHINE_ID) {
+    mixed[hardware_hash_t::license_size - 1] = '1';
     std::string system_id;
     if (!GetMachineID(&system_id)) {
       return false;
@@ -90,8 +91,9 @@ bool GenerateHardwareHash(ALGO_TYPE algo, hardware_hash_t* hash) {
 
 bool IsValidHardwareHash(const hardware_hash_t& hash) {
   hardware_hash_t lic;
-  ALGO_TYPE algo = static_cast<ALGO_TYPE>(hash[hardware_hash_t::license_size - 1]);
-  if (GenerateHardwareHash(algo, &lic)) {
+  auto algo = hash[hardware_hash_t::license_size - 1];
+  int alg = algo - '0';
+  if (GenerateHardwareHash(static_cast<ALGO_TYPE>(alg), &lic)) {
     if (lic == hash) {
       return true;
     }
