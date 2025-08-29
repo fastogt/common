@@ -29,6 +29,7 @@
 
 #include <common/daemon/commands/hhash_info.h>
 
+#define LICENSE_INFO_PROJECT_FIELD "project"
 #define LICENSE_INFO_KEY_FIELD "key"
 
 namespace common {
@@ -37,7 +38,8 @@ namespace commands {
 
 HardwareHashInfo::HardwareHashInfo() : base_class(), license_() {}
 
-HardwareHashInfo::HardwareHashInfo(license_t license) : base_class(), license_(license) {}
+HardwareHashInfo::HardwareHashInfo(project_t proj, license_t license)
+    : base_class(), project_(proj), license_(license) {}
 
 common::Error HardwareHashInfo::SerializeFields(json_object* out) const {
   if (!IsValid()) {
@@ -47,11 +49,12 @@ common::Error HardwareHashInfo::SerializeFields(json_object* out) const {
   const auto license_str = *license_;
   json_object_object_add(out, LICENSE_INFO_KEY_FIELD,
                          json_object_new_string_len(license_str.data(), license_str.size()));
+  json_object_object_add(out, LICENSE_INFO_PROJECT_FIELD, json_object_new_string_len(project_.data(), project_.size()));
   return Error();
 }
 
 bool HardwareHashInfo::IsValid() const {
-  if (license_) {
+  if (license_ && !project_.empty()) {
     return true;
   }
   return false;
@@ -59,6 +62,12 @@ bool HardwareHashInfo::IsValid() const {
 
 common::Error HardwareHashInfo::DoDeSerialize(json_object* serialized) {
   HardwareHashInfo inf;
+  json_object* jproj = nullptr;
+  json_bool jproj_exists = json_object_object_get_ex(serialized, LICENSE_INFO_PROJECT_FIELD, &jproj);
+  if (!jproj_exists) {
+    return make_error_inval();
+  }
+
   json_object* jlicense = nullptr;
   json_bool jlicense_exists = json_object_object_get_ex(serialized, LICENSE_INFO_KEY_FIELD, &jlicense);
   if (!jlicense_exists) {
@@ -72,8 +81,13 @@ common::Error HardwareHashInfo::DoDeSerialize(json_object* serialized) {
   }
 
   inf.license_ = lic;
+  inf.project_ = json_object_get_string(jlicense);
   *this = inf;
   return common::Error();
+}
+
+HardwareHashInfo::project_t HardwareHashInfo::GetProject() const {
+  return project_;
 }
 
 HardwareHashInfo::license_t HardwareHashInfo::GetLicense() const {

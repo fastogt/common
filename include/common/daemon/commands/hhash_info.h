@@ -44,10 +44,13 @@ class HardwareHashInfo : public common::serializer::JsonSerializer<HardwareHashI
   typedef JsonSerializer<HardwareHashInfo> base_class;
   typedef license::hardware_hash_t raw_license_t;
   typedef Optional<raw_license_t> license_t;
+  typedef std::string project_t;
+
   HardwareHashInfo();
-  explicit HardwareHashInfo(license_t license);
+  explicit HardwareHashInfo(project_t proj, license_t license);
 
   bool IsValid() const;
+  project_t GetProject() const;
   license_t GetLicense() const;
 
  protected:
@@ -55,6 +58,7 @@ class HardwareHashInfo : public common::serializer::JsonSerializer<HardwareHashI
   Error SerializeFields(json_object* out) const override;
 
  private:
+  project_t project_;
   license_t license_;
 };
 
