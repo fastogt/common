@@ -36,12 +36,12 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-HardwareHashInfo::HardwareHashInfo() : base_class(), license_() {}
+HardwareHashProject::HardwareHashProject() : base_class(), license_() {}
 
-HardwareHashInfo::HardwareHashInfo(project_t proj, license_t license)
+HardwareHashProject::HardwareHashProject(project_t proj, license_t license)
     : base_class(), project_(proj), license_(license) {}
 
-common::Error HardwareHashInfo::SerializeFields(json_object* out) const {
+common::Error HardwareHashProject::SerializeFields(json_object* out) const {
   if (!IsValid()) {
     return make_error_inval();
   }
@@ -53,15 +53,15 @@ common::Error HardwareHashInfo::SerializeFields(json_object* out) const {
   return Error();
 }
 
-bool HardwareHashInfo::IsValid() const {
+bool HardwareHashProject::IsValid() const {
   if (license_ && !project_.empty()) {
     return true;
   }
   return false;
 }
 
-common::Error HardwareHashInfo::DoDeSerialize(json_object* serialized) {
-  HardwareHashInfo inf;
+common::Error HardwareHashProject::DoDeSerialize(json_object* serialized) {
+  HardwareHashProject inf;
   json_object* jproj = nullptr;
   json_bool jproj_exists = json_object_object_get_ex(serialized, LICENSE_INFO_PROJECT_FIELD, &jproj);
   if (!jproj_exists) {
@@ -86,11 +86,11 @@ common::Error HardwareHashInfo::DoDeSerialize(json_object* serialized) {
   return common::Error();
 }
 
-HardwareHashInfo::project_t HardwareHashInfo::GetProject() const {
+HardwareHashProject::project_t HardwareHashProject::GetProject() const {
   return project_;
 }
 
-HardwareHashInfo::license_t HardwareHashInfo::GetLicense() const {
+HardwareHashProject::license_t HardwareHashProject::GetLicense() const {
   return license_;
 }
 

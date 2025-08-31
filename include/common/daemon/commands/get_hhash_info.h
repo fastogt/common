@@ -21,12 +21,12 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-class GetHardwareHashInfo : public serializer::JsonSerializer<GetHardwareHashInfo> {
+class GetHardwareHashProject : public serializer::JsonSerializer<GetHardwareHashProject> {
  public:
-  typedef serializer::JsonSerializer<GetHardwareHashInfo> base_class;
+  typedef serializer::JsonSerializer<GetHardwareHashProject> base_class;
   typedef license::ALGO_TYPE algo_t;
-  GetHardwareHashInfo();
-  explicit GetHardwareHashInfo(algo_t algo);
+  GetHardwareHashProject();
+  explicit GetHardwareHashProject(algo_t algo);
 
   algo_t GetAlgoType() const;
 

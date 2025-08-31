@@ -39,15 +39,15 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-class HardwareHashInfo : public common::serializer::JsonSerializer<HardwareHashInfo> {
+class HardwareHashProject : public common::serializer::JsonSerializer<HardwareHashProject> {
  public:
-  typedef JsonSerializer<HardwareHashInfo> base_class;
+  typedef JsonSerializer<HardwareHashProject> base_class;
   typedef license::hardware_hash_t raw_license_t;
   typedef Optional<raw_license_t> license_t;
   typedef std::string project_t;
 
-  HardwareHashInfo();
-  explicit HardwareHashInfo(project_t proj, license_t license);
+  HardwareHashProject();
+  explicit HardwareHashProject(project_t proj, license_t license);
 
   bool IsValid() const;
   project_t GetProject() const;
