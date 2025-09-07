@@ -39,19 +39,16 @@ namespace common {
 namespace daemon {
 namespace commands {
 
-class HardwareHashProject : public common::serializer::JsonSerializer<HardwareHashProject> {
+class Project : public common::serializer::JsonSerializer<Project> {
  public:
-  typedef JsonSerializer<HardwareHashProject> base_class;
-  typedef license::hardware_hash_t raw_license_t;
-  typedef Optional<raw_license_t> license_t;
+  typedef JsonSerializer<Project> base_class;
   typedef std::string project_t;
 
-  HardwareHashProject();
-  explicit HardwareHashProject(project_t proj, license_t license);
+  Project();
+  explicit Project(project_t proj);
 
   bool IsValid() const;
   project_t GetProject() const;
-  license_t GetLicense() const;
 
  protected:
   Error DoDeSerialize(json_object* serialized) override;
@@ -59,6 +56,25 @@ class HardwareHashProject : public common::serializer::JsonSerializer<HardwareHa
 
  private:
   project_t project_;
+};
+
+class HardwareHashProject : public Project {
+ public:
+  typedef Project base_class;
+  typedef license::hardware_hash_t raw_license_t;
+  typedef Optional<raw_license_t> license_t;
+
+  HardwareHashProject();
+  explicit HardwareHashProject(project_t proj, license_t license);
+
+  bool IsValid() const;
+  license_t GetLicense() const;
+
+ protected:
+  Error DoDeSerialize(json_object* serialized) override;
+  Error SerializeFields(json_object* out) const override;
+
+ private:
   license_t license_;
 };
 

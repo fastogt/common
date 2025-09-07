@@ -29,32 +29,72 @@
 
 #include <common/daemon/commands/hhash_info.h>
 
-#define LICENSE_INFO_PROJECT_FIELD "project"
+#define PROJECT_FIELD "project"
 #define LICENSE_INFO_KEY_FIELD "key"
 
 namespace common {
 namespace daemon {
 namespace commands {
 
+Project::Project() : base_class(), project_() {}
+
+Project::Project(project_t proj) : base_class(), project_(proj) {}
+
+Project::project_t Project::GetProject() const {
+  return project_;
+}
+
+bool Project::IsValid() const {
+  if (!project_.empty()) {
+    return true;
+  }
+  return false;
+}
+
+common::Error Project::SerializeFields(json_object* out) const {
+  if (!IsValid()) {
+    return make_error_inval();
+  }
+
+  json_object_object_add(out, PROJECT_FIELD, json_object_new_string_len(project_.data(), project_.size()));
+  return Error();
+}
+
+common::Error Project::DoDeSerialize(json_object* serialized) {
+  Project inf;
+  json_object* jproj = nullptr;
+  json_bool jproj_exists = json_object_object_get_ex(serialized, PROJECT_FIELD, &jproj);
+  if (!jproj_exists) {
+    return make_error_inval();
+  }
+
+  inf.project_ = json_object_get_string(jproj);
+  *this = inf;
+  return common::Error();
+}
+
 HardwareHashProject::HardwareHashProject() : base_class(), license_() {}
 
-HardwareHashProject::HardwareHashProject(project_t proj, license_t license)
-    : base_class(), project_(proj), license_(license) {}
+HardwareHashProject::HardwareHashProject(project_t proj, license_t license) : base_class(proj), license_(license) {}
 
 common::Error HardwareHashProject::SerializeFields(json_object* out) const {
   if (!IsValid()) {
     return make_error_inval();
   }
 
+  common::Error err = base_class::SerializeFields(out);
+  if (err) {
+    return err;
+  }
+
   const auto license_str = *license_;
   json_object_object_add(out, LICENSE_INFO_KEY_FIELD,
                          json_object_new_string_len(license_str.data(), license_str.size()));
-  json_object_object_add(out, LICENSE_INFO_PROJECT_FIELD, json_object_new_string_len(project_.data(), project_.size()));
-  return Error();
+  return common::Error();
 }
 
 bool HardwareHashProject::IsValid() const {
-  if (license_ && !project_.empty()) {
+  if (base_class::IsValid() && license_) {
     return true;
   }
   return false;
@@ -62,10 +102,9 @@ bool HardwareHashProject::IsValid() const {
 
 common::Error HardwareHashProject::DoDeSerialize(json_object* serialized) {
   HardwareHashProject inf;
-  json_object* jproj = nullptr;
-  json_bool jproj_exists = json_object_object_get_ex(serialized, LICENSE_INFO_PROJECT_FIELD, &jproj);
-  if (!jproj_exists) {
-    return make_error_inval();
+  common::Error err = inf.base_class::DoDeSerialize(serialized);
+  if (err) {
+    return err;
   }
 
   json_object* jlicense = nullptr;
@@ -81,13 +120,8 @@ common::Error HardwareHashProject::DoDeSerialize(json_object* serialized) {
   }
 
   inf.license_ = lic;
-  inf.project_ = json_object_get_string(jlicense);
   *this = inf;
   return common::Error();
-}
-
-HardwareHashProject::project_t HardwareHashProject::GetProject() const {
-  return project_;
 }
 
 HardwareHashProject::license_t HardwareHashProject::GetLicense() const {
