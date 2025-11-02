@@ -55,7 +55,7 @@ class TcpTlsSocketHolder : public TcpSocketHolder {
   ErrnoError WriteImpl(const void* data, size_t size, size_t* nwrite_out) override;
   ErrnoError ReadImpl(void* out_data, size_t max_size, size_t* nread_out) override;
 
-  ErrnoError SendFileImpl(descriptor_t file_fd, size_t file_size) override;
+  ErrnoError SendFileImpl(descriptor_t file_fd, off_t offset, size_t file_size) override;
 
   ErrnoError CloseImpl() override;
 
