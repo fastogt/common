@@ -246,8 +246,7 @@ common::ErrnoError TcpTlsSocketHolder::ReadImpl(void* out_data, size_t max_size,
   return common::ErrnoError();
 }
 
-ErrnoError TcpTlsSocketHolder::SendFileImpl(descriptor_t file_fd, size_t file_size) {
-  off_t offset = 0;
+ErrnoError TcpTlsSocketHolder::SendFileImpl(descriptor_t file_fd, off_t offset, size_t file_size) {
   for (size_t size_to_send = file_size; size_to_send > 0;) {
     off_t off = offset;
     ssize_t sent = sendfilessl(ssl_, file_fd, &off, size_to_send);

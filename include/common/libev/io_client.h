@@ -65,7 +65,7 @@ class IoClient : public IoBase<IoClient> {
   ErrnoError SingleWrite(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT;
   ErrnoError SingleRead(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT;
 
-  ErrnoError SendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT;
+  ErrnoError SendFile(descriptor_t file_fd, off_t offset, size_t file_size) WARN_UNUSED_RESULT;
 
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
@@ -73,7 +73,7 @@ class IoClient : public IoBase<IoClient> {
  private:
   virtual ErrnoError DoSingleWrite(const void* data, size_t size, size_t* nwrite_out) WARN_UNUSED_RESULT = 0;
   virtual ErrnoError DoSingleRead(void* out_data, size_t max_size, size_t* nread_out) WARN_UNUSED_RESULT = 0;
-  virtual ErrnoError DoSendFile(descriptor_t file_fd, size_t file_size) WARN_UNUSED_RESULT = 0;
+  virtual ErrnoError DoSendFile(descriptor_t file_fd, off_t offset, size_t file_size) WARN_UNUSED_RESULT = 0;
   virtual ErrnoError DoClose() WARN_UNUSED_RESULT = 0;
 
   IoLoop* server_;

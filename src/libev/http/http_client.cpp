@@ -222,7 +222,7 @@ ErrnoError HttpServerClient::SendError(common::http::http_protocol protocol,
 }
 
 ErrnoError HttpServerClient::SendFileByFd(descriptor_t fdesc, size_t size) {
-  return SendFile(fdesc, size);
+  return SendFile(fdesc, 0, size);
 }
 
 ErrnoError HttpServerClient::SendHeaders(common::http::http_protocol protocol,

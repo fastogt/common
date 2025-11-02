@@ -82,7 +82,7 @@ Error IHttpClient::PostFile(const url_t& path,
     return err;
   }
 
-  errn = SendFile(fd, file_size);
+  errn = SendFile(fd, 0, file_size);
   if (errn) {
     file.Close();
     return make_error_from_errno(errn);
@@ -277,9 +277,9 @@ ErrnoError HttpClient::Disconnect() {
   return sock->Disconnect();
 }
 
-ErrnoError HttpClient::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError HttpClient::SendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
-  return sock->SendFile(file_fd, file_size);
+  return sock->SendFile(file_fd, offset, file_size);
 }
 
 HostAndPort HttpClient::GetHost() const {
@@ -395,9 +395,9 @@ common::net::HostAndPort HttpsClient::GetHost() const {
   return sock->GetHost();
 }
 
-ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError HttpsClient::SendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   ClientSocketTcpTls* sock = static_cast<ClientSocketTcpTls*>(GetSocket());
-  return sock->SendFile(file_fd, file_size);
+  return sock->SendFile(file_fd, offset, file_size);
 }
 
 Error GetHttpsFile(const uri::GURL& url,
@@ -507,9 +507,9 @@ common::net::HostAndPort HttpsClient::GetHost() const {
   return sock->GetHost();
 }
 
-ErrnoError HttpsClient::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError HttpsClient::SendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   ClientSocketTcp* sock = static_cast<ClientSocketTcp*>(GetSocket());
-  return sock->SendFile(file_fd, file_size);
+  return sock->SendFile(file_fd, offset, file_size);
 }
 
 Error GetHttpsFile(const uri::GURL& url,

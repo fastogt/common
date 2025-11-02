@@ -61,9 +61,9 @@ ErrnoError ISocketFd::ReadImpl(void* out_data, size_t max_size, size_t* nread_ou
   return read_from_socket(GetFd(), out_data, max_size, nread_out);
 }
 
-ErrnoError ISocketFd::SendFileImpl(descriptor_t file_fd, size_t file_size) {
+ErrnoError ISocketFd::SendFileImpl(descriptor_t file_fd, off_t offset, size_t file_size) {
   const socket_descr_t fd = GetFd();
-  return send_file_to_fd(fd, file_fd, 0, file_size);
+  return send_file_to_fd(fd, file_fd, offset, file_size);
 }
 
 #else
@@ -75,20 +75,20 @@ ErrnoError ISocketFd::ReadImpl(void* out_data, size_t max_size, size_t* nread_ou
   return read_from_tcp_socket(GetFd(), out_data, max_size, nread_out);
 }
 
-ErrnoError ISocketFd::SendFileImpl(descriptor_t file_fd, size_t file_size) {
+ErrnoError ISocketFd::SendFileImpl(descriptor_t file_fd, off_t offset, size_t file_size) {
   const socket_descr_t fd = GetFd();
-  return send_file_to_fd(fd, file_fd, 0, file_size);
+  return send_file_to_fd(fd, file_fd, offset, file_size);
 }
 #endif
 
-ErrnoError ISocketFd::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError ISocketFd::SendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   DCHECK(IsValid());
   const socket_descr_t fd = GetFd();
   if (file_fd == INVALID_DESCRIPTOR || fd == INVALID_SOCKET_VALUE) {
     return make_error_perror("SendFile", EINVAL);
   }
 
-  return SendFileImpl(file_fd, file_size);
+  return SendFileImpl(file_fd, offset, file_size);
 }
 
 ErrnoError ISocketFd::CloseImpl() {

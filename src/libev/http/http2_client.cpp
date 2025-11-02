@@ -161,7 +161,7 @@ ErrnoError Http2ServerClient::SendFileByFd(descriptor_t fdesc, size_t size) {
     return ErrnoError();
   }
 
-  return HttpServerClient::SendFileByFd(fdesc, size);
+  return HttpServerClient::SendFileByFd(fdesc, 0, size);
 }
 
 ErrnoError Http2ServerClient::SendHeaders(common::http::http_protocol protocol,

@@ -70,12 +70,12 @@ ErrnoError TcpClient::DoSingleRead(void* out_data, size_t max_size, size_t* nrea
   return sock_->Read(static_cast<char*>(out_data), max_size, nread_out);
 }
 
-ErrnoError TcpClient::DoSendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError TcpClient::DoSendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   if (!sock_) {
     return make_error_perror("TcpClient::DoSendFile", EINVAL);
   }
 
-  return sock_->SendFile(file_fd, file_size);
+  return sock_->SendFile(file_fd, offset, file_size);
 }
 
 ErrnoError TcpClient::DoClose() {

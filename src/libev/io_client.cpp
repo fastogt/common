@@ -117,12 +117,12 @@ ErrnoError IoClient::Read(void* out_data, size_t max_size, size_t* nread_out) {
   return ErrnoError();
 }
 
-ErrnoError IoClient::SendFile(descriptor_t file_fd, size_t file_size) {
+ErrnoError IoClient::SendFile(descriptor_t file_fd, off_t offset, size_t file_size) {
   if (file_fd == INVALID_DESCRIPTOR) {
     return make_error_perror("SendFile", EINVAL);
   }
 
-  return DoSendFile(file_fd, file_size);
+  return DoSendFile(file_fd, offset, file_size);
 }
 
 ErrnoError IoClient::SingleWrite(const void* data, size_t size, size_t* nwrite_out) {
