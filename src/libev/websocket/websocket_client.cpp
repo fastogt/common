@@ -33,6 +33,7 @@
 #include <common/utils.h>
 
 #define BUF_SIZE 4096
+#define MAX_PAYLOAD_SIZE (1024 * 1024)
 
 namespace {
 
@@ -387,20 +388,32 @@ ErrnoError WebSocketServerClient::ProcessFrame(std::function<void(char*, size_t)
       memset(&frame_, 0, sizeof(frame_t));
     }
   } else if (step_ == common::libev::websocket::FOUR) {
+    if (frame_.payload_len > MAX_PAYLOAD_SIZE) {
+      return make_errno_error("Payload too large", E2BIG);
+    }
     if (frame_.payload_len > 0) {
-      char buff[BUF_SIZE] = {0};
-      size_t nread = 0;
-      common::ErrnoError errn = SingleRead(buff, frame_.payload_len, &nread);
-      if (errn || nread == 0) {
-        if (nread == 0) {
-          return make_errno_error("Connection closed", EAGAIN);
+      char* buff = new char[frame_.payload_len];
+      if (!buff) {
+        return make_errno_error("Memory allocation failed", ENOMEM);
+      }
+      size_t total_read = 0;
+      while (total_read < frame_.payload_len) {
+        size_t nread = 0;
+        common::ErrnoError errn = SingleRead(buff + total_read, frame_.payload_len - total_read, &nread);
+        if (errn || nread == 0) {
+          delete[] buff;
+          if (nread == 0) {
+            return make_errno_error("Connection closed", EAGAIN);
+          }
+          return errn;
         }
-        return errn;
+        total_read += nread;
       }
       if (frame_.mask == 1) {
         unmask_payload_data((const char*)frame_.masking_key, buff, frame_.payload_len);
       }
-      pred(buff, nread);
+      pred(buff, total_read);
+      delete[] buff;
     }
 
     /*recv a whole frame*/

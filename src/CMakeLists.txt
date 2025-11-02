@@ -1019,6 +1019,7 @@ IF(DEVELOPER_ENABLE_TESTS)
     SET(UNIT_TESTS_SOURCES ${UNIT_TESTS_SOURCES}
       ${CMAKE_SOURCE_DIR}/tests/unit_test_libev.cpp
       ${CMAKE_SOURCE_DIR}/tests/unit_test_websockets.cpp
+      ${CMAKE_SOURCE_DIR}/tests/unit_test_websocket.cpp
     )
   ENDIF(LIBEV_FOUND)
   ADD_EXECUTABLE(${UNIT_TESTS_PROJECT_NAME} ${UNIT_TESTS_SOURCES})
