@@ -131,7 +131,7 @@ Optional<size_t> AmountOfTotalDiskSpace(const std::string& path) {
 }
 
 std::string OperatingSystemName() {
-  return "Windows NT";
+  return "windows";
 }
 
 std::string OperatingSystemVersion() {

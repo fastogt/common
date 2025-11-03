@@ -38,7 +38,7 @@ namespace common {
 namespace system_info {
 
 std::string OperatingSystemName() {
-  return "Mac OS X";
+  return "macosx";
 }
 
 Optional<size_t> AmountOfPhysicalMemory() {

@@ -44,6 +44,7 @@
 #include <sys/vfs.h>
 #endif
 
+#include <common/string_util.h>
 #include <common/eintr_wrapper.h>
 #include <common/macros.h>
 
@@ -119,7 +120,8 @@ std::string OperatingSystemName() {
     return std::string();
   }
 
-  return std::string(info.sysname);
+  auto lower = common::ToLowerASCII(info.sysname);
+  return lower;
 }
 #endif
 

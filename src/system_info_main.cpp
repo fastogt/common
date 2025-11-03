@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
   static const std::string vrole = common::system_info::VirtualizationRole();
   static const auto cpu = common::system_info::CPU();
 
+  std::cout << std::boolalpha;
   std::cout << "UTC: " << common::time::current_utc_mstime() << std::endl;
   std::cout << "Operation system: " << name << std::endl;
   std::cout << "Version: " << version << std::endl;
