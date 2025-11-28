@@ -28,6 +28,7 @@
 */
 
 #include <common/libev/event_io.h>
+#include <common/file_system/file_system.h>
 #include <common/libev/io_client.h>
 #include <common/libev/io_loop.h>
 
@@ -147,6 +148,12 @@ ErrnoError IoClient::SingleRead(void* out_data, size_t max_size, size_t* nread_o
     read_bytes_ += *nread_out;
   }
   return err;
+}
+
+}  // namespace libev
+}  // namespace common
+ErrnoError IoClient::SetBlocking(bool block) {
+  return set_blocking_descriptor(GetFd(), block);
 }
 
 }  // namespace libev

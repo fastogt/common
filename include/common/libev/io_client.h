@@ -67,6 +67,8 @@ class IoClient : public IoBase<IoClient> {
 
   ErrnoError SendFile(descriptor_t file_fd, off_t offset, size_t file_size) WARN_UNUSED_RESULT;
 
+  ErrnoError SetBlocking(bool block) WARN_UNUSED_RESULT;
+
  protected:  // executed IoLoop
   virtual descriptor_t GetFd() const = 0;
 
