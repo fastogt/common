@@ -150,10 +150,8 @@ ErrnoError IoClient::SingleRead(void* out_data, size_t max_size, size_t* nread_o
   return err;
 }
 
-}  // namespace libev
-}  // namespace common
 ErrnoError IoClient::SetBlocking(bool block) {
-  return set_blocking_descriptor(GetFd(), block);
+  return file_system::set_blocking_descriptor(GetFd(), block);
 }
 
 }  // namespace libev
