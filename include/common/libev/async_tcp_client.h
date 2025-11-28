@@ -29,42 +29,35 @@
 
 #pragma once
 
-#include <common/libev/types.h>
+#include <common/libev/async_io_client.h>
+#include <common/net/socket_info.h>
+#include <common/net/socket_tcp.h>
 
 namespace common {
 namespace libev {
+namespace tcp {
 
-class IoLoop;
-class IoClient;
-class IoChild;
-class AsyncIoClient;
-
-class IoLoopObserver {
+class AsyncTcpClient : public AsyncIoClient {
  public:
-  virtual void PreLooped(IoLoop* server) = 0;
+  explicit AsyncTcpClient(IoLoop* server, const net::socket_info& info, flags_t flags = EV_READ);
+  AsyncTcpClient(IoLoop* server, net::TcpSocketHolder* sock, flags_t flags = EV_READ);
 
-  virtual void Accepted(IoClient* client) = 0;
-  virtual void Moved(IoLoop* server, IoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(IoClient* client) = 0;
-  virtual void TimerEmited(IoLoop* server, timer_id_t id) = 0;
-  virtual void Accepted(IoChild* child) = 0;
-  virtual void Moved(IoLoop* server, IoChild* child) = 0;  // owner server, now child is orphan
-  virtual void ChildStatusChanged(IoChild* child, int status, int signal) = 0;
+  net::socket_info GetInfo() const;
 
-  virtual void Accepted(AsyncIoClient* client) = 0;
-  virtual void Moved(IoLoop* server, AsyncIoClient* client) = 0;  // owner server, now client is orphan
-  virtual void Closed(AsyncIoClient* client) = 0;
+  const char* ClassName() const override;
 
-  virtual void DataReceived(IoClient* client) = 0;
-  virtual void DataReadyToWrite(IoClient* client) = 0;
+ protected:
+  descriptor_t GetFd() const override;
 
-  virtual void AsyncDataWriteCompleted(AsyncIoClient* client, size_t bytes_written) = 0;
-  virtual void AsyncDataReadCompleted(AsyncIoClient* client, size_t bytes_read) = 0;
+ private:
+  ErrnoError DoAsyncWrite() override WARN_UNUSED_RESULT;
+  ErrnoError DoAsyncRead() override WARN_UNUSED_RESULT;
+  ErrnoError DoSendFile(descriptor_t file_fd, off_t offset, size_t file_size) override WARN_UNUSED_RESULT;
+  ErrnoError DoClose() override WARN_UNUSED_RESULT;
 
-  virtual void PostLooped(IoLoop* server) = 0;
-
-  virtual ~IoLoopObserver();
+  net::TcpSocketHolder* sock_;
 };
 
+}  // namespace tcp
 }  // namespace libev
 }  // namespace common

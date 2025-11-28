@@ -38,6 +38,7 @@ namespace libev {
 class IoLoopObserver;
 class IoClient;
 class IoChild;
+class AsyncIoClient;
 
 class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
  public:
@@ -54,6 +55,10 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
   void UnRegisterClient(IoClient* client);
   virtual void CloseClient(IoClient* client);
 
+  bool RegisterAsyncClient(AsyncIoClient* client) WARN_UNUSED_RESULT;
+  void UnRegisterAsyncClient(AsyncIoClient* client);
+  virtual void CloseAsyncClient(AsyncIoClient* client);
+
   timer_id_t CreateTimer(double sec, bool repeat);
   void RemoveTimer(timer_id_t id);
 
@@ -67,8 +72,11 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
 
   bool IsLoopThread() const;
 
+  IoLoopObserver* GetObserver() const { return observer_; }
+
   std::vector<IoClient*> GetClients() const;
   std::vector<IoChild*> GetChilds() const;
+  std::vector<AsyncIoClient*> GetAsyncClients() const;
 
   static IoLoop* FindExistLoopByPredicate(std::function<bool(IoLoop*)> pred);
 
@@ -84,16 +92,19 @@ class IoLoop : public EvLoopObserver, public IoBase<IoLoop> {
   LibEvLoop* const loop_;
 
  private:
-  static void read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents);
-  void ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents);
+   static void read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents);
+   void ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents);
+   void ReadWriteAsync(LibEvLoop* loop, AsyncIoClient* client, flags_t revents);
 
   static void child_cb(LibEvLoop* loop, LibevChild* child, int status, int signal, flags_t revents);
   void ChildStatus(LibEvLoop* loop, IoChild* child, int status, int signal, flags_t revents);
 
+protected:
   IoLoopObserver* const observer_;
 
   std::vector<IoClient*> clients_;
   std::vector<IoChild*> childs_;
+  std::vector<AsyncIoClient*> async_clients_;
   const patterns::id_counter<IoLoop> id_;
 
   std::string name_;

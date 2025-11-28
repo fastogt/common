@@ -32,6 +32,7 @@
 #include <common/libev/http/http_client.h>
 #include <common/uri/gurl.h>
 
+#include <common/libev/async_io_client.h>
 #include <common/libev/io_loop_observer.h>
 #include <common/libev/tcp/tcp_client.h>
 #include <common/libev/tcp/tcp_server.h>
@@ -87,6 +88,22 @@ class ServerHandler : public common::libev::IoLoopObserver {
   void DataReceived(common::libev::IoClient* client) override { UNUSED(client); }
 
   void DataReadyToWrite(common::libev::IoClient* client) override { UNUSED(client); }
+
+  void Accepted(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+  void Moved(common::libev::IoLoop* server, common::libev::AsyncIoClient* client) override {
+    UNUSED(server);
+    UNUSED(client);
+  }
+  void Closed(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+
+  void AsyncDataWriteCompleted(common::libev::AsyncIoClient* client, size_t bytes_written) override {
+    UNUSED(client);
+    UNUSED(bytes_written);
+  }
+  void AsyncDataReadCompleted(common::libev::AsyncIoClient* client, size_t bytes_read) override {
+    UNUSED(client);
+    UNUSED(bytes_read);
+  }
 
   void PostLooped(common::libev::IoLoop* server) override {
     std::vector<common::libev::IoClient*> cl = server->GetClients();
@@ -212,6 +229,22 @@ class ServerWebHandler : public common::libev::IoLoopObserver {
   }
 
   void DataReadyToWrite(common::libev::IoClient* client) override { UNUSED(client); }
+
+  void Accepted(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+  void Moved(common::libev::IoLoop* server, common::libev::AsyncIoClient* client) override {
+    UNUSED(server);
+    UNUSED(client);
+  }
+  void Closed(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+
+  void AsyncDataWriteCompleted(common::libev::AsyncIoClient* client, size_t bytes_written) override {
+    UNUSED(client);
+    UNUSED(bytes_written);
+  }
+  void AsyncDataReadCompleted(common::libev::AsyncIoClient* client, size_t bytes_read) override {
+    UNUSED(client);
+    UNUSED(bytes_read);
+  }
 
   void PostLooped(common::libev::IoLoop* server) override {
     std::vector<common::libev::IoClient*> cl = server->GetClients();

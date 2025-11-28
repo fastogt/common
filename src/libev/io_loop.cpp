@@ -27,6 +27,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <common/libev/async_io_client.h>
 #include <common/libev/event_child.h>
 #include <common/libev/event_io.h>
 #include <common/libev/io_child.h>
@@ -127,6 +128,84 @@ bool IoLoop::RegisterClient(IoClient* client) {
   DEBUG_LOG() << "Successfully connected with client[" << formated_name << "], from server[" << GetFormatedName()
               << "], " << clients_.size() << " client(s) connected.";
   return true;
+}
+
+bool IoLoop::RegisterAsyncClient(AsyncIoClient* client) {
+ if (!client) {
+   DNOTREACHED();
+   return false;
+ }
+
+ CHECK(IsLoopThread()) << "Must be called in loop thread!";
+ const std::string formated_name = client->GetFormatedName();
+
+ if (client->GetServer()) {
+   CHECK(client->GetServer() == this) << "Must have same server!";
+ } else {
+   client->server_ = this;
+ }
+
+ // Initialize and start watcher to read client requests
+ LibevIO* client_ev = client->read_write_io_;
+ bool is_inited = client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
+ if (!is_inited) {
+   DNOTREACHED();
+   return false;
+ }
+ client_ev->Start();
+
+ if (observer_) {
+   observer_->Accepted(client);
+ }
+
+ async_clients_.push_back(client);
+ DEBUG_LOG() << "Successfully connected with async client[" << formated_name << "], from server[" << GetFormatedName()
+             << "], " << async_clients_.size() << " async client(s) connected.";
+ return true;
+}
+
+void IoLoop::UnRegisterAsyncClient(AsyncIoClient* client) {
+ if (!client) {
+   DNOTREACHED();
+   return;
+ }
+
+ CHECK(IsLoopThread()) << "Must be called in loop thread!";
+ CHECK(client->GetServer() == this) << "Must have same server!";
+ const std::string formated_name = client->GetFormatedName();
+
+ LibevIO* client_ev = client->read_write_io_;
+ client_ev->Stop();
+ client->server_ = nullptr;
+
+ if (observer_) {
+   observer_->Moved(this, client);
+ }
+
+ async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
+ DEBUG_LOG() << "Successfully unregister async client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+             << async_clients_.size() << " async client(s) connected.";
+}
+
+void IoLoop::CloseAsyncClient(AsyncIoClient* client) {
+ if (!client) {
+   DNOTREACHED();
+   return;
+ }
+
+ CHECK(IsLoopThread()) << "Must be called in loop thread!";
+ CHECK(client->GetServer() == this) << "Must have same server!";
+ const std::string formated_name = client->GetFormatedName();
+
+ LibevIO* client_ev = client->read_write_io_;
+ client_ev->Stop();
+
+ if (observer_) {
+   observer_->Closed(client);
+ }
+ async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
+ DEBUG_LOG() << "Successfully disconnected async client[" << formated_name << "], from server[" << GetFormatedName() << "], "
+             << async_clients_.size() << " async client(s) connected.";
 }
 
 void IoLoop::CloseClient(IoClient* client) {
@@ -250,10 +329,30 @@ std::vector<IoChild*> IoLoop::GetChilds() const {
   return childs_;
 }
 
+std::vector<AsyncIoClient*> IoLoop::GetAsyncClients() const {
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+
+  return async_clients_;
+}
+
 void IoLoop::read_write_cb(LibEvLoop* loop, LibevIO* io, flags_t revents) {
-  IoClient* pclient = reinterpret_cast<IoClient*>(io->GetUserData());
-  IoLoop* pserver = pclient->GetServer();
-  pserver->ReadWrite(loop, pclient, revents);
+  void* user_data = io->GetUserData();
+  IoLoop* pserver = nullptr;
+
+  // Check if it's an IoClient
+  IoClient* pclient = reinterpret_cast<IoClient*>(user_data);
+  if (pclient && pclient->GetServer()) {
+    pserver = pclient->GetServer();
+    pserver->ReadWrite(loop, pclient, revents);
+    return;
+  }
+
+  // Check if it's an AsyncIoClient
+  AsyncIoClient* aclient = reinterpret_cast<AsyncIoClient*>(user_data);
+  if (aclient && aclient->server_) {
+    pserver = aclient->server_;
+    pserver->ReadWriteAsync(loop, aclient, revents);
+  }
 }
 
 void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
@@ -276,6 +375,25 @@ void IoLoop::ReadWrite(LibEvLoop* loop, IoClient* client, flags_t revents) {
     if (observer_) {
       observer_->DataReadyToWrite(client);
     }
+  }
+}
+
+void IoLoop::ReadWriteAsync(LibEvLoop* loop, AsyncIoClient* client, flags_t revents) {
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  CHECK(loop_ == loop);
+  CHECK(client && client->server_ == this);
+
+  if (EV_ERROR & revents) {
+    DNOTREACHED();
+    return;
+  }
+
+  if (revents & EV_READ) {
+    client->HandleReadEvent();
+  }
+
+  if (revents & EV_WRITE) {
+    client->HandleWriteEvent();
   }
 }
 
