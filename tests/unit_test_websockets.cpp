@@ -206,6 +206,22 @@ class ServerWebsockHandler : public common::libev::IoLoopObserver {
 
   void DataReadyToWrite(common::libev::IoClient* client) override { UNUSED(client); }
 
+  void Accepted(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+  void Moved(common::libev::IoLoop* server, common::libev::AsyncIoClient* client) override {
+    UNUSED(server);
+    UNUSED(client);
+  }
+  void Closed(common::libev::AsyncIoClient* client) override { UNUSED(client); }
+
+  void AsyncDataWriteCompleted(common::libev::AsyncIoClient* client, size_t bytes_written) override {
+    UNUSED(client);
+    UNUSED(bytes_written);
+  }
+  void AsyncDataReadCompleted(common::libev::AsyncIoClient* client, size_t bytes_read) override {
+    UNUSED(client);
+    UNUSED(bytes_read);
+  }
+
   void PostLooped(common::libev::IoLoop* server) override {
     std::vector<common::libev::IoClient*> cl = server->GetClients();
     ASSERT_TRUE(cl.empty());
