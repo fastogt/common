@@ -17,8 +17,6 @@
 
 #include <openssl/evp.h>
 
-#include <cstring>
-
 namespace common {
 namespace license {
 
