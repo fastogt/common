@@ -33,7 +33,7 @@ class License : public std::array<char, N> {
 };
 
 typedef License<65> hardware_hash_t;
-typedef License<97> expire_key_t;
+typedef License<98> expire_key_t;
 
 template <typename Lic>
 Optional<Lic> make_license(const std::string& data) {
