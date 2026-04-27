@@ -34,9 +34,7 @@ SET(SERIALIZER_HEADERS
   ${CMAKE_SOURCE_DIR}/include/common/serializer/iserializer.h
 )
 
-SET(SERIALIZER_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/serializer/iserializer.cpp
-)
+SET(SERIALIZER_SOURCES)
 
 FIND_PACKAGE(JSON-C CONFIG QUIET)
 IF(JSON-C_FOUND)
@@ -413,7 +411,6 @@ SET(LICENSE_HEADERS
 )
 SET(LICENSE_SOURCES
   ${CMAKE_SOURCE_DIR}/src/license/expire_license.cpp
-  ${CMAKE_SOURCE_DIR}/src/license/types.cpp
 )
 
 SET(LICENSE_HW_LIBRARIES)

@@ -49,7 +49,7 @@ namespace uri {
 template <typename T>
 class CanonOutputT {
  public:
-  CanonOutputT() : buffer_(NULL), buffer_len_(0), cur_len_(0) {}
+  CanonOutputT() : buffer_(nullptr), buffer_len_(0), cur_len_(0) {}
   virtual ~CanonOutputT() {}
 
   // Implemented to resize the buffer. This function should update the buffer
@@ -780,7 +780,14 @@ struct URLComponentSource {
   // will make them all NULL, which is no replacement. The caller would then
   // override the components they want to replace.
   URLComponentSource()
-      : scheme(NULL), username(NULL), password(NULL), host(NULL), port(NULL), path(NULL), query(NULL), ref(NULL) {}
+      : scheme(nullptr),
+        username(nullptr),
+        password(nullptr),
+        host(nullptr),
+        port(nullptr),
+        path(nullptr),
+        query(nullptr),
+        ref(nullptr) {}
 
   // Constructor normally used internally to initialize all the components to
   // point to the same spec.
@@ -825,7 +832,7 @@ class Replacements {
     components_.scheme = comp;
   }
   // Note: we don't have a ClearScheme since this doesn't make any sense.
-  bool IsSchemeOverridden() const { return sources_.scheme != NULL; }
+  bool IsSchemeOverridden() const { return sources_.scheme != nullptr; }
 
   // Username
   void SetUsername(const CHAR* s, const Component& comp) {
@@ -836,7 +843,7 @@ class Replacements {
     sources_.username = Placeholder();
     components_.username = Component();
   }
-  bool IsUsernameOverridden() const { return sources_.username != NULL; }
+  bool IsUsernameOverridden() const { return sources_.username != nullptr; }
 
   // Password
   void SetPassword(const CHAR* s, const Component& comp) {
@@ -847,7 +854,7 @@ class Replacements {
     sources_.password = Placeholder();
     components_.password = Component();
   }
-  bool IsPasswordOverridden() const { return sources_.password != NULL; }
+  bool IsPasswordOverridden() const { return sources_.password != nullptr; }
 
   // Host
   void SetHost(const CHAR* s, const Component& comp) {
@@ -858,7 +865,7 @@ class Replacements {
     sources_.host = Placeholder();
     components_.host = Component();
   }
-  bool IsHostOverridden() const { return sources_.host != NULL; }
+  bool IsHostOverridden() const { return sources_.host != nullptr; }
 
   // Port
   void SetPort(const CHAR* s, const Component& comp) {
@@ -869,7 +876,7 @@ class Replacements {
     sources_.port = Placeholder();
     components_.port = Component();
   }
-  bool IsPortOverridden() const { return sources_.port != NULL; }
+  bool IsPortOverridden() const { return sources_.port != nullptr; }
 
   // Path
   void SetPath(const CHAR* s, const Component& comp) {
@@ -880,7 +887,7 @@ class Replacements {
     sources_.path = Placeholder();
     components_.path = Component();
   }
-  bool IsPathOverridden() const { return sources_.path != NULL; }
+  bool IsPathOverridden() const { return sources_.path != nullptr; }
 
   // Query
   void SetQuery(const CHAR* s, const Component& comp) {
@@ -891,7 +898,7 @@ class Replacements {
     sources_.query = Placeholder();
     components_.query = Component();
   }
-  bool IsQueryOverridden() const { return sources_.query != NULL; }
+  bool IsQueryOverridden() const { return sources_.query != nullptr; }
 
   // Ref
   void SetRef(const CHAR* s, const Component& comp) {
@@ -902,7 +909,7 @@ class Replacements {
     sources_.ref = Placeholder();
     components_.ref = Component();
   }
-  bool IsRefOverridden() const { return sources_.ref != NULL; }
+  bool IsRefOverridden() const { return sources_.ref != nullptr; }
 
   // Getters for the internal data. See the variables below for how the
   // information is encoded.
