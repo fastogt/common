@@ -119,7 +119,7 @@ class LibEvLoop {
   AsyncCustom* async_custom_;
 
   std::vector<LibevTimer*> timers_;
-  bool is_running_;
+  std::atomic<bool> is_running_;
 };
 
 }  // namespace libev

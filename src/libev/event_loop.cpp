@@ -302,7 +302,9 @@ bool LibEvLoop::IsLoopThread() const {
 }
 
 bool LibEvLoop::IsRunning() const {
-  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  // Read-only status getter; safe to call from any thread (is_running_ is atomic). Unlike Start/Stop*
+  // which mutate libev state and must stay on the loop thread, callers legitimately poll this from other
+  // threads (e.g. a stats timer checking whether a separate HTTP-server loop is up).
   return is_running_;
 }
 
