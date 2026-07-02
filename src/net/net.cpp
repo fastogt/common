@@ -422,7 +422,11 @@ ErrnoError socket(int domain, socket_t type, int protocol, socket_info* out_info
   }
 
   int ntype = socket_type_to_native(type);
-  socket_descr_t sd = ::socket(domain, ntype, protocol);
+  int create_type = ntype;
+#if defined(SOCK_CLOEXEC)
+  create_type |= SOCK_CLOEXEC;  // don't leak listen/client sockets into exec'd children
+#endif
+  socket_descr_t sd = ::socket(domain, create_type, protocol);
   if (sd == INVALID_SOCKET_VALUE) {
     return make_error_perror("socket", errno);
   }
@@ -562,7 +566,11 @@ ErrnoError accept(const socket_info& info, socket_info* out_info) {
 #else
   int* addr_len = reinterpret_cast<int*>(&ainf->ai_addrlen);
 #endif
+#if defined(OS_LINUX)
+  int res = ::accept4(fd, ainf->ai_addr, addr_len, SOCK_CLOEXEC);  // atomically close-on-exec (P5)
+#else
   int res = ::accept(fd, ainf->ai_addr, addr_len);
+#endif
   if (res == ERROR_RESULT_VALUE) {
     return make_error_perror("accept", errno);
   }

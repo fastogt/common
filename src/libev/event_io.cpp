@@ -36,7 +36,9 @@ namespace libev {
 
 LibevIO::LibevIO() : base_class(), loop_(nullptr), func_(), fd_(INVALID_DESCRIPTOR), events_(0) {}
 
-LibevIO::~LibevIO() {}
+LibevIO::~LibevIO() {
+  Stop();  // never free the ev_io while it is still linked in the loop
+}
 
 descriptor_t LibevIO::GetFd() const {
   return fd_;

@@ -285,7 +285,8 @@ void SocketTcpTls::SetHost(const HostAndPort& host) {
 
 SocketTcpTls::~SocketTcpTls() {}
 
-ClientSocketTcpTls::ClientSocketTcpTls(const HostAndPort& host) : base_class(host) {}
+ClientSocketTcpTls::ClientSocketTcpTls(const HostAndPort& host, bool verify_peer)
+    : base_class(host), verify_peer_(verify_peer) {}
 
 common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
   common::net::ClientSocketTcp hs(GetHost());
@@ -300,22 +301,42 @@ common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
     return common::make_errno_error_inval();
   }
 
+  if (verify_peer_) {
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, nullptr);
+    if (SSL_CTX_set_default_verify_paths(ctx) != 1) {
+      SSL_CTX_free(ctx);
+      ignore_result(hs.Disconnect());
+      return common::make_errno_error("Failed to load default CA verify paths", EAGAIN);
+    }
+  }
+
   SSL* ssl = SSL_new(ctx);
   SSL_CTX_free(ctx);
   if (!ssl) {
-    SSL_free(ssl);
     ignore_result(hs.Disconnect());
     return common::make_errno_error_inval();
   }
 
+  const std::string hostname = GetHost().GetHostNoBrackets();
+  if (verify_peer_) {
+    // reject a valid-chain cert issued for a different host
+    if (SSL_set1_host(ssl, hostname.c_str()) != 1) {
+      SSL_free(ssl);
+      ignore_result(hs.Disconnect());
+      return common::make_errno_error("Failed to set expected peer hostname", EAGAIN);
+    }
+  }
+  // SNI so the server presents the right certificate
+  SSL_set_tlsext_host_name(ssl, hostname.c_str());
+
   SSL_set_fd(ssl, hs.GetFd());
   int e = SSL_connect(ssl);
-  if (e < 0) {
-    int err = SSL_get_error(ssl, e);
-    char* str = ERR_error_string(err, nullptr);
+  if (e <= 0) {
+    int ssl_err = SSL_get_error(ssl, e);
+    char* str = ERR_error_string(ERR_get_error(), nullptr);
     SSL_free(ssl);
     ignore_result(hs.Disconnect());
-    return common::make_errno_error(str, EINTR);
+    return common::make_errno_error(common::MemSPrintf("SSL_connect failed (ssl_error=%d): %s", ssl_err, str), EINTR);
   }
 
   X509* cert = SSL_get_peer_certificate(ssl);
@@ -323,6 +344,17 @@ common::ErrnoError ClientSocketTcpTls::Connect(struct timeval* tv) {
     SSL_free(ssl);
     ignore_result(hs.Disconnect());
     return common::make_errno_error("Could not get a certificate", EINTR);
+  }
+  X509_free(cert);
+
+  if (verify_peer_) {
+    long vr = SSL_get_verify_result(ssl);
+    if (vr != X509_V_OK) {
+      SSL_free(ssl);
+      ignore_result(hs.Disconnect());
+      return common::make_errno_error(
+          common::MemSPrintf("Certificate verification failed: %s", X509_verify_cert_error_string(vr)), EINTR);
+    }
   }
 
   SetInfo(hs.GetInfo());
@@ -361,19 +393,29 @@ ErrnoError ServerSocketTcpTls::LoadCertificates(const std::string& cert, const s
 }
 
 ErrnoError ServerSocketTcpTls::Accept(socket_info* info, SSL** out) {
+  if (!ctx_) {  // LoadCertificates() was never called; SSL_new(nullptr) would deref null
+    return common::make_errno_error("TLS server certificates not loaded", EINVAL);
+  }
+
   ErrnoError err = base_class::Accept(info);
   if (err) {
     return err;
   }
 
   auto ssl = SSL_new(ctx_);
+  if (!ssl) {
+    ignore_result(close(info->fd()));
+    return common::make_errno_error_inval();
+  }
+
   SSL_set_fd(ssl, info->fd());
   int e = SSL_accept(ssl);
-  if (e < 0) {
-    int err = SSL_get_error(ssl, e);
-    char* str = ERR_error_string(err, nullptr);
+  if (e <= 0) {  // 0 is a controlled handshake failure, negative a fatal error - both must fail and close the fd
+    int ssl_err = SSL_get_error(ssl, e);
+    char* str = ERR_error_string(ERR_get_error(), nullptr);
     SSL_free(ssl);
-    return common::make_errno_error(str, EINTR);
+    ignore_result(close(info->fd()));  // otherwise every failed handshake leaks the accepted socket (DoS)
+    return common::make_errno_error(common::MemSPrintf("SSL_accept failed (ssl_error=%d): %s", ssl_err, str), EINTR);
   }
 
   *out = ssl;

@@ -83,6 +83,8 @@ class WebSocketServerClient : public WebSocketClient {
 
  private:
   ErrnoError SendPong() WARN_UNUSED_RESULT;
+  // Read exactly n bytes into buff, accumulating across short reads; returns an error on EOF/failure.
+  ErrnoError ReadFull(char* buff, size_t n) WARN_UNUSED_RESULT;
 
   frame_t frame_;
   size_t ntoread_;

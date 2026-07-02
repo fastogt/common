@@ -51,7 +51,9 @@ namespace libev {
 
 LibevChild::LibevChild() : base_class(), loop_(nullptr), func_(), pid_(INVALID_PROCESS_ID) {}
 
-LibevChild::~LibevChild() {}
+LibevChild::~LibevChild() {
+  Stop();  // never free the ev_child while it is still linked in the loop
+}
 
 bool LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, process_handle_t pid) {
   if (!loop || !cb || pid == INVALID_PROCESS_ID) {

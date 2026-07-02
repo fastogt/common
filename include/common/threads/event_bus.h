@@ -92,17 +92,19 @@ class EventThread {
 
  private:
   int Exec() {
-    while (!stop_.load()) {
-      event_t* event = nullptr;
+    while (true) {
+      std::deque<event_t*> to_process;
       {
         mutex_lock_t lock(queue_mutex_);
-        condition_.wait(lock);
-        if (!stop_.load()) {
-          event = events_.front();
-          events_.pop_front();
+        condition_.wait(lock, [this]() { return stop_.load() || !events_.empty(); });
+        if (stop_.load()) {
+          break;
         }
+        events_.swap(to_process);
       }
-      dispatcher_.ProcessEvent(event);
+      for (size_t i = 0; i < to_process.size(); ++i) {
+        dispatcher_.ProcessEvent(to_process[i]);
+      }
     }
 
     {

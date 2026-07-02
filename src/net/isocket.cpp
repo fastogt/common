@@ -38,7 +38,24 @@ ErrnoError ISocket::Write(const void* data, size_t size, size_t* nwrite_out) {
     return make_errno_error_inval();
   }
 
-  return WriteImpl(data, size, nwrite_out);
+  // Loop until the whole buffer is written; a single WriteImpl can short-write (e.g. HTTP request
+  // bodies), and callers that ignored the partial count silently truncated the request.
+  size_t total = 0;
+  while (total < size) {
+    size_t n = 0;
+    ErrnoError err = WriteImpl(static_cast<const char*>(data) + total, size - total, &n);
+    if (err) {
+      *nwrite_out = total;
+      return err;
+    }
+    if (n == 0) {
+      break;
+    }
+    total += n;
+  }
+
+  *nwrite_out = total;
+  return ErrnoError();
 }
 
 ErrnoError ISocket::WriteBuffer(const std::string& data, size_t* nwrite_out) {

@@ -51,7 +51,7 @@ process_handle_t IoChild::GetProcessID() const {
 }
 
 const char* IoChild::ClassName() const {
-  return "IoClient";
+  return "IoChild";
 }
 
 }  // namespace libev

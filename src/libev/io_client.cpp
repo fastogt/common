@@ -27,8 +27,8 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <common/libev/event_io.h>
 #include <common/file_system/file_system.h>
+#include <common/libev/event_io.h>
 #include <common/libev/io_client.h>
 #include <common/libev/io_loop.h>
 
@@ -81,7 +81,7 @@ ErrnoError IoClient::Write(const void* data, size_t size, size_t* nwrite_out) {
 
   while (total < size) {
     size_t n;
-    ErrnoError err = SingleWrite(data, size, &n);
+    ErrnoError err = SingleWrite(static_cast<const char*>(data) + total, bytes_left, &n);
     if (err || n == 0) {
       *nwrite_out = 0;
       return err;

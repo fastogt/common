@@ -34,7 +34,9 @@ namespace threads {
 
 ThreadPool::ThreadPool() : workers_(), tasks_(), queue_mutex_(), condition_(), stop_(false) {}
 
-ThreadPool::~ThreadPool() {}
+ThreadPool::~ThreadPool() {
+  Stop();  // never destroy joinable workers -> std::terminate
+}
 
 void ThreadPool::Post(task_t task) {
   {
@@ -49,20 +51,28 @@ void ThreadPool::Start(size_t count_threads) {
 }
 
 void ThreadPool::Stop() {
-  stop_ = true;
+  {
+    std::lock_guard<std::mutex> lock(queue_mutex_);  // set under the lock RunWork waits on, or the wakeup is lost
+    stop_ = true;
+  }
   condition_.notify_all();
   WaitFinishWork();
 }
 
 void ThreadPool::Restart() {
+  size_t count = workers_.size();  // capture before Stop() clears workers_
   Stop();
-  InitWork(workers_.size());
+  InitWork(count);
 }
 
 void ThreadPool::InitWork(size_t threads) {
   workers_.clear();
-  tasks_t q;
-  tasks_.swap(q);
+  {
+    std::lock_guard<std::mutex> lock(queue_mutex_);
+    stop_ = false;  // revive the pool; otherwise every new worker exits immediately
+    tasks_t q;
+    tasks_.swap(q);
+  }
   for (uint16_t i = 0; i < threads; ++i) {
     workers_.push_back(thread_t(&ThreadPool::RunWork, this));
   }
@@ -70,8 +80,11 @@ void ThreadPool::InitWork(size_t threads) {
 
 void ThreadPool::WaitFinishWork() {
   for (uint16_t i = 0; i < workers_.size(); ++i) {
-    workers_[i].join();
+    if (workers_[i].joinable()) {
+      workers_[i].join();
+    }
   }
+  workers_.clear();  // so a later Stop()/dtor doesn't re-join joined threads
 }
 
 void ThreadPool::RunWork() {

@@ -68,7 +68,7 @@ void DynamicEventDispatcher::UnSubscribe(listener_t* listener) {
   }
 
   mutex_lock_t lock(listeners_mutex_);
-  for (size_t i = 0; i < listeners_->size(); ++i) {
+  for (size_t i = 0; i < max_events_count_; ++i) {  // was listeners_[0].size(): skipped higher slots -> UAF
     listeners_[i].erase(std::remove(listeners_[i].begin(), listeners_[i].end(), listener), listeners_[i].end());
   }
 }

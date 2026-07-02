@@ -86,13 +86,16 @@ class ClientSocketTcpTls : public SocketTcpTls {
  public:
   typedef SocketTcpTls base_class;
 
-  explicit ClientSocketTcpTls(const HostAndPort& host);
+  // verify_peer: validate the server certificate chain + hostname (default). Pass false only for
+  // known self-signed / internal endpoints — disabling it makes the connection MITM-able.
+  explicit ClientSocketTcpTls(const HostAndPort& host, bool verify_peer = true);
 
   ErrnoError Connect(struct timeval* tv = nullptr) WARN_UNUSED_RESULT;
   ErrnoError Disconnect() WARN_UNUSED_RESULT;
   bool IsConnected() const;
 
  private:
+  const bool verify_peer_;
   DISALLOW_COPY_AND_ASSIGN(ClientSocketTcpTls);
 };
 

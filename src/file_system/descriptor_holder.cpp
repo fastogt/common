@@ -72,7 +72,12 @@ ErrnoError DescriptorHolder::Read(void* out_data, size_t max_size, size_t* nread
 }
 
 ErrnoError DescriptorHolder::Close() {
-  return close_descriptor(fd_);
+  if (fd_ == INVALID_DESCRIPTOR) {  // idempotent: never close (and possibly reuse) a stale fd twice
+    return ErrnoError();
+  }
+  ErrnoError err = close_descriptor(fd_);
+  fd_ = INVALID_DESCRIPTOR;
+  return err;
 }
 
 ErrnoError DescriptorHolder::Lock() {

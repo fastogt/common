@@ -36,6 +36,10 @@ namespace libev {
 
 LibevAsync::LibevAsync() : base_class(), loop_(nullptr), func_() {}
 
+// NB: no defensive Stop() here. Unlike IoClient/IoChild/timer watchers (always deleted on the loop
+// thread), the loop's async watchers are owned by LibEvLoop and freed in ~LibEvLoop, which usually runs
+// on the controlling thread, not the exec thread — Stop() -> StopAsync() would trip CHECK(IsLoopThread()).
+// They are already stopped in HandleStop() before the loop tears down.
 LibevAsync::~LibevAsync() {}
 
 void LibevAsync::Init(LibEvLoop* loop, async_loop_exec_function_t cb) {

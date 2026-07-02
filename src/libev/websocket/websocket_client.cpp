@@ -309,19 +309,34 @@ ErrnoError WebSocketServerClient::SendPong() {
   return errn;
 }
 
-ErrnoError WebSocketServerClient::ProcessFrame(std::function<void(char*, size_t)> pred) {
-  if (step_ == common::libev::websocket::ONE) {
-    char buff[BUF_SIZE] = {0};
+ErrnoError WebSocketServerClient::ReadFull(char* buff, size_t n) {
+  size_t total = 0;
+  while (total < n) {
     size_t nread = 0;
-    common::ErrnoError errn = SingleRead(buff, ntoread_, &nread);
+    common::ErrnoError errn = SingleRead(buff + total, n - total, &nread);
     if (errn || nread == 0) {
       if (nread == 0) {
         return make_errno_error("Connection closed", EAGAIN);
       }
       return errn;
     }
+    total += nread;
+  }
+  return ErrnoError();
+}
+
+ErrnoError WebSocketServerClient::ProcessFrame(std::function<void(char*, size_t)> pred) {
+  if (step_ == common::libev::websocket::ONE) {
+    char buff[BUF_SIZE] = {0};
+    common::ErrnoError errn = ReadFull(buff, ntoread_);  // header can arrive split across TCP segments
+    if (errn) {
+      return errn;
+    }
 
     if (parse_frame_header(buff, &frame_)) {
+      if (frame_.mask == 0) {  // RFC 6455: a server MUST fail the connection on an unmasked client frame
+        return make_errno_error("Received unmasked client frame", EPROTO);
+      }
       if (frame_.payload_len <= 125) {
         step_ = THREE;
         ntoread_ = 4;
@@ -334,14 +349,9 @@ ErrnoError WebSocketServerClient::ProcessFrame(std::function<void(char*, size_t)
       }
     }
   } else if (step_ == common::libev::websocket::TWO) {
-    char* tmp = (char*)malloc(ntoread_);
-    size_t nread = 0;
-    common::ErrnoError errn = SingleRead(tmp, ntoread_, &nread);
-    if (errn || nread == 0) {
-      free(tmp);
-      if (nread == 0) {
-        return make_errno_error("Connection closed", EAGAIN);
-      }
+    char tmp[8] = {0};
+    common::ErrnoError errn = ReadFull(tmp, ntoread_);
+    if (errn) {
       return errn;
     }
 
@@ -350,17 +360,12 @@ ErrnoError WebSocketServerClient::ProcessFrame(std::function<void(char*, size_t)
     } else if (frame_.payload_len == 127) {
       frame_.payload_len = myntohll(*(uint64_t*)tmp);
     }
-    free(tmp);
     step_ = THREE;
     ntoread_ = 4;
   } else if (step_ == common::libev::websocket::THREE) {
     char buff[BUF_SIZE] = {0};
-    size_t nread = 0;
-    common::ErrnoError errn = SingleRead(buff, ntoread_, &nread);
-    if (errn || nread == 0) {
-      if (nread == 0) {
-        return make_errno_error("Connection closed", EAGAIN);
-      }
+    common::ErrnoError errn = ReadFull(buff, ntoread_);
+    if (errn) {
       return errn;
     }
 

@@ -56,6 +56,9 @@ bool realpath_without_exist(const std::basic_string<CharT>& path, std::basic_str
     if (part == ".") {
       continue;
     } else if (part == "..") {
+      if (valid_parts.empty()) {  // ".." with nothing to pop -> escapes the root, reject before pop_back UB
+        return false;
+      }
       valid_parts.pop_back();
       if (valid_parts.empty()) {
         return false;

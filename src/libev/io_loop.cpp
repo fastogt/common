@@ -131,81 +131,82 @@ bool IoLoop::RegisterClient(IoClient* client) {
 }
 
 bool IoLoop::RegisterAsyncClient(AsyncIoClient* client) {
- if (!client) {
-   DNOTREACHED();
-   return false;
- }
+  if (!client) {
+    DNOTREACHED();
+    return false;
+  }
 
- CHECK(IsLoopThread()) << "Must be called in loop thread!";
- const std::string formated_name = client->GetFormatedName();
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  const std::string formated_name = client->GetFormatedName();
 
- if (client->GetServer()) {
-   CHECK(client->GetServer() == this) << "Must have same server!";
- } else {
-   client->server_ = this;
- }
+  if (client->GetServer()) {
+    CHECK(client->GetServer() == this) << "Must have same server!";
+  } else {
+    client->server_ = this;
+  }
 
- // Initialize and start watcher to read client requests
- LibevIO* client_ev = client->read_write_io_;
- bool is_inited = client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
- if (!is_inited) {
-   DNOTREACHED();
-   return false;
- }
- client_ev->Start();
+  // Initialize and start watcher to read client requests
+  LibevIO* client_ev = client->read_write_io_;
+  bool is_inited = client_ev->Init(loop_, read_write_cb, client->GetFd(), client->GetFlags());
+  if (!is_inited) {
+    DNOTREACHED();
+    return false;
+  }
+  client_ev->Start();
 
- if (observer_) {
-   observer_->Accepted(client);
- }
+  if (observer_) {
+    observer_->Accepted(client);
+  }
 
- async_clients_.push_back(client);
- DEBUG_LOG() << "Successfully connected with async client[" << formated_name << "], from server[" << GetFormatedName()
-             << "], " << async_clients_.size() << " async client(s) connected.";
- return true;
+  async_clients_.push_back(client);
+  DEBUG_LOG() << "Successfully connected with async client[" << formated_name << "], from server[" << GetFormatedName()
+              << "], " << async_clients_.size() << " async client(s) connected.";
+  return true;
 }
 
 void IoLoop::UnRegisterAsyncClient(AsyncIoClient* client) {
- if (!client) {
-   DNOTREACHED();
-   return;
- }
+  if (!client) {
+    DNOTREACHED();
+    return;
+  }
 
- CHECK(IsLoopThread()) << "Must be called in loop thread!";
- CHECK(client->GetServer() == this) << "Must have same server!";
- const std::string formated_name = client->GetFormatedName();
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  CHECK(client->GetServer() == this) << "Must have same server!";
+  const std::string formated_name = client->GetFormatedName();
 
- LibevIO* client_ev = client->read_write_io_;
- client_ev->Stop();
- client->server_ = nullptr;
+  LibevIO* client_ev = client->read_write_io_;
+  client_ev->Stop();
+  client->server_ = nullptr;
 
- if (observer_) {
-   observer_->Moved(this, client);
- }
+  if (observer_) {
+    observer_->Moved(this, client);
+  }
 
- async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
- DEBUG_LOG() << "Successfully unregister async client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-             << async_clients_.size() << " async client(s) connected.";
+  async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
+  DEBUG_LOG() << "Successfully unregister async client[" << formated_name << "], from server[" << GetFormatedName()
+              << "], " << async_clients_.size() << " async client(s) connected.";
 }
 
 void IoLoop::CloseAsyncClient(AsyncIoClient* client) {
- if (!client) {
-   DNOTREACHED();
-   return;
- }
+  if (!client) {
+    DNOTREACHED();
+    return;
+  }
 
- CHECK(IsLoopThread()) << "Must be called in loop thread!";
- CHECK(client->GetServer() == this) << "Must have same server!";
- const std::string formated_name = client->GetFormatedName();
+  CHECK(IsLoopThread()) << "Must be called in loop thread!";
+  CHECK(client->GetServer() == this) << "Must have same server!";
+  const std::string formated_name = client->GetFormatedName();
 
- LibevIO* client_ev = client->read_write_io_;
- client_ev->Stop();
+  LibevIO* client_ev = client->read_write_io_;
+  client_ev->Stop();
+  client->server_ = nullptr;  // prevent a second Close() from re-firing Closed() (double-delete)
 
- if (observer_) {
-   observer_->Closed(client);
- }
- async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
- DEBUG_LOG() << "Successfully disconnected async client[" << formated_name << "], from server[" << GetFormatedName() << "], "
-             << async_clients_.size() << " async client(s) connected.";
+  if (observer_) {
+    observer_->Closed(client);
+  }
+  async_clients_.erase(std::remove(async_clients_.begin(), async_clients_.end(), client), async_clients_.end());
+  DEBUG_LOG() << "Successfully disconnected async client[" << formated_name << "], from server[" << GetFormatedName()
+              << "], " << async_clients_.size() << " async client(s) connected.";
 }
 
 void IoLoop::CloseClient(IoClient* client) {
@@ -220,6 +221,7 @@ void IoLoop::CloseClient(IoClient* client) {
 
   LibevIO* client_ev = client->read_write_io_;
   client_ev->Stop();
+  client->server_ = nullptr;  // prevent a second Close() from re-firing Closed() (double-delete)
 
   if (observer_) {
     observer_->Closed(client);
@@ -444,6 +446,14 @@ void IoLoop::Stopped(LibEvLoop* loop) {
 
   for (size_t i = 0; i < cl.size(); ++i) {
     IoClient* client = cl[i];
+    ErrnoError err = client->Close();
+    DCHECK(!err) << err->GetDescription();
+    delete client;
+  }
+
+  const std::vector<AsyncIoClient*> acl = GetAsyncClients();
+  for (size_t i = 0; i < acl.size(); ++i) {
+    AsyncIoClient* client = acl[i];
     ErrnoError err = client->Close();
     DCHECK(!err) << err->GetDescription();
     delete client;

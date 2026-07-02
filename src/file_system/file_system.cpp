@@ -541,8 +541,8 @@ ErrnoError seek_descriptor(descriptor_t fd_desc, off_t offset, int whence) {
     return make_error_perror("open_descriptor", EINVAL);
   }
 
-  int res = ::lseek(fd_desc, offset, whence);
-  if (res == ERROR_RESULT_VALUE) {
+  off_t res = ::lseek(fd_desc, offset, whence);  // off_t is 64-bit; int truncated valid offsets to -1
+  if (res == static_cast<off_t>(ERROR_RESULT_VALUE)) {
     return make_error_perror("lseek", errno);
   }
 

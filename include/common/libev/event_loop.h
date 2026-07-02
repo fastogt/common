@@ -32,6 +32,7 @@
 #include <common/libev/types.h>
 #include <common/threads/platform_thread.h>
 
+#include <atomic>
 #include <vector>
 
 struct ev_loop;
@@ -112,7 +113,7 @@ class LibEvLoop {
 
   struct ev_loop* loop_;
   EvLoopObserver* observer_;
-  threads::platform_thread_id_t exec_id_;
+  std::atomic<threads::platform_thread_id_t> exec_id_;
   LibevAsync* async_stop_;
 
   AsyncCustom* async_custom_;

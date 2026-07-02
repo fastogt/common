@@ -31,6 +31,8 @@
 #include <common/libev/inotify/inotify_client_observer.h>
 #include <sys/inotify.h>
 
+#include <algorithm>
+
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_SIZE (1024 * (EVENT_SIZE + 16))
 
@@ -75,7 +77,13 @@ void IoInotifyClient::ProcessRead() {
   size_t i = 0;
   while (i < nread) {
     struct inotify_event* event = reinterpret_cast<struct inotify_event*>(data + i);
-    if (event->len) {
+    if (event->mask & IN_IGNORED) {
+      // kernel freed this wd (dir deleted/moved/unwatched); drop the stale entry so a reused wd isn't misattributed
+      const descriptor_t gone_wd = event->wd;
+      watched_directories_.erase(std::remove_if(watched_directories_.begin(), watched_directories_.end(),
+                                                [gone_wd](const InotifyNode& n) { return n.fd == gone_wd; }),
+                                 watched_directories_.end());
+    } else if (event->len) {
       const auto inode = FindInotifyNodeByDescriptor(event->wd);
       if (inode) {
         if (client_) {

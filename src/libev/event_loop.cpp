@@ -88,6 +88,10 @@ class LibEvLoop::AsyncCustom : public LibevAsync {
     custom->Pop();
   }
 
+  // Run any closures still queued at shutdown so "post + wait on condvar" callers
+  // don't block forever after the loop stops.
+  void Flush() { Pop(); }
+
  private:
   void Pop() {
     std::vector<custom_loop_exec_function_t> copy;
@@ -112,7 +116,7 @@ LibEvLoop::LibEvLoop() : LibEvLoop(ev_loop_new(0)) {}
 LibEvLoop::LibEvLoop(struct ev_loop* loop)
     : loop_(loop),
       observer_(nullptr),
-      exec_id_(),
+      exec_id_(threads::invalid_tid),
       async_stop_(new LibevAsync),
       async_custom_(new AsyncCustom),
       timers_(),
@@ -148,6 +152,7 @@ void LibEvLoop::RemoveTimer(timer_id_t id) {
     LibevTimer* timer = *it;
     if (timer->get_id() == id) {
       timers_.erase(it);
+      timer->Stop();  // unlink the ev_timer from libev's heap before freeing it
       delete timer;
       return;
     }
@@ -349,6 +354,8 @@ void LibEvLoop::HandleStop() {
   if (observer_) {
     observer_->Stopped(this);
   }
+  async_custom_->Flush();  // run closures posted before the loop was told to stop
+  async_custom_->Stop();
   ev_unloop(loop_, EVUNLOOP_ONE);
 }
 
