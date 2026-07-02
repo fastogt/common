@@ -36,9 +36,9 @@ namespace libev {
 
 LibevIO::LibevIO() : base_class(), loop_(nullptr), func_(), fd_(INVALID_DESCRIPTOR), events_(0) {}
 
-LibevIO::~LibevIO() {
-  Stop();  // never free the ev_io while it is still linked in the loop
-}
+// No Stop() here: Stop() -> loop_->StopIO() asserts CHECK(IsLoopThread()), but a client can be destroyed
+// off the loop thread during error teardown. Callers must Close()/UnRegister() on the loop thread first.
+LibevIO::~LibevIO() {}
 
 descriptor_t LibevIO::GetFd() const {
   return fd_;

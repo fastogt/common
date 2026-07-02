@@ -36,9 +36,9 @@ namespace libev {
 
 LibevTimer::LibevTimer() : base_class(), loop_(nullptr), func_() {}
 
-LibevTimer::~LibevTimer() {
-  Stop();  // never free the ev_timer while it is still linked in the loop's heap
-}
+// No Stop() here: StopTimer() asserts CHECK(IsLoopThread()) and destruction can happen off the loop
+// thread during teardown. RemoveTimer()/HandleStop() stop timers on the loop thread first.
+LibevTimer::~LibevTimer() {}
 
 void LibevTimer::Init(LibEvLoop* loop, timer_loop_exec_function_t cb, double sec, bool repeat) {
   if (!loop || !cb) {

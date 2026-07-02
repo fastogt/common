@@ -51,9 +51,9 @@ namespace libev {
 
 LibevChild::LibevChild() : base_class(), loop_(nullptr), func_(), pid_(INVALID_PROCESS_ID) {}
 
-LibevChild::~LibevChild() {
-  Stop();  // never free the ev_child while it is still linked in the loop
-}
+// No Stop() here: StopChild() asserts CHECK(IsLoopThread()) and destruction can happen off the loop
+// thread during teardown. Callers stop/unregister on the loop thread first.
+LibevChild::~LibevChild() {}
 
 bool LibevChild::Init(LibEvLoop* loop, child_loop_exec_function_t cb, process_handle_t pid) {
   if (!loop || !cb || pid == INVALID_PROCESS_ID) {
